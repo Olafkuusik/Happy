@@ -1,0 +1,85 @@
+/* .themify_builder_2_row.module_row_0 Style */
+.themify_builder_2_row.module_row_0.module_row {
+	padding-top : 5%;
+	padding-bottom : 5%
+}
+
+.themify_builder .image-2-0-0-1.module-image { padding-right: 5%; padding-left: 5%;  } 
+.themify_builder .text-2-0-1-1.module-text { padding-top: 0%; padding-right: 5%; padding-left: 5%;  } 
+/* .themify_builder_2_row.module_row_1 Style */
+.themify_builder_2_row.module_row_1.module_row {
+	background-color: #4d7de1;
+	padding-top : 8%
+}
+
+/* .module_row_1 .module_column_0.tb_2_column Style */
+.module_row_1 .module_column_0.tb_2_column.module_column {
+	padding-right : 10%;
+	padding-left : 10%
+}
+
+.themify_builder .text-2-1-0-1.module-text { color: #ffffff; text-align: center;  } 
+.themify_builder .text-2-1-0-1.module-text h1 { color: #ffffff;  } 
+.themify_builder .text-2-1-0-1.module-text h2 { color: #ffffff;  } 
+.themify_builder .text-2-1-0-1.module-text h3:not(.module-title) { color: #ffffff;  } 
+.themify_builder .text-2-1-0-1.module-text h4 { color: #ffffff;  } 
+.themify_builder .text-2-1-0-1.module-text h5 { color: #ffffff;  } 
+.themify_builder .text-2-1-0-1.module-text h6 { color: #ffffff;  } 
+.themify_builder .buttons-2-1-0-2 div.module-buttons { text-align: center; padding-bottom: 45%;  } 
+/* .themify_builder_2_row.module_row_2 Style */
+.themify_builder_2_row.module_row_2.module_row {
+	padding-top : 8%;
+	padding-bottom : 8%
+}
+
+/* .module_row_2 .module_column_1.tb_2_column Style */
+.module_row_2 .module_column_1.tb_2_column.module_column {
+	padding-right : 10%;
+	padding-left : 10%
+}
+
+.themify_builder .text-2-2-1-1.module-text { color: #000000; text-align: center; padding-right: 5%; padding-left: 5%;  } 
+.themify_builder .text-2-2-1-1.module-text h1 { color: #000000;  } 
+.themify_builder .text-2-2-1-1.module-text h2 { color: #000000;  } 
+.themify_builder .text-2-2-1-1.module-text h3:not(.module-title) { color: #000000;  } 
+.themify_builder .text-2-2-1-1.module-text h4 { color: #000000;  } 
+.themify_builder .text-2-2-1-1.module-text h5 { color: #000000;  } 
+.themify_builder .text-2-2-1-1.module-text h6 { color: #000000;  } 
+/* .themify_builder_2_row.module_row_3 Style */
+.themify_builder_2_row.module_row_3.module_row {
+	padding-top : 7%;
+	padding-bottom : 7%;
+	border-top: #e8e8e8 1px solid
+}
+
+.themify_builder .image-2-3-0-1.module-image .image-content { text-align: center;  } 
+.themify_builder .image-2-3-0-1.module-image { padding-bottom: 20%;  } 
+.themify_builder .image-2-3-0-2.module-image .image-content { text-align: center;  } 
+.themify_builder .image-2-3-1-1.module-image .image-content { text-align: center;  } 
+.themify_builder .image-2-3-1-1.module-image { padding-bottom: 20%;  } 
+.themify_builder .image-2-3-1-2.module-image .image-content { text-align: center;  } 
+.themify_builder .image-2-3-2-1.module-image .image-content { text-align: center;  } 
+.themify_builder .image-2-3-2-1.module-image { padding-bottom: 20%;  } 
+.themify_builder .image-2-3-2-2.module-image .image-content { text-align: center;  } 
+/* .themify_builder_2_row.module_row_4 Style */
+.themify_builder_2_row.module_row_4.module_row {
+	background-color: #4d7de1;
+	padding-top : 7%
+}
+
+.themify_builder .text-2-4-0-1.module-text { color: #ffffff; text-align: center; padding-right: 5%; padding-left: 5%;  } 
+.themify_builder .text-2-4-0-1.module-text h1 { color: #ffffff;  } 
+.themify_builder .text-2-4-0-1.module-text h2 { color: #ffffff;  } 
+.themify_builder .text-2-4-0-1.module-text h3:not(.module-title) { color: #ffffff;  } 
+.themify_builder .text-2-4-0-1.module-text h4 { color: #ffffff;  } 
+.themify_builder .text-2-4-0-1.module-text h5 { color: #ffffff;  } 
+.themify_builder .text-2-4-0-1.module-text h6 { color: #ffffff;  } 
+.themify_builder .image-2-4-0-2.module-image { padding-top: 5%;  } 
+/* .themify_builder_2_row.module_row_5 Style */
+.themify_builder_2_row.module_row_5.module_row {
+	padding-top : 7%;
+	padding-bottom : 7%
+}
+
+.themify_builder .text-2-5-0-1.module-text { text-align: center; margin-right: 5%; margin-left: 5%;  } 
+.themify_builder .buttons-2-5-0-2 div.module-buttons { text-align: center;  } 
