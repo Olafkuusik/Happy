@@ -61,10 +61,10 @@
             var $previewBtn = $('.builder_preview_lightbox'),
                 $previewLoaderImage = $('.builder_preview_loader_image');
 
-            if(stats == 'show'){
+            if(stats === 'show'){
                 $('#themify_builder_alert').addClass('busy').show();
             }
-            else if(stats == 'spinhide'){
+            else if(stats === 'spinhide'){
                 $("#themify_builder_alert").delay(800).fadeOut(800, function() {
                     $(this).removeClass('busy');
                 });
@@ -114,51 +114,73 @@
             $('.themify_builder_sub_row').removeClass('current_selected_sub_row');
             $subRow.addClass('current_selected_sub_row');
         },
-        setUpTooltip: function(){
-          if($('.themify_is_premium_module').length>0 || $('.themify_builder_lite').length>0){
-                        if($('.themify_tooltip').length===0){
-                            $('<div class="themify_tooltip">Upgrade to premium version to get this feature<div class="themify_tooltip_arrow"><div class="themify_tooltip_arrow_border"></div><div class="themify_tooltip_arrow_background"></div></div></div>').appendTo('body');
-                        }
-                    var width = ($('.themify_tooltip').outerWidth(true)/2)+10,
-                        height = $('.themify_tooltip').outerHeight(true)+10,
+        setUpTooltip: function () {
+            if ($('.themify_is_premium_module').length > 0 || $('.themify_builder_lite').length > 0) {
+                if ($('.themify_tooltip').length === 0) {
+                    $('<div class="themify_tooltip">Upgrade to premium version to get this feature<div class="themify_tooltip_arrow"><div class="themify_tooltip_arrow_border"></div><div class="themify_tooltip_arrow_background"></div></div></div>').appendTo('body');
+                }
+                var width = ($('.themify_tooltip').outerWidth(true) / 2) + 10,
+                        height = $('.themify_tooltip').outerHeight(true) + 10,
                         is_hover;
-                    $('.themify_builder_lite,.themify_is_premium_module').each(function(){
-                        if($(this).children('.themify_builder_lite_modal').length===0){
-                            var $this = $(this);
-                            $('<div class="themify_builder_lite_modal"></div>').appendTo($(this)).mouseenter(function(e){
-                                var is_input = $this.children('.themify_builder_input').length>0,
+                $('.themify_builder_lite,.themify_is_premium_module').each(function () {
+                    if ($(this).children('.themify_builder_lite_modal').length === 0) {
+                        var $this = $(this);
+                        $('<div class="themify_builder_lite_modal"></div>').appendTo($(this)).mouseenter(function (e) {
+                            var is_input = $this.children('.themify_builder_input').length > 0,
+                                    tooltip = $('.themify_tooltip'),
                                     $ofset = $(this).offset(),
-                                    $width = is_input?50:($(this).width()/2)-width,
+                                    $width = is_input ? 50 : ($(this).width() / 2) - width,
                                     is_hover = true;
-                                    if(!e.isTrigger){
-                                        $('.themify_builder_lite_active').removeClass('themify_builder_lite_active');
-                                        $(this).addClass('themify_builder_lite_active');
-                                    }
-                                   
-                                    $('.themify_tooltip').css({ top: $ofset.top -height, left: $ofset.left+$width}).delay(500)
-                                .queue(function(next) {
-                                    var $el = $(this);
-                                    if(is_hover){
-                                        $el.stop().fadeIn('fast');
-                                    }
-                                    else{
-                                        $('.themify_builder_lite_modal').each(function(){
-                                            if($(this).is('hover')){
+                            $('.themify_builder_lite_active').removeClass('themify_builder_lite_active');
+                            $(this).addClass('themify_builder_lite_active');
+
+                            tooltip.css({top: $ofset.top - height, left: $ofset.left + $width}).delay(500)
+                                    .queue(function (next) {
+                                        var $el = $(this);
+                                        if ($('.themify_builder_lite_active').length > 0) {
+                                            if (is_hover) {
                                                 $el.stop().fadeIn('fast');
-                                                return false;
                                             }
-                                        });
+                                            else {
+                                                $('.themify_builder_lite_modal').each(function () {
+                                                    if ($(this).is(':hover')) {
+                                                        $el.stop().fadeIn('fast');
+                                                        return false;
+                                                    }
+                                                });
+                                            }
+                                        }
+                                        else {
+                                            $el.hide();
+                                        }
+                                        next();
+                                    });
+                            setTimeout(function () {
+                                if ($('.themify_builder_lite_active').length === 0) {
+                                    tooltip.hide();
+                                }
+                                else {
+                                    var check_hover = false;
+                                    $('.themify_builder_lite_modal').each(function () {
+                                        if ($(this).is(':hover')) {
+                                            check_hover = true;
+                                            return false;
+                                        }
+                                    });
+                                    if (!check_hover) {
+                                        $('.themify_builder_lite_active').removeClass('themify_builder_lite_active');
+                                        tooltip.hide();
                                     }
-                                    next();
-                                });
-                            }).mouseleave(function() {
-                                is_hover = false;
-                                $('.themify_builder_lite_active').removeClass('themify_builder_lite_active');
-                                $('.themify_tooltip').hide();
-                            });
-                        }
+                                }
+                            }, 1000);
+                        }).mouseleave(function () {
+                            is_hover = false;
+                            $('.themify_builder_lite_active').removeClass('themify_builder_lite_active');
+                            $('.themify_tooltip').hide();
+                        });
+                    }
                 });
-                $(window).scroll(function(){
+                $(window).scroll(function () {
                     $('.themify_builder_lite_active').trigger('mouseenter');
                 });
             }
@@ -166,7 +188,7 @@
         _saveRevision: function(callback) {
                 
                 var self = ThemifyBuilderCommon;
-                self.LiteLightbox.prompt(themifyBuilder.enterRevComment, function(result) {
+                self.LiteLightbox.prompt(themifyBuilder.i18n.enterRevComment, function(result) {
                         if (result !== null) {
                                 $.ajax({
                                         type: "POST",
@@ -224,12 +246,21 @@
                                 });
                     };
 
-                self.LiteLightbox.confirm(themifyBuilder.confirmRestoreRev, function(response) {
-                        if ('yes' == response) {
+                self.LiteLightbox.confirm(themifyBuilder.i18n.confirmRestoreRev, function(response) {
+                        if ('yes' === response) {
                                 self._saveRevision(restoreIt);
                         } else {
                                 restoreIt();
                         }
+                }, {
+                    buttons: {
+                        no: {
+                            label: 'Don\'t Save'
+                        },
+                        yes: {
+                            label: 'Save'
+                        }
+                    }
                 });
 
         },
@@ -238,7 +269,7 @@
                 var $this = $(this),
                     self = ThemifyBuilderCommon,
                     revID = $(this).data('rev-id');
-                if (!confirm(themifyBuilder.confirmDeleteRev))
+                if (!confirm(themifyBuilder.i18n.confirmDeleteRev))
                         return;
 
                 $.ajax({
@@ -305,7 +336,7 @@
 
             var componentType = self.getComponentType($component);
 
-            if (componentType == 'sub-col') {
+            if (componentType === 'sub-col') {
                 subColIndex = $component.index();
                 subRowIndex = self.getClosestSubRow($component).index();
                 colIndex = self.getClosestCol($component).index();
@@ -313,13 +344,13 @@
 
                 return rowIndex + '-' + colIndex + '-' + subRowIndex + '-' + subColIndex;
 
-            } else if (componentType == 'col') {
+            } else if (componentType === 'col') {
                 colIndex = $component.index();
                 rowIndex = self.getClosestRow($component).index();
 
                 return rowIndex + '-' + colIndex;
 
-            } else if (componentType == 'row') {
+            } else if (componentType === 'row') {
                 rowIndex = $component.index();
 
                 return rowIndex;
@@ -336,22 +367,21 @@
          * @param $component {jQuery} The component we want to detect the type of.
          */
         getComponentType: function($component) {
+            var res = '';
             if ($component.hasClass('themify_builder_col')) {
-               if ($component.closest('.themify_builder_sub_row_content').length) {
-                   return 'sub-col';
-               } else {
-                   return 'col';
-               }
+                res = $component.closest('.themify_builder_sub_row_content').length>0?'sub-col':'col';
             } else if ($component.hasClass('themify_builder_row')) {
-                return 'row';
-            } else if ($component.hasClass('themify_builder_module_front')
-                || $component.hasClass('themify_builder_module') /* backend */) {
-                return 'module';
+                res = 'row';
+            } else if ($component.hasClass('themify_builder_sub_row')) {
+                res = 'subrow';
+            } else if ($component.hasClass('themify_builder_module_front') || $component.hasClass('themify_builder_module') /* backend */) {
+                res = 'module';
             } else if ($component.hasClass('themify_module_holder')) {
-                return 'module-holder';
+                res = 'module-holder';
             } else if ($component.hasClass('module')) {
-                return 'module-inner';
+                res = 'module-inner';
             }
+            return res;
         },
 
         /**
@@ -362,12 +392,7 @@
          */
         getComponentBuilderId: function($component) {
             var id = $component.closest('.themify_builder_content').data('postid');
-
-            if (typeof id === 'undefined' || isNaN(id)) {
-                return -1;
-            }
-
-            return id;
+            return typeof id === 'undefined' || isNaN(id)?-1:id;
         },
 
         /**
@@ -387,12 +412,8 @@
                 if ( ThemifyBuilderCommon.storageAvailable('localStorage') ) {
                     var savedType =  localStorage.getItem( this.key + 'type' ),
                         savedContent = localStorage.getItem( this.key + 'content' );
-
-                    if ( typeof type === undefined || type === savedType ) {
-                        return savedContent;
-                    } else {
-                        return false;
-                    }
+                     
+                        return typeof type === 'undefined' || type === savedType?savedContent:false;
                 } else {
                     alert( themifyBuilderCommon.text_no_localStorage );
                 }
@@ -408,11 +429,7 @@
         },
 
         detectBuilderComponent: function($component) {
-            if (!$component.attr('data-component')) {
-                return false;
-            }
-
-            return $component.data('component');
+            return $component.attr('data-component')||$component.data('component')||false;
         },
 
         /**
@@ -443,12 +460,18 @@
          */
         getRowStylingSettings: function($row) {
             var settings = $row.find('.row_inner').children('.row-data-styling').data('styling');
+            return typeof settings === "object"?settings:false;
+        },
 
-            if (typeof settings === "object") {
-                return settings;
-            }
-
-            return false;
+		/**
+         * Returns sub-row's styling settings as {Object} if there any, otherwise {false}.
+         *
+         * @param $subrow {jQuery} Sub-Row element, which styling settings we want to get.
+         * @returns {Object|false}
+         */
+        getSubRowStylingSettings: function($subrow) {
+            var settings = $subrow.children('.subrow-data-styling').data('styling');
+            return typeof settings === "object"?settings:false;
         },
 
         /**
@@ -459,17 +482,13 @@
          */
         getColumnStylingSettings: function($column) {
             var settings = $column.children('.column-data-styling').data('styling');
-
-            if (typeof settings === "object") {
-                return settings;
-            }
-
-            return false;
+            return typeof settings === "object"?settings:false;
         },
 
         findColumnInNewRow: function($newRow, colLocationObj) {
-            var $currentCol = null;
-            var colIndex, subColIndex = 0;
+            var $currentCol = null,
+                colIndex, 
+                subColIndex = 0;
 
             if (colLocationObj.hasOwnProperty('sub-col_index')) {
                 subColIndex = colLocationObj['sub-col_index'];
@@ -612,107 +631,19 @@
             }
         },
         hideShowBorder:function($container){
-                var $apply_all = $('.style_apply_all[value="border"]',$container);
-                $apply_all.each(function(){
-                        var $select = $(this).closest('.themify_builder_field').prevUntil('h4').find('select.tfb_lb_option');
-                        $select.change(function(){
-                                var $fields = $(this).closest('.themify_builder_input').children().not('.selectwrapper')
-                                if(!$(this).val() || $(this).val()==='none'){
-                                    $fields.fadeOut();
-                                }
-                                else{
-                                    $fields.fadeIn();
-                                }
-                        });
+            var $apply_all = $('.style_apply_all[value="border"]',$container);
+            $apply_all.each( function() {
+                var $select = $(this).closest('.themify_builder_field').prevUntil('h4').find('select.tfb_lb_option'),
+                    borderCallback = function() {
+                        var $fields = $(this).closest('.themify_builder_input').children().not('.selectwrapper');
 
-                });
-        },
-        columnDrag:function($container,$remove){
-            var $holders = $('.themify_builder_column_action',$container);
-            $holders.each(function(){
-                var $drag = $(this).prev('.themify_grid_drag');
-                if($drag.length===0){
-                    $(this).before('<div class="themify_grid_drag themify_drag_right"></div><div class="themify_grid_drag themify_drag_left"></div>');
-                }
-                else{
-                    $drag.removeAttr('style');
-                }
-                if($remove){
-                    $(this).closest('.themify_builder_col').removeAttr('style');
-                }
+                        if( !$(this).val() || $(this).val() === 'none' ) $fields.fadeOut();
+                        else $fields.fadeIn();
+                    };
+
+                borderCallback.apply( $select );
+                $select.change( borderCallback );
             });
-            var $cdrags = $('.themify_grid_drag',$container),
-                $min = 5;
-            $cdrags.each(function(){
-                
-                    var $el = $(this),
-                        $row = $el.closest('.themify_builder_sub_row_content'),
-                        $row = $row.length===0?$el.closest('.themify_builder_row_content'):$row,
-                        $columns = $row.children('.themify_builder_col'),
-                        $current = $el.closest('.themify_builder_col'),
-                        $el_width = false,
-                        $direction = '',
-                        $row_width = '',
-                        $excolumn=false,
-                        $helperClass = '';
-                       if($el.hasClass('themify_drag_right')){
-                            $direction = 'e';
-                            $excolumn = $current.next('.themify_builder_col');
-                            $helperClass = 'themify_grid_drag_placeholder_right';
-                            $el_width = $el.width();
-                        }
-                        else{
-                            $direction = 'w';
-                            $excolumn = $current.prev('.themify_builder_col');
-                            $helperClass = 'themify_grid_drag_placeholder_left';
-                        }
-                        
-                    $el.draggable({ 
-                        axis: "x",
-                        cursor:'col-resize',
-                        distance :0,
-                        containment:'.themify_builder_row_content',
-                        helper:function(event){
-                            return $( '<div class="ui-widget-header themify_grid_drag_placeholder '+$helperClass+'"></div><div class="ui-widget-header themify_grid_drag_placeholder"></div>' ); 
-                        },
-                        start:function(event,ui){
-                            $('.themify_grid_drag_current').removeClass('themify_grid_drag_current');  
-                            $row_width = $row.outerWidth();
-                            if($direction==='w'){
-                                $el_width = $current.width();
-                            }
-                        },
-                        stop:function(event,ui){
-                            $('.themify_grid_drag_placeholder').remove();
-                        },
-                        drag: function(event, ui) {
-                            var $pxwidth = $el_width+($direction==='w'?-(ui.position.left):ui.position.left);
-                                $current.addClass('themify_grid_drag_current');
-                                if($excolumn.length>0){
-                                    var $width = parseFloat((100*$pxwidth)/$row_width);
-                                    if($width>=$min && $width<100){
-                                        var $summ = 0; 
-                                        $columns.each(function(i){
-                                            if(i!==$excolumn.index()){
-                                                 $summ+=$(this).hasClass('themify_grid_drag_current')?$width:
-                                                        ($(this).prop('style').width?parseFloat($(this).prop('style').width):parseFloat(100*parseFloat($(this).css('width'))/$row_width));
-                                            }
-                                            $summ+=parseFloat((parseFloat($(this).css('marginLeft'))*100)/$row_width);
-                                        });
-                                        var $max = 100-$summ;;
-                                        if($max>=$min && $max<100){
-                                           
-                                            $current.css('width', $width+'%').children('.'+$helperClass).html($width.toFixed(2)+'%');
-                                            $current.children('.themify_grid_drag_placeholder').last().html($max.toFixed(2)+'%');
-                                            $excolumn.css('width', $max+'%');
-                                        }  
-                                    }
-                                }
-                               
-                        }
-
-                    });
-              });
         },
         fontPreview:function($container,$data){
             this.autoComplete();
@@ -724,10 +655,12 @@
                 $google_fonts_html = '';
                 if(Object.keys(self.safe_fonts).length===0){
                     for(var $i in themify_builder_plupload_init.fonts.safe){
-                         self.safe_fonts[themify_builder_plupload_init.fonts.safe[$i].value] = themify_builder_plupload_init.fonts.safe[$i].name;
+                        if ( '' === themify_builder_plupload_init.fonts.safe[$i].value || 'default' === themify_builder_plupload_init.fonts.safe[$i].value ) continue;
+                        self.safe_fonts[themify_builder_plupload_init.fonts.safe[$i].value] = themify_builder_plupload_init.fonts.safe[$i].name;
                     } 
                     for(var $i in themify_builder_plupload_init.fonts.google){
-                         self.google_fonts[themify_builder_plupload_init.fonts.google[$i].value] = themify_builder_plupload_init.fonts.google[$i].name;
+                        if ( '' === themify_builder_plupload_init.fonts.google[$i].value || 'default' === themify_builder_plupload_init.fonts.google[$i].value ) continue;
+                        self.google_fonts[themify_builder_plupload_init.fonts.google[$i].value] = themify_builder_plupload_init.fonts.google[$i].name;
                     }
                 }
             $('.font-family-select',$container).each(function(){
@@ -936,12 +869,13 @@
 
                 $body
                     // Top bar actions
-                    .on('editing_row_option editing_column_option editing_module_option', self.selectDefaultTab)
+                    .on('editing_row_option editing_column_option editing_module_option editing_subrow_option', self.selectDefaultTab)
                     .on(actionEvent, '.themify_builder_options_tab li', self.switchTabs)
                     .on(actionEvent, '.builder_cancel_lightbox', self.cancel)
                     .on(actionEvent, '#builder_submit_row_settings', themifybuilderapp.Forms.rowSaving)
+                    .on(actionEvent, '#builder_submit_subrow_settings', themifybuilderapp.Forms.subRowSaving)
                     .on(actionEvent, '#builder_submit_column_settings', themifybuilderapp.Forms.columnSaving)
-                    .on(actionEvent, '#builder_submit_module_settings, #builder_preview_module', themifybuilderapp.Forms.moduleSave)
+                    .on(actionEvent, '#builder_submit_module_settings', themifybuilderapp.Forms.moduleSave)
 
                     // Content actions
                     .on('change click', '.tf-option-checkbox-js', self.clickRadioOption)
@@ -954,13 +888,12 @@
                   
                    
                 if (!themifyBuilder.disableShortcuts) {
-                    self.saveByKeyInput();
+                    self.controlByKeyInput();
                 }
             },
             adjustHeight: function(newLightboxHeight)  {
-                var self = ThemifyBuilderCommon.Lightbox;
-
-                var $lightboxContent = self.$lightbox.find('.themify_builder_options_tab_wrapper'),
+                var self = ThemifyBuilderCommon.Lightbox,
+                    $lightboxContent = self.$lightbox.find('.themify_builder_options_tab_wrapper'),
                     heightOfLightboxWithoutContent = 55;
 
                 $lightboxContent.css('height', newLightboxHeight - heightOfLightboxWithoutContent);
@@ -980,20 +913,18 @@
             open: function( options, callback) {
                 var self = ThemifyBuilderCommon.Lightbox,
                     $lightboxContainer = $('#themify_builder_lightbox_container');
-                console.time('openLightbox');
+                
                 if (ThemifyBuilderCommon.isFrontend()) {
-                    themifybuilderapp.Frontend.hideSlidingPanel();
-
                     themifybuilderapp.Frontend.hideModulesControl();
-                    themifybuilderapp.Frontend.hideColumnsBorder();
                 }
+                themifybuilderapp.toolbar.trigger('hide-distraction-panel');
 
-                $lightboxContainer.empty();
+                this._cleanLightBoxContent();
                 self.$lightbox.addClass( 'tfb-lightbox-open' );
                 $('#themify_builder_overlay').show();
                 ThemifyBuilderCommon.showLoader('show');
 
-                if ( options.loadMethod && 'inline' == options.loadMethod ) {
+                if ( options.loadMethod && 'inline' === options.loadMethod ) {
                     var response = ThemifyBuilderCommon.templateCache.get( 'tmpl-' + options.templateID );
                     self.openCallback( response, $lightboxContainer, callback );
                 } else {
@@ -1008,7 +939,6 @@
                         self.openCallback( response, $lightboxContainer, callback );
                     });
                 }
-                console.timeEnd('openLightbox');
             },
 
             openCallback: function( response, $lightboxContainer, callback ) {
@@ -1051,21 +981,24 @@
 
                 ThemifyBuilderCommon.showLoader('spinhide');
 
-                var $response = $(response);
-                
-                var $optionsTabItemsContainer = $response.find('#themify_builder_lightbox_options_tab_items');
-                if ($optionsTabItemsContainer.length) {
+                var $response = $(response),
+                    $optionsTabItemsContainer = $response.find('#themify_builder_lightbox_options_tab_items');
+                if ($optionsTabItemsContainer.length>0) {
                     $('.themify_builder_options_tab').append($optionsTabItemsContainer.children());
                     $optionsTabItemsContainer.remove();
                 }
 
                 var $actionButtonsContainer = $response.find('#themify_builder_lightbox_actions_items');
-                if ($actionButtonsContainer.length) {
+                if ($actionButtonsContainer.length>0) {
                     $('.themify_builder_lightbox_actions').append($actionButtonsContainer.children());
                     $actionButtonsContainer.remove();
                 }
 
                 $lightboxContainer.append($response);
+
+                self.$lightbox.find('.themify_builder_options_tab_wrapper').each(function(){
+                    new SimpleBar(this);
+                });
 
                 self.adjustHeight(posSizeObj.height);
 
@@ -1104,23 +1037,14 @@
                         themifybuilderapp.liveStylingInstance.remove();
                     }
 
-                    themifybuilderapp.Frontend.showSlidingPanel();
-
                     themifybuilderapp.Frontend.showColumnsBorder();
                 }
+                themifybuilderapp.toolbar.trigger('show-distraction-panel');
 
-                self.$lightbox.addClass('animated fadeOut')
-                .one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(e) {
+                self.$lightbox.fadeOut(function(e) {
                     $(this).removeClass('animated fadeOut');
                     // Animation complete.
-                    $('#themify_builder_lightbox_container').children().remove().end().empty();
-                    self.$lightbox.find('.themify_builder_options_tab').empty();
-                    self.$lightbox.find('.themify_builder_lightbox_actions')
-                        .children()
-                        .not('.builder_cancel_lightbox')
-                        .remove();
-
-                    $( "#themify_builder_lightbox_parent" ).removeAttr('style');
+                    self._cleanLightBoxContent();
 
                     $('#themify_builder_overlay, #themify_builder_lightbox_parent').hide();
                     self.$lightbox.removeClass( 'tfb-lightbox-open' );
@@ -1129,9 +1053,18 @@
                 });
             },
 
-            saveByKeyInput: function () {
+            _cleanLightBoxContent: function() {
+                $('#themify_builder_lightbox_container').children().remove().end().empty();
+                this.$lightbox.find('.themify_builder_options_tab').empty();
+                this.$lightbox.find('.themify_builder_lightbox_actions')
+                    .children()
+                    .not('.builder_cancel_lightbox')
+                    .remove();
+            },
+
+            controlByKeyInput: function () {
                 $(document).on('keydown', function (event) {
-                    // Ctrl + s | Cmd + s
+                    // Ctrl + s | Cmd + s - Save Builder
                     if (83 == event.which && (true == event.ctrlKey || true == event.metaKey)) {
                         var currentElement = document.activeElement.tagName.toLowerCase();
 
@@ -1139,16 +1072,40 @@
                             event.preventDefault();
                             var $moduleSettings = $('#builder_submit_module_settings'),
                                 $rowSetting = $('#builder_submit_row_settings'),
+                                $subRowSetting = $('#builder_submit_subrow_settings'),
                                 $columnSettings = $('#builder_submit_column_settings'),
-                                $panelSave = $('.themify_builder_active').find('.themify-builder-front-save-title');
+                                $panelSave = $('#tb_toolbar').find('.tb_toolbar_save');
                             if ($moduleSettings.length > 0) {
                                 $moduleSettings.trigger('click');
                             } else if ($rowSetting.length > 0) {
                                 $rowSetting.trigger('click');
+                            } else if ($subRowSetting.length > 0) {
+                                $subRowSetting.trigger('click');
                             } else if ($columnSettings.length > 0) {
                                 $columnSettings.trigger('click');
-                            } else if ($panelSave.length > 0) {
+                            } else if ($panelSave.length > 0 && $panelSave.is(':visible')) {
                                 $panelSave.trigger('click');
+                            }
+                        }
+                    }
+
+                    // Redo
+                    if (90 == event.which && ( ( true == event.ctrlKey && true == event.shiftKey ) || ( true == event.metaKey && true == event.shiftKey ) )) {
+                        var currentElement = document.activeElement.tagName.toLowerCase();
+
+                        if (currentElement != 'input' && currentElement != 'textarea') {
+                            event.preventDefault();
+                            if ( $('.js-themify-builder-redo-btn').length ) {
+                                $('.js-themify-builder-redo-btn').trigger('click');
+                            }
+                        }
+                    } else if (90 == event.which && (true == event.ctrlKey || true == event.metaKey)) { // UNDO
+                        var currentElement = document.activeElement.tagName.toLowerCase();
+
+                        if (currentElement != 'input' && currentElement != 'textarea') {
+                            event.preventDefault();
+                            if ( $('.js-themify-builder-undo-btn').length ) {
+                                $('.js-themify-builder-undo-btn').trigger('click');
                             }
                         }
                     }
@@ -1239,12 +1196,16 @@
             },
 
             cancel: function(e) {
-                e.preventDefault();
+				e.preventDefault();
 
                 var self = ThemifyBuilderCommon.Lightbox;
 
                 if (self.rememberedRow !== null) {
                     self.revertToRememberedRow();
+                }
+
+                if (ThemifyBuilderCommon.isFrontend()) {
+                    themifybuilderapp.styleSheet.revertRules();
                 }
 
                 // clear undo/redo start value
@@ -1268,6 +1229,8 @@
                     $context = $('#themify_builder_options_styling');
                 } else if (dataReset === 'row') {
                     $context = $('#tfb_row_settings');
+                } else if (dataReset === 'subrow') {
+                    $context = $('#tfb_subrow_settings');
                 } else if (dataReset === 'column') {
                     $context = $('#tfb_column_settings');
                 }
@@ -1284,15 +1247,16 @@
                             radioGroupNames.push(radioGroupName);
                         }
                     } else {
-                        $this.val('').prop('selected', false);
+                        $this.val('').prop('selected', false).trigger('change');
                     }
 
                     if( $this.hasClass('themify-builder-uploader-input') ) {
                         $this.parent().find('.img-placeholder').html('').parent().hide();
                     } else if ( $this.hasClass('font-family-select') ) {
-                        $this.val('default');
+                        $this.val('default').trigger('change');
                     } else if( $this.hasClass('builderColorSelectInput') ) {
-                        $this.parent().find('.colordisplay').val('').trigger('blur');
+                        $this.parent().find('.colordisplay').val('').trigger('blur').trigger('change');
+                        $this.parent().find('.opacity-input').val('');
                     }
                 });
 
@@ -1301,10 +1265,6 @@
                         .attr('checked', true)
                         .trigger('change');
                 });
-
-                if (ThemifyBuilderCommon.isFrontend()) {
-                    ThemifyPageBuilder.liveStylingInstance.resetStyling();
-                }
             },
 
             switchTabs: function(e) {
@@ -1355,11 +1315,18 @@
             events: $({}), // create empty object
             startValue: null,
             startData: {},
-            set: function( $container, startValue, newValue, startData, newData ) {
+            startStyleValue: null,
+            set: function( $container, startValue, newValue, startData, newData, styleData ) {
                 var newStartValue = startValue,
                     newNewValue = newValue,
                     newStartData = startData,
                     newNewData = newData;
+
+                if ( ! _.isNull( styleData ) && _.isObject( styleData ) ) {
+                    var startStyleValue = styleData.startValue,
+                        endStyleValue = styleData.newValue;
+                }
+
                 ThemifyBuilderCommon.undoManager.instance.add({
                     undo: function () {
                         $container[0].innerHTML = newStartValue;
@@ -1369,7 +1336,12 @@
                             var model = themifybuilderapp.Models.Registry.lookup( newStartData.cid );
                             if ( model ) {
                                 model.set(newStartData.value, {silent:true});
+                                model.unset('temp_settings', { silent: true });
                             }
+                        }
+
+                        if ( ! _.isUndefined( startStyleValue ) ) {
+                            themifybuilderapp.styleSheet.replaceCSSText( startStyleValue );
                         }
                     },
                     redo: function () {
@@ -1380,12 +1352,18 @@
                             var model = themifybuilderapp.Models.Registry.lookup( newNewData.cid );
                             if ( model ) {
                                 model.set(newNewData.value, {silent:true});
+                                model.unset('temp_settings', { silent: true });
                             }
+                        }
+
+                        if ( ! _.isUndefined( endStyleValue ) ) {
+                            themifybuilderapp.styleSheet.replaceCSSText( endStyleValue );
                         }
                     }
                 });
                 ThemifyBuilderCommon.undoManager.startValue = null;
                 ThemifyBuilderCommon.undoManager.startData = {};
+                ThemifyBuilderCommon.undoManager.startStyleValue = null;
             },
             setStartValue: function( value ) {
                 ThemifyBuilderCommon.undoManager.startValue = value;
@@ -1398,6 +1376,12 @@
             },
             getStartData: function() {
                 return ThemifyBuilderCommon.undoManager.startData;
+            },
+            setStartStyleValue: function( value ) {
+                ThemifyBuilderCommon.undoManager.startStyleValue = value;
+            },
+            getStartStyleValue: function() {
+                return ThemifyBuilderCommon.undoManager.startStyleValue;
             }
         },
         LiteLightbox: {
@@ -1494,7 +1478,16 @@
                         callback.call(this, value);
                     }
                 });
-            }
+            },
+			alert: function( message ) {
+				ThemifyBuilderCommon.LiteLightbox.confirm( message, null, {
+					buttons : {
+						yes: {
+							label: 'OK'
+						}
+					}
+				} );
+			}
         },
         getDomPath: function(el) {
           var stack = [];

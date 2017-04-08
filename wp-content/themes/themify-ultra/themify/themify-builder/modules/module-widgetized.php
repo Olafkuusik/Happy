@@ -27,6 +27,9 @@ class TB_Widgetized_Module extends Themify_Builder_Module {
 				'type' => 'widgetized_select',
 				'label' => __('Widgetized Area', 'themify'),
 				'class' => 'large',
+				'render_callback' => array(
+					'control_type' => 'select'
+				)
 			),
 			// Additional CSS
 			array(
@@ -118,7 +121,7 @@ class TB_Widgetized_Module extends Themify_Builder_Module {
 					array('value' => 'repeat', 'name' => __('Repeat All', 'themify')),
 					array('value' => 'repeat-x', 'name' => __('Repeat Horizontally', 'themify')),
 					array('value' => 'repeat-y', 'name' => __('Repeat Vertically', 'themify')),
-					array('value' => 'repeat-none', 'name' => __('Do not repeat', 'themify')),
+					array('value' => 'no-repeat', 'name' => __('Do not repeat', 'themify')),
 					array('value' => 'fullcover', 'name' => __('Fullcover', 'themify'))
 				),
 				'prop' => 'background-repeat',
@@ -495,7 +498,8 @@ class TB_Widgetized_Module extends Themify_Builder_Module {
 
 		switch ( $field['type'] ) {
 			case 'widgetized_select':
-				$output .= '<select name="'. esc_attr( $field['id'] ) .'" id="'. esc_attr( $field['id'] ) .'" class="tfb_lb_option">';
+				$output .= '<select name="'. esc_attr( $field['id'] ) .'" id="'. esc_attr( $field['id'] ) .'" class="tfb_lb_option"'. themify_builder_get_control_binding_data( $field ) .'>';
+				$output .= '<option></option>';
 				foreach ( $wp_registered_sidebars as $k => $v ) {
 					$output .= '<option value="'.esc_attr( $v['id'] ).'">'.esc_html( $v['name'] ).'</option>';
 				}

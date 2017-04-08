@@ -23,6 +23,9 @@ if (TFCache::start_cache('feature', self::$post_id, array('ID' => $module_ID))):
 	$fields_default = array(
 		'mod_title_feature' => '',
 		'title_feature' => '',
+		'overlap_image_feature' => '',
+		'overlap_image_width' => '',
+		'overlap_image_height' => '',
 		'layout_feature' => 'icon-left',
 		'content_feature' => '',
 		'circle_percentage_feature' => '',
@@ -65,6 +68,9 @@ if (TFCache::start_cache('feature', self::$post_id, array('ID' => $module_ID))):
 
 	$circle_percentage_feature = preg_replace( '/%$/', '', $circle_percentage_feature ); // remove % if added by user
 	$chart_class = ( $circle_percentage_feature == '' ) ? 'no-chart' : 'with-chart';
+	if( '' != $overlap_image_feature ) {
+		$chart_class .= ' with-overlay-image';
+	}
 	$circle_percentage_feature = do_shortcode($circle_percentage_feature);
 	if ('' == $circle_percentage_feature || '0' == $circle_percentage_feature) {
 		$circle_percentage_feature = '0';
@@ -100,7 +106,7 @@ if (TFCache::start_cache('feature', self::$post_id, array('ID' => $module_ID))):
 
 	$container_class = implode(' ', apply_filters('themify_builder_module_classes', array(
 		'module', 'module-' . $mod_name, $module_ID, $chart_class, 'layout-' . $layout_feature, 'size-' . $circle_size_feature, $css_feature, $animation_effect
-					), $mod_name, $module_ID, $fields_args)
+		), $mod_name, $module_ID, $fields_args)
 	);
 	$container_props = apply_filters( 'themify_builder_module_container_props', array(
 		'id' => $module_ID,
@@ -116,9 +122,9 @@ if (TFCache::start_cache('feature', self::$post_id, array('ID' => $module_ID))):
 			$id = esc_attr($module_ID);
 			$circleSize = (int) esc_attr( $chart_vars['size'] );
 			$circleBackground = esc_attr( $chart_vars['trackColor'] );
-			$circleColor = esc_attr( $this->get_rgba_color( $circle_color_feature ) );
+			$circleColor = esc_attr( $this->stylesheet->get_rgba_color( $circle_color_feature ) );
 			$insetSize = ( (int) esc_attr( $chart_vars['size'] ) ) - ( ( (int) esc_attr( $circle_stroke_feature ) ) * 2 );
-			$insetColor = ! empty( $icon_bg_feature ) ? esc_attr( $this->get_rgba_color( $icon_bg_feature ) ) : '';
+			$insetColor = ! empty( $icon_bg_feature ) ? esc_attr( $this->stylesheet->get_rgba_color( $icon_bg_feature ) ) : '';
 			$transitionLength = (int) esc_attr( $chart_vars['animate'] );
 
 			$style = '';
@@ -174,8 +180,13 @@ if (TFCache::start_cache('feature', self::$post_id, array('ID' => $module_ID))):
 
 		<div class="module-feature-image">
 
+			<?php if( '' != $overlap_image_feature ) {
+				echo themify_get_image( 'src=' . $overlap_image_feature . '&w=' . $overlap_image_width . '&h=' . $overlap_image_height . '&ignore=true' );
+			};
+			?>
+
 			<?php if ('' != $link_feature) : ?>
-				<a href="<?php echo esc_url('lightbox' == $link_type ? themify_get_lightbox_iframe_link($link_feature) : $link_feature ); ?>" <?php
+				<a href="<?php echo esc_url( $link_feature ); ?>" <?php
 				if ('lightbox' == $link_type) : echo 'class="themify_lightbox"';
 				endif;
 				if ('newtab' == $link_type) : echo 'target="_blank"';
@@ -186,8 +197,8 @@ if (TFCache::start_cache('feature', self::$post_id, array('ID' => $module_ID))):
 				<div class="module-feature-chart-html5"
 					data-progress="0"
 					data-progress-end="<?php echo esc_attr($circle_percentage_feature) ?>"
-					data-bgcolor="<?php echo esc_attr($this->get_rgba_color($icon_bg_feature)); ?>"
-					data-color="<?php echo esc_attr($this->get_rgba_color($circle_color_feature)); ?>"
+					data-bgcolor="<?php echo esc_attr($this->stylesheet->get_rgba_color($icon_bg_feature)); ?>"
+					data-color="<?php echo esc_attr($this->stylesheet->get_rgba_color($circle_color_feature)); ?>"
 					data-trackcolor="<?php echo esc_attr($chart_vars['trackColor']); ?>"
 					data-size="<?php echo esc_attr($chart_vars['size']); ?>"
 					data-linewidth="<?php echo esc_attr($circle_stroke_feature); ?>"
@@ -206,8 +217,8 @@ if (TFCache::start_cache('feature', self::$post_id, array('ID' => $module_ID))):
 							<?php $alt = ( $alt_text = get_post_meta(TB_Feature_Module::get_attachment_id_by_url($image_feature), '_wp_attachment_image_alt', true) ) ? $alt_text : $title_feature; ?>
 							<img src="<?php echo esc_url($image_feature); ?>" alt="<?php echo esc_attr($alt); ?>" />
 						<?php else : ?>
-							<?php if ('' != $icon_bg_feature) : ?><div class="module-feature-background" style="background: <?php echo esc_attr($this->get_rgba_color($icon_bg_feature)); ?>"></div><?php endif; ?>
-							<?php if ('' != $icon_feature) : ?><i class="module-feature-icon <?php echo esc_attr(themify_get_icon($icon_feature)); ?>" style="color: <?php echo esc_attr($this->get_rgba_color($icon_color_feature)); ?>"></i><?php endif; ?>
+							<?php if ('' != $icon_bg_feature) : ?><div class="module-feature-background" style="background: <?php echo esc_attr($this->stylesheet->get_rgba_color($icon_bg_feature)); ?>"></div><?php endif; ?>
+							<?php if ('' != $icon_feature) : ?><i class="module-feature-icon <?php echo esc_attr(themify_get_icon($icon_feature)); ?>" style="color: <?php echo esc_attr($this->stylesheet->get_rgba_color($icon_color_feature)); ?>"></i><?php endif; ?>
 						<?php endif; ?>
 
 					</div>
@@ -223,7 +234,7 @@ if (TFCache::start_cache('feature', self::$post_id, array('ID' => $module_ID))):
 			<?php if ('' != $title_feature) : ?>
 				<h3 class="module-feature-title">
 					<?php if ('' != $link_feature) : ?>
-						<a href="<?php echo esc_url('lightbox' == $link_type ? themify_get_lightbox_iframe_link($link_feature) : $link_feature ); ?>" <?php
+						<a href="<?php echo esc_url( $link_feature ); ?>" <?php
 						if ('lightbox' == $link_type) : echo 'class="themify_lightbox"';
 						endif;
 						if ('newtab' == $link_type) : echo 'target="_blank"';

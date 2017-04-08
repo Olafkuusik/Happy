@@ -66,7 +66,6 @@ if (TFCache::start_cache('buttons', self::$post_id, array('ID' => $module_ID))):
                 );
 
                 if( $content['link_options'] === 'lightbox' ) {
-                    $content['link'] = themify_get_lightbox_iframe_link( $content['link'] );
                     $link_css_clsss[] = 'themify_lightbox';
 
                     if( !empty( $content['lightbox_width'] ) || !empty( $content['lightbox_height'] ) ) {

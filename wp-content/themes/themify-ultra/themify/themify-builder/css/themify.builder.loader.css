@@ -95,33 +95,17 @@
 }
 /* fix WP editor insert link search field */
 #wp-link p.howto{
-        padding:0; 
+	padding:0; 
 }
 #link-selector{
-        font-family: "Open Sans",sans-serif;
-        font-size: 13px;
-        line-height: 1.5;
+	font-family: "Open Sans",sans-serif;
+	font-size: 13px;
+	line-height: 1.5;
 }
 #link-selector input{
-        margin: 1px;
-        padding: 3px 5px;
+	margin: 1px;
+	padding: 3px 5px;
 }
-
-.spinner {
-        background: url(images/spinner.gif) no-repeat;
-        -webkit-background-size: 20px 20px;
-        background-size: 20px 20px;
-        display: inline-block;
-        visibility: hidden;
-        float: right;
-        vertical-align: middle;
-        opacity: .7;
-        filter: alpha(opacity=70);
-        width: 20px;
-        height: 20px;
-        margin: 4px 10px 0;
-}
-.spinner.is-active{visibility:visible;}
 
 /* alert message
 ---------------------------------------------------------------*/
@@ -143,8 +127,54 @@
 	width: 80%;
 	height: 80%;
 	border: 5px solid transparent;
-    border-top-color: #fff;
-    border-radius: 50%;
+	border-top-color: #fff;
+	border-radius: 50%;
+	box-sizing: border-box;
+	position: absolute;
+	top: 10%;
+	left: 10%;
+	content: '';
+	-webkit-animation: circle-loader 1.4s infinite linear;
+	animation: circle-loader 1.4s infinite linear;
+}
+.themify-builder-alert.done,
+.themify-builder-alert.error {
+	text-align: center;
+}
+.themify-builder-alert.done:after,
+.themify-builder-alert.error:after {
+	color: #fff;
+	font-family: themify;
+	font-size: 30px;
+}
+.themify-builder-alert.done:after {
+	content: '\e64c';
+}
+.themify-builder-alert.error:after {
+	content: '\e646';
+}
+
+/* CIRCLE LOADER */
+.themify_loader {
+	margin: -20px 0 0 -20px;
+	width: 62px;
+	height: 62px;
+	background-color: #666;
+	background-color: rgba(0,0,0,.6);
+	border-radius: 50%;
+	box-sizing: border-box;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	z-index: 100001;
+	line-height: 62px;
+}
+.themify_loader:before {
+	width: 80%;
+	height: 80%;
+	border: 5px solid transparent;
+	border-top-color: #fff;
+	border-radius: 50%;
 	box-sizing: border-box;
 	position: absolute;
 	top: 10%;
@@ -173,19 +203,78 @@
 		transform: rotate(360deg);
 	}
 }
-.themify-builder-alert.done,
-.themify-builder-alert.error {
-	text-align: center;
+.themify_loader.loader_medium {
+	width: 92px;
+	height: 92px;	
+	line-height: 92px;	
 }
-.themify-builder-alert.done:after,
-.themify-builder-alert.error:after {
-	color: #fff;
-	font-family: themify;
-	font-size: 30px;
+.themify_loader.loader_large {
+	width: 120px;
+	height: 120px;	
+	line-height: 120px;	
 }
-.themify-builder-alert.done:after {
-	content: '\e64c';
+
+/* HORIZONTAL LOADER */
+.themify_horizontal_loader {
+	margin: 12px 30px 12px 25px;
+	position: relative;
+	font-size: 11px;
+	-webkit-animation-delay: -0.16s;
+	animation-delay: -0.16s;
 }
-.themify-builder-alert.error:after {
-	content: '\e646';
+.themify_horizontal_loader,
+.themify_horizontal_loader:before,
+.themify_horizontal_loader:after {
+	background: #000;
+	border-radius: 100%;
+	width: 9px !important;
+	height: 9px !important;
+	-webkit-animation: horizontal-loader 1s infinite ease-in-out;
+	animation: horizontal-loader 1s infinite ease-in-out;
+}
+.themify_horizontal_loader:before,
+.themify_horizontal_loader:after {
+	position: absolute;
+	top: 0;
+	content: '';
+}
+.themify_horizontal_loader:before {
+	left: -150%;
+	-webkit-animation-delay: -0.32s;
+	animation-delay: -0.32s;
+}
+.themify_horizontal_loader:after {
+	left: 150%;
+}
+@-webkit-keyframes horizontal-loader {
+	0%,
+	80%,
+	100% {
+		opacity: 1;
+	}
+	40% {
+		opacity: .5;
+	}
+}
+@keyframes horizontal-loader {
+	0%,
+	80%,
+	100% {
+		opacity: 1;
+	}
+	40% {
+		opacity: .5;
+	}
+}
+.themify_horizontal_loader.loader_medium,
+.themify_horizontal_loader.loader_medium:before,
+.themify_horizontal_loader.loader_medium:after {
+	width: 12px !important;
+	height: 12px !important;
+}
+.themify_horizontal_loader.loader_large,
+.themify_horizontal_loader.loader_large:before,
+.themify_horizontal_loader.loader_large:after {
+	width: 18px !important;
+	height: 18px !important;
 }

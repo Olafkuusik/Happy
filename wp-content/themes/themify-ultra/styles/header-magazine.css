@@ -210,7 +210,7 @@ HEADER MAGAZINE
 }
 	
 /* header magazine navbar */
-.mobile_menu_active.header-magazine #headerwrap .navbar-wrapper {
+.mobile_menu_active #headerwrap .navbar-wrapper {
 	position: static;
 	border: none;
 	padding: 0;
@@ -223,20 +223,20 @@ HEADER MAGAZINE
 }
 
 /* header magazine social widget */
-.mobile_menu_active.header-magazine #header .social-widget {
+.mobile_menu_active #header .social-widget {
 	margin: 0 0 1em;
 	float: none;
 	border: none;
 }
-.mobile_menu_active.header-magazine .social-links .icon-medium i {
+.mobile_menu_active .social-links .icon-medium i {
 	margin: auto;
 }
 
 /* header magazine searchform */
-.mobile_menu_active.header-magazine #headerwrap #searchform-wrap {
+.mobile_menu_active #headerwrap #searchform-wrap {
 	position: static;
 }
-.mobile_menu_active.header-magazine #headerwrap #searchform #s {
+.mobile_menu_active #headerwrap #searchform #s {
 	margin: auto;
 	padding: 8px 15px 8px 35px;
 	position: static;
@@ -252,7 +252,7 @@ HEADER MAGAZINE
 }
 
 /* header magazine header widget */
-.mobile_menu_active.header-magazine #headerwrap .header-widget {
+.mobile_menu_active #headerwrap .header-widget {
 	display: block;
 	text-align: inherit;
 	max-height: none !important;

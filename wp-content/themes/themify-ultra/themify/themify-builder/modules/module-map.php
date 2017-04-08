@@ -19,7 +19,7 @@ class TB_Map_Module extends Themify_Builder_Module {
 	public function get_options() {
 		$zoom_opt = array();
 		for ( $i=1; $i < 17 ; $i++ ) {
-		 array_push( $zoom_opt, $i );
+                    $zoom_opt[] = $i;
 		}
 		$options = array(
 			array(
@@ -56,7 +56,7 @@ class TB_Map_Module extends Themify_Builder_Module {
 			),
 			array(
 				'id' => 'zoom_map',
-				'type' => 'selectbasic',
+				'type' => 'select',
 				'label' => __('Zoom', 'themify'),
 				'default' => 8,
 				'options' => $zoom_opt
@@ -68,6 +68,7 @@ class TB_Map_Module extends Themify_Builder_Module {
 				'label' => __('Width', 'themify'),
 				'unit' => array(
 					'id' => 'unit_w',
+					'type' => 'select',
 					'selected' => '%',
 					'options' => array(
 						array( 'id' => 'pixel_unit_w', 'value' => 'px'),
@@ -93,6 +94,7 @@ class TB_Map_Module extends Themify_Builder_Module {
 				'class' => 'xsmall',
 				'unit' => array(
 					'id' => 'unit_h',
+					'type' => 'select',
 					'options' => array(
 						array( 'id' => 'pixel_unit_h', 'value' => 'px')
 					)
@@ -110,8 +112,10 @@ class TB_Map_Module extends Themify_Builder_Module {
 						'label' => '',
 						'options' => array(
 							'solid' => __( 'Solid', 'themify' ),
-							'dotted' => __( 'Dotted', 'themify' ),
 							'dashed' => __( 'Dashed', 'themify' ),
+							'dotted' => __( 'Dotted', 'themify' ),
+							'double' => __( 'Double', 'themify' ),
+							'' => __( 'None', 'themify' )
 						)
 					),
 					array(
@@ -126,7 +130,10 @@ class TB_Map_Module extends Themify_Builder_Module {
 						'type' => 'text',
 						'colorpicker' => true,
 						'class' => 'large',
-						'label' => ''
+						'label' => '',
+						'render_callback' => array(
+							'control_type' => 'color'
+						)
 					),
 				)
 			),
@@ -194,6 +201,14 @@ class TB_Map_Module extends Themify_Builder_Module {
 			)
 		);
 		return $options;
+	}
+
+	public function get_default_settings() {
+		$settings = array(
+			'address_map' => 'Toronto',
+			'b_style_map' => 'solid'
+		);
+		return $settings;
 	}
 
 	public function get_animation() {

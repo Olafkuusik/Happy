@@ -4,6 +4,7 @@
 <?php
 	foreach ( $builder_output as $key => $row ) {
 		if ( 0 == count( $row ) ) continue;
+		if( isset( $row['row_order'] ) ) $row['row_order'] = $key; // Fix issue with import content has same row_order number
 		$this->get_template_row( $key, $row, $builder_id, true, false );
 	} // end row loop
 ?>

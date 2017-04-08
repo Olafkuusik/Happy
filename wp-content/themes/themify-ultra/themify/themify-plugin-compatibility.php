@@ -39,28 +39,6 @@ if ( function_exists( 'icl_register_string' ) ) :
 	themify_register_wpml_strings( 'Themify', 'Themify Option', themify_get_data() );
 endif;
 
-if( class_exists( 'SitePress' ) ) {
-	/**
-	 * Checks if WPML is active and if so, sets the correct page number.
-	 *
-	 * @since 1.7.3
-	 * @since 2.3.7 Only applied to query pages.
-	 * @param $wp_query
-	 */
-	function themify_wpml_pagination_setup( $wp_query ) {
-		if ( themify_is_query_page() ) {
-			$paged = 1;
-			if ( get_query_var( 'paged' ) ) {
-				$paged = get_query_var( 'paged' );
-			} elseif( get_query_var( 'page' ) ) {
-				$paged = get_query_var( 'page' );
-			}
-			set_query_var( 'paged', $paged );
-		}
-	}
-	add_action( 'pre_get_posts', 'themify_wpml_pagination_setup' );
-}
-
 // Remove default WC wrappers
 remove_action( 'woocommerce_before_main_content', 'woocommerce_output_content_wrapper', 10);
 remove_action( 'woocommerce_after_main_content', 'woocommerce_output_content_wrapper_end', 10);
@@ -102,6 +80,8 @@ if( ! function_exists( 'themify_after_shop_content' ) ) :
 	 * @since 1.4.6
 	 */
 	function themify_after_shop_content() {
+		global $themify;
+
 				if (is_search() && is_post_type_archive() ) {
 					add_filter( 'woo_pagination_args', 'woocommerceframework_add_search_fragment', 10 );
 				}
@@ -112,122 +92,13 @@ if( ! function_exists( 'themify_after_shop_content' ) ) :
 
 			<?php themify_content_after() // Hook ?>
 
+			<?php if( $themify->layout != 'sidebar-none' ) get_sidebar(); ?>
+
 		</div><!-- /#layout -->
 	<?php
 	}
 endif;
 add_action( 'woocommerce_after_main_content', 'themify_after_shop_content', 20 );
-
-if( ! function_exists( 'themify_wc_compatibility_sidebar' ) ) :
-	/**
-	 * Add sidebar if it's enabled in theme settings
-	 * @since 1.4.6
-	 */
-	function themify_wc_compatibility_sidebar(){
-
-		// Check if WC is active and this is a WC-managed page
-		if( !themify_is_woocommerce_active() || !function_exists('is_woocommerce') || !is_woocommerce() ) return;
-
-		$sidebar_layout = 'sidebar1';
-
-		if ( is_product() ) {
-			if ( themify_check('setting-single_product_layout') ) {
-				$sidebar_layout = themify_get('setting-single_product_layout');
-			} elseif( themify_check('setting-default_page_post_layout') ) {
-				$sidebar_layout = themify_get('setting-default_page_post_layout');
-			}
-		} else if ( is_shop() ) {
-			$woo_page_layout = get_post_meta( get_option('woocommerce_shop_page_id') , 'page_layout', true);
-			if ( $woo_page_layout == 'default' ) {
-				if ( themify_check( 'setting-shop_layout' ) ) {
-						$sidebar_layout = themify_get( 'setting-shop_layout' );
-				}
-				elseif( themify_check( 'setting-default_page_layout' ) ) {
-						$sidebar_layout = themify_get( 'setting-default_page_layout' );
-				}
-				elseif ( themify_check( 'setting-default_layout' ) ) {
-						$sidebar_layout = themify_get('setting-default_layout');
-				}
-			} else {
-				$sidebar_layout = $woo_page_layout;
-			}
-		}
-		elseif(is_product_category() || is_product_tag()){
-			$sidebar_layout = themify_check('setting-shop_archive_layout')?themify_get('setting-shop_archive_layout'):themify_get('setting-default_layout');
-		}
-		themify_ecommerce_sidebar_before(); // Hook
-
-		if ( $sidebar_layout != 'sidebar-none' ) {
-			get_sidebar();
-		}
-
-		themify_ecommerce_sidebar_after(); // Hook
-	}
-endif;
-add_action( 'themify_content_after', 'themify_wc_compatibility_sidebar', 10 );
-
-if ( ! function_exists( 'themify_wc_body_class' ) ) :
-	/**
-	 * Set correct layout class in body for Shop page
-	 *
-	 * @since 1.9.4
-	 *
-	 * @param array $classes
-	 * @return array
-	 */
-	function themify_wc_body_class( $classes = array() ) {
-		// Check if WC is active and this is a WC-managed page
-		if( !themify_is_woocommerce_active() || !function_exists('is_woocommerce') || !is_woocommerce() ) return $classes;
-		$sidebar_layout = '';
-		if( is_product() ) {
-			if( themify_check('setting-single_product_layout') ) {
-				$sidebar_layout = themify_get('setting-single_product_layout');
-			} elseif( themify_check('setting-default_page_post_layout') ) {
-				$sidebar_layout = themify_get('setting-default_page_post_layout');
-			}
-		} elseif (is_shop()) {
-			$sidebar_in_page = get_post_meta( get_option( 'woocommerce_shop_page_id' ) , 'page_layout', true );
-			$sidebar_layout = '';
-			if ( $sidebar_in_page == 'default' ) {
-				if ( themify_check('setting-shop_layout') ) {
-					$sidebar_layout = themify_get( 'setting-shop_layout' );
-				} 
-				elseif( themify_check( 'setting-default_page_layout' ) ) {
-					$sidebar_layout = themify_get( 'setting-default_page_layout' );
-				}
-				elseif( themify_check( 'setting-default_layout' ) ) {
-					$sidebar_layout = themify_get( 'setting-default_layout' );
-				}
-			} else {
-				$sidebar_layout = $sidebar_in_page;
-			}
-
-			// Content Width
-			$woo_content_width = get_post_meta( get_option( 'woocommerce_shop_page_id' ) , 'content_width', true );
-			if ( $woo_content_width == 'full_width' ) {
-				$classes[] = 'full_width';
-			} else {
-				$classes[] = 'default_width';
-			}
-		}
-		elseif(is_product_category() || is_product_tag()){
-			$sidebar_layout = themify_check('setting-shop_archive_layout')?themify_get('setting-shop_archive_layout'):themify_get('setting-default_layout');
-		}
-		if ( '' != $sidebar_layout ) {
-			$key = 0;
-			foreach ( $classes as $class ) {
-				if ( false !== stripos( $class, 'sidebar' ) ) {
-					unset( $classes[$key] );
-				}
-				$key++;
-			}
-			$classes[] = $sidebar_layout;
-		}
-
-		return $classes;
-	}
-endif;
-add_filter( 'body_class', 'themify_wc_body_class', 99 );
 
 if ( ! function_exists( 'themify_maybe_hide_shop_title' ) ) :
 	/**

@@ -23,17 +23,17 @@ class Themify_Builder {
 	/**
 	 * @var array
 	 */
-	var $builder_settings = array();
+	public $builder_settings = array();
 
 	/**
 	 * @var array
 	 */
-	var $module_settings = array();
+	public $module_settings = array();
 
 	/**
 	 * @var array
 	 */
-	var $registered_post_types = array();
+	public $registered_post_types = array();
 
 	/**
 	 * Define builder grid active or not
@@ -45,17 +45,17 @@ class Themify_Builder {
 	 * Define load form
 	 * @var string
 	 */
-	var $load_form = 'module';
+	public $load_form = 'module';
 
 	/**
 	 * Directory Registry
 	 */
-	var $directory_registry = array();
+	public $directory_registry = array();
 
 	/**
 	 * Array of classnames to add to post objects
 	 */
-	var $_post_classes = array();
+	public $_post_classes = array();
 
 	/**
 	 * Get status of builder content whether inside builder content or not
@@ -77,7 +77,7 @@ class Themify_Builder {
 	 *
 	 * @var array
 	 */
-	var $builder_cpt = array();
+	public $builder_cpt = array();
 
 	/**
 	 * List of all public post types.
@@ -86,25 +86,12 @@ class Themify_Builder {
 	 *
 	 * @var array
 	 */
-	var $public_post_types = array();
+	public $public_post_types = array();
 
 	/**
 	 * A list of posts which have been rendered by Builder
 	 */
 	private $post_ids = array();
-
-	/**
-	 * Flag to know if we're in the middle of saving the stylesheet.
-	 * @var string
-	 */
-	var $saving_stylesheet = false;
-
-	/**
-	 * Flag to know if we're rendering the style inline.
-	 * @var string
-	 */
-	var $is_front_end_style_inline = false;
-
 	
 	/**
 	 * Selectors for preview styling.
@@ -112,25 +99,32 @@ class Themify_Builder {
 	private $modules_styles = array();
 
 	/**
+	 *  Components Manager.
+	 */
+	public $components_manager;
+
+	public $stylesheet;
+
+	public $preview;
+
+	/**
 	 * Themify Builder Constructor
 	 */
-	function __construct() {
-		
-	}
+	public function __construct() {}
 
 	/**
 	 * Class Init
 	 */
-	function init() {
+	public function init() {
 		// Include required files
 		$this->includes();
 		$this->setup_default_directories();
 
 		/* git #1862 */
 		$this->builder_cpt_check();
-                
+				
                 new Themify_Builder_Include($this);
-                
+				
 		do_action('themify_builder_setup_modules', $this);
 
 		// Init
@@ -141,11 +135,7 @@ class Themify_Builder {
 
 		// Filtered post types
 		add_filter('themify_post_types', array($this, 'extend_post_types'));
-		add_filter('themify_builder_module_content', 'wptexturize');
-		add_filter('themify_builder_module_content', 'convert_smilies');
-		add_filter('themify_builder_module_content', 'convert_chars');
-		add_filter('themify_builder_module_content', array($this, 'the_module_content'));
-
+                add_filter('themify_builder_module_content', array('Themify_Builder_Model','format_text'));
 		/**
 		 * WordPress 4.4 Responsive Images support */
 		global $wp_version;
@@ -159,7 +149,6 @@ class Themify_Builder {
 		add_action('themify_builder_metabox', array($this, 'add_builder_metabox'), 10);
 		//add_action( 'media_buttons_context', array( $this, 'add_custom_switch_btn' ), 10 );
 		add_action('admin_enqueue_scripts', array($this, 'load_admin_interface'), 10);
-		add_action('wp_head', array($this, 'ie_enhancements'));
 
 		// Asynchronous Loader
 		add_action('wp_enqueue_scripts', array($this, 'register_frontend_js_css'), 9);
@@ -172,38 +161,11 @@ class Themify_Builder {
 			
 			// load module panel frontend
 			add_action('wp_footer', array($this, 'builder_module_panel_frontedit'), 10);
-			add_action('themify_builder_frontend_load_builder_tmpl', 'themify_font_icons_dialog', 10);
 			// Frontend builder javascript tmpl load
 			add_action('themify_builder_frontend_load_builder_tmpl', array($this, 'load_javascript_template_front'), 10);
-
-			// Row Styling
-			add_action('themify_builder_row_start', array($this, 'render_row_styling'), 10, 2);
-
-			// Column Styling
-			add_action('themify_builder_column_start', array($this, 'render_column_styling'), 10, 3);
-
-			// Sub-Column Styling
-			add_action('themify_builder_sub_column_start', array($this, 'render_sub_column_styling'), 10, 5);
-
-			// Google Fonts
-			add_action('wp_enqueue_scripts', array($this, 'enqueue_fonts'), 10);
-							
-			if(Themify_Builder_Model::is_front_builder_activate()){
-				// add product class
-				add_filter('post_class', array($this, 'add_product_class'),10,1);
-			}
-		} else {
-			// If user not logged in and is not a Builder editor view, enqueue static stylesheet
-			if (isset($_GET['themify_builder_infinite_scroll']) && 'yes' == $_GET['themify_builder_infinite_scroll']) {
-				add_action('themify_builder_row_start', array($this, 'render_row_styling'), 10, 2);
-			} else {
-				add_action('wp_enqueue_scripts', array($this, 'enqueue_stylesheet'), 14);
-				add_action('themify_builder_before_template_content_render', array($this, 'enqueue_stylesheet'), 10, 2);
-			}
 		}
 
 		// Ajax Actions
-		add_action('wp_ajax_tfb_add_wp_editor', array($this, 'add_wp_editor_ajaxify'), 10);
 		add_action('wp_ajax_tfb_load_shortcode_preview', array($this, 'shortcode_preview'), 10);
 		add_action('wp_ajax_builder_import', array($this, 'builder_import_ajaxify'), 10);
 		add_action('wp_ajax_builder_import_submit', array($this, 'builder_import_submit_ajaxify'), 10);
@@ -248,9 +210,6 @@ class Themify_Builder {
 		// Frontend editor
 		add_action('themify_builder_edit_module_panel', array($this, 'module_edit_panel_front'), 10, 2);
 
-		// Checks if a stylesheet with the proper slug exists, otherwise generates it.
-		add_action('save_post', array($this, 'build_stylesheet_if_needed'), 77, 1);
-
 		// Switch to frontend
 		add_action('save_post', array($this, 'switch_frontend'), 999, 1);
 
@@ -266,14 +225,14 @@ class Themify_Builder {
 		add_action('wp_head', array($this, 'render_javascript_classes'));
 
 		// Add extra protocols like skype: to WordPress allowed protocols.
-		if (!has_filter('kses_allowed_protocols', 'themify_allow_extra_protocols')) {
+		if (!has_filter('kses_allowed_protocols', 'themify_allow_extra_protocols') && function_exists('themify_allow_extra_protocols')) {
 			add_filter('kses_allowed_protocols', 'themify_allow_extra_protocols');
 		}
 
 		// Clear All builder caches in Themify Settings > Builder with ajax
 		if (defined('DOING_AJAX')) {
 			add_action('wp_ajax_tfb_render_column', array($this, 'render_column_ajaxify'), 10);
-			add_action('wp_ajax_tfb_render_sub_row', array($this, 'render_sub_row_ajaxify'), 10);
+			add_action('wp_ajax_tfb_render_subrow', array($this, 'render_sub_row_ajaxify'), 10);
 			add_action('wp_ajax_tfb_render_element', array($this, 'render_element_ajaxify'), 10);
 		}
 
@@ -286,6 +245,13 @@ class Themify_Builder {
 		// Import Export
 		new Themify_Builder_Import_Export();
 
+		$this->components_manager = new Themify_Builder_Components_Manager();
+
+		$this->stylesheet = new Themify_Builder_Stylesheet( $this );
+
+		$this->preview = new Themify_Builder_Preview( $this );
+
+		add_filter( 'themify_builder_module_args', array( $this, 'add_module_args' ) );
 
 	}
 
@@ -319,19 +285,19 @@ class Themify_Builder {
 		$_modules = array();
 		// loop through modules in Builder
 		if (is_array($builder_data)) {
-			foreach ($builder_data as $row_id => $row) {
-				if (isset($row['cols']) && !empty($row['cols'])) {
-					foreach ($row['cols'] as $cols => $col) {
-						if (isset($col['modules']) && !empty($col['modules'])) {
-							foreach ($col['modules'] as $modules => $mod) {
+			foreach ($builder_data as $row) {
+				if (!empty($row['cols'])) {
+					foreach ($row['cols'] as $col) {
+						if (!empty($col['modules'])) {
+							foreach ($col['modules'] as $mod) {
 								if (isset($mod['mod_name'])) {
 									$_modules[] = $mod;
 								}
 								// Check for Sub-rows
-								if (isset($mod['cols']) && !empty($mod['cols'])) {
-									foreach ($mod['cols'] as $col_key => $sub_col) {
-										if (isset($sub_col['modules']) && !empty($sub_col['modules'])) {
-											foreach ($sub_col['modules'] as $sub_module_k => $sub_module) {
+								if (!empty($mod['cols'])) {
+									foreach ($mod['cols'] as $sub_col) {
+										if (!empty($sub_col['modules'])) {
+											foreach ($sub_col['modules'] as $sub_module) {
 												$_modules[] = $sub_module;
 											}
 										}
@@ -360,19 +326,19 @@ class Themify_Builder {
 		// loop through modules in Builder
 		if (is_array($builder_data)) {
 			foreach ($builder_data as $row) {
-				if (isset($row['cols']) && !empty($row['cols'])) {
+				if (!empty($row['cols'])) {
 					foreach ($row['cols'] as $col) {
-						if (isset($col['modules']) && !empty($col['modules'])) {
+						if (!empty($col['modules'])) {
 							foreach ($col['modules'] as $mod) {
-								if (isset($mod['mod_name']) && $mod['mod_name'] == 'text' && isset($mod['mod_settings']) && isset($mod['mod_settings']['content_text']) && $mod['mod_settings']['content_text']) {
+								if (isset($mod['mod_name']) && $mod['mod_name'] === 'text' &&  !empty($mod['mod_settings']['content_text'])) {
 									return $mod['mod_settings']['content_text'];
 								}
 								// Check for Sub-rows
-								if (isset($mod['cols']) && !empty($mod['cols'])) {
+								if ( !empty($mod['cols'])) {
 									foreach ($mod['cols'] as $sub_col) {
-										if (isset($sub_col['modules']) && !empty($sub_col['modules'])) {
+										if (!empty($sub_col['modules'])) {
 											foreach ($sub_col['modules'] as $sub_module) {
-												if (isset($sub_module['mod_name']) && $sub_module['mod_name'] == 'text' && isset($sub_module['mod_settings']) && isset($sub_module['mod_settings']['content_text']) && $sub_module['mod_settings']['content_text']) {
+												if (isset($sub_module['mod_name']) && $sub_module['mod_name'] === 'text' && !empty($sub_module['mod_settings']['content_text'])) {
 													return $sub_module['mod_settings']['content_text'];
 												}
 											}
@@ -506,7 +472,7 @@ class Themify_Builder {
 					$style_data['media'] = esc_attr($wp_styles->registered[$handle]->args);
 
 				// Add stylesheet to data that will be returned to IS JS
-				array_push($results['styles'], $style_data);
+								$results['styles'][] = $style_data;
 			}
 		}
 
@@ -549,7 +515,7 @@ class Themify_Builder {
 				$script_data['src'] = add_query_arg('ver', $ver, $src);
 
 				// Add script to data that will be returned to IS JS
-				array_push($results['scripts'], $script_data);
+								$results['scripts'][] = $script_data;
 			}
 		}
 		
@@ -558,49 +524,35 @@ class Themify_Builder {
 		die();
 	}
 	
-        /**
+	/**
 	 * Called by AJAX action themify_builder_loader_tpl
 	 * Load the script tpl of modules
 	 */
 	public function async_load_builder_tpl(){
 		
-            ob_start();
-            /**
-             * Fires frontend load javascript template hooks.
-             * Hook all builder frontend js template here.
-             */
-            do_action('themify_builder_frontend_load_builder_tmpl');
+		ob_start();
+		/**
+		 * Fires frontend load javascript template hooks.
+		 * Hook all builder frontend js template here.
+		 */
+		do_action('themify_builder_frontend_load_builder_tmpl');
 
-            $results = ob_get_contents();
-            ob_end_clean();
+		$results = ob_get_contents();
+		ob_end_clean();
 
-            echo $results;
+		echo $results;
 
-            die();
+		die();
 	}
 	
-        /**
+	/**
 	 * Called by AJAX action themify_builder_loader_responsive.
 	 * Load the responsive html
 	 */
 	public function async_load_builder_responsive(){
-			$breakpoints = array();
-
-			if( themify_get( 'setting-customizer_responsive_design_tablet_landscape' ) ) {
-				$breakpoints['tablet_landscape'] = themify_get( 'setting-customizer_responsive_design_tablet_landscape' );
-			}
-			if( themify_get( 'setting-customizer_responsive_design_tablet' ) ) {
-				$breakpoints['tablet'] = themify_get( 'setting-customizer_responsive_design_tablet' );
-			}
-			if( themify_get( 'setting-customizer_responsive_design_mobile' ) ) {
-				$breakpoints['mobile'] = themify_get( 'setting-customizer_responsive_design_mobile' );
-			}
-
-			$breakpoints = !empty( $breakpoints ) ? json_encode( $breakpoints ) : '';
-
-			printf('<div class="themify_builder_workspace_container"><div class="themify_builder_workspace"><div class="themify_builder_site_canvas" data-preview-breakpoints=\'%s\'>
-			<ifr'.'ame id="themify_builder_site_canvas_iframe" class="themify_builder_site_canvas_iframe"></ifr'.'ame>
-			</div></div><div class="themify_builder_workspace_overlay"></div></div>', $breakpoints );
+		echo '<div class="themify_builder_workspace_container"><div class="themify_builder_workspace"><div class="themify_builder_site_canvas">
+		<ifr'.'ame id="themify_builder_site_canvas_iframe" name="themify_builder_site_canvas_iframe" class="themify_builder_site_canvas_iframe"></ifr'.'ame>
+		</div></div><div class="themify_builder_workspace_overlay"></div></div>';
 	}
 
 	/**
@@ -618,53 +570,20 @@ class Themify_Builder {
 		wp_editor('', '');
 
 		$scripts = is_a($wp_scripts, 'WP_Scripts') ? $wp_scripts->done : array();
-		$styles = is_a($wp_styles, 'WP_Styles') ? $wp_styles->done : array();
-		if (self::is_front_builder_activate()) {
-			$rules = array();
-			$rules['module-inner'] = $this->modules_styles;
-			unset($this->modules_styles);
-
-			$rules['raw'] = array(
-				'background_video' => array('prop' => ''),
-				'background_image' => array('prop' => 'background-image'),
-                                'background_gradient' => array('prop' => 'background-image'),
-				'background_color' => array('prop' => 'background-color'),
-                                'cover_gradient'=> array('prop' => 'background-image'),
-				'cover_color' => array('prop' => 'color'),
-				'font_family' => array('prop' => 'font-family', 'selector' => array('', ' h1', ' h2', ' h3:not(.module-title)', ' h4', ' h5', ' h6')),
-				'font_color' => array('prop' => 'color', 'selector' => array('', ' h1', ' h2', ' h3:not(.module-title)', ' h4', ' h5', ' h6')),
-				'font_size' => array('prop' => 'font-size'),
-				'line_height' => array('prop' => 'line-height'),
-				'text_align' => array('prop' => 'text-align'),
-				'link_color' => array('prop' => 'color', 'selector' => array(' a')),
-				'text_decoration' => array('prop' => 'text-decoration', 'selector' => array(' a')),
-				'padding_top' => array('prop' => 'padding-top'),
-				'padding_right' => array('prop' => 'padding-right'),
-				'padding_bottom' => array('prop' => 'padding-bottom'),
-				'padding_left' => array('prop' => 'padding-left'),
-				'margin_top' => array('prop' => 'margin-top'),
-				'margin_right' => array('prop' => 'margin-right'),
-				'margin_bottom' => array('prop' => 'margin-bottom'),
-				'border_top_color' => array('prop' => 'border-top-color'),
-				'border_top_width' => array('prop' => 'border-top-width'),
-				'border_top_style' => array('prop' => 'border-top-style'),
-				'border_right_color' => array('prop' => 'border-right-color'),
-				'border_right_width' => array('prop' => 'border-right-width'),
-				'border_right_style' => array('prop' => 'border-right-style'),
-				'border_bottom_color' => array('prop' => 'border-bottom-color'),
-				'border_bottom_width' => array('prop' => 'border-bottom-width'),
-				'border_bottom_style' => array('prop' => 'border-bottom-style'),
-				'border_left_color' => array('prop' => 'border-left-color'),
-				'border_left_width' => array('prop' => 'border-left-width'),
-				'border_left_style' => array('prop' => 'border-left-style'),
-			);
-?>
-			<script type="text/javascript">var themify_module_styles=<?php echo wp_json_encode($rules) ?>;</script>
-		<?php } ?>
+		$styles = is_a($wp_styles, 'WP_Styles') ? $wp_styles->done : array(); ?>
 		<script type="text/javascript">
 			jQuery.extend(tbLoaderVars.assets.scripts, <?php echo json_encode($scripts); ?>);
 			jQuery.extend(tbLoaderVars.assets.styles, <?php echo json_encode($styles); ?>);
-		</script><?php
+		</script>
+				<style type="text/css" scoped="scoped">
+					<?php $breakpoints = themify_get_breakpoints();?>
+					@media screen and (max-width: <?php echo $breakpoints['tablet_landscape'][1]?>px) {
+						 <?php echo Themify_Builder_Model::get_column_responsive_style('tablet');?>
+					} 
+					@media screen and (max-width: <?php echo $breakpoints['mobile']?>px){
+						<?php echo Themify_Builder_Model::get_column_responsive_style('mobile');?>
+					}
+				</style><?php
 	}
 
 	public function builder_cpt_check() {
@@ -684,11 +603,7 @@ class Themify_Builder {
 	}
 
 	public function is_cpt_active($post_type) {
-		$active = false;
-		if (in_array($post_type, $this->builder_cpt)) {
-			$active = true;
-		}
-
+		$active = in_array($post_type, $this->builder_cpt);
 		return apply_filters("builder_is_{$post_type}_active", $active);
 	}
 
@@ -697,13 +612,13 @@ class Themify_Builder {
 	 */
 	function setup_default_directories() {
 		$this->register_directory('templates', THEMIFY_BUILDER_TEMPLATES_DIR, 1);
-                $this->register_directory('templates', THEMIFY_BUILDER_TEMPLATES_DIR.'/premium/', 1);
+				$this->register_directory('templates', THEMIFY_BUILDER_TEMPLATES_DIR.'/premium/', 1);
 		$this->register_directory('templates', get_template_directory() . '/themify-builder/', 5);
 		if (is_child_theme()) {
 			$this->register_directory('templates', get_stylesheet_directory() . '/themify-builder/', 9);
 		}
 		$this->register_directory('modules', THEMIFY_BUILDER_MODULES_DIR, 1);
-                $this->register_directory('modules', THEMIFY_BUILDER_MODULES_DIR.'/premium/', 1);
+				$this->register_directory('modules', THEMIFY_BUILDER_MODULES_DIR.'/premium/', 1);
 		$this->register_directory('modules', get_template_directory() . '/themify-builder-modules/', 5);
 	}
 
@@ -742,6 +657,10 @@ class Themify_Builder {
 		// Class duplicate page
 		include_once THEMIFY_BUILDER_CLASSES_DIR . '/class-builder-duplicate-page.php';
 		include_once THEMIFY_BUILDER_CLASSES_DIR . '/class-builder-data-manager.php';
+
+		include_once THEMIFY_BUILDER_CLASSES_DIR . '/class-themify-builder-components-manager.php';
+		include_once THEMIFY_BUILDER_CLASSES_DIR . '/class-themify-builder-stylesheet.php';
+		include_once THEMIFY_BUILDER_CLASSES_DIR . '/class-themify-builder-preview.php';
 	}
 
 	/**
@@ -788,7 +707,6 @@ class Themify_Builder {
 	 * @return array
 	 */
 	function builder_write_panels($meta_boxes) {
-		global $pagenow;
 
 		// Page builder Options
 		$page_builder_options = apply_filters('themify_builder_write_panels_options', array(
@@ -875,8 +793,9 @@ class Themify_Builder {
 		ksort($_modules);
 
 		foreach ($_modules as $value) {
-			if (is_dir($value))
+			if (is_dir($value)){
 				continue; /* clean-up, make sure no directories is included in the list */
+						}
 			$path_info = pathinfo($value);
 			if (!preg_match('/^module-/', $path_info['filename']))
 				continue; /* convention: module's file name must begin with module-* */
@@ -890,26 +809,26 @@ class Themify_Builder {
 				'basename' => $path_info['basename'],
 			);
 		}
+                if (!empty($modules)) {
+                    if ('active' === $select) {
+                            $pre = 'setting-page_builder_';
+                            $data = themify_get_data();
+                            foreach ($modules as $key => $m) {
+                                    $exclude = $pre . 'exc_' . $m['id'];
+                                    if ( !empty($data[$exclude]) ){
+                                            unset($modules[$m['id']]);
+                                    }
+                            }
 
-		if ('active' == $select) {
-			$pre = 'setting-page_builder_';
-			$data = themify_get_data();
-			if (count($modules) > 0) {
-				foreach ($modules as $key => $m) {
-					$exclude = $pre . 'exc_' . $m['id'];
-					if (isset($data[$exclude]))
-						unset($modules[$m['id']]);
-				}
-			}
-		} elseif ('registered' == $select) {
-			foreach ($modules as $key => $m) {
-				/* check if module is registered */
-				if (!Themify_Builder_Model::check_module_active($key)) {
-					unset($modules[$key]);
-				}
-			}
-		}
-
+                    } elseif ('registered' === $select) {
+                            foreach ($modules as $key => $m) {
+                                    /* check if module is registered */
+                                    if (!Themify_Builder_Model::check_module_active($key)) {
+                                            unset($modules[$key]);
+                                    }
+                            }
+                    }
+                }
 		return $modules;
 	}
 
@@ -924,7 +843,7 @@ class Themify_Builder {
 	 * Add builder metabox
 	 */
 	function add_builder_metabox() {
-		global $post, $pagenow;
+		global $post;
 
 		$builder_data = $this->get_builder_data($post->ID);
 
@@ -940,7 +859,6 @@ class Themify_Builder {
 	 * @param $hook
 	 */
 	function load_admin_interface($hook) {
-		global $pagenow, $current_screen;
 
 		if (in_array($hook, array('post-new.php', 'post.php')) && in_array(get_post_type(), themify_post_types()) && Themify_Builder_Model::hasAccess()) {
 
@@ -948,13 +866,15 @@ class Themify_Builder {
 
 			wp_enqueue_style('themify-builder-loader', THEMIFY_BUILDER_URI . '/css/themify.builder.loader.css');
 			wp_enqueue_style('themify-builder-admin-ui', THEMIFY_BUILDER_URI . '/css/themify-builder-admin-ui.css', array(), THEMIFY_VERSION);
-			wp_enqueue_style('themify-builder-animate-css', THEMIFY_BUILDER_URI . '/css/animate.min.css', array(), THEMIFY_VERSION); // required to load for lightbox animation
+			wp_enqueue_style('themify-builder-style', THEMIFY_BUILDER_URI . '/css/themify-builder-style.css');
 			if (is_rtl()) {
 				wp_enqueue_style('themify-builder-admin-ui-rtl', THEMIFY_BUILDER_URI . '/css/themify-builder-admin-ui-rtl.css', array('themify-builder-admin-ui'), THEMIFY_VERSION);
 			}
 
 			// Enqueue builder admin scripts
 			$enqueue_scripts = array(
+				'masonry',
+				'imagesloaded',
 				'jquery-ui-core',
 				'jquery-ui-accordion',
 				'jquery-ui-droppable',
@@ -982,7 +902,8 @@ class Themify_Builder {
 						wp_enqueue_script($script, THEMIFY_BUILDER_URI . '/js/undomanager.js', array('jquery'));
 						break;
 					case 'themify-builder-common-js':
-						wp_register_script('themify-builder-common-js', THEMIFY_BUILDER_URI . "/js/themify.builder.common.js", array('jquery'), THEMIFY_VERSION, true);
+						wp_register_script('themify-builder-simple-bar-js', THEMIFY_BUILDER_URI . "/js/simplebar.js", array('jquery'), '2.0.3', true);
+						wp_register_script('themify-builder-common-js', THEMIFY_BUILDER_URI . "/js/themify.builder.common.js", array('jquery','themify-builder-simple-bar-js'), THEMIFY_VERSION, true);
 						wp_enqueue_script('themify-builder-common-js');
 
 						wp_localize_script('themify-builder-common-js', 'themifyBuilderCommon', apply_filters('themify_builder_common_vars', array(
@@ -1017,36 +938,40 @@ class Themify_Builder {
 						wp_enqueue_script('themify-builder-backend-js');
 						$gutterClass = Themify_Builder_Model::get_grid_settings('gutter_class');
 						wp_localize_script('themify-builder-backend-js', 'themifyBuilder', apply_filters('themify_builder_ajax_admin_vars', array(
-							'ajaxurl' => admin_url('admin-ajax.php'),
-							'tfb_load_nonce' => wp_create_nonce('tfb_load_nonce'),
-							'tfb_url' => THEMIFY_BUILDER_URI,
-							'post_ID' => get_the_ID(),
-							'dropPlaceHolder' => __('drop module here', 'themify'),
+							'ajaxurl'            => admin_url('admin-ajax.php'),
+							'tfb_load_nonce'     => wp_create_nonce('tfb_load_nonce'),
+							'tfb_url'            => THEMIFY_BUILDER_URI,
+							'post_ID'            => get_the_ID(),
+							'dropPlaceHolder'    => __('drop module here', 'themify'),
 							'draggerTitleMiddle' => __('Drag left/right to change columns', 'themify'),
-							'draggerTitleLast' => __('Drag left to add columns', 'themify'),
-							'confirm_on_duplicate_page' => __('Save the Builder before duplicating this page?', 'themify'),
-							'textRowStyling' => __('Row Styling', 'themify'),
-							'textColumnStyling' => __('Column Styling', 'themify'),
-							'permalink' => get_permalink(),
-							'isTouch' => themify_is_touch() ? 'true' : 'false',
-							'isThemifyTheme' => $this->is_themify_theme() ? 'true' : 'false',
-							'moduleDeleteConfirm' => __('Press OK to remove this module', 'themify'),
-							'rowDeleteConfirm' => __('Press OK to remove this row', 'themify'),
-							'subRowDeleteConfirm' => __('Press OK to remove this sub row', 'themify'),
-							'disableShortcuts' => themify_check('setting-page_builder_disable_shortcuts'),
-							'importFileConfirm' => __('This import will override all current Builder data. Press OK to continue', 'themify'),
-							'confirm_template_selected' => __('Would you like to replace or append the layout?', 'themify'),
-							'confirm_delete_layout' => __('Are you sure want to delete this layout ?', 'themify'),
-							'isFrontend' => 'false',
-							'enterRevComment' => esc_html__('Add optional revision comment:', 'themify'),
-							'confirmRestoreRev' => esc_html__('Save the current state as a revision before replacing?', 'themify'),
-							'confirmDeleteRev' => esc_html__('Are you sure want to delete this revision', 'themify'),
-							'gutterClass' => $gutterClass,
+							'draggerTitleLast'   => __('Drag left to add columns', 'themify'),
+							'textRowStyling'     => __('Row Styling', 'themify'),
+							'textColumnStyling'  => __('Column Styling', 'themify'),
+							'permalink'          => get_permalink(),
+							'isTouch'            => themify_is_touch() ? 'true' : 'false',
+							'isThemifyTheme'     => $this->is_themify_theme() ? 'true' : 'false',
+							'disableShortcuts'   => themify_check('setting-page_builder_disable_shortcuts'),
+							'isFrontend'         => 'false',
+							'gutterClass'        => $gutterClass,
 							// Breakpoints
-							'breakpoints' => Themify_Builder_Model::get_breakpoints(),
+							'breakpoints'        => themify_get_breakpoints(),
 							// Output builder data to use by Backbone Models
-							'builder_data' => $this->get_builder_data( get_the_ID() ),
-							'switchToFrontendLabel' => __( 'Themify Builder', 'themify' ),
+							'builder_data'       => $this->get_builder_data( get_the_ID() ),
+							'modules'            => Themify_Builder_Model::get_modules_localize_settings(),
+							'i18n'               => array(
+								'confirmRestoreRev'         => esc_html__('Save the current state as a revision before replacing?', 'themify'),
+								'dialog_import_page_post'   => esc_html__( 'Would you like to replace or append the builder?', 'themify' ),
+								'confirm_on_duplicate_page' => esc_html__('Save the Builder before duplicating this page?', 'themify'),
+								'moduleDeleteConfirm'       => esc_html__('Press OK to remove this module', 'themify'),
+								'rowDeleteConfirm'          => esc_html__('Press OK to remove this row', 'themify'),
+								'subRowDeleteConfirm'       => esc_html__('Press OK to remove this sub row', 'themify'),
+								'importFileConfirm'         => esc_html__('This import will override all current Builder data. Press OK to continue', 'themify'),
+								'confirm_template_selected' => esc_html__('Would you like to replace or append the layout?', 'themify'),
+								'confirm_delete_layout'     => esc_html__('Are you sure want to delete this layout ?', 'themify'),
+								'enterRevComment'           => esc_html__('Add optional revision comment:', 'themify'),
+								'confirmDeleteRev'          => esc_html__('Are you sure want to delete this revision', 'themify'),
+								'switchToFrontendLabel'     => esc_html__( 'Themify Builder', 'themify' )
+							)
 						)));
 						break;
 
@@ -1065,7 +990,6 @@ class Themify_Builder {
 	 * Frontend editor
 	 */
 	function load_inline_js_script() {
-		global $post;
 		if (Themify_Builder_Model::is_frontend_editor_page()) {
 			?>
 			<script type="text/javascript">
@@ -1076,19 +1000,19 @@ class Themify_Builder {
 		}
 	}
 
-        public static function getMapKey(){
-            static $key = false;
-            if($key===false){
-                $key = themify_get( 'setting-google_map_key' );
-            }
-            return $key;
-        }
+	public static function getMapKey(){
+		static $key = null;
+		if(is_null($key)){
+                    $key = themify_get( 'setting-google_map_key' );
+		}
+		return $key;
+	}
 
 	function is_fullwidth_layout_supported() {
 		return apply_filters('themify_builder_fullwidth_layout_support', false);
 	}
 
-        /**
+		/**
 	 * Register styles and scripts necessary for Builder template output.
 	 * These are enqueued when user initializes Builder or from a template output.
 	 *
@@ -1102,37 +1026,25 @@ class Themify_Builder {
 	 */
 	function register_frontend_js_css() {
 
-		// Builder main scripts
-		wp_enqueue_style('themify-builder-style', THEMIFY_BUILDER_URI . '/css/themify-builder-style.css', array(), THEMIFY_VERSION);
-
-		if (self::is_front_builder_activate()) {
-			wp_enqueue_style('themify-builder-admin-ui', THEMIFY_BUILDER_URI . '/css/themify-builder-admin-ui.css', array(), THEMIFY_VERSION);
-			if (is_rtl()) {
-				wp_enqueue_style('themify-builder-admin-ui-rtl', THEMIFY_BUILDER_URI . '/css/themify-builder-admin-ui-rtl.css', array('themify-builder-admin-ui'), THEMIFY_VERSION);
-			}
-			wp_enqueue_style('themify-icons', THEMIFY_URI . '/themify-icons/themify-icons.css', array(), THEMIFY_VERSION);
-			wp_enqueue_style('google-fonts-builder', themify_https_esc('http://fonts.googleapis.com/css') . '?family=Open+Sans:400,300,600|Montserrat');
-			wp_register_script('jss', THEMIFY_BUILDER_URI . "/js/jss.min.js", null, THEMIFY_VERSION, true);
-			wp_enqueue_script('jss');
-		}
+		wp_enqueue_style( 'builder-styles', THEMIFY_BUILDER_URI . '/css/themify-builder-style.css',array(), THEMIFY_VERSION );
+		add_filter( 'style_loader_tag', array( $this, 'builder_stylesheet_style_tag' ), 10, 4 );
 
 		////Enqueue main js that will load others needed js
 		wp_register_script('themify-main-script', THEMIFY_URI . '/js/main.js', array('jquery'), THEMIFY_VERSION, true);
-		wp_localize_script('themify-main-script', 'themify_vars', array(
+		wp_localize_script('themify-main-script', 'themify_vars', apply_filters( 'themify_main_script_vars', array(
 			'version' => THEMIFY_VERSION,
 			'url' => THEMIFY_URI,
 			'TB' => 1,
 			'map_key'=>self::getMapKey(),
 			'includesURL' => includes_url(),
 			'isCached' => themify_get('setting-page_builder_cache')
-		));
+		) ) );
 
 		wp_localize_script('themify-main-script', 'tbLocalScript', apply_filters('themify_builder_script_vars', array(
 			'isAnimationActive' => Themify_Builder_Model::is_animation_active(),
 			'isParallaxActive' => Themify_Builder_Model::is_parallax_active(),
 			'isParallaxScrollActive' => Themify_Builder_Model::is_parallax_scroll_active(),
-			'animationInviewSelectors' => Themify_Builder_Model::is_premium()?Themify_Builder_Include::$inview_selectors:array(),
-			'createAnimationSelectors' => Themify_Builder_Model::is_premium()?Themify_Builder_Include::$new_selectors:array(),
+			'animationInviewSelectors' => array( '.module.wow', '.themify_builder_content .themify_builder_row.wow', '.module_row.wow', '.builder-posts-wrap > .post.wow' ),
 			'backgroundSlider' => array(
 				'autoplay' => 5000,
 				'speed' => 2000,
@@ -1145,7 +1057,9 @@ class Themify_Builder {
 			'version' => THEMIFY_VERSION,
 			'fullwidth_support' => $this->is_fullwidth_layout_supported(),
 			'fullwidth_container' => 'body',
-			'loadScrollHighlight' => true
+			'loadScrollHighlight' => true,
+			'addons'=>Themify_Builder_Model::get_addons_assets(),
+                        'breakpoints' => themify_get_breakpoints()
 		)));
 
 		//Inject variable values in gallery script
@@ -1166,8 +1080,18 @@ class Themify_Builder {
 		wp_enqueue_script('themify-main-script');
 	}
 
+	/**
+	 * Prevent builder-style.css stylesheet from loading in the page, the stylesheet is loaded in themify.builder.script.js
+	 *
+	 * @return html
+	 */
+	function builder_stylesheet_style_tag( $tag, $handle, $href, $media ) {
+		if( 'builder-styles' === $handle ) {
+			$tag = '<meta name="builder-styles-css" content="" id="builder-styles-css">' . "\n";
+		}
 
-
+		return $tag;
+	}
 
 	/**
 	 * Load interface js and css
@@ -1175,16 +1099,12 @@ class Themify_Builder {
 	 * @since 2.1.9
 	 */
 	function load_frontend_interface() {
-
-
-
 		// load only when editing and login
 		if (Themify_Builder_Model::is_frontend_editor_page()) {
 			wp_enqueue_style('themify-builder-admin-ui', THEMIFY_BUILDER_URI . '/css/themify-builder-admin-ui.css', array(), THEMIFY_VERSION);
 			if (is_rtl()) {
 				wp_enqueue_style('themify-builder-admin-ui-rtl', THEMIFY_BUILDER_URI . '/css/themify-builder-admin-ui-rtl.css', array('themify-builder-admin-ui'), THEMIFY_VERSION);
 			}
-			wp_enqueue_style('themify-icons', THEMIFY_URI . '/themify-icons/themify-icons.css', array(), THEMIFY_VERSION);
 			wp_enqueue_style('google-fonts-builder', themify_https_esc('http://fonts.googleapis.com/css') . '?family=Open+Sans:400,300,600|Montserrat');
 			wp_enqueue_style('themify-colorpicker', THEMIFY_METABOX_URI . 'css/jquery.minicolors.css'); // from themify framework
 			// Icon picker
@@ -1201,6 +1121,8 @@ class Themify_Builder {
 			}
 			
 			$enqueue_scripts = array(
+				'masonry',
+				'imagesloaded',
 				'underscore',
 				'jquery-ui-core',
 				'jquery-ui-accordion',
@@ -1225,8 +1147,7 @@ class Themify_Builder {
 				'themify-combobox',
 				'themify-builder-common-js',
 				'themify-builder-app-js',
-				'themify-builder-front-ui-js',
-				'jss'
+				'themify-builder-front-ui-js'
 			);
 
 			// For editor
@@ -1263,7 +1184,8 @@ class Themify_Builder {
 
 					case 'themify-builder-common-js':
 						// front ui js
-						wp_register_script($script, THEMIFY_BUILDER_URI . "/js/themify.builder.common.js", array('jquery'), THEMIFY_VERSION, true);
+						wp_register_script('themify-builder-simple-bar-js', THEMIFY_BUILDER_URI . "/js/simplebar.js", array('jquery'), '2.0.3', true);
+						wp_register_script($script, THEMIFY_BUILDER_URI . "/js/themify.builder.common.js", array('jquery', 'themify-builder-simple-bar-js'), THEMIFY_VERSION, true);
 						wp_enqueue_script($script);
 
 						wp_localize_script('themify-builder-common-js', 'themifyBuilderCommon', apply_filters('themify_builder_common_vars', array(
@@ -1275,11 +1197,6 @@ class Themify_Builder {
 						)));
 						break;
 
-					case 'jss':
-						wp_register_script($script, THEMIFY_BUILDER_URI . "/js/jss.min.js", null, THEMIFY_VERSION, true);
-						wp_enqueue_script($script);
-						break;
-
 					case 'themify-builder-app-js':
 						wp_register_script('themify-builder-app-js', THEMIFY_BUILDER_URI . "/js/themify-builder-app.js", array('jquery'), THEMIFY_VERSION, true);
 						wp_enqueue_script('themify-builder-app-js');
@@ -1289,58 +1206,48 @@ class Themify_Builder {
 						// front ui js
 						wp_enqueue_script( 'jquery-knob', THEMIFY_BUILDER_URI . '/js/jquery.knob.min.js', array( 'jquery' ), null, true );
 						wp_enqueue_script( 'themifyGradient', THEMIFY_BUILDER_URI . '/js/premium/themifyGradient.js', array( 'jquery', 'themify-colorpicker' ), null, true );
-						wp_register_script($script, THEMIFY_BUILDER_URI . "/js/themify-builder-visual.js", array('jquery', 'jquery-ui-tabs', 'themify-builder-common-js', 'jss'), THEMIFY_VERSION, true);
+						wp_register_script($script, THEMIFY_BUILDER_URI . "/js/themify-builder-visual.js", array('jquery', 'jquery-ui-tabs', 'themify-builder-common-js'), THEMIFY_VERSION, true);
 						wp_enqueue_script($script);
 
 						$gutterClass = Themify_Builder_Model::get_grid_settings('gutter_class');
 						$columnAlignmentClass = Themify_Builder_Model::get_grid_settings('column_alignment_class');
 						wp_localize_script($script, 'themifyBuilder', apply_filters('themify_builder_ajax_front_vars', array(
-							'ajaxurl' => admin_url('admin-ajax.php'),
-							'isTouch' => themify_is_touch() ? 'true' : 'false',
-							'tfb_load_nonce' => wp_create_nonce('tfb_load_nonce'),
-							'tfb_url' => THEMIFY_BUILDER_URI,
-							'post_ID' => get_the_ID(),
-							'dropPlaceHolder' => __('drop module here', 'themify'),
-							'draggerTitleMiddle' => __('Drag left/right to change columns', 'themify'),
-							'draggerTitleLast' => __('Drag left to add columns', 'themify'),
-							'moduleDeleteConfirm' => __('Press OK to remove this module', 'themify'),
-							'rowDeleteConfirm' => __('Press OK to remove this row', 'themify'),
-							'toggleOn' => __('Turn On Builder', 'themify'),
-							'toggleOff' => __('Turn Off Builder', 'themify'),
-							'confirm_on_turn_off' => __('Do you want to save the changes made to this page?', 'themify'),
-							'confirm_on_duplicate_page' => __('Save the Builder before duplicating this page?', 'themify'),
-							'confirm_on_unload' => __('You have unsaved data.', 'themify'),
-							'isFrontend' => 'true',
-							// TODO: remove these (both here and backend)
-							'textImportBuilder' => __('Import From', 'themify'),
-							'textRowStyling' => __('Row Styling', 'themify'),
-							'textColumnStyling' => __('Column Styling', 'themify'),
-							'load_layout_title' => __('Layouts', 'themify'),
-							'save_as_layout_title' => __('Save as Layout', 'themify'),
-							'text_import_module_data' => __('Import Module'),
-							'text_export_module_data' => __('Export Module'),
-							'text_import_row_data' => __('Import Row'),
-							'text_export_row_data' => __('Export Row'),
-							'text_import_sub_row_data' => __('Import Sub-Row'),
-							'text_export_sub_row_data' => __('Export Sub-Row'),
-							// END TODO
-							'importFileConfirm' => __('This import will override all current Builder data. Press OK to continue', 'themify'),
-							'confirm_template_selected' => __('Would you like to replace or append the layout?', 'themify'),
-							'confirm_delete_layout' => __('Are you sure want to delete this layout ?', 'themify'),
-							'isThemifyTheme' => $this->is_themify_theme() ? 'true' : 'false',
-							'gutterClass' => $gutterClass,
-							'columnAlignmentClass' => $columnAlignmentClass,
-							'subRowDeleteConfirm' => __('Press OK to remove this sub row', 'themify'),
-							'disableShortcuts' => themify_check('setting-page_builder_disable_shortcuts'),
+							'ajaxurl'                 => admin_url('admin-ajax.php'),
+							'isTouch'                 => themify_is_touch() ? 'true' : 'false',
+							'tfb_load_nonce'          => wp_create_nonce('tfb_load_nonce'),
+							'tfb_url'                 => THEMIFY_BUILDER_URI,
+							'post_ID'                 => get_the_ID(),
+							'dropPlaceHolder'         => __('drop module here', 'themify'),
+							'draggerTitleMiddle'      => __('Drag left/right to change columns', 'themify'),
+							'draggerTitleLast'        => __('Drag left to add columns', 'themify'),
+							'isFrontend'              => 'true',
+							'confirm_delete_layout'   => __('Are you sure want to delete this layout ?', 'themify'),
+							'isThemifyTheme'          => $this->is_themify_theme() ? 'true' : 'false',
+							'gutterClass'             => $gutterClass,
+							'columnAlignmentClass'    => $columnAlignmentClass,
+							'disableShortcuts'        => themify_check('setting-page_builder_disable_shortcuts'),
 							// for live styling
-							'webSafeFonts' => themify_get_web_safe_font_list(true),
-							'errorSaveBuilder' => esc_html__('Error saving. Please save again.', 'themify'),
-							// Revisions
-							'enterRevComment' => esc_html__('Add optional revision comment:', 'themify'),
-							'confirmRestoreRev' => esc_html__('Save the current state as a revision before replacing?', 'themify'),
-							'confirmDeleteRev' => esc_html__('Are you sure want to delete this revision', 'themify'),
+							'webSafeFonts'            => themify_get_web_safe_font_list(true),
 							// Breakpoints
-							'breakpoints' => Themify_Builder_Model::get_breakpoints()
+							'breakpoints'             => themify_get_breakpoints(),
+							'element_style_rules'     => Themify_Builder_Model::get_elements_style_rules(),
+							'modules'                 => Themify_Builder_Model::get_modules_localize_settings(),
+							'i18n'                    => array(
+								'confirmRestoreRev'         => esc_html__('Save the current state as a revision before replacing?', 'themify'),
+								'dialog_import_page_post'   => esc_html__( 'Would you like to replace or append the builder?', 'themify' ),
+								'moduleDeleteConfirm'       => esc_html__('Press OK to remove this module', 'themify'),
+								'confirm_on_turn_off'       => esc_html__('Do you want to save the changes made to this page?', 'themify'),
+								'confirm_on_duplicate_page' => esc_html__('Save the Builder before duplicating this page?', 'themify'),
+								'confirm_on_unload'         => esc_html__('You have unsaved data.', 'themify'),
+								'rowDeleteConfirm'          => esc_html__('Press OK to remove this row', 'themify'),
+								'importFileConfirm'         => esc_html__('This import will override all current Builder data. Press OK to continue', 'themify'),
+								'confirm_template_selected' => esc_html__('Would you like to replace or append the layout?', 'themify'),
+								'subRowDeleteConfirm'       => esc_html__('Press OK to remove this sub row', 'themify'),
+								'errorSaveBuilder'          => esc_html__('Error saving. Please save again.', 'themify'),
+								// Revisions
+								'enterRevComment'           => esc_html__('Add optional revision comment:', 'themify'),
+								'confirmDeleteRev'          => esc_html__('Are you sure want to delete this revision', 'themify')
+							)
 						)));
 						wp_localize_script($script, 'themify_builder_plupload_init', $this->get_builder_plupload_init());
 						break;
@@ -1350,6 +1257,8 @@ class Themify_Builder {
 						break;
 				}
 			}
+
+			do_action('themify_builder_front_editor_enqueue', $this);
 		}
 	}
 
@@ -1366,7 +1275,7 @@ class Themify_Builder {
 				'background_slider_size' => $bg_slider_data['size'],
 			)
 		);
-                do_action('themify_builder_background_styling',$row_or_col,$bg_slider_data['order'],$bg_slider_data['type']);
+		do_action('themify_builder_background_styling',$row_or_col,$bg_slider_data['order'],$bg_slider_data['type']);
 		wp_die();
 	}
 
@@ -1528,7 +1437,7 @@ class Themify_Builder {
 
 	function shortcode_preview() {
 		check_ajax_referer('tfb_load_nonce', 'tfb_load_nonce');
-		if (isset($_POST['shortcode']) && $_POST['shortcode']) {
+		if (!empty($_POST['shortcode'])) {
 			$shortcode = sanitize_text_field($_POST['shortcode']);
 			$images = $this->get_images_from_gallery_shortcode($shortcode);
 			if (!empty($images)) {
@@ -1543,48 +1452,33 @@ class Themify_Builder {
 		}
 		wp_die();
 	}
-        
-        function themify_get_tax(){
-            if(!empty($_GET['tax']) && !empty($_GET['term'])){
-                $terms_by_tax = get_terms(sanitize_key($_GET['tax']),array('hide_empty'=>true,'name__like'=>sanitize_text_field($_GET['term'])));
-                $items = array();
-                if(!empty($terms_by_tax)){
-                    foreach ($terms_by_tax as $t){
-                        $items[] = array('value'=>$t->slug,'label'=>$t->name);
-                    }
-                }
-                echo wp_json_encode($items);
-            }
-            wp_die();
-        }
-        
-        function themify_builder_get_tax_data(){
-            if(!empty($_POST['data'])){
-                $respose = array();
-                foreach($_POST['data'] as $k=>$v){
-                    $tax = key($v);
-                    $slug = $v[$tax];
-                    $terms_by_slug = get_term_by('slug',$slug,$tax);
-                    $respose[] = array('tax'=>$tax,'val'=>$terms_by_slug->name);
-                }
-                echo wp_json_encode($respose);
-            }
-            wp_die();
-        }
-
-	/**
-	 * Add wp editor element
-	 */
-	function add_wp_editor_ajaxify() {
-		check_ajax_referer('tfb_load_nonce', 'tfb_load_nonce');
-
-		$txt_id = $_POST['txt_id'];
-		$class = $_POST['txt_class'];
-		$txt_name = $_POST['txt_name'];
-		$txt_val = stripslashes_deep($_POST['txt_val']);
-		wp_editor($txt_val, $txt_id, array('textarea_name' => $txt_name, 'editor_class' => $class, 'textarea_rows' => 12));
-
-		die();
+		
+	function themify_get_tax(){
+		if(!empty($_GET['tax']) && !empty($_GET['term'])){
+			$terms_by_tax = get_terms(sanitize_key($_GET['tax']),array('hide_empty'=>true,'name__like'=>sanitize_text_field($_GET['term'])));
+			$items = array();
+			if(!empty($terms_by_tax)){
+				foreach ($terms_by_tax as $t){
+					$items[] = array('value'=>$t->slug,'label'=>$t->name);
+				}
+			}
+			echo wp_json_encode($items);
+		}
+		wp_die();
+	}
+	
+	function themify_builder_get_tax_data(){
+		if(!empty($_POST['data'])){
+			$respose = array();
+			foreach($_POST['data'] as $k=>$v){
+				$tax = key($v);
+				$slug = $v[$tax];
+				$terms_by_slug = get_term_by('slug',$slug,$tax);
+				$respose[] = array('tax'=>$tax,'val'=>$terms_by_slug->name);
+			}
+			echo wp_json_encode($respose);
+		}
+		wp_die();
 	}
 
 	/**
@@ -1595,7 +1489,7 @@ class Themify_Builder {
 
 		$response = array();
 		$post_ids = isset($_POST['tfb_post_ids']) ? $_POST['tfb_post_ids'] : array();
-		$is_edit = isset($_POST['state']) && $_POST['state'] == 1;
+		$is_edit = !empty($_POST['state']);
 		global $post;
 
 		foreach ($post_ids as $k => $id) {
@@ -1644,18 +1538,6 @@ class Themify_Builder {
 
 		$response['html'] = $this->get_template_module($new_modules, $cid, false, false, null, $identifier);
 		$response['gfonts'] = $this->get_custom_google_fonts();
-		if(isset($_POST['rules']) && $_POST['rules']){
-			$styling = Themify_Builder_model::$modules[$module_slug]->get_styling();
-						 
-			$response['rules'] = array();
-			$all_rules = $this->make_styling_rules($styling, $module_settings,1);
-						 
-			if (!empty($all_rules)) {
-				foreach ($all_rules as $key => $rule) {
-					 $response['rules'][$key] = array('prop' => $rule['prop'], 'selector' =>(array) $rule['selector']);
-				}
-			}
-		}
 		$post = $temp_post;
 		echo json_encode($response);
 
@@ -1668,41 +1550,51 @@ class Themify_Builder {
 		$response = array();
 		$batch = json_decode(stripslashes($_POST['batch']), true);
 
-		if ( is_array( $batch ) && count( $batch ) > 0 ) {
+		if ( is_array( $batch ) && !empty( $batch )) {
 			foreach( $batch as $b ) {
 				$type = $b['data']['elType'];
-				$output = '';
-
 				switch ( $type ) {
 					case 'module':
 						
 						$identifier = array($b['jobID']);
 						$markup = $this->get_template_module($b['data'], $b['jobID'], false, false, null, $identifier);
-						$output = array( 'markup' => $markup );
+                                                $styling = $b['data']['mod_settings'];
+                                                $type = $b['data']['mod_name'];
+						break;
 
+					case 'subrow':
+
+						$b['data']['row_order'] = $b['jobID'];
+						if ( isset( $b['data']['cols'] ) ){
+                                                    unset( $b['data']['cols'] );
+                                                }
+						$markup = $this->get_template_sub_row($b['jobID'], $b['jobID'], $b['jobID'], $b['data'], $b['jobID']);
+						$styling = isset( $b['data']['styling'] ) ? $b['data']['styling'] : array();
 						break;
 
 					case 'column':
 
 						$row = array( 'row_order' => $b['jobID'] );
-						if ( isset( $b['data']['modules'] ) ) unset( $b['data']['modules'] );
+						if ( isset( $b['data']['modules'] ) ){
+                                                    unset( $b['data']['modules'] );
+                                                }
 						$b['data']['column_order'] = $b['jobID'];
 						$markup = $this->get_template_column( $b['jobID'], $row, $b['jobID'], $b['data'], $b['jobID'] );
-						$output = array( 'markup' => $markup );
-
+						$styling = isset( $b['data']['styling'] ) ? $b['data']['styling'] : array();
 						break;
-					
+
 					case 'row':
 
 						$b['data']['row_order'] = $b['jobID'];
-						if ( isset( $b['data']['cols'] ) ) unset( $b['data']['cols'] );
+						if ( isset( $b['data']['cols'] ) ){
+                                                    unset( $b['data']['cols'] );
+                                                }
 						$markup = $this->get_template_row($b['jobID'], $b['data'], $b['jobID']);
-						$output = array( 'markup' => $markup );
-
+						$styling = isset( $b['data']['styling'] ) ? $b['data']['styling'] : array();
 						break;
 				}
-
-				$response[ $b['jobID'] ] = $output;
+                                $styles = $this->stylesheet->get_style_rules( $type, $styling );
+				$response[ $b['jobID'] ] = array( 'markup' => $markup, 'styles' => $styles );
 			}
 		}
 		echo json_encode($response);
@@ -1715,7 +1607,6 @@ class Themify_Builder {
 	 */
 	function load_row_partial_ajaxify() {
 		check_ajax_referer('tfb_load_nonce', 'nonce');
-		global $themify;
 
 		$post_id = (int) $_POST['post_id'];
 		$row = json_decode( stripslashes_deep( $_POST['row'] ), true );
@@ -1737,7 +1628,6 @@ class Themify_Builder {
 	 */
 	public function render_column_ajaxify() {
 		check_ajax_referer('tfb_load_nonce', 'nonce');
-		global $themify;
 
 		$cid = $_POST['cid'];
 		$col = json_decode(stripslashes_deep($_POST['column_data']), true);
@@ -1752,6 +1642,7 @@ class Themify_Builder {
 			$cols = $col['col_order'];
 			$modules = $col['sub_row_order'];
 			$col_key = $col['column_order'];
+                        $post_id = (int) $_POST['post_id'];
 			$response['html'] = $this->get_template_sub_column( $rows, $cols, $modules, $col_key, $col, $post_id );
 		}
 
@@ -1767,13 +1658,10 @@ class Themify_Builder {
 	 */
 	public function render_sub_row_ajaxify() {
 		check_ajax_referer('tfb_load_nonce', 'nonce');
-		global $themify;
 
 		$post_id = (int) $_POST['post_id'];
-		$uniqid = uniqid();
 		$mod = json_decode(stripslashes_deep($_POST['sub_row_data']), true);
 		$response = array();
-
 		$rows = $mod['row_order'];
 		$cols = $mod['col_order'];
 		$modules = $mod['sub_row_order'];
@@ -1795,9 +1683,9 @@ class Themify_Builder {
 		$response = array();
 		$uniqid = uniqid();
 
-		if (isset($row['row_order']))
-			unset($row['row_order']);
-
+		if (isset($row['row_order'])){
+                    unset($row['row_order']);
+                }
 		$response['html'] = $this->get_template_row($uniqid, $row, $post_id);
 
 		echo json_encode($response);
@@ -1806,9 +1694,9 @@ class Themify_Builder {
 	}
 
 	public static function remove_cache($post_id, $tag = false, array $args = array()) {
-                if(Themify_Builder_Model::is_premium()){
-                    TFCache::remove_cache($tag, $post_id, $args);
-                }
+		if(Themify_Builder_Model::is_premium()){
+			TFCache::remove_cache($tag, $post_id, $args);
+		}
 	}
 
 	/**
@@ -1823,11 +1711,11 @@ class Themify_Builder {
 		$saveto = $_POST['tfb_saveto'];
 		$ids = json_decode(stripslashes_deep($_POST['ids']), true);
 
-		if (is_array($ids) && count($ids) > 0) {
+		if (is_array($ids) && !empty($ids)) {
 			foreach ($ids as $v) {
 				$post_id = isset($v['id']) ? $v['id'] : '';
-				$post_data = ( isset($v['data']) && is_array($v['data']) && count($v['data']) > 0 ) ? $v['data'] : array();
-				if ('main' == $saveto) {
+				$post_data =  !empty($v['data']) && is_array($v['data'])  > 0  ? $v['data'] : array();
+				if ('main' === $saveto) {
 
 					$GLOBALS['ThemifyBuilder_Data_Manager']->save_data($post_data, $post_id);
 
@@ -1840,9 +1728,8 @@ class Themify_Builder {
 
 					if (!empty($post_data)) {
 						// Write Stylesheet
-						$results = $this->write_stylesheet(array('id' => $post_id, 'data' => $post_data));
+						$results = $this->stylesheet->write_stylesheet(array('id' => $post_id, 'data' => $post_data));
 					}
-					do_action('themify_builder_save_data', $post_id, $this->meta_key, $post_data); // hook save data
 
 					self::remove_cache($post_id);
 				} else {
@@ -1861,16 +1748,16 @@ class Themify_Builder {
 	 * @return string
 	 */
 	function builder_show_on_front($content) {
-		global $post, $wp_query;
+		global $post;
 		// Exclude builder output in admin post list mode excerpt, Dont show builder on product single description
-		if (( is_admin() && !defined('DOING_AJAX') ) || ( is_post_type_archive() && !is_post_type_archive('product') ) || post_password_required() || isset($wp_query->query_vars['product_cat']) || is_tax('product_tag') || (is_singular('product') && 'product' == get_post_type())
+		if (!is_object($post) 
+					|| ( is_admin() && ! defined( 'DOING_AJAX' ) )
+					|| post_password_required()
+					|| (themify_is_woocommerce_active() &&  is_singular('product') && 'product' == get_post_type() )
 		) {
-			return $content;
+					return $content;
 		}
-
-		if (!is_object($post))
-			return $content;
-
+			
 		$display = apply_filters('themify_builder_display', true, $post->ID);
 		if (false === $display) {
 			return $content;
@@ -1921,7 +1808,30 @@ class Themify_Builder {
 			// the loop is finished, reset the ID list
 			$this->post_ids = array();
 		}
+
+		// load Builder stylesheet if necessary
+		$content = $this->get_builder_stylesheet( $builder_output ) . $content;
+
 		return $content;
+	}
+
+	/**
+	 * Returns <link> tag for Builder stylesheet or enqueue it properly, if necessary.
+	 *
+	 * @return string
+	 */
+	public function get_builder_stylesheet( $builder_output ) {
+		static $builder_loaded = false;
+		if(! $builder_loaded && !Themify_Builder_Model::is_front_builder_activate() && strpos($builder_output,'themify_builder_row')!==false) { // check if builder has any content
+			$builder_loaded = true;
+						wp_dequeue_style('builder-styles');
+						$link_tag = "<link id='builder-styles' rel='stylesheet' href='". THEMIFY_BUILDER_URI . '/css/themify-builder-style.css?ver='.THEMIFY_VERSION. "' type='text/css' />";
+						return '<script type="text/javascript">
+							if( document.getElementById( "builder-styles-css" ) ) document.getElementById( "builder-styles-css" ).insertAdjacentHTML( "beforebegin", "' . $link_tag . '" );
+							</script>';
+						
+		}
+		return '';
 	}
 
 	/**
@@ -1937,11 +1847,10 @@ class Themify_Builder {
 	 * Loads JS templates for front-end editor.
 	 */
 	public function load_javascript_template_front() {
-		include_once( sprintf("%s/themify-builder-js-tmpl-admin.php", THEMIFY_BUILDER_INCLUDES_DIR) ); // need to delete later
-		include_once( sprintf("%s/themify-builder-js-tmpl-front.php", THEMIFY_BUILDER_INCLUDES_DIR) );
-		include_once( sprintf("%s/themify-builder-js-tmpl-form.php", THEMIFY_BUILDER_INCLUDES_DIR) );
 		include_once( sprintf("%s/themify-builder-js-tmpl-common.php", THEMIFY_BUILDER_INCLUDES_DIR) );
+		include_once( sprintf("%s/themify-builder-js-tmpl-front.php", THEMIFY_BUILDER_INCLUDES_DIR) );
 		include_once( sprintf("%s/themify-builder-module-panel.php", THEMIFY_BUILDER_INCLUDES_DIR) );
+		$this->components_manager->render_components_form_content();
 	}
 
 	/**
@@ -1950,7 +1859,7 @@ class Themify_Builder {
 	public function load_javascript_template_admin() {
 		include_once( sprintf("%s/themify-builder-js-tmpl-common.php", THEMIFY_BUILDER_INCLUDES_DIR) );
 		include_once( sprintf("%s/themify-builder-js-tmpl-admin.php", THEMIFY_BUILDER_INCLUDES_DIR) );
-		include_once( sprintf("%s/themify-builder-js-tmpl-form.php", THEMIFY_BUILDER_INCLUDES_DIR) );
+		$this->components_manager->render_components_form_content();
 	}
 
 	/**
@@ -2008,10 +1917,12 @@ class Themify_Builder {
 	 */
 	function builder_plupload() {
 		// check ajax nonce
-		$imgid = $_POST['imgid'];
-		//check_ajax_referer( $imgid . 'themify-builder-plupload' );
 		check_ajax_referer('tfb_load_nonce');
-
+		if( ! current_user_can( 'upload_files' ) ) {
+			die;
+		}
+                
+		$imgid = $_POST['imgid'];
 		/** If post ID is set, uploaded image will be attached to it. @var String */
 		$postid = $_POST['topost'];
 
@@ -2022,7 +1933,7 @@ class Themify_Builder {
 		$ext = explode('/', $file['type']);
 
 		// Import routines
-		if ('zip' == $ext[1] || 'rar' == $ext[1] || 'plain' == $ext[1]) {
+		if ('zip' === $ext[1] || 'rar' === $ext[1] || 'plain' === $ext[1]) {
 
 			$url = wp_nonce_url('admin.php?page=themify');
 
@@ -2035,48 +1946,32 @@ class Themify_Builder {
 			}
 
 			global $wp_filesystem;
-
-			if ('zip' == $ext[1] || 'rar' == $ext[1]) {
-				$destination = wp_upload_dir();
-				$destination_path = $destination['path'];
-
-				unzip_file($file['file'], $destination_path);
-				if ($wp_filesystem->exists($destination_path . '/builder_data_export.txt')) {
-					$data = $wp_filesystem->get_contents($destination_path . '/builder_data_export.txt');
-
-					if (is_serialized($data)) {
-						/* serialized string */
-						$data = @unserialize($data);
-					} else {
-						/* must be the new JSON format */
-						$data = json_decode($data);
-					}
-					$GLOBALS['ThemifyBuilder_Data_Manager']->save_data($data, $postid, true);
-
-					$wp_filesystem->delete($destination_path . '/builder_data_export.txt');
-					$wp_filesystem->delete($file['file']);
-				} else {
-					_e('Data could not be loaded', 'themify');
-				}
-			} else {
-				if ($wp_filesystem->exists($file['file'])) {
-					$data = $wp_filesystem->get_contents($file['file']);
-
-					if (is_serialized($data)) {
-						/* serialized string */
-						$data = @unserialize($data);
-					} else {
-						/* must be the new JSON format */
-						$data = json_decode($data);
-					}
-					// set data here
-					$GLOBALS['ThemifyBuilder_Data_Manager']->save_data($data, $postid, true);
-
-					$wp_filesystem->delete($file['file']);
-				} else {
-					_e('Data could not be loaded', 'themify');
-				}
+						$is_txt = $path = false;
+			if ('zip' === $ext[1] || 'rar' === $ext[1]) {
+							$destination = wp_upload_dir();
+							$destination_path = $destination['path'];
+							unzip_file($file['file'], $destination_path);
+							if ($wp_filesystem->exists($destination_path . '/builder_data_export.txt')) {
+								$path = $destination_path . '/builder_data_export.txt';
+								$is_txt = true;
+							}
+			} elseif ($wp_filesystem->exists($file['file'])) {
+							$path = $file['file']; 
 			}
+						
+						if($path){
+							$data = $wp_filesystem->get_contents($path);
+							$data = is_serialized($data)?maybe_unserialize($data):json_decode($data);
+							// set data here
+							$GLOBALS['ThemifyBuilder_Data_Manager']->save_data($data, $postid, true);
+							if($is_txt){
+								$wp_filesystem->delete($destination_path . '/builder_data_export.txt');
+							}
+							$wp_filesystem->delete($file['file']);
+						}
+						else{
+							_e('Data could not be loaded', 'themify');
+						}
 		} else {
 			// Insert into Media Library
 			// Set up options array to add this file as an attachment
@@ -2122,91 +2017,22 @@ class Themify_Builder {
 		$p = get_queried_object(); //get_the_ID can back wrong post id
 		$post_id = isset($p->ID) ? $p->ID : false;
 		unset($p);
-		if (!$post_id || !current_user_can('edit_page', $post_id))
-			return;
+		if (!$post_id || !current_user_can('edit_page', $post_id)){
+                    return;
+                }
 
 		$args = array(
 			array(
 				'id' => 'themify_builder',
-				'title' => sprintf('<span class="themify_builder_front_icon"></span> %s', __('Themify Builder', 'themify')),
-				'href' => '#'
-			),
-			array(
-				'id' => 'toggle_themify_builder',
-				'parent' => 'themify_builder',
-				'title' => __('Turn On Builder', 'themify'),
+				'title' => sprintf('<span class="themify_builder_front_icon"></span> %s', esc_html__('Turn On Builder', 'themify')),
 				'href' => '#',
 				'meta' => array('class' => 'toggle_tf_builder')
-			),
-			array(
-				'id' => 'duplicate_themify_builder',
-				'parent' => 'themify_builder',
-				'title' => __('Duplicate This Page', 'themify'),
-				'href' => '#',
-				'meta' => array('class' => 'themify_builder_dup_link')
-			)
-		);
-
-
-		$help_args = array(
-			array(
-				'id' => 'help_themify_builder',
-				'parent' => 'themify_builder',
-				'title' => __('Help', 'themify'),
-				'href' => '//themify.me/docs/builder',
-				'meta' => array('target' => '_blank', 'class' => '')
 			)
 		);
 
 		if (is_singular() || is_page()) {
-			$import_args = array(
-				array(
-					'id' => 'import_themify_builder',
-					'parent' => 'themify_builder',
-					'title' => __('Import From', 'themify'),
-					'href' => '#'
-				),
-				// Sub Menu
-				array(
-					'id' => 'from_existing_pages_themify_builder',
-					'parent' => 'import_themify_builder',
-					'title' => __('Existing Pages', 'themify'),
-					'href' => '#',
-					'meta' => array('class' => 'themify_builder_import_page')
-				),
-				array(
-					'id' => 'from_existing_posts_themify_builder',
-					'parent' => 'import_themify_builder',
-					'title' => __('Existing Posts', 'themify'),
-					'href' => '#',
-					'meta' => array('class' => 'themify_builder_import_post')
-				),
-				array(
-					'id' => 'import_export_themify_builder',
-					'parent' => 'themify_builder',
-					'title' => __('Import / Export', 'themify'),
-					'href' => '#'
-				),
-				// Sub Menu
-				array(
-					'id' => 'import_file_themify_builder',
-					'parent' => 'import_export_themify_builder',
-					'title' => __('Import', 'themify'),
-					'href' => '#',
-					'meta' => array('class' => 'themify_builder_import_file')
-				),
-				array(
-					'id' => 'export_file_themify_builder',
-					'parent' => 'import_export_themify_builder',
-					'title' => __('Export', 'themify'),
-					'href' => wp_nonce_url('?themify_builder_export_file=true&postid=' . $post_id, 'themify_builder_export_nonce'),
-					'meta' => array('class' => 'themify_builder_export_file')
-				),
-			);
-			$args = array_merge($args, apply_filters('themify_builder_admin_bar_menu_single_page', $import_args));
+			$args = apply_filters('themify_builder_admin_bar_menu_single_page', $args);
 		}
-
-		$args = array_merge($args, $help_args);
 
 		foreach ($args as $arg) {
 			$wp_admin_bar->add_node($arg);
@@ -2313,16 +2139,16 @@ class Themify_Builder {
 	 * @return array
 	 */
 	function return_text_shortcode($array) {
-		if (count($array) > 0) {
+		if (!empty($array)) {
 			foreach ($array as $key => $value) {
 				if (is_array($value)) {
-					$this->return_text_shortcode($value);
+                                    $this->return_text_shortcode($value);
 				} else {
-					$array[$key] = str_replace("[", "&#91;", $value);
-					$array[$key] = str_replace("]", "&#93;", $value);
+                                    $array[$key] = str_replace(array('[',']'), array('&#91;','&#93;'), $value);
 				}
 			}
-		} else {
+		} 
+                else {
 			$array = array();
 		}
 		return $array;
@@ -2334,7 +2160,7 @@ class Themify_Builder {
 	 * @return array
 	 */
 	function clean_json_bad_escaped_char($array) {
-		if (count($array) > 0) {
+		if (!empty($array)) {
 			foreach ($array as $key => $value) {
 				if (is_array($value)) {
 					$this->clean_json_bad_escaped_char($value);
@@ -2342,7 +2168,8 @@ class Themify_Builder {
 					$array[$key] = str_replace("<wbr />", "<wbr>", $value);
 				}
 			}
-		} else {
+		} 
+                else {
 			$array = array();
 		}
 		return $array;
@@ -2360,10 +2187,13 @@ class Themify_Builder {
 	function retrieve_template($template_name, $args = array(), $template_path = '', $default_path = '', $echo = true) {
 		ob_start();
 		$this->get_template($template_name, $args, $template_path = '', $default_path = '');
-		if ($echo)
-			echo ob_get_clean();
-		else
-			return ob_get_clean();
+		if ($echo){
+					echo ob_get_clean();
+				}	
+		else{
+					return ob_get_clean();
+				}
+			
 	}
 
 	/**
@@ -2401,8 +2231,10 @@ class Themify_Builder {
 		}
 
 		// Get default template
-		if (!$template)
-			$template = $default_path . $template_name;
+		if (!$template){
+					$template = $default_path . $template_name;
+				}
+			
 
 		// Return what we found
 		return apply_filters('themify_builder_locate_template', $template, $template_name, $template_path);
@@ -2435,7 +2267,7 @@ class Themify_Builder {
 		$mod_id = $mod['mod_name'] . '-' . $builder_id . '-' . implode('-', $identifier);
 		$output .= PHP_EOL; // add line break
 	   
-		$is_frontend = Themify_Builder_model::is_frontend_editor_page() || ( isset($_GET['themify_builder_infinite_scroll']) && 'yes' == $_GET['themify_builder_infinite_scroll'] ) || $this->is_front_end_style_inline;
+		$is_frontend = Themify_Builder_model::is_frontend_editor_page() || ( isset($_GET['themify_builder_infinite_scroll']) && 'yes' === $_GET['themify_builder_infinite_scroll'] ) || $this->stylesheet->is_front_end_style_inline;
 		if (!$is_frontend) {
 			$post = get_post($builder_id);
 			$is_frontend = is_object($post) && $post->post_type == 'tbuilder_layout_part';
@@ -2444,7 +2276,7 @@ class Themify_Builder {
 		if ($wrap) {
 			if ($is_frontend && $mod['mod_name']  && !isset($this->modules_styles[$mod['mod_name']])) {
 				$styling = Themify_Builder_model::$modules[$mod['mod_name']]->get_styling();
-				$all_rules = $this->make_styling_rules($styling, $mod['mod_settings'], 1);
+				$all_rules = $this->stylesheet->make_styling_rules($styling, $mod['mod_settings'], 1);
 				if (!empty($all_rules)) {
 					foreach ($all_rules as $id=>$rule) {
 						$this->modules_styles[$mod['mod_name']][$id] = array('prop' => $rule['prop'], 'selector' =>(array) $rule['selector']);
@@ -2461,10 +2293,7 @@ class Themify_Builder {
 			$output .= ob_get_clean();
 		}
 
-		$module_args = apply_filters('themify_builder_module_args', array(
-			'before_title' => '<h3 class="module-title">',
-			'after_title' => '</h3>',
-		));
+		$module_args = apply_filters('themify_builder_module_args', array());
 		$mod['mod_settings'] = wp_parse_args($mod['mod_settings'], $module_args);
 
 		// render the module
@@ -2473,13 +2302,13 @@ class Themify_Builder {
 		$style_id = '.themify_builder .' . $mod_id;
 
 		if ($is_frontend) {
-			$output .= $this->get_custom_styling($style_id, $mod['mod_name'], $mod['mod_settings']);
+			$output .= $this->stylesheet->get_custom_styling($style_id, $mod['mod_name'], $mod['mod_settings']);
 			// responsive styling
-			$output .= $this->render_responsive_style($style_id, $mod['mod_name'], $mod['mod_settings']);
+			$output .= $this->stylesheet->render_responsive_style($style_id, $mod['mod_name'], $mod['mod_settings']);
 		}
-		if ($wrap)
-			$output .= '</div>';
-
+		if ($wrap){
+					$output .= '</div>';
+				}
 		// add line break
 		$output .= PHP_EOL;
 
@@ -2488,6 +2317,12 @@ class Themify_Builder {
 		} else {
 			return $output;
 		}
+	}
+
+	public function add_module_args( $args ) {
+		$args['before_title'] = '<h3 class="module-title">';
+		$args{'after_title'} = '</h3>';
+		return $args;
 	}
 
 	/**
@@ -2503,11 +2338,7 @@ class Themify_Builder {
 				)
 		);
 
-		if (!$template) {
-			return false;
-		} else {
-			return true;
-		}
+		return !$template?false:true;
 	}
 
 	/**
@@ -2553,7 +2384,7 @@ class Themify_Builder {
 	 * @param $type
 	 */
 	function push_post_types($type) {
-		array_push($this->registered_post_types, $type);
+				$this->registered_post_types[] = $type;
 	}
 
 	/**
@@ -2606,9 +2437,9 @@ class Themify_Builder {
 	 * @param $action
 	 */
 	function reset_builder_query($action = 'reset') {
-		if ('reset' == $action) {
+		if ('reset' === $action) {
 			remove_filter('the_content', array(&$this, 'builder_show_on_front'), 11);
-		} elseif ('restore' == $action) {
+		} elseif ('restore' === $action) {
 			add_filter('the_content', array(&$this, 'builder_show_on_front'), 11);
 		}
 	}
@@ -2661,14 +2492,12 @@ class Themify_Builder {
 	 * @return string
 	 */
 	function get_pagenav( $before = '', $after = '', $query = false, $original_offset = 0 ) {
-		global $wpdb, $wp_query;
+		global  $wp_query;
 
 		if (false == $query) {
 			$query = $wp_query;
 		}
 
-		$request = $query->request;
-		$posts_per_page = intval(get_query_var('posts_per_page'));
 		$paged = intval($this->get_paged_query());
 		$numposts = $query->found_posts;
 
@@ -2789,9 +2618,8 @@ class Themify_Builder {
 		$type = $_POST['type'];
 		$data = array();
 
-		if ('post' == $type) {
+		if ('post' === $type) {
 			$post_types = get_post_types(array('_builtin' => false, 'public' => true));
-			$exclude_post_types = array('shop_order');
 			$data[] = array(
 				'post_type' => 'post',
 				'label' => __('Post', 'themify'),
@@ -2804,7 +2632,7 @@ class Themify_Builder {
 					'items' => get_posts(array('posts_per_page' => -1, 'post_type' => $post_type))
 				);
 			}
-		} else if ('page' == $type) {
+		} else if ('page' === $type) {
 			$data[] = array(
 				'post_type' => 'page',
 				'label' => __('Page', 'themify'),
@@ -2825,669 +2653,33 @@ class Themify_Builder {
 		check_ajax_referer('tfb_load_nonce', 'nonce');
 		parse_str($_POST['data'], $imports);
 		$import_to = (int) $_POST['importTo'];
+		$import_type = $_POST['importType'];
 
-		if (count($imports) > 0 && is_array($imports)) {
+		if (is_array($imports) && !empty($imports)) {
 			$meta_values = array();
 
-			// get current page builder data
-
-			$meta_values[] = $this->get_builder_data($import_to);
-
-			foreach ($imports as $post_type => $post_id) {
-				if (empty($post_id) || $post_id == 0)
-					continue;
-
-				$builder_data = $this->get_builder_data($post_id);
-				$meta_values[] = $builder_data;
+			if ( 'append' === $import_type ) {
+				// get current page builder data
+				$meta_values[] = $this->get_builder_data($import_to);
 			}
 
-			if (count($meta_values) > 0) {
-				$result = array();
-				foreach ($meta_values as $meta) {
-					$result = array_merge($result, (array) $meta);
-				}
-				$GLOBALS['ThemifyBuilder_Data_Manager']->save_data($result, $import_to);
+			foreach ($imports as $post_id) {
+				if (!empty($post_id)){
+                                    $builder_data = $this->get_builder_data($post_id);
+                                    $meta_values[] = $builder_data;
+                                }
+			}
+
+			if (!empty($meta_values)) {
+							$result = array();
+							foreach ($meta_values as $meta) {
+                                                            $result = array_merge($result, (array) $meta);
+							}
+							$GLOBALS['ThemifyBuilder_Data_Manager']->save_data($result, $import_to);
 			}
 		}
 
 		die();
-	}
-
-	/**
-	 * Output row styling style
-	 * @param int $builder_id
-	 * @param array $row
-	 * @return string
-	 */
-	function render_row_styling($builder_id, $row) {
-		$row['styling'] = isset($row['styling']) ? $row['styling'] : '';
-		$row['row_order'] = isset($row['row_order']) ? $row['row_order'] : '';
-		$settings = $row['styling'];
-		$style_id = '.themify_builder .module_row_' . $builder_id . '-' . $row['row_order'];
-		echo $this->get_custom_styling($style_id, 'row', $settings);
-
-		// responsive styling
-		echo $this->render_responsive_style($style_id, 'row', $settings);
-
-	}
-
-	/**
-	 * Output column styling style
-	 * @param int $builder_id
-	 * @param array $row
-	 * @param array $column
-	 * @return string
-	 */
-	function render_column_styling($builder_id, $row, $column) {
-		$column['styling'] = isset($column['styling']) ? $column['styling'] : '';
-		$column['column_order'] = isset($column['column_order']) ? $column['column_order'] : '';
-		$settings = $column['styling'];
-		/*$style_id = '.themify_builder_' . $builder_id . '_row.module_row_' . $row['row_order'] .
-				' .tb_' . $builder_id . '_column.module_column_' . $column['column_order'];*/
-		$style_id = '.themify_builder .module_column_' . $builder_id . '-' . $row['row_order'] . '-' . $column['column_order'];
-		echo $this->get_custom_styling($style_id, 'column', $settings);
-
-		// responsive styling
-		echo $this->render_responsive_style($style_id, 'column', $settings);
-	}
-
-	/**
-	 * Output sub-column styling style
-	 * @param int $builder_id
-	 * @param int $rows
-	 * @param int $cols
-	 * @param int $modules
-	 * @param array $sub_column
-	 * @return string
-	 */
-	function render_sub_column_styling($builder_id, $rows, $cols, $modules, $sub_column) {
-		$sub_column['styling'] = isset($sub_column['styling']) ? $sub_column['styling'] : '';
-		$sub_column['column_order'] = isset($sub_column['column_order']) ? $sub_column['column_order'] : '';
-		$settings = $sub_column['styling'];
-		$style_id = '.sub_column_post_' . $builder_id . '.sub_column_' . $rows . '-' .
-				$cols . '-' . $modules . '-' . $sub_column['column_order'];
-		echo $this->get_custom_styling($style_id, 'sub_column', $settings);
-                
-                // responsive styling
-		echo $this->render_responsive_style($style_id, 'sub_column', $settings);
-	}
-
-	/**
-	 * Generate CSS styling.
-	 * 
-	 * @since 1.0.0
-	 * @since 2.2.5 Added the ability to return pure CSS without <style> tags for stylesheet generation.
-	 *
-	 * @param int $style_id
-	 * @param string $mod_name Name of the module to build styles for. Example 'row' for row styling.
-	 * @param array $settings List of settings to generate style.
-	 * @param bool $array Used for legacy styling generation.
-	 * @param string $format Use 'tag' to return the CSS enclosed in <style> tags. This mode is used while user is logged in and Builder is active. Use 'css' to return only the CSS. This mode is used on stylesheet generation.
-	 *
-	 * @return string
-	 */
-	function get_custom_styling($style_id, $mod_name, $settings, $array = false, $format = 'tag', $rules=false) {
-		global $themify;
-
-		/**
-		 * Filter style id selector. This can be used to modify the selector on a theme by theme basis.
-		 * 
-		 * @since 2.3.1
-		 *
-		 * @param string $style_id Full selector string to be filtered.
-		 * @param string $builder_id ID of Builder instance.
-		 * @param array $row Current row.
-		 */
-		$style_id = apply_filters('themify_builder_row_styling_style_id', $style_id);
-
-		if (!isset($themify->builder_google_fonts)) {
-			$themify->builder_google_fonts = '';
-		}
-		$output = '';
-		// legacy module def support
-		if (
-				'row' == $mod_name ||
-				'column' == $mod_name ||
-				'sub_column' == $mod_name ||
-				( isset(Themify_Builder_model::$modules[$mod_name]) && is_array(Themify_Builder_model::$modules[$mod_name]->get_css_selectors()) )
-		) {
-			return $this->get_custom_styling_legacy($style_id, $mod_name, $settings, $array, $format);
-		}
-
-		if($rules===false){
-			$styling = isset(Themify_Builder_model::$modules[$mod_name]) ? Themify_Builder_model::$modules[$mod_name]->get_styling() : array();
-			$rules = $this->make_styling_rules($styling, $settings);
-		}
-
-		if (!empty($rules) && is_array($rules)) {
-			$css = array();
-                        $css_rules = array();
-                        foreach ($rules as $v){
-                            $css_rules[$v['id']] = $v;
-                        }
-			foreach ($rules as $value) {
-				$css[$value['selector']] = isset($css[$value['selector']]) ? $css[$value['selector']] : '';
-
-				if ( in_array( $value['prop'], array( 'background-color', 'color', 'border-top-color', 'border-bottom-color', 'border-left-color', 'border-right-color' ) ) ) {
-					if( in_array($value['prop'], array( 'border-top-color', 'border-bottom-color', 'border-left-color', 'border-right-color' ) ) ){
-						$temp_id = str_replace( '_color','', $value['id'] );
-						if ( empty( $css_rules[$temp_id.'_width']['value'] ) || empty( $css_rules[$temp_id.'_style']['value'] ) || $css_rules[$temp_id.'_style']['value']==='none' ) {
-							continue;
-						}
-					}
-					// Split color and opacity
-					$temp_color = explode( '_', $value['value'] );
-					$temp_opacity = isset($temp_color[1]) ? $temp_color[1] : '1';
-					// Write hexadecimal color.
-					$css[$value['selector']] .= sprintf( '%s: #%s; ', $value['prop'], $temp_color[0] );
-					// If there's opacity, that is, if it's not 1 or 1.00 write RGBA color.
-					if ( '1' != $temp_opacity && '1.00' != $temp_opacity ) {
-						$css[$value['selector']] .= sprintf('%s: %s; ', $value['prop'], self::get_rgba_color($value['value']));
-					}
-				} elseif ($value['prop'] == 'font-family' && $value['value'] != 'default') {
-					if (!in_array($value['value'], themify_get_web_safe_font_list(true))) {
-						$themify->builder_google_fonts .= str_replace(' ', '+', $value['value'] . '|');
-					}
-					$css[$value['selector']] .= sprintf('font-family: %s; ', $value['value']);
-				} elseif (in_array($value['prop'], array('font-size', 'line-height', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width'))) {
-					if(in_array($value['prop'], array('border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width'))){
-						$temp_id = str_replace( '_width', '', $value['id'] );
-						if(empty($css_rules[$temp_id.'_style']['value']) || empty($value['value']) ||  $css_rules[$temp_id.'_style']['value']==='none'){
-							continue;
-						}
-					}
-					$unit = isset($settings[$value['id'] . '_unit']) ? $settings[$value['id'] . '_unit'] : 'px';
-					$css[$value['selector']] .= sprintf('%s: %s%s; ', $value['prop'], $value['value'], $unit);
-				} elseif (in_array($value['prop'], array('text-decoration', 'text-align', 'background-repeat', 'background-position', 'border-top-style', 'border-right-style', 'border-bottom-style', 'border-left-style'))) {
-					if(in_array($value['prop'], array('border-top-style', 'border-right-style', 'border-bottom-style', 'border-left-style'))){
-						$temp_id = str_replace( '_style', '', $value['id'] );
-						if(empty($css_rules[$temp_id.'_width']['value']) && $value['value']!=='none'){
-							continue;
-						}
-					}
-					$css[$value['selector']] .= sprintf('%s: %s; ', $value['prop'], $value['value']);
-				} elseif ( $value['prop'] == 'background-image' && $value['type'] == 'image' ) {
-					$css[$value['selector']] .= sprintf('%s: url("%s"); ', $value['prop'], themify_https_esc($value['value']));
-				} elseif( $value['prop'] == 'background-image' && $value['type'] == 'gradient' && isset( $settings[$value['id'] . '-css'] ) ) {
-					$css[$value['selector']] .= $settings[$value['id'] . '-css']; // note: the property is defined in the "*-css" field
-				}
-			}
-
-			if (!empty($css)) {
-				foreach ($css as $selector => $defs) {
-					if (empty($defs)) {
-						continue;
-					}
-					$output .= "{$style_id}{$selector} { {$defs} } \n";
-				}
-				if ('tag' == $format && !empty($output)) {
-					$output = '<style type="text/css">' . $output . '</style>';
-				}
-			}
-		}
-		return $output;
-	}
-
-	function    make_styling_rules($def, $settings, $empty = false) {
-		$result = array();
-		if (empty($def)) {
-			return $result;
-		}
-
-		foreach ($def as $option) {
-			if ($option['type'] == 'multi') {
-				$result = array_merge($result, $this->make_styling_rules($option['fields'], $settings, $empty));
-			} elseif ($option['type'] == 'tabs') {
-				foreach ($option['tabs'] as $tab) {
-					$result = array_merge($result, $this->make_styling_rules($tab['fields'], $settings, $empty));
-				}
-			} elseif( $option['type'] == 'image_and_gradient' && !$empty ) {
-				if( isset($settings[$option['id'] . '-type']) && $settings[$option['id'] . '-type'] == 'gradient' && isset( $settings[$option['id'] . '-css'] ) ) {
-					$new = array(
-						'id' => $option['id'],
-						'value' => $settings[$option['id'] . '-css'],
-						'prop' => 'background-image',
-						'type' => 'gradient'
-					);
-				} elseif( ( ! isset( $settings[$option['id'] . '-type'] ) || ( isset($settings[$option['id'] . '-type']) && $settings[$option['id'] . '-type'] == 'image' ) ) && isset( $settings[$option['id']] ) ) {
-					$new = array(
-						'id' => $option['id'],
-						'value' => $settings[$option['id']],
-						'prop' => 'background-image',
-						'type' => 'image'
-					);
-				}
-				if( isset( $new ) ) {
-					foreach ((array) $option['selector'] as $selector) {
-						$result[] = array_merge( $new, array( 'selector' => $selector ) );
-				   }
-				}
-			}
-			elseif (isset($option['prop']) && (isset($settings[$option['id']]) || $empty)) {
-				if ($empty) {
-					if($option['type']!=='seperator'){
-						$result[$option['id']] = $option;
-					}
-				} else {
-					foreach ((array) $option['selector'] as $selector) {
-						$result[] = array(
-							'id' => $option['id'],
-							'prop' => $option['prop'],
-							'type' => $option['type'],
-							'selector' => $selector,
-							'value' => $settings[$option['id']]
-						);
-					}
-				}
-			}
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Get custom style
-	 *
-	 * @since 2.2.5 New parameter $format to return output enclosed in style tags or not.
-	 *
-	 * @param string $style_id 
-	 * @param string $mod_name 
-	 * @param array $settings 
-	 * @param boolean $array 
-	 * @param string $format Use 'tag' to return the CSS enclosed in <style> tags. This mode is used while user is logged in and Builder is active. Use 'css' to return only the CSS. This mode is used on stylesheet generation.
-	 *
-	 * @return string|array
-	 */
-	function get_custom_styling_legacy($style_id, $mod_name, $settings, $array = false, $format = 'tag') {
-		global $themify;
-
-		if (!isset($themify->builder_google_fonts)) {
-			$themify->builder_google_fonts = '';
-		}
-
-		$rules_arr = array(
-			'font_size' => array(
-				'prop' => 'font-size',
-				'key' => array('font_size', 'font_size_unit')
-			),
-			'font_family' => array(
-				'prop' => 'font-family',
-				'key' => 'font_family'
-			),
-			'line_height' => array(
-				'prop' => 'line-height',
-				'key' => array('line_height', 'line_height_unit')
-			),
-			'text_align' => array(
-				'prop' => 'text-align',
-				'key' => 'text_align'
-			),
-			'color' => array(
-				'prop' => 'color',
-				'key' => 'font_color'
-			),
-			'link_color' => array(
-				'prop' => 'color',
-				'key' => 'link_color'
-			),
-			'text_decoration' => array(
-				'prop' => 'text-decoration',
-				'key' => 'text_decoration'
-			),
-			'background_color' => array(
-				'prop' => 'background-color',
-				'key' => 'background_color'
-			),
-			'background_image' => array(
-				'prop' => 'background-image',
-				'key' => 'background_image'
-			),
-			'background_gradient' => array(
-				'prop' => 'background-image',
-				'key' => 'background_gradient-css'
-			),
-			'background_overlay' => array(
-				'prop' => 'background',
-				'key' => array('cover_color','cover_gradient-css')
-			),
-			'background_overlay_hover' => array(
-				'prop' => 'background',
-				'key' => array('cover_color_hover','cover_gradient_hover-css')
-			),
-			'background_repeat' => array(
-				'prop' => 'background-repeat',
-				'key' => 'background_repeat'
-			),
-			'background_position' => array(
-				'prop' => 'background-position',
-				'key' => array('background_position_x', 'background_position_y')
-			),
-			'padding' => array(
-				'prop' => 'padding',
-				'key' => array('padding_top', 'padding_right', 'padding_bottom', 'padding_left')
-			),
-			'margin' => array(
-				'prop' => 'margin',
-				'key' => array('margin_top', 'margin_right', 'margin_bottom', 'margin_left')
-			),
-			'border_top' => array(
-				'prop' => 'border-top',
-				'key' => array('border_top_color', 'border_top_width', 'border_top_style')
-			),
-			'border_right' => array(
-				'prop' => 'border-right',
-				'key' => array('border_right_color', 'border_right_width', 'border_right_style')
-			),
-			'border_bottom' => array(
-				'prop' => 'border-bottom',
-				'key' => array('border_bottom_color', 'border_bottom_width', 'border_bottom_style')
-			),
-			'border_left' => array(
-				'prop' => 'border-left',
-				'key' => array('border_left_color', 'border_left_width', 'border_left_style')
-			)
-		);
-
-		if ($mod_name == 'row') {
-			$styles_selector = array(
-				'.module_row' => array(
-					'background_image','background_gradient', 'background_color', 'font_family', 'font_size', 'line_height', 'text_align', 'color', 'padding', 'margin', 'border_top', 'border_right', 'border_bottom', 'border_left'
-				),
-				' a' => array(
-					'link_color', 'text_decoration'
-				),
-				'.module_row h1' => array('color', 'font_family'),
-				'.module_row h2' => array('color', 'font_family'),
-				'.module_row h3:not(.module-title)' => array('color', 'font_family'),
-				'.module_row h4' => array('color', 'font_family'),
-				'.module_row h5' => array('color', 'font_family'),
-				'.module_row h6' => array('color', 'font_family'),
-				'.module_row>.builder_row_cover' => array('background_overlay'),
-				'.module_row>.builder_row_cover:before' => array('background_overlay_hover'),
-			);
-		} else if ($mod_name == 'column') {
-			$styles_selector = array(
-				'.module_column' => array(
-					'background_image','background_gradient', 'background_color', 'font_family', 'font_size', 'line_height', 'text_align', 'color', 'padding', 'margin', 'border_top', 'border_right', 'border_bottom', 'border_left'
-				),
-				' a' => array(
-					'link_color', 'text_decoration'
-				),
-				'.module_column h1' => array('color', 'font_family'),
-				'.module_column h2' => array('color', 'font_family'),
-				'.module_column h3:not(.module-title)' => array('color', 'font_family'),
-				'.module_column h4' => array('color', 'font_family'),
-				'.module_column h5' => array('color', 'font_family'),
-				'.module_column h6' => array('color', 'font_family'),
-				'.module_column>.builder_row_cover' => array('background_overlay'),
-				'.module_column>.builder_row_cover:before' => array('background_overlay_hover'),
-			);
-		} else if ($mod_name == 'sub_column') {
-			$styles_selector = array(
-				'.sub_column' => array(
-					'background_image','background_gradient', 'background_color', 'font_family', 'font_size', 'line_height', 'text_align', 'color', 'padding', 'margin', 'border_top', 'border_right', 'border_bottom', 'border_left'
-				),
-				' a' => array(
-					'link_color', 'text_decoration'
-				),
-				'.sub_column h1' => array('color', 'font_family'),
-				'.sub_column h2' => array('color', 'font_family'),
-				'.sub_column h3:not(.module-title)' => array('color', 'font_family'),
-				'.sub_column h4' => array('color', 'font_family'),
-				'.sub_column h5' => array('color', 'font_family'),
-				'.sub_column h6' => array('color', 'font_family'),
-				'.sub_column>.builder_row_cover' => array('background_overlay'),
-				'.sub_column>.builder_row_cover:before' => array('background_overlay_hover'),
-								
-			);
-		} else {
-			$styles_selector = Themify_Builder_Model::$modules[$mod_name]->get_css_selectors();
-		}
-		$rules = array();
-		$css = array();
-		$style = '';
-
-		foreach ($styles_selector as $selector => $properties) {
-			$property_arr = array();
-			foreach ($properties as $property) {
-				array_push($property_arr, $rules_arr[$property]);
-			}
-			$rules[$style_id . $selector] = $property_arr;
-		}
-		$web_fonts =  themify_get_web_safe_font_list(true);
-          
-		foreach ($rules as $selector => $property) {
-						if(empty($css[$selector])){
-							$css[$selector] = array();
-						}
-			foreach ($property as $val) {
-				$prop = $val['prop'];
-				$key = $val['key'];
-				if (is_array($key)) {
-					if ($prop == 'font-size' && isset($settings[$key[0]]) && '' != $settings[$key[0]]) {
-						$css[$selector][$prop] = $prop . ': ' . $settings[$key[0]] . $settings[$key[1]];
-					} elseif ($prop == 'line-height' && isset($settings[$key[0]]) && '' != $settings[$key[0]]) {
-						$css[$selector][$prop] = $prop . ': ' . $settings[$key[0]] . $settings[$key[1]];
-					} elseif ($prop == 'background-position' && isset($settings[$key[0]]) && '' != $settings[$key[0]]) {
-						$css[$selector][$prop] = $prop . ': ' . $settings[$key[0]] . ' ' . $settings[$key[1]];
-					} elseif ($prop == 'padding') {
-						$padding['top'] = isset($settings[$key[0]]) && '' != $settings[$key[0]] ? $settings[$key[0]] : '';
-						$padding['right'] = isset($settings[$key[1]]) && '' != $settings[$key[1]] ? $settings[$key[1]] : '';
-						$padding['bottom'] = isset($settings[$key[2]]) && '' != $settings[$key[2]] ? $settings[$key[2]] : '';
-						$padding['left'] = isset($settings[$key[3]]) && '' != $settings[$key[3]] ? $settings[$key[3]] : '';
-
-						foreach ($padding as $k => $v) {
-							if ('' == $v)
-								continue;
-							$unit = isset($settings["padding_{$k}_unit"]) ? $settings["padding_{$k}_unit"] : 'px';
-							$css[$selector]['padding-' . $k] = 'padding-' . $k . ' : ' . $v . $unit;
-						}
-					} elseif ($prop == 'margin') {
-						$margin['top'] = isset($settings[$key[0]]) && '' != $settings[$key[0]] ? $settings[$key[0]] : '';
-						$margin['right'] = isset($settings[$key[1]]) && '' != $settings[$key[1]] ? $settings[$key[1]] : '';
-						$margin['bottom'] = isset($settings[$key[2]]) && '' != $settings[$key[2]] ? $settings[$key[2]] : '';
-						$margin['left'] = isset($settings[$key[3]]) && '' != $settings[$key[3]] ? $settings[$key[3]] : '';
-
-						foreach ($margin as $k => $v) {
-							if ('' == $v)
-								continue;
-							$unit = isset($settings["margin_{$k}_unit"]) ? $settings["margin_{$k}_unit"] : 'px';
-							$css[$selector]['margin-' . $k] = 'margin-' . $k . ' : ' . $v . $unit;
-						}
-					} elseif (in_array($prop, array('border-top', 'border-right', 'border-bottom', 'border-left'))) {
-					
-						if(!empty($settings[$key[2]])){
-							$border['color'] = isset($settings[$key[0]]) && '' != $settings[$key[0]] ? '#' . $settings[$key[0]] : '';
-							$border['width'] = !empty($settings[$key[1]])?$settings[$key[1]].'px':'';
-							$border['style'] = $settings[$key[2]];
-							$border_result = $this->build_color_props(array(
-								'color_opacity' => $border['color'],
-								'property' => $prop,
-								'border_width' => $border['width'],
-								'border_style' => $border['style'],
-									)
-							);
-							
-							if($border_result){
-								$css[$selector][$prop] = $border_result;
-							}
-						}
-					}
-					elseif($prop==='background' && !isset($css[$selector][$prop]) && (!empty($settings[$key[0]]) || !empty($settings[$key[1]]))){
-						if($key[0]==='cover_color'){
-							if( !empty($settings[$key[0]]) && ( empty( $settings['cover_color-type'] ) || $settings['cover_color-type'] === 'color' ) ) {
-								 $css[$selector][$prop] = $prop . ':'.self::get_rgba_color($settings[$key[0]]);
-							}
-							elseif(!empty($settings['cover_color-type']) && $settings['cover_color-type']!=='color' && !empty($settings[$key[1]])){
-								 $css[$selector][$prop] = str_replace('background-image','background',$settings[$key[1]]);
-							}
-						}
-						elseif($key[0]==='cover_color_hover'){
-						   if(!empty($settings[$key[0]])  && (empty($settings['cover_color_hover-type']) || $settings['cover_color_hover-type']==='hover_color')){
-							   $css[$selector][$prop] =  $prop . ':'.self::get_rgba_color($settings[$key[0]]);
-						   }
-						   elseif(!empty($settings['cover_color_hover-type']) && $settings['cover_color_hover-type']!=='hover_color' && !empty($settings[$key[1]])){
-							   $css[$selector][$prop] = str_replace('background-image','background',$settings[$key[1]]);
-						   }
-						}
-						  
-					}
-				} elseif (isset($settings[$key]) && 'default' != $settings[$key] && '' != $settings[$key]) {
-					if ($prop == 'color' || stripos($prop, 'color')) {
-						$css[$selector][$prop] = $this->build_color_props(array(
-							'color_opacity' => $settings[$key],
-							'property' => $prop,
-								)
-						);     
-					} 
-					elseif ($prop == 'background-image' && 'default' != $settings[$key] &&  !empty( $settings[$key] )) {
-						
-						if(isset($settings['background_type']) && $key==='background_gradient-css' && $settings['background_type']=='gradient'){
-							$css[$selector][$prop]= $settings[$key]; 
-						}
-						elseif($settings['background_type']!='gradient' && $key!=='background_gradient-css'){
-							$css[$selector][$prop] = $prop . ': url(' . themify_https_esc($settings[$key]) . ')';
-							if (isset($settings['background_type']) && 'video' == $settings['background_type']) {
-									$css[$selector][$prop] .= ";\n\tbackground-size: cover";
-							}
-						}
-					} elseif ($prop == 'font-family') {
-                                     
-						$font = $settings[$key];
-						$css[$selector][$prop] = $prop . ': ' . $font;
-						if (!in_array($font,$web_fonts)) {
-							$themify->builder_google_fonts .= str_replace(' ', '+', $font . '|');
-						}
-					} else {
-						$css[$selector][$prop] = $prop . ': ' . $settings[$key];
-					}
-				}
-			}
-
-			if (!empty($css[$selector])) {
-				$style .= "$selector {\n\t" . implode(";\n\t", array_map(array($this, 'trim_last_semicolon'), $css[$selector])) . "\n}\n";
-			}
-		}
-
-		if (!$array) {
-			if ('' != $style) {
-				if ('tag' == $format) {
-					return "\n<!-- $style_id Style -->\n<style type=\"text/css\" >\n$style</style>\n<!-- End $style_id Style -->\n";
-				} else {
-					return "/* $style_id Style */\n$style\n";
-				}
-			}
-		} else if ($array) {
-			return $css;
-		}
-	}
-
-	/**
-	 * If string has an semicolon at the end, it will be stripped.
-	 *
-	 * @since 2.3.3
-	 *
-	 * @param string $string
-	 * @return string
-	 */
-	function trim_last_semicolon($string) {
-		return rtrim($string, ';');
-	}
-
-	/**
-	 * Outputs color for the logo in text mode since it's needed for the <a>.
-	 *
-	 * @since 1.9.6
-	 *
-	 * @param array $args
-	 * @return string
-	 */
-	function build_color_props($args = array()) {
-		$args = wp_parse_args($args, array(
-			'color_opacity' => '',
-			'property' => 'color',
-			'border_width' => '',
-			'border_style' => 'solid',
-		));
-		// Strip any lingering hashes just in case
-		$args['color_opacity'] = str_replace('#', '', $args['color_opacity']);
-		// Separator between color and opacity
-		$sep = '_';
-
-		if (false !== stripos($args['color_opacity'], $sep)) {
-			// If it's the new color+opacity, an underscore separates color from opacity
-			$all = explode($sep, $args['color_opacity']);
-			$color = isset($all[0]) ? $all[0] : '';
-			$opacity = isset($all[1]) ? $all[1] : '';
-		} else {
-			// If it's the traditional, it's a simple color
-			$color = $args['color_opacity'];
-			$opacity = '';
-		}
-		$element_props = '';
-		if ('' != $color || false !== stripos($args['property'], 'border')) {
-			// Setup opacity value or solid
-			$opacity = ( '' != $opacity ) ? $opacity : '1';
-			if (false !== stripos($args['property'], 'border')) {
-				// It's a border property, a composite of border size style
-				
-				if($args['border_style']!=='none'){
-					if(!empty($args['border_width'])){
-						$element_props .= "{$args['property']}: #$color {$args['border_width']} {$args['border_style']};";
-						if ('1' != $opacity && '1.00' != $opacity) {
-							$element_props .= "\n\t{$args['property']}: rgba(" . self::hex2rgb($color) . ",  $opacity) {$args['border_width']} {$args['border_style']}";
-						}
-					}
-					else{
-						return false;
-					}
-				}
-				else{
-					 $element_props .= "{$args['property']}: {$args['border_style']};";
-				}
-			} else {
-				// It's either background-color or color, a simple color
-				$element_props .= "{$args['property']}: #$color;";
-				if ('1' != $opacity && '1.00' != $opacity) {
-					$element_props .= "\n\t{$args['property']}: rgba(" . self::hex2rgb($color) . ", $opacity)";
-				}
-			}
-		}
-		return $element_props;
-	}
-
-	/**
-	 * Converts color in hexadecimal format to RGB format.
-	 *
-	 * @since 1.9.6
-	 *
-	 * @param string $hex Color in hexadecimal format.
-	 * @return string Color in RGB components separated by comma.
-	 */
-	public static function hex2rgb($hex) {
-		$hex = str_replace("#", "", $hex);
-
-		if (strlen($hex) == 3) {
-			$r = hexdec(substr($hex, 0, 1) . substr($hex, 0, 1));
-			$g = hexdec(substr($hex, 1, 1) . substr($hex, 1, 1));
-			$b = hexdec(substr($hex, 2, 1) . substr($hex, 2, 1));
-		} else {
-			$r = hexdec(substr($hex, 0, 2));
-			$g = hexdec(substr($hex, 2, 2));
-			$b = hexdec(substr($hex, 4, 2));
-		}
-		return implode(',', array($r, $g, $b));
-	}
-
-	/**
-	 * Get RGBA color format from hex color
-	 *
-	 * @return string
-	 */
-	public static function get_rgba_color($color) {
-		$color = explode('_', $color);
-		$opacity = isset($color[1]) ? $color[1] : '1';
-		return 'rgba(' . self::hex2rgb($color[0]) . ', ' . $opacity . ')';
 	}
 
 	/**
@@ -3496,39 +2688,11 @@ class Themify_Builder {
 	function get_custom_google_fonts() {
 		global $themify;
 		$fonts = array();
-
-		if (!isset($themify->builder_google_fonts) || '' == $themify->builder_google_fonts)
-			return $fonts;
-		$themify->builder_google_fonts = substr($themify->builder_google_fonts, 0, -1);
-		$fonts = explode('|', $themify->builder_google_fonts);
+		if (!empty($themify->builder_google_fonts)){
+                        $themify->builder_google_fonts = substr($themify->builder_google_fonts, 0, -1);
+                        $fonts = explode('|', $themify->builder_google_fonts);
+                }
 		return $fonts;
-	}
-
-	/**
-	 * Add filter to module content
-	 * @param string $content 
-	 * @return string
-	 */
-	function the_module_content($content) {
-		global $wp_embed;
-		$content = $wp_embed->run_shortcode($content);
-		$content = do_shortcode(shortcode_unautop($content));
-		$content = $this->autoembed_adjustments($content);
-		$content = $wp_embed->autoembed($content);
-		$content = htmlspecialchars_decode($content);
-		return $content;
-	}
-
-	/**
-	 * Adjust autoembed filter
-	 * @param string $content 
-	 * @return string
-	 */
-	function autoembed_adjustments($content) {
-		$pattern = '|<p>\s*(https?://[^\s"]+)\s*</p>|im'; // pattern to check embed url
-		$to = '<p>' . PHP_EOL . '$1' . PHP_EOL . '</p>'; // add line break 
-		$content = preg_replace($pattern, $to, $content);
-		return $content;
 	}
 
 	/**
@@ -3539,17 +2703,11 @@ class Themify_Builder {
 	function add_custom_switch_btn($context) {
 		global $pagenow;
 		$post_types = themify_post_types();
-		if ('post.php' == $pagenow && in_array(get_post_type(), $post_types)) {
+		if ('post.php' === $pagenow && in_array(get_post_type(), $post_types)) {
 			$context .= sprintf('<a href="#" class="button themify_builder_switch_btn">%s</a>', __('Themify Builder', 'themify'));
 		}
 		return $context;
 	}
-
-	
-
-	
-
-	
 
 	/**
 	 * Get template row
@@ -3574,10 +2732,8 @@ class Themify_Builder {
 
 		// prevent empty rows from being rendered
 		if ( ! $frontedit_active ) {
-			if (
-				( ! isset( $row['cols'] ) && ! isset( $row['styling'] ) )
-				|| ( isset( $row['cols'] ) && empty( $row['cols'] ) && ! isset( $row['styling'] ) )
-				|| ( isset( $row['cols'] ) && count( $row['cols'] ) == 1 && empty( $row['cols'][0]['modules'] ) && ( ! isset( $row['styling'] ) || empty( $row['styling'] ) ) ) // there's only one column and it's empty
+			if ( (empty( $row['cols'] ) && ! isset( $row['styling'] ) )
+							|| ( isset( $row['cols'] ) && count( $row['cols'] ) == 1 && empty( $row['cols'][0]['modules'] ) && empty( $row['cols'][0]['styling'] ) && ( ! isset( $row['styling'] ) || empty( $row['styling'] ) ) ) // there's only one column and it's empty
 			) {
 				return '';
 			}
@@ -3585,20 +2741,19 @@ class Themify_Builder {
 
 		$row['row_order'] = isset($row['row_order']) ? $row['row_order'] : uniqid();
 		$row_classes = array('themify_builder_row', 'themify_builder_' . $builder_id . '_row', 'module_row', 'module_row_' . $row['row_order'], 'module_row_' . $builder_id . '-' . $row['row_order'], 'clearfix');
-		$class_fields = array('custom_css_row', 'background_repeat', 'animation_effect', 'row_width', 'row_height');
-		$row_gutter_class = isset($row['gutter']) && !empty($row['gutter']) ? $row['gutter'] : 'gutter-default';
-		$row_column_equal_height = isset($row['equal_column_height']) && !empty($row['equal_column_height']) ? $row['equal_column_height'] : '';
-		$row_column_alignment = isset($row['column_alignment']) && !empty($row['column_alignment']) ? $row['column_alignment'] : '';
-		$row_anchor = isset($row['styling']['row_anchor']) && !empty($row['styling']['row_anchor']) ? " #" . $row['styling']['row_anchor'] : '';
+		$class_fields = array('custom_css_row', 'background_repeat', 'animation_effect', 'row_height');
+		$row_gutter_class =!empty($row['gutter']) ? $row['gutter'] : 'gutter-default';
+		$row_column_alignment = !empty($row['column_alignment']) ? $row['column_alignment'] : '';
+		$row_anchor = !empty($row['styling']['row_anchor']) ? " #" . $row['styling']['row_anchor'] : '';
+		$col_desktop_dir = !empty($row['desktop_dir']) ? $row['desktop_dir'] : 'ltr';
+		$col_tablet_dir = !empty($row['tablet_dir']) ? $row['tablet_dir'] : 'ltr';
+		$col_mobile_dir = !empty($row['mobile_dir']) ? $row['mobile_dir'] : 'ltr';
+		$col_mobile = !empty($row['col_mobile']) && $row['col_mobile']!=='mobile-auto' ? $row['col_mobile'] : false;
+		$col_tablet = !empty($row['col_tablet']) && $row['col_tablet']!=='tablet-auto' ? $row['col_tablet'] : false;
 
 		// Set Gutter Class
 		if ('' != $row_gutter_class)
 			$row_classes[] = $row_gutter_class;
-
-		// Set column equal height
-		if ('' != $row_column_equal_height) {
-			$row_classes[] = $row_column_equal_height;
-		}
 
 		// Set column alignment
 		if ('' != $row_column_alignment) {
@@ -3611,38 +2766,54 @@ class Themify_Builder {
 		}
 
 		// @backward-compatibility
-		if (!isset($row['styling']['background_type']) && isset($row['styling']['background_video']) && '' != $row['styling']['background_video']) {
+		if (!isset($row['styling']['background_type']) && !empty($row['styling']['background_video'])) {
 			$row['styling']['background_type'] = 'video';
-					}
-					if(!empty($row['styling']['background_type']) && $row['styling']['background_type']==='image' && isset($row['styling']['background_zoom']) && $row['styling']['background_zoom']==='zoom' && $row['styling']['background_repeat']=='repeat-none'){
-							$row_classes[] = 'themify-bg-zoom';
-					}
+				}
+				elseif(isset($row['styling']['background_type']) && $row['styling']['background_type']==='image' && isset($row['styling']['background_zoom']) && $row['styling']['background_zoom']==='zoom' && $row['styling']['background_repeat']=='repeat-none'){
+						$row_classes[] = 'themify-bg-zoom';
+				}
 		foreach ($class_fields as $field) {
-			if (isset($row['styling'][$field]) && !empty($row['styling'][$field])) {
-				if ('animation_effect' == $field) {
+			if (!empty($row['styling'][$field])) {
+				if ('animation_effect' === $field) {
 					$row_classes[] = 'wow';
 				}
 				$row_classes[] = $row['styling'][$field];
 			}
 		}
-		if (isset($row['styling']['animation_effect_delay']) && !empty($row['styling']['animation_effect_delay'])) {
+		if (!empty($row['styling']['animation_effect_delay'])) {
 			$row_classes[] = 'animation_effect_delay_' . $row['styling']['animation_effect_delay'];
 		}
-		if (isset($row['styling']['animation_effect_repeat']) && !empty($row['styling']['animation_effect_repeat'])) {
+		if (!empty($row['styling']['animation_effect_repeat'])) {
 			$row_classes[] = 'animation_effect_repeat_' . $row['styling']['animation_effect_repeat'];
 		}
-		if (isset($row['styling']['background_image']) && $row['styling']['background_image'] && isset($row['styling']['background_position']) && !empty($row['styling']['background_position'])) {
+		if (!empty($row['styling']['background_image'])  && !empty($row['styling']['background_position'])) {
 			$row_classes[] = 'bg-position-' . $row['styling']['background_position'];
 		}
+
+		/**
+		 * Row Width class
+		 * To provide backward compatibility, the CSS classname and the option label do not match. See #5284
+		 */
+		if( isset( $row['styling']['row_width'] ) ) {
+			if( 'fullwidth' == $row['styling']['row_width'] ) {
+				$row_classes[] = 'fullwidth_row_container';
+			} elseif( 'fullwidth-content' == $row['styling']['row_width'] ) {
+				$row_classes[] = 'fullwidth';
+			}
+		}
+
 		$row_classes = apply_filters('themify_builder_row_classes', $row_classes, $row, $builder_id);
 		$row_attributes = apply_filters( 'themify_builder_row_attributes', array(
 			'data-gutter' => $row_gutter_class,
 			'class' => implode(' ', $row_classes),
-			'data-equal-column-height' => $row_column_equal_height,
-			'data-column-alignment' => $row_column_alignment
+			'data-column-alignment' => $row_column_alignment,
+						'data-desktop_dir'=>$col_desktop_dir,
+						'data-tablet_dir'=>$col_tablet_dir,
+						'data-mobile_dir'=>$col_mobile_dir
 		), isset( $row['styling'] ) ? $row['styling'] : array() );
-		if (isset($row['styling']) && isset($row['styling']['row_anchor']) && '' != $row['styling']['row_anchor']) {
-			$row_attributes['data-anchor'] = $row['styling']['row_anchor'];
+				
+		if ($row_anchor) {
+                    $row_attributes['data-anchor'] = $row['styling']['row_anchor'];
 		}
 
 		// background video
@@ -3651,6 +2822,36 @@ class Themify_Builder {
 			$output = PHP_EOL; // add line break
 			ob_start();
 		}
+				$count = isset($row['cols'])?count($row['cols']):0;
+				
+				if(!$frontedit_active){
+					$row_content_classes = array($row_gutter_class);
+					$row_content_classes[] = 'tablet-col-direction-'.$col_tablet_dir;
+					$row_content_classes[] = 'desktop-col-direction-'.$col_desktop_dir;
+					$row_content_classes[] = 'mobile-col-direction-'.$col_mobile_dir;
+					if($col_tablet){
+						$row_content_classes[] = $col_tablet;
+						$rcols = $col_tablet==='tablet3-1'?3:($col_tablet==='tablet4-2'?2:substr_count($col_tablet,'-')-1);
+						if($rcols===2 || $rcols===3){
+							 $row_content_classes[] = 'tablet-'.($rcols===2?'2col':'3col');
+						}
+					}
+					if($col_mobile){
+						$row_content_classes[] = $col_mobile;
+						$rcols =  $col_mobile==='mobile3-1'?3:($col_mobile==='mobile4-2'?2:substr_count($col_mobile,'-')-1);
+						if($rcols===2 || $rcols===3){
+							 $row_content_classes[] = 'mobile-'.($rcols===2?'2col':'3col');
+						}
+					}
+					elseif($col_tablet && !empty($row['col_mobile']) && $row['col_mobile']==='mobile-auto'){
+							$row_content_classes[] = $row['col_mobile'];
+					}
+					if($col_mobile || $col_tablet){
+						$row_content_classes[] = 'tfb_grid_classes col-count-'.$count.' count-'.(($count%2)===0?'even':'odd');
+					}
+					$row_content_classes = implode(' ',$row_content_classes);
+					
+				}
 		?>
 			<!-- module_row -->
 			<div <?php echo $video_data; echo self::get_element_attributes( $row_attributes ); ?>>
@@ -3658,7 +2859,7 @@ class Themify_Builder {
 		<?php if ($frontedit_active): ?>
 					<div class="themify_builder_row_top">
 
-			<?php themify_builder_grid_lists('row', $row_gutter_class, $row_column_equal_height, $row_column_alignment, $row_anchor); ?>
+			<?php themify_builder_grid_lists('row', $row_gutter_class, $row_column_alignment, $row_anchor); ?>
 
 						<ul class="row_action">
 							<li><a href="#" data-title="<?php _e('Export', 'themify') ?>" class="themify_builder_export_component"
@@ -3706,12 +2907,12 @@ class Themify_Builder {
 
 				<?php
 				if (isset($row['styling'])) {
-                                    do_action('themify_builder_background_styling',$row,$row['row_order'],'row');	
+									do_action('themify_builder_background_styling',$row,$row['row_order'],'row');	
 				}
 				?>
 
 				<div class="row_inner_wrapper">
-					<div class="row_inner">
+					<div class="row_inner <?php echo !$frontedit_active?$row_content_classes:''?>">
 
 						<?php do_action('themify_builder_row_start', $builder_id, $row); ?>
 
@@ -3720,9 +2921,8 @@ class Themify_Builder {
 						<?php endif; // builder edit active    ?>
 
 							<?php
-							if (isset($row['cols']) && count($row['cols']) > 0):
+							if ($count > 0):
 
-								$count = count($row['cols']);
 
 								switch ($count) {
 
@@ -3750,7 +2950,9 @@ class Themify_Builder {
 										$order_classes = array('first');
 										break;
 								}
-
+                                                                if(!$frontedit_active && (($col_mobile_dir==='rtl' && themify_is_touch('phone')) || ($col_tablet_dir==='rtl' && themify_is_touch('tablet')) || ($col_desktop_dir==='rtl' && !themify_is_touch()))){
+                                                                        $order_classes = array_reverse($order_classes);
+                                                                 }
 								foreach ($row['cols'] as $cols => $col):
 									$this->get_template_column( $rows, $row, $cols, $col, $builder_id, $order_classes, true, $frontedit_active );
 								endforeach; ?>
@@ -3818,50 +3020,45 @@ class Themify_Builder {
 		if (null === $frontedit_active) {
 			$frontedit_active = self::$frontedit_active;
 		}
-
-		$columns_class = array();
+				$column_count = isset( $row['cols'] )?count($row['cols']):0;
 		$grid_class = explode(' ', $col['grid_class']);
-		$dynamic_class = array('', '');
+		$dynamic_class = array();
 		$dynamic_class[0] = $frontedit_active ? 'themify_builder_col' : $order_classes[$cols];
 		$dynamic_class[1] = $frontedit_active ? '' : 'tb-column';
 		$dynamic_class[2] = ( isset($col['modules']) && count($col['modules']) > 0 ) ? '' : 'empty-column';
-		$dynamic_class[3] = 'tb_' . $builder_id . '_column'; // who's your daddy?
+		$dynamic_class[3] = 'module_column tb_' . $builder_id . '_column'; // who's your daddy?
 
 		if (isset($col['column_order'])) {
-			array_push($dynamic_class, 'module_column_' . $col['column_order']);
-			array_push($dynamic_class, 'module_column_' . $builder_id . '-' . $row['row_order'] . '-' . $col['column_order']);
+                    $dynamic_class[] = 'module_column_' . $col['column_order'];
+                    $dynamic_class[] = 'module_column_' . $builder_id . '-' . $row['row_order'] . '-' . $col['column_order'];
 		}
 
-		array_push($dynamic_class, 'module_column');
+		if($column_count>1 && (($key = array_search('last', $grid_class) ) !== false || ($key = array_search('first', $grid_class)) !== false)){
+                        unset($grid_class[$key]);
+                }
 
-		if (isset($col['styling']['background_repeat']) && !empty($col['styling']['background_repeat'])) {
+		if (!empty($col['styling']['background_repeat'])) {
 			$dynamic_class[] = $col['styling']['background_repeat'];
 		}
 
-		$columns_class = array_merge($columns_class, $grid_class);
-		foreach ($dynamic_class as $class) {
-			array_push($columns_class, $class);
-		}
-		$columns_class = array_unique($columns_class);
+		$print_column_classes = array_unique(array_merge($grid_class,$dynamic_class));
 		// remove class "last" if the column is fullwidth
-		if ( 1 == count($row['cols']) ) {
-			if (( $key = array_search('last', $columns_class) ) !== false) {
-				unset($columns_class[$key]);
-			}
+		if (1 == $column_count && ( $key = array_search('last', $print_column_classes) ) !== false ) {
+						unset($print_column_classes[$key]);
 		}
-		if (isset($col['styling']['background_image']) && $col['styling']['background_image'] && isset($col['styling']['background_position']) && !empty($col['styling']['background_position'])) {
-			$columns_class[] = 'bg-position-' . $col['styling']['background_position'];
+		if (!empty($col['styling']['background_image'])  && !empty($col['styling']['background_position'])) {
+			$print_column_classes[] = 'bg-position-' . $col['styling']['background_position'];
 		}
-		if(!empty($col['styling']['background_type']) && $col['styling']['background_type']==='image' && isset($col['styling']['background_zoom']) && $col['styling']['background_zoom']==='zoom' && $col['styling']['background_repeat']=='repeat-none'){
-				$columns_class[] = 'themify-bg-zoom';
+		if(isset($col['styling']['background_type']) && $col['styling']['background_type']==='image' && isset($col['styling']['background_zoom']) && $col['styling']['background_zoom']==='zoom' && $col['styling']['background_repeat']=='repeat-none'){
+						$print_column_classes[] = 'themify-bg-zoom';
 		}
-		if (isset($col['styling']['custom_css_column']) && $col['styling']['custom_css_column']) {
-			$columns_class[] = $col['styling']['custom_css_column'];
+		if (!empty($col['styling']['custom_css_column'])) {
+			$print_column_classes[] = $col['styling']['custom_css_column'];
 		}
-		$print_column_classes = implode(' ', $columns_class);
+		$print_column_classes = implode(' ', $print_column_classes);
 
 		// background video
-                $video_data = isset($col['styling']) && Themify_Builder_Model::is_premium()?Themify_Builder_Include::get_video_background($col['styling']):'';
+				$video_data = isset($col['styling']) && Themify_Builder_Model::is_premium()?Themify_Builder_Include::get_video_background($col['styling']):'';
 
 		if ( ! $echo ) {
 			$output = PHP_EOL; // add line break
@@ -3871,7 +3068,7 @@ class Themify_Builder {
 		// Start Column Render ######
 		?>
 
-		<div <?php if(!empty($col['grid_width']) && ($frontedit_active || Themify_Builder_Model::is_frontend_editor_page())):?>style="width:<?php echo $col['grid_width']?>%"<?php endif;?> class="<?php echo esc_attr($print_column_classes); ?>" <?php echo $video_data; ?>>
+		<div <?php if(!empty($col['grid_width']) && ($frontedit_active || Themify_Builder_Model::is_frontend_editor_page())):?>style="width:<?php echo $col['grid_width']?>%"<?php endif;?> class="<?php  esc_attr_e($print_column_classes); ?>" <?php echo $video_data; ?>>
 
 			<?php
 			if (isset($col['styling'])) {
@@ -3881,8 +3078,8 @@ class Themify_Builder {
 			?>
 
 			<?php if ($frontedit_active) : ?>
-                                <div class="themify_grid_drag themify_drag_right"></div>
-                                <div class="themify_grid_drag themify_drag_left"></div>
+								<div class="themify_grid_drag themify_drag_right"></div>
+								<div class="themify_grid_drag themify_drag_left"></div>
 				<ul class="themify_builder_column_action">
 					<li><a href="#" class="themify_builder_option_column" data-title="<?php esc_html_e( 'Styling', 'themify' );?>" rel="themify-tooltip-bottom"><span class="ti-brush"></span></a></li>
 					<li class="separator"></li>
@@ -3906,19 +3103,18 @@ class Themify_Builder {
 				<?php endif; ?>
 
 					<?php
-					if (isset($col['modules']) && count($col['modules']) > 0) {
+					if (!empty($col['modules'])) {
 
 						foreach ($col['modules'] as $modules => $mod) {
 
 							if (isset($mod['mod_name'])) {
-								$w_wrap = ( $frontedit_active ) ? true : false;
-								$w_class = ( $frontedit_active ) ? 'r' . $rows . 'c' . $cols . 'm' . $modules : '';
+								$w_class =  $frontedit_active  ? 'r' . $rows . 'c' . $cols . 'm' . $modules : '';
 								$identifier = array($rows, $cols, $modules); // define module id
-								$this->get_template_module($mod, $builder_id, true, $w_wrap, $w_class, $identifier);
+								$this->get_template_module($mod, $builder_id, true, $frontedit_active, $w_class, $identifier);
 							}
 
 							// Check for Sub-rows
-							if (isset($mod['cols']) && count($mod['cols']) > 0) {
+							if (!empty($mod['cols'])) {
 								$this->get_template_sub_row( $rows, $cols, $modules, $mod, $builder_id, true, $frontedit_active );	
 							}
 						}
@@ -3962,25 +3158,68 @@ class Themify_Builder {
 	 * @param boolean $frontedit_active 
 	 */
 	public function get_template_sub_row( $rows, $cols, $modules, $mod, $builder_id, $echo = false, $frontedit_active = null ) {
-		if (null === $frontedit_active) 
-			$frontedit_active = self::$frontedit_active;
+		if (null === $frontedit_active) {
+                        $frontedit_active = self::$frontedit_active;
+                }
+		$print_sub_row_classes = array('module_subrow sub_row_' . $rows . '-' . $cols . '-' . $modules);
+		$sub_row_gutter = !empty($mod['gutter']) ? $mod['gutter'] : 'gutter-default';
+		$print_sub_row_classes[] = $sub_row_column_alignment = !empty($mod['column_alignment']) ? $mod['column_alignment'] : '';
+		if (!empty($mod['styling']['background_repeat'])) {
+			$print_sub_row_classes[] = $mod['styling']['background_repeat'];
+		}
+		if (!empty($mod['styling']['background_image']) && !empty($mod['styling']['background_position'])) {
+			$print_sub_row_classes[] = 'bg-position-' . $mod['styling']['background_position'];
+		}
+		if(isset($mod['styling']['background_type']) && $mod['styling']['background_type']==='image' && isset($mod['styling']['background_zoom']) && $mod['styling']['background_zoom']==='zoom' && $mod['styling']['background_repeat']=='repeat-none'){
+						$print_sub_row_classes[] = 'themify-bg-zoom';
+		}
+		if (!empty($mod['styling']['custom_css_column'])) {
+			$print_sub_row_classes[] = $mod['styling']['custom_css_column'];
+		}
+		
+		$sub_row_attr = $frontedit_active ? 'data-gutter="' . esc_attr($sub_row_gutter) . '"' : '';
+		$sub_row_column_alignment_data = $frontedit_active ? 'data-column-alignment="' .esc_attr($sub_row_column_alignment) . '"' : '';
+                $col_desktop_dir = !empty($mod['desktop_dir']) ? $mod['desktop_dir'] : 'ltr';
+                $col_tablet_dir =  !empty($mod['tablet_dir']) ? $mod['tablet_dir'] : 'ltr';
+                $col_mobile_dir = !empty($mod['mobile_dir']) ? $mod['mobile_dir'] : 'ltr';
+                $col_mobile = !empty($mod['col_mobile'])  && $mod['col_mobile']!=='mobile-auto'? $mod['col_mobile'] :false;
+                $col_tablet = !empty($mod['col_tablet']) && $mod['col_tablet']!=='tablet-auto'? $mod['col_tablet'] : false;;
 
-		$dynamic_class = array();
-		$dynamic_class[] = $sub_row_gutter = isset($mod['gutter']) && !empty($mod['gutter']) ? $mod['gutter'] : 'gutter-default';
-		$dynamic_class[] = $sub_row_column_equal_height = isset($mod['equal_column_height']) &&
-				!empty($mod['equal_column_height']) ? $mod['equal_column_height'] : '';
-		$dynamic_class[] = $sub_row_column_alignment = isset($mod['column_alignment']) &&
-				!empty($mod['column_alignment']) ? $mod['column_alignment'] : '';
-		$dynamic_class[] = 'sub_row_' . $rows . '-' . $cols . '-' . $modules;
-
-		$sub_row_attr = $frontedit_active ? '
-	data-gutter="' . esc_attr($sub_row_gutter) . '"' : '';
-		$sub_row_column_equal_height_data = $frontedit_active ? 'data-equal-column-height="' .
-				esc_attr($sub_row_column_equal_height) . '"' : '';
-		$sub_row_column_alignment_data = $frontedit_active ? 'data-column-alignment="' .
-				esc_attr($sub_row_column_alignment) . '"' : '';
-
-		$print_sub_row_classes = implode(' ', $dynamic_class);
+                if(!$frontedit_active){
+                        $row_content_classes = array($sub_row_gutter);
+                        $row_content_classes[] = 'tablet-col-direction-'.$col_tablet_dir;
+                        $row_content_classes[] = 'desktop-col-direction-'.$col_desktop_dir;
+                        $row_content_classes[] = 'mobile-col-direction-'.$col_mobile_dir;
+                        if($col_tablet){
+                                $row_content_classes[] = $col_tablet;
+                                $rcols =  $col_tablet==='tablet3-1'?3:($col_tablet==='tablet4-2'?2:substr_count($col_tablet,'-')-1);
+                                if($rcols===2 || $rcols===3){
+                                         $row_content_classes[] = 'tablet-'.($rcols===2?'2col':'3col');
+                                }
+                        }
+                        if($col_mobile){
+                                $row_content_classes[] = $col_mobile;
+                                $rcols =  $col_mobile==='mobile3-1'?3:($col_mobile==='mobile4-2'?2:substr_count($col_mobile,'-')-1);
+                                if($rcols===2 || $rcols===3){
+                                         $row_content_classes[] = 'mobile-'.($rcols===2?'2col':'3col');
+                                }
+                        }
+                        elseif($col_tablet && !empty($mod['col_mobile']) && $mod['col_mobile']==='mobile-auto'){
+                                        $row_content_classes[] = $mod['col_mobile'];
+                        }
+                        if($col_mobile || $col_tablet){
+                                $count = count($mod['cols']);
+                                $row_content_classes[] = 'tfb_grid_classes col-count-'.$count.' count-'.(($count%2)===0?'even':'odd');
+                        }
+                        $row_content_classes = implode(' ',$row_content_classes);
+                }
+                else{
+                        $sub_row_attr.= ' data-desktop_dir="' . $col_desktop_dir . '" data-tablet_dir="' . $col_tablet_dir . '" data-mobile_dir="' . $col_mobile_dir . '"'; 
+                }
+		$print_sub_row_classes = implode(' ', $print_sub_row_classes);
+		
+		// background video
+                $video_data = isset($mod['styling']) && Themify_Builder_Model::is_premium()?Themify_Builder_Include::get_video_background($mod['styling']):'';
 
 		if ( ! $echo ) {
 			$output = PHP_EOL; // add line break
@@ -3988,12 +3227,20 @@ class Themify_Builder {
 		}
 
 		// Start Sub-Row Render ######
-		echo sprintf('<div class="themify_builder_sub_row clearfix %s"%s %s %s>', esc_attr($print_sub_row_classes), $sub_row_attr, $sub_row_column_equal_height_data, $sub_row_column_alignment_data);
 		?>
-
+		<div class="themify_builder_sub_row clearfix <?php esc_attr_e($print_sub_row_classes)?>"<?php echo $sub_row_attr?> <?php echo $sub_row_column_alignment_data?> <?php echo $video_data?>>
+		<?php
+			if (isset($mod['styling'])) {
+				$mod['row_order'] = $modules;
+				$sub_row_order = $rows . '-' . $cols . '-' . $modules;
+				do_action('themify_builder_background_styling',$mod,$sub_row_order,'sub_row');
+				do_action('themify_builder_sub_row_start', $builder_id, $rows, $cols, $mod);
+			}
+		?>
+		
 		<?php if ($frontedit_active): ?>
 			<div class="themify_builder_sub_row_top">
-			<?php themify_builder_grid_lists('sub_row', $sub_row_gutter, $sub_row_column_equal_height, $sub_row_column_alignment); ?>
+			<?php themify_builder_grid_lists('sub_row', $sub_row_gutter, $sub_row_column_alignment); ?>
 				<ul class="sub_row_action">
 					<li><a href="#" data-title="<?php _e('Export', 'themify') ?>" rel="themify-tooltip-bottom"
 						   class="themify_builder_export_component" data-component="sub-row">
@@ -4013,6 +3260,10 @@ class Themify_Builder {
 							<span class="ti-clipboard"></span>
 						</a></li>
 					<li class="separator"></li>
+					<li><a href="#" data-title="<?php _e('Styling', 'themify') ?>" class="themify_builder_style_subrow"
+						   rel="themify-tooltip-bottom">
+							<span class="ti-brush"></span>
+						</a></li>
 					<li><a href="#" data-title="<?php _e('Duplicate', 'themify') ?>" rel="themify-tooltip-bottom"
 						   class="sub_row_duplicate">
 							<span class="ti-layers"></span>
@@ -4023,16 +3274,36 @@ class Themify_Builder {
 						</a></li>
 				</ul>
 			</div>
+		<?php endif; ?>
+		<div class="sub_row_inner_wrapper <?php echo !$frontedit_active?$row_content_classes:''?>">
+		<?php if ($frontedit_active): ?>
 			<div class="themify_builder_sub_row_content">
+		<?php elseif(($col_mobile_dir==='rtl' && themify_is_touch('phone')) || ($col_tablet_dir==='rtl' && themify_is_touch('tablet')) || ($col_desktop_dir==='rtl' && !themify_is_touch())):?>
+		<?php 
+			if ( isset( $mod['cols'] ) ) {
+				$first = key($mod['cols']);
+				$last = count($mod['cols'])-1;
+				$mod['cols'][$first]['grid_class'] = str_replace('first','last',$mod['cols'][$first]['grid_class']);
+				$mod['cols'][$last]['grid_class'] = str_replace('last','first',$mod['cols'][$last]['grid_class']);
+			}
+		?>
 		<?php endif; ?>
 
 		<?php
-		foreach ($mod['cols'] as $col_key => $sub_col) {
-			$this->get_template_sub_column( $rows, $cols, $modules, $col_key, $sub_col, $builder_id, true, $frontedit_active );
+		if (! empty( $mod['cols'] ) ) {
+			foreach ($mod['cols'] as $col_key => $sub_col) {
+				$this->get_template_sub_column( $rows, $cols, $modules, $col_key, $sub_col, $builder_id, true, $frontedit_active );
+			}
 		}
-
 		if ($frontedit_active) {
 			echo '</div><!-- /themify_builder_sub_row_content -->';
+		}
+		
+		echo "</div>";
+		
+		if ($frontedit_active) {
+			$subrow_data_styling = isset($mod['styling']) ? json_encode($mod['styling']) : json_encode(array());
+			echo '<div class="subrow-data-styling" data-styling="'.esc_attr($subrow_data_styling).'"></div>';
 		}
 
 		echo '</div><!-- /themify_builder_sub_row -->';
@@ -4059,28 +3330,28 @@ class Themify_Builder {
 	 * @param boolean $frontedit_active
 	 */
 	public function get_template_sub_column( $rows, $cols, $modules, $col_key, $sub_col, $builder_id, $echo = false, $frontedit_active = null ) {
-		if (null === $frontedit_active) 
+		if (null === $frontedit_active){
 			$frontedit_active = self::$frontedit_active;
-
-		$dynamic_class = array();
-		$dynamic_class[] = $frontedit_active ? 'themify_builder_col ' . $sub_col['grid_class'] : $sub_col['grid_class'];
-		$dynamic_class[] = 'sub_column sub_column_' . $rows . '-' . $cols . '-' . $modules . '-' . $col_key;
-		$dynamic_class[] = "sub_column_post_{$builder_id}";
+                }
+		$print_sub_col_classes = array();
+		$print_sub_col_classes[] = $frontedit_active ? 'themify_builder_col ' . $sub_col['grid_class'] : $sub_col['grid_class'];
+		$print_sub_col_classes[] = 'sub_column module_column sub_column_' . $rows . '-' . $cols . '-' . $modules . '-' . $col_key;
+		$print_sub_col_classes[] = "sub_column_post_{$builder_id}";
 		$sub_row_class = 'sub_row_' . $rows . '-' . $cols . '-' . $modules;
 
-		if (isset($sub_col['styling']['background_repeat']) && !empty($sub_col['styling']['background_repeat'])) {
-			$dynamic_class[] = $sub_col['styling']['background_repeat'];
+		if (!empty($sub_col['styling']['background_repeat'])) {
+			$print_sub_col_classes[] = $sub_col['styling']['background_repeat'];
 		}
-		if (isset($sub_col['styling']['background_image']) && $sub_col['styling']['background_image'] && isset($sub_col['styling']['background_position']) && !empty($sub_col['styling']['background_position'])) {
-			$dynamic_class[] = 'bg-position-' . $sub_col['styling']['background_position'];
+		if (!empty($sub_col['styling']['background_image']) && !empty($sub_col['styling']['background_position'])) {
+			$print_sub_col_classes[] = 'bg-position-' . $sub_col['styling']['background_position'];
 		}
-		if (isset($sub_col['styling']['custom_css_column']) && $sub_col['styling']['custom_css_column']) {
-			$dynamic_class[] = $sub_col['styling']['custom_css_column'];
+		if (!empty($sub_col['styling']['custom_css_column'])) {
+			$print_sub_col_classes[] = $sub_col['styling']['custom_css_column'];
 		}
-		if(!empty($sub_col['styling']['background_type']) && $sub_col['styling']['background_type']==='image' && isset($sub_col['styling']['background_zoom']) && $sub_col['styling']['background_zoom']==='zoom' && $sub_col['styling']['background_repeat']=='repeat-none'){
-				$dynamic_class[] = 'themify-bg-zoom';
+		if(isset($sub_col['styling']['background_type']) && $sub_col['styling']['background_type']==='image' && isset($sub_col['styling']['background_zoom']) && $sub_col['styling']['background_zoom']==='zoom' && $sub_col['styling']['background_repeat']=='repeat-none'){
+						$print_sub_col_classes[] = 'themify-bg-zoom';
 		}
-		$print_sub_col_classes = implode(' ', $dynamic_class);
+		$print_sub_col_classes = implode(' ', $print_sub_col_classes);
 
 		// background video
 		$video_data = isset($sub_col['styling']) && Themify_Builder_Model::is_premium()?Themify_Builder_Include::get_video_background($sub_col['styling']):'';
@@ -4092,19 +3363,19 @@ class Themify_Builder {
                 $style = !empty($sub_col['grid_width']) && ($frontedit_active || Themify_Builder_Model::is_frontend_editor_page())?'style="width:'.$sub_col['grid_width'].'%;"':'';																								
 		echo sprintf('<div %s class="%s" %s>',$style, esc_attr($print_sub_col_classes), $video_data);
 		?>
-
 		<?php
 		if (isset($sub_col['styling'])) {
 			$sub_column_order = $rows . '-' . $cols . '-' . $modules . '-' . $col_key;
-                        do_action('themify_builder_background_styling',$sub_col,$sub_column_order,'sub-col');
+						do_action('themify_builder_background_styling',$sub_col,$sub_column_order,'sub-col');
 		}
 		?>
 
+		<div class="tb-column-inner">
 		<?php do_action('themify_builder_sub_column_start', $builder_id, $rows, $cols, $modules, $sub_col); ?>
 
 		<?php if ($frontedit_active): ?>
-                        <div class="themify_grid_drag themify_drag_right"></div>
-                        <div class="themify_grid_drag themify_drag_left"></div>
+						<div class="themify_grid_drag themify_drag_right"></div>
+						<div class="themify_grid_drag themify_drag_left"></div>
 			<ul class="themify_builder_column_action">
 				<li><a href="#" class="themify_builder_option_column" data-title="<?php esc_html_e( 'Styling', 'themify' );?>" rel="themify-tooltip-bottom"><span class="ti-brush"></span></a></li>
 				<li class="separator"></li>
@@ -4117,25 +3388,25 @@ class Themify_Builder {
 				<li class="themify_builder_column_dragger_li"><a href="#" class="themify_builder_column_dragger"><span class="ti-arrows-horizontal"></span></a></li>
 			</ul>
 			<div class="themify_module_holder">
-                            <div class="empty_holder_text"><?php _e('drop module here', 'themify') ?></div><!-- /empty module text -->
+							<div class="empty_holder_text"><?php _e('drop module here', 'themify') ?></div><!-- /empty module text -->
 		<?php endif; ?>
 			<?php
-			if (isset($sub_col['modules']) && count($sub_col['modules']) > 0) {
+			if (!empty($sub_col['modules'])) {
 				foreach ($sub_col['modules'] as $sub_module_k => $sub_module) {
-					$sw_wrap = ( $frontedit_active ) ? true : false;
-					$sw_class = ( $frontedit_active ) ? 'r' . $sub_row_class . 'c' . $col_key . 'm' . $sub_module_k : '';
+					$sw_class = $frontedit_active ? 'r' . $sub_row_class . 'c' . $col_key . 'm' . $sub_module_k : '';
 					$sub_identifier = array($sub_row_class, $col_key, $sub_module_k); // define module id
-					$this->get_template_module($sub_module, $builder_id, true, $sw_wrap, $sw_class, $sub_identifier);
+					$this->get_template_module($sub_module, $builder_id, true, $frontedit_active, $sw_class, $sub_identifier);
 				}
 			}
 			?>
 
 			<?php if ($frontedit_active): ?>
 			</div>
-				<?php $sub_column_data_styling = isset($sub_col['styling']) ? json_encode($sub_col['styling']) : json_encode(array()); ?>
+						<?php $sub_column_data_styling = isset($sub_col['styling']) ? json_encode($sub_col['styling']) : json_encode(array()); ?>
 			<div class="column-data-styling" data-styling="<?php echo esc_attr($sub_column_data_styling); ?>"></div>
 			<!-- /module_holder -->
 			<?php endif; ?>
+		</div>
 		<?php
 		echo '</div><!-- /sub_column -->';
 
@@ -4155,15 +3426,15 @@ class Themify_Builder {
 	 * @return string
 	 */
 	function parse_animation_effect($effect, $mod_settings = null) {
-		if (!Themify_Builder_Model::is_animation_active())
+		if (!Themify_Builder_Model::is_animation_active()){
 			return '';
-
+				}
 		$class = ( '' != $effect && !in_array($effect, array('fade-in', 'fly-in', 'slide-up')) ) ? 'wow ' . $effect : $effect;
-		if (isset($mod_settings['animation_effect_delay']) && !empty($mod_settings['animation_effect_delay'])) {
-			$class .= ' animation_effect_delay_' . $mod_settings['animation_effect_delay'];
+		if (!empty($mod_settings['animation_effect_delay'])) {
+                    $class .= ' animation_effect_delay_' . $mod_settings['animation_effect_delay'];
 		}
-		if (isset($mod_settings['animation_effect_repeat']) && !empty($mod_settings['animation_effect_repeat'])) {
-			$class .= ' animation_effect_repeat_' . $mod_settings['animation_effect_repeat'];
+		if (!empty($mod_settings['animation_effect_repeat'])) {
+                    $class .= ' animation_effect_repeat_' . $mod_settings['animation_effect_repeat'];
 		}
 
 		return $class;
@@ -4195,20 +3466,7 @@ class Themify_Builder {
 	 * @return array
 	 */
 	function filter_post_class($classes) {
-		$classes = array_merge($classes, $this->_post_classes);
-		return $classes;
-	}
-			
-	/**
-	* Add product class when builder is active
-	*
-	* @return array
-	*/
-	function add_product_class($classes){
-		if(get_post_type()==='product'){
-			$classes[] = 'product';
-		}
-		return $classes;
+            return array_merge($classes, $this->_post_classes);
 	}
 
 	/**
@@ -4260,9 +3518,10 @@ class Themify_Builder {
 	function parse_slug_to_ids($slug_string, $post_type = 'post') {
 		$slug_arr = explode(',', $slug_string);
 		$return = array();
-		if (count($slug_arr) > 0) {
+		if (!empty($slug_arr)) {
 			foreach ($slug_arr as $slug) {
-				array_push($return, $this->get_id_by_slug(trim($slug), $post_type));
+							$return[] = $this->get_id_by_slug(trim($slug));
+							$return[] = $post_type;
 			}
 		}
 		return $return;
@@ -4276,11 +3535,7 @@ class Themify_Builder {
 			'numberposts' => 1
 		);
 		$my_posts = get_posts($args);
-		if ($my_posts) {
-			return $my_posts[0]->ID;
-		} else {
-			return null;
-		}
+		return $my_posts?$my_posts[0]->ID:null;
 	}
 
 	/**
@@ -4343,491 +3598,39 @@ class Themify_Builder {
 	}
 
 	/**
-	 * Return the URL or the directory path for a template, template part or content builder styling stylesheet.
-	 * 
-	 * @since 2.2.5
-	 *
-	 * @param string $mode Whether to return the directory or the URL. Can be 'bydir' or 'byurl' correspondingly. 
-	 * @param int $single ID of layout, layour part or entry that we're working with.
-	 *
-	 * @return string
-	 */
-	public static function get_stylesheet($mode = 'bydir', $single = null) {
-		static $before;
-		if (!isset($before)) {
-			$upload_dir = wp_upload_dir();
-			$before = array(
-				'bydir' => $upload_dir['basedir'],
-				'byurl' => $upload_dir['baseurl'],
-			);
-		}
-		if (is_null($single)) {
-			$single = get_the_ID();
-		}
-
-		$single = is_int($single) ? get_post($single) : get_page_by_path($single, OBJECT, 'tbuilder_layout_part');
-
-		if (!is_object($single)) {
-			return '';
-		}
-
-		$single = $single->ID;
-
-		$path = "$before[$mode]/themify-css";
-
-		if ('bydir' == $mode) {
-			if (!function_exists('WP_Filesystem')) {
-				require_once ABSPATH . 'wp-admin/includes/file.php';
-			}
-			WP_Filesystem();
-			global $wp_filesystem;
-			$dir_exists = $wp_filesystem->is_dir($path);
-			if (!$dir_exists) {
-				$dir_exists = $wp_filesystem->mkdir($path, FS_CHMOD_DIR);
-			}
-		}
-
-		$stylesheet = "$path/themify-builder-$single-generated.css";
-
-		/**
-		 * Filters the return URL or directory path including the file name.
-		 *
-		 * @param string $stylesheet Path or URL for the global styling stylesheet.
-		 * @param string $mode What was being retrieved, 'bydir' or 'byurl'.
-		 * @param int $single ID of the template, template part or content builder that we're fetching.
-		 *
-		 */
-		return apply_filters('themify_builder_get_stylesheet', $stylesheet, $mode, $single);
-	}
-
-	/**
-	 * Build style recursively. Written for sub_row styling generation.
-	 * 
-	 * @since 2.2.6
-	 * 
-	 * @param array $data Collection of styling data.
-	 * @param int $style_id ID of the current entry.
-	 * @param string $sub_row Row ID when it's a sub row. This is used starting from second level depth.
-	 *
-	 * @return string
-	 */
-	function recursive_style_generator($data, $style_id, $sub_row = '') {
-		$css_to_save = '';
-		if (!is_array($data)) {
-			return $css_to_save;
-		}
-		foreach ($data as $row_index => $row) {
-			$row_order = $row_index;
-
-			if (isset($row['row_order'])) {
-				$row_order = $row['row_order'];
-			}
-
-			if (!empty($row['styling']) && is_array($row['styling'])) {
-				$selector = ".themify_builder_{$style_id}_row.module_row_{$row_order}";
-
-				$css_to_save .= $this->get_custom_styling(
-						$selector, 'row', $row['styling'], false, 'css'
-				);
-
-				// responsive styling
-				$css_to_save .= $this->render_responsive_style($selector, 'row', $row['styling']);
-			}
-			if (!isset($row['cols']) || !is_array($row['cols'])) {
-				continue;
-			}
-			foreach ($row['cols'] as $col_index => $col) {
-				$column_order = $col_index;
-
-				if (isset($col['column_order'])) {
-					$column_order = $col['column_order'];
-				}
-
-				// column styling
-				if (!empty($col['grid_width']) || (!empty($col['styling']) && is_array($col['styling']))) {
-
-					$col_or_sub_col = 'column';
-
-					// dealing with 1st level columns
-					if (empty($sub_row)) {
-						$selector = ".module_row_{$row_order}" .
-								" .module_column_{$column_order}.tb_{$style_id}_column";
-					} else { // dealing with 2nd level columns (sub-columns)
-						$row_col = $sub_row[8] . '-' . $sub_row[10];
-						$selector = ".sub_column_post_{$style_id}.sub_column_{$row_col}-{$row_order}-{$column_order}";
-
-						$col_or_sub_col = 'sub_column';
-					}
-                                        if((!empty($col['styling']) && is_array($col['styling']))){
-                                            $css_to_save .= $this->get_custom_styling(
-                                                            $selector, $col_or_sub_col, $col['styling'], false, 'css'
-                                            );
-
-                                            // responsive styling
-                                            $css_to_save .= $this->render_responsive_style($selector, $col_or_sub_col, $col['styling']);
-                                        }
-                                        if(!empty($col['grid_width'])){
-                                            if($col_or_sub_col==='sub_column'){
-                                                $selector = '.'.$col_or_sub_col.$selector;
-                                            }
-                                            $css_to_save.=$selector.'{width:'.$col['grid_width'].'%;}';
-                                        }
-				}
-
-				if (!isset($col['modules']) || !is_array($col['modules'])) {
-					continue;
-				}
-				foreach ($col['modules'] as $mod_index => $mod) {
-					if (is_null($mod)) {
-						continue;
-					}
-					if (isset($mod['mod_name'])) {
-						if ('layout-part' == $mod['mod_name']) {
-							$lp = get_page_by_path($mod['mod_settings']['selected_layout_part'], OBJECT, 'tbuilder_layout_part');
-							$lp_meta = get_post_meta($lp->ID, $this->meta_key, true);
-							self::remove_cache($lp->ID);
-							if (!empty($lp_meta)) {
-								foreach ($lp_meta as $lp_row_index => $lp_row) {
-									if (!empty($lp_row['styling']) && is_array($lp_row['styling'])) {
-										$css_to_save .= $this->get_custom_styling(
-												".themify_builder_content-$lp->ID .module_row_{$lp_row['row_order']}", 'row', $lp_row['styling'], false, 'css'
-										);
-									}
-									if (isset($lp_row['cols']) && is_array($lp_row['cols'])) {
-										foreach ($lp_row['cols'] as $lp_col_index => $lp_col) {
-											if (isset($lp_col['modules']) && is_array($lp_col['modules'])) {
-												foreach ($lp_col['modules'] as $lp_mod_index => $lp_mod) {
-													if (is_null($lp_mod)) {
-														continue;
-													}
-													if (empty($sub_row)) {
-														$this_index = "$lp_row_index-$lp_col_index-$lp_mod_index";
-													} else {
-														if (isset($row['row_order'])) {
-															$this_index = $sub_row . "{$row['row_order']}-$lp_col_index-$lp_mod_index";
-														} else {
-															$sr_index = $row_index + 1;
-															$this_index = $sub_row . "$sr_index-$lp_col_index-$lp_mod_index";
-														}
-													}
-													$css_to_save .= $this->get_custom_styling(
-															".themify_builder .{$lp_mod['mod_name']}-$lp->ID-$this_index", $lp_mod['mod_name'], $lp_mod['mod_settings'], false, 'css'
-													);
-												}
-											}
-										}
-									}
-								}
-							}
-						} else {
-							if (empty($sub_row)) {
-								$this_index = "$row_index-$col_index-$mod_index";
-							} else {
-								if (isset($row['row_order'])) {
-									$this_index = $sub_row . "{$row['row_order']}-$col_index-$mod_index";
-								} else {
-									$sr_index = $row_index + 1;
-									$this_index = $sub_row . "$sr_index-$col_index-$mod_index";
-								}
-							}
-							$css_to_save .= $this->get_custom_styling(
-									".themify_builder .{$mod['mod_name']}-$style_id-$this_index", $mod['mod_name'], $mod['mod_settings'], false, 'css'
-							);
-
-							// responsive styling modules
-							$css_to_save .= $this->render_responsive_style(".themify_builder .{$mod['mod_name']}-$style_id-$this_index", $mod['mod_name'], $mod['mod_settings']);
-						}
-					}
-					if (isset($mod['row_order'])) {
-						$css_to_save .= $this->recursive_style_generator(array($mod), $style_id, "sub_row_$row_index-$col_index-");
-					}
-				}
-			}
-		}
-		return $css_to_save;
-	}
-
-	/**
-	 * Write stylesheet file.
-	 * 
-	 * @since 2.2.5
-	 * 
-	 * @return array
-	 */
-	function write_stylesheet($data_set) {
-		// Information about how writing went.
-		$results = array();
-
-		$this->saving_stylesheet = true;
-		$style_id = $data_set['id'];
-
-		$css_to_save = $this->recursive_style_generator($data_set['data'], $style_id);
-
-		$css_file = $this->get_stylesheet('bydir', (int) $style_id);
-
-		$filesystem = Themify_Filesystem::get_instance();
-
-		if ($filesystem->execute->is_file($css_file)) {
-			$filesystem->execute->delete($css_file);
-		}
-
-		// Write file information to be returned.
-		$results['css_file'] = $css_file;
-
-		if (!empty($css_to_save)) {
-			/**
-			 * Filters the CSS that will be saved for modules that output inline <style> tags for styling changes not managed by get_styling().
-			 * 
-			 * @since 2.2.5
-			 *
-			 * @param string $css_to_save CSS text right before it's saved.
-			 */
-			$css_to_save = apply_filters('themify_builder_css_to_stylesheet', $css_to_save);
-			if ($write = $filesystem->execute->put_contents($css_file, $css_to_save, FS_CHMOD_FILE)) {
-				update_option('themify_builder_stylesheet_timestamp', current_time('y.m.d.H.i.s'));
-			}
-
-			// Add information about writing.
-			$results['write'] = $write;
-
-			// Save Google Fonts
-			global $themify;
-			if (isset($themify->builder_google_fonts) && !empty($themify->builder_google_fonts)) {
-				$builder_fonts = get_option('themify_builder_google_fonts');
-				if (empty($builder_fonts) || !is_array($builder_fonts)) {
-					$builder_fonts = array();
-				}
-				if (isset($builder_fonts[$style_id])) {
-					$builder_fonts[$style_id] = $themify->builder_google_fonts;
-					$entry_fonts = $builder_fonts;
-				} else {
-					$entry_fonts = array($style_id => $themify->builder_google_fonts) + $builder_fonts;
-				}
-				update_option('themify_builder_google_fonts', $entry_fonts);
-			}
-		} else {
-			// Add information about writing.
-			$results['write'] = esc_html__('Nothing written. Empty CSS.', 'themify');
-		}
-
-		$this->saving_stylesheet = false;
-
-		return $results;
-	}
-
-	/**
-	 * Checks if the builder stylesheet exists and enqueues it. Otherwise hooks an action to wp_head to build the CSS and output it.
-	 * 
-	 * @since 2.2.5
-	 */
-	function delete_stylesheet() {
-		$css_file = $this->get_stylesheet();
-		$filesystem = Themify_Filesystem::get_instance();
-
-		if ($filesystem->execute->is_file($css_file)) {
-			$filesystem->execute->delete($css_file);
-		}
-	}
-
-	/**
-	 * If there wasn't a proper stylesheet, that is, one that matches this slug, generate it.
-	 *
-	 * @since 2.2.5
-	 *
-	 * @param int $post_id
-	 */
-	function build_stylesheet_if_needed($post_id) {
-		//verify post is not a revision
-		if (!wp_is_post_revision($post_id)) {
-			if (!$this->is_readable_and_not_empty($this->get_stylesheet('bydir', $post_id))) {
-				if ($post_data = get_post_meta($post_id, $this->meta_key, true)) {
-					// Write Stylesheet
-					$this->write_stylesheet(array('id' => $post_id, 'data' => $post_data));
-				}
-			}
-		}
-	}
-
-	/**
-	 * Checks whether a file exists, can be loaded and is not empty.
-	 * 
-	 * @since 2.2.5
-	 * 
-	 * @param string $file_path Path in server to the file to check.
-	 * 
-	 * @return bool
-	 */
-	function is_readable_and_not_empty($file_path = '') {
-		if (empty($file_path)) {
-			return false;
-		}
-		return is_readable($file_path) && 0 !== filesize($file_path);
-	}
-
-	/**
-	 * Tries to enqueue stylesheet. If it's not possible, it hooks an action to wp_head to build the CSS and output it.
-	 * 
-	 * @since 2.2.5
-	 */
-	function enqueue_stylesheet() {
-		if (apply_filters('themify_builder_enqueue_stylesheet', true)) {
-			// If enqueue fails, maybe the file doesn't exist...
-			if (!$this->test_and_enqueue()) {
-				// Try to generate it right now.
-				if ($post_data = get_post_meta(get_the_ID(), $this->meta_key, true)) {
-					// Write Stylesheet
-					$this->write_stylesheet(array('id' => get_the_ID(), 'data' => $post_data));
-				}
-				if (!$this->test_and_enqueue()) {
-					// No luck. Let's do it inline.
-					$this->is_front_end_style_inline = true;
-					add_action('themify_builder_row_start', array($this, 'render_row_styling'), 10, 2);
-					add_action('themify_builder_column_start', array($this, 'render_column_styling'), 10, 3);
-					add_action('themify_builder_sub_column_start', array($this, 'render_sub_column_styling'), 10, 5);
-				}
-			}
-		} else {
-			// No luck. Let's do it inline.
-			$this->is_front_end_style_inline = true;
-			add_action('themify_builder_row_start', array($this, 'render_row_styling'), 10, 2);
-			add_action('themify_builder_column_start', array($this, 'render_column_styling'), 10, 3);
-			add_action('themify_builder_sub_column_start', array($this, 'render_sub_column_styling'), 10, 5);
-		}
-	}
-
-	/**
-	 * Checks if the builder stylesheet exists and enqueues it.
-	 * 
-	 * @since 2.2.5
-	 * 
-	 * @return bool True if enqueue was successful, false otherwise.
-	 */
-	function test_and_enqueue() {
-		$stylesheet_path = $this->get_stylesheet();
-		if ($this->is_readable_and_not_empty($stylesheet_path)) {
-			setlocale(LC_CTYPE, get_locale() . '.UTF-8');
-			$handler = pathinfo($stylesheet_path);
-			wp_enqueue_style($handler['filename'], themify_https_esc($this->get_stylesheet('byurl')), array(), $this->get_stylesheet_version());
-			// Load Google Fonts. Despite this function is hit twice while on-the-fly stylesheet generation, they're loaded only once.
-			$this->enqueue_fonts();
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Return timestamp to use as stylesheet version.
-	 * 
-	 * @since 2.2.5
-	 */
-	function get_stylesheet_version() {
-		return get_option('themify_builder_stylesheet_timestamp');
-	}
-
-	/**
-	 * Enqueues Google Fonts
-	 * 
-	 * @since 2.2.6
-	 */
-	function enqueue_fonts() {
-		$entry_google_fonts = get_option('themify_builder_google_fonts');
-		if (isset($entry_google_fonts) && !empty($entry_google_fonts) && is_array($entry_google_fonts)) {
-			$entry_id = get_the_ID();
-			if (isset($entry_google_fonts[$entry_id])) {
-				$fonts = explode( '|', $entry_google_fonts[$entry_id] );
-				$fonts = array_unique( array_filter( $fonts ) );
-				wp_enqueue_style('builder-google-fonts', themify_https_esc('http://fonts.googleapis.com/css') . '?family=' . join( '|', $fonts ) );
-			}
-		}
-	}
-
-
-	/**
-	 * IE enhancements scripts.
-	 * 
-	 * @since 2.5.1
-	 * @access public
-	 */
-	public function ie_enhancements() {
-		echo '
-				<!-- equalcolumn-ie-fix.js -->
-				<!--[if IE 9]>
-					<script src="' . THEMIFY_BUILDER_URI . '/js/equalcolumn-ie-fix.js"></script>
-				<![endif]-->
-				';
-	}
-
-	/**
 	 * Merge user defined arguments into defaults array
 	 *
 	 * @return array
 	 */
 	function parse_args($args, $defaults = '', $filter_key = '') {
 		// Setup a temporary array from $args
-		if (is_object($args))
-			$r = get_object_vars($args);
-		elseif (is_array($args))
-			$r = & $args;
-		else
-			wp_parse_str($args, $r);
+		if (is_object($args)){
+                        $r = get_object_vars($args);
+                }
+		elseif (is_array($args)){
+                        $r = & $args;
+                }
+		else{
+                        wp_parse_str($args, $r);
+                }
 
 		// Passively filter the args before the parse
-		if (!empty($filter_key))
-			$r = apply_filters('themify_builder_before_' . $filter_key . '_parse_args', $r);
+		if (!empty($filter_key)){
+                        $r = apply_filters('themify_builder_before_' . $filter_key . '_parse_args', $r);
+                }
 
 		// Parse
-		if (is_array($defaults))
-			$r = array_merge($defaults, $r);
+		if (is_array($defaults)){
+                    $r = array_merge($defaults, $r);
+                }
 
 		// Aggressively filter the args after the parse
-		if (!empty($filter_key))
-			$r = apply_filters('themify_builder_after_' . $filter_key . '_parse_args', $r);
+		if (!empty($filter_key)){
+                        $r = apply_filters('themify_builder_after_' . $filter_key . '_parse_args', $r);
+                }
 
 		// Return the parsed results
 		return $r;
-	}
-
-	/**
-	 * Render responsive style media queries.
-	 * 
-	 * @since 2.6.6
-	 * @access public
-	 * @param string $style_id 
-	 * @param string $element 
-	 * @param array $settings 
-	 * @return string
-	 */
-	public function render_responsive_style($style_id, $element, $settings) {
-		$output = '';
-		$before = '';
-		$after = '';
-		$breakpoints = Themify_Builder_Model::get_breakpoints();
-
-		foreach ($breakpoints as $bp => $val) {
-			// responsive styling
-			if (isset($settings['breakpoint_' . $bp]) && is_array($settings['breakpoint_' . $bp])) {
-				$val = explode('-', $val);
-				if (is_array($val) && count($val) == 2) {
-					$media_queries = sprintf('@media only screen and (min-width : %spx) and (max-width : %spx) {', $val[0], $val[1]);
-				} else {
-					$media_queries = sprintf('@media screen and (max-width: %spx) {', $val[0]);
-				}
-			  
-				$output .= $media_queries;
-				$output .= $this->get_custom_styling($style_id, $element, $settings['breakpoint_' . $bp], false, 'css');
-				$output .= '}';
-			}
-		}
-
-		if ( '' != $output ) {
-			if(!$this->saving_stylesheet){
-				$before = '<style type="text/css">';
-				$after = '</style>';
-			}
-			$output = $before . $output . $after;
-
-		}
-		return $output;
 	}
 
 
@@ -4857,6 +3660,11 @@ class Themify_Builder {
 		}
 
 		return $classes;
+	}
+
+	// Fix for old add-ons with live preview FW
+	public function get_rgba_color( $color ) {
+		return $this->stylesheet->get_rgba_color( $color );
 	}
 }
 endif;

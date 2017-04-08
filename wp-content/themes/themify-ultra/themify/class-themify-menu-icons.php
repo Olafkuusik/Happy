@@ -55,11 +55,14 @@ class Themify_Menu_Icons {
 	 * @since 1.6.8
 	 */
 	function wp_edit_nav_menu_walker( $walker ) {
-		if( ! class_exists( 'Themify_Walker_Nav_Menu_Edit' ) ) {
-			include_once THEMIFY_DIR . '/class-themify-walker-nav-menu-edit.php';
+		if( class_exists( 'Walker_Nav_Menu_Edit' ) ) {
+			if( ! class_exists( 'Themify_Walker_Nav_Menu_Edit' ) ) {
+				include_once THEMIFY_DIR . '/class-themify-walker-nav-menu-edit.php';
+			}
+			return 'Themify_Walker_Nav_Menu_Edit';
 		}
 
-		return 'Themify_Walker_Nav_Menu_Edit';
+		return $walker;
 	}
 
 	/**

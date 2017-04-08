@@ -179,10 +179,10 @@
     display: none;
     color: #000;
     background: #fff;
-    padding: 14px;
+    padding: 10px;
     font-size: 18px;
     border: 1px solid #ddd;
-    width: 170px;
+    width: 140px;
     right: 2px;
     top: 26px;
     line-height: 30px;
@@ -201,18 +201,21 @@
 .themify_builder_font_preview:after {
     border-color: rgba(255, 255, 255, 0);
     border-right-color: #fff;
-    border-width: 30px;
-    margin-top: -30px;
+    border-width: 26px;
+    margin-top: -26px;
 }
 .themify_builder_font_preview:before {
     border-color: rgba(153, 153, 153, 0);
     border-right-color: #999;
-    border-width: 31px;
-    margin-top: -31px;
+    border-width: 27px;
+    margin-top: -27px;
 }
 .themify_builder_font_preview>span{
     min-height: 32px;
     display: block;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 .themify_builder_font_preview .themify_show_wait {
 	display: inline-block;
@@ -222,6 +225,7 @@
 .themify_builder_font_preview .themify_show_wait {
 	width: 20px;
 	height: 20px;
+	min-height: inherit;
 	background-color: #666;
 	background-color: rgba(0,0,0,.6);
 	border-radius: 50%;

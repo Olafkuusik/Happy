@@ -53,8 +53,7 @@ class Wp_Twitter_Api {
 		 * Encode token credentials since Twitter requires it that way.
 		 * @since 2.0.2
 		 */
-		$encoding = '64' . '_' . 'encode';
-		$bearer_token_credentials_64 = call_user_func( 'base' . $encoding, $bearer_token_credentials );
+		$bearer_token_credentials_64 = base64_encode( $bearer_token_credentials );
 
 		$args = array(
 			'method'		=> 	'POST',

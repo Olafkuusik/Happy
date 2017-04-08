@@ -108,8 +108,8 @@ global $themify; ?>
 				/////////////////////////////////////////////
 				// Entry Filter
 				/////////////////////////////////////////////
-				if ( 'portfolio' == $themify->query_post_type && ( count( $categories ) > 1 ) && 'slider' !== $themify->post_layout ) : ?>
-					<?php get_template_part( 'includes/filter', $themify->query_post_type ); ?>
+				if ( ('portfolio' == $themify->query_post_type || 'post' == $themify->query_post_type )&& ( count( $categories ) > 1 ) && 'slider' !== $themify->post_layout && (!isset($themify->post_filter) || $themify->post_filter=='yes')) : ?>
+					<?php get_template_part( 'includes/filter', 'portfolio' ); ?>
 				<?php endif; // portfolio query ?>
 
 				<!-- loops-wrapper -->

@@ -584,6 +584,12 @@
 	width: 70%;
 }
 
+/* BUILDER WOOCOMMERCE ADDON
+================================================ */
+.module-product-categories ul.products li.product {
+	margin-bottom: 1.3em;
+}
+
 /* SLIDE CART
 ================================================ */
 /* Cart wrap */
@@ -668,6 +674,7 @@
 #slide-cart .product {
 	overflow: hidden;
 	margin: 0 0 1.2em;
+	display: block;
 }
 #slide-cart .product:last-child {
 	border-bottom: 1px solid rgba(0,0,0,.1);
@@ -691,6 +698,21 @@
 #slide-cart .remove-item:after {
 	content: "\e646";
 	font-family: 'themify';
+}
+#slide-cart #shopdock-ultra .remove-item {
+	background-color: inherit;
+	text-indent: inherit;
+	position: relative;
+}
+#slide-cart #shopdock-ultra .remove-item:before {
+	display: none;
+}
+#slide-cart #shopdock-ultra .remove-item:after {
+	-webkit-transform: none;
+	-moz-transform: none;
+	transform: none;
+	border: none;
+	position: static;
 }
 
 #slide-cart .product-image {
@@ -761,8 +783,12 @@
 	-moz-transition: left .2s ease-in-out;
 	transition: left .2s ease-in-out;
 }
-.sidemenu-right,
-.sidemenu-right #headerwrap.fixed-header {
+.slide-cart-visible.sidemenu-right,
+.slide-cart-visible.sidemenu-right #headerwrap.fixed-header {
+	left: -300px;
+}
+.mobile-menu-visible.mobile_menu_active.sidemenu-right,
+.mobile-menu-visible.mobile_menu_active.sidemenu-right #headerwrap.fixed-header {
 	left: -300px;
 }
 

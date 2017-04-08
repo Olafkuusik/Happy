@@ -23,7 +23,10 @@ class TB_Image_Module extends Themify_Builder_Module {
 				'id' => 'mod_title_image',
 				'type' => 'text',
 				'label' => __('Module Title', 'themify'),
-				'class' => 'large'
+				'class' => 'large',
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			array(
 				'id' => 'style_image',
@@ -35,13 +38,19 @@ class TB_Image_Module extends Themify_Builder_Module {
 					array('img' => 'image-right.png', 'value' => 'image-right', 'label' => __('Image Right', 'themify')),
 					array('img' => 'image-overlay.png', 'value' => 'image-overlay', 'label' => __('Image Overlay', 'themify')),
 					array('img' => 'image-center.png', 'value' => 'image-center', 'label' => __('Centered Image', 'themify'))
+				),
+				'render_callback' => array(
+					'binding' => 'live'
 				)
 			),
 			array(
 				'id' => 'url_image',
 				'type' => 'image',
 				'label' => __('Image URL', 'themify'),
-				'class' => 'xlarge'
+				'class' => 'xlarge',
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			array(
 				'id' => 'appearance_image',
@@ -52,6 +61,9 @@ class TB_Image_Module extends Themify_Builder_Module {
 					array( 'name' => 'drop-shadow', 'value' => __('Drop Shadow', 'themify')),
 					array( 'name' => 'bordered', 'value' => __('Bordered', 'themify')),
 					array( 'name' => 'circle', 'value' => __('Circle', 'themify'), 'help' => __('(square format image only)', 'themify'))
+				),
+				'render_callback' => array(
+					'binding' => 'live'
 				)
 			),
 			array(
@@ -63,7 +75,10 @@ class TB_Image_Module extends Themify_Builder_Module {
 					'label' => ''
 				),
 				'hide' => Themify_Builder_Model::is_img_php_disabled() ? false : true,
-				'options' => $image_sizes
+				'options' => $image_sizes,
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			array(
 				'id' => 'image_fullwidth_container',
@@ -76,12 +91,18 @@ class TB_Image_Module extends Themify_Builder_Module {
 						'label' => '',
 						'class' => 'xsmall',
 						'help' => 'px',
-						'value' => ''
+						'value' => '',
+						'render_callback' => array(
+							'binding' => 'live'
+						)
 					),
 					array(
 						'id' => 'auto_fullwidth',
 						'type' => 'checkbox',
-						'options'=>array(array('name'=>'1','value'=>__('Auto fullwidth image', 'themify')))
+						'options'=>array(array('name'=>'1','value'=>__('Auto fullwidth image', 'themify'))),
+						'render_callback' => array(
+							'binding' => 'live'
+						)
 					)
 				)
 			),
@@ -91,13 +112,19 @@ class TB_Image_Module extends Themify_Builder_Module {
 				'label' => __('Height', 'themify'),
 				'class' => 'xsmall',
 				'help' => 'px',
-				'value' => ''
+				'value' => '',
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			array(
 				'id' => 'title_image',
 				'type' => 'text',
 				'label' => __('Image Title', 'themify'),
-				'class' => 'fullwidth'
+				'class' => 'fullwidth',
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			array(
 				'id' => 'link_image',
@@ -111,6 +138,9 @@ class TB_Image_Module extends Themify_Builder_Module {
 					'not_empty' => array(
 						'show' => array('param_image', 'image_zoom_icon', 'lightbox_size')
 					)
+				),
+				'render_callback' => array(
+					'binding' => 'live'
 				)
 			),
 			array(
@@ -124,7 +154,10 @@ class TB_Image_Module extends Themify_Builder_Module {
 				),
 				'new_line' => false,
 				'default' => 'regular',
-				'option_js' => true
+				'option_js' => true,
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			array(
 				'id' => 'image_zoom_icon',
@@ -135,6 +168,9 @@ class TB_Image_Module extends Themify_Builder_Module {
 					array( 'name' => 'zoom', 'value' => __( 'Show zoom icon', 'themify' ) )
 				),
 				'wrap_with_class' => 'tf-group-element tf-group-element-lightbox tf-group-element-newtab',
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			array(
 				'id' => 'lightbox_size',
@@ -145,7 +181,10 @@ class TB_Image_Module extends Themify_Builder_Module {
 						'id' => 'lightbox_width',
 						'type' => 'text',
 						'label' => __( 'Width', 'themify' ),
-						'value' => ''
+						'value' => '',
+						'render_callback' => array(
+							'binding' => 'live'
+						)
 					),
 					array(
 						'id' => 'lightbox_size_unit_width',
@@ -155,13 +194,19 @@ class TB_Image_Module extends Themify_Builder_Module {
 							'pixels' => __('px ', 'themify'),
 							'percents' => __('%', 'themify')
 						),
-						'default' => 'pixels'
+						'default' => 'pixels',
+						'render_callback' => array(
+							'binding' => 'live'
+						)
 					),
 					array(
 						'id' => 'lightbox_height',
 						'type' => 'text',
 						'label' => __( 'Height', 'themify' ),
-						'value' => ''
+						'value' => '',
+						'render_callback' => array(
+							'binding' => 'live'
+						)
 					),
 					array(
 						'id' => 'lightbox_size_unit_height',
@@ -171,22 +216,31 @@ class TB_Image_Module extends Themify_Builder_Module {
 							'pixels' => __('px ', 'themify'),
 							'percents' => __('%', 'themify')
 						),
-						'default' => 'pixels'
+						'default' => 'pixels',
+						'render_callback' => array(
+							'binding' => 'live'
+						)
 					)
 				),
 				'wrap_with_class' => 'tf-group-element tf-group-element-lightbox'
 			),
 			array(
-				'id' => 'alt_image',
-				'type' => 'text',
-				'label' => __('Image Alt', 'themify'),
-				'class' => 'fullwidth'
-			),
-			array(
 				'id' => 'caption_image',
 				'type' => 'textarea',
 				'label' => __('Image Caption', 'themify'),
-				'class' => 'fullwidth'
+				'class' => 'fullwidth',
+				'render_callback' => array(
+					'binding' => 'live'
+				)
+			),
+			array(
+				'id' => 'alt_image',
+				'type' => 'text',
+				'label' => __('Image Alt Tag', 'themify'),
+				'class' => 'fullwidth',
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			// Additional CSS
 			array(
@@ -198,10 +252,20 @@ class TB_Image_Module extends Themify_Builder_Module {
 				'type' => 'text',
 				'label' => __('Additional CSS Class', 'themify'),
 				'class' => 'large exclude-from-reset-field',
-				'help' => sprintf( '<br/><small>%s</small>', __( 'Add additional CSS class(es) for custom styling', 'themify' ) )
+				'help' => sprintf( '<br/><small>%s</small>', __( 'Add additional CSS class(es) for custom styling', 'themify' ) ),
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			)
 		);
 		return $options;
+	}
+
+	public function get_default_settings() {
+		$settings = array(
+			'url_image' => 'https://themify.me/demo/themes/wp-content/uploads/image-placeholder-small.jpg'
+		);
+		return $settings;
 	}
 
 	public function get_animation() {
@@ -940,6 +1004,61 @@ class TB_Image_Module extends Themify_Builder_Module {
 			),
 		);
 
+	}
+
+	protected function _visual_template() { 
+		$module_args = $this->get_module_args(); ?>
+		<# var fullwidth = data.auto_fullwidth ? 'auto_fullwidth' : ''; #>
+		<div class="module module-<?php echo esc_attr( $this->slug ); ?> {{ fullwidth }} {{ data.style_image }} {{ data.css_image }} <# ! _.isUndefined( data.appearance_image ) ? print( data.appearance_image.split('|').join(' ') ) : ''; #>">
+			<# if ( data.mod_title_image ) { #>
+			<?php echo $module_args['before_title']; ?>{{{ data.mod_title_image }}}<?php echo $module_args['after_title']; ?>
+			<# } #>
+			
+			<#
+			var attr = data.width_image ? 'width="'+ data.width_image +'" ': '';
+			attr += data.height_image ? 'height="' + data.height_image +'" ' : '';
+				
+			var image = '<img src="'+ data.url_image +'" '+ attr +'>';
+			#>
+			<div class="image-wrap">
+				<# if ( data.link_image ) { #>
+				<a href="{{ data.link_image }}">
+					<# if( data.image_zoom_icon == 'zoom' ) { #>
+						<span class="zoom fa <# print( data.param_image == 'lightbox' ? 'fa-search' : 'fa-external-link' ) #>"></span>
+					<# } #>
+					{{{ image }}}
+				</a>
+				<# } else { #>
+					{{{ image }}}
+				<# } #>
+
+				<# if ( 'image-overlay' !== data.style_image ) { #>
+				</div>
+				<# } #>
+
+				<# if( data.title_image || data.caption_image ) { #>
+					<div class="image-content">
+						<# if ( data.title_image ) { #>
+						<h3 class="image-title">
+							<# if ( data.link_image ) { #>
+							<a href="{{ data.link_image }}">{{{ data.title_image }}}</a>
+							<# } else { #>
+							{{{ data.title_image }}}
+							<# } #>
+						</h3>
+						<# } #>
+
+						<# if( data.caption_image ) { #>
+						<div class="image-caption">{{{ data.caption_image }}}</div>
+						<# } #>
+					</div>
+				<# } #>
+			<# if ( 'image-overlay' === data.style_image ) { #>
+				</div>
+			<# } #>
+
+		</div>
+	<?php
 	}
 }
 ///////////////////////////////////////

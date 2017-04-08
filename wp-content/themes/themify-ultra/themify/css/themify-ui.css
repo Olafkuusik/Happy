@@ -319,7 +319,7 @@ img {
 	float: left;
 	margin: 0 0 2em 4%;
 	text-align: left;
-	font-size: 1.2em;
+	font-size: 17px;
 	color: #333;
 	box-sizing: border-box;
 }
@@ -401,13 +401,13 @@ img {
 }
 #themify .skin-preview .view-demo a {
 	color: #01bd5d;
-	font-size: 10px;
+	font-size: 9px;
 	line-height: 1;
 	text-transform: uppercase;
 	border-radius: 2px;
 	padding: .3em .3em;
 	letter-spacing: .06em;
-	margin: 0em 0 0 .7em;
+	margin: -1px 0 0 .7em;
 	display: inline-block;
 	vertical-align: middle;
 	border: solid 1px #01bd5d;
@@ -452,23 +452,24 @@ img {
 	right: -9px;
 	top: 2px;
 }
-#themify .skin-preview.selected .skin-demo-content.busy * {
+#themify .skin-preview.selected .busy * {
 	display: none;
 }
-#themify .skin-preview.selected .skin-demo-content.busy:after {
+#themify .skin-preview.selected .busy + .themify-modal .proceed-import {
+	position: relative;
+	padding-left: 30px;
+}
+#themify .skin-preview.selected .busy + .themify-modal .proceed-import:before {
+	left: 7px;
+}
+#themify .skin-preview.selected .busy + .themify-modal .proceed-import:before,
+#themify .skin-preview.selected .busy:after {
 	content: "\f110";
 	font-family: FontAwesome;
 	-webkit-animation: fa-spin 2s infinite linear;
 	animation: fa-spin 2s infinite linear;
 	position: absolute;
 	margin-left: 3px;
-}
-
-/* export   
----------------------------------------------------------------*/
-#themify .download-export {
-	background: url(../img/arrow-down.png) no-repeat 0 center;
-	padding: 3px 0 3px 20px;
 }
 
 /* save button   
@@ -912,6 +913,131 @@ input[type=checkbox]:checked:before {
 }
 .alert.error:after {
 	content: '\e646';
+}
+
+/* CIRCLE LOADER */
+.themify_loader {
+	margin: -20px 0 0 -20px;
+	width: 62px;
+	height: 62px;
+	background-color: #666;
+	background-color: rgba(0,0,0,.6);
+	border-radius: 50%;
+	box-sizing: border-box;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	z-index: 100001;
+	line-height: 62px;
+}
+.themify_loader:before {
+	width: 80%;
+	height: 80%;
+	border: 5px solid transparent;
+    border-top-color: #fff;
+    border-radius: 50%;
+	box-sizing: border-box;
+	position: absolute;
+	top: 10%;
+	left: 10%;
+	content: '';
+	-webkit-animation: circle-loader 1.4s infinite linear;
+	animation: circle-loader 1.4s infinite linear;
+}
+@-webkit-keyframes circle-loader {
+	0% {
+		-webkit-transform: rotate(0deg);
+		transform: rotate(0deg);
+	}
+	100% {
+		-webkit-transform: rotate(360deg);
+		transform: rotate(360deg);
+	}
+}
+@keyframes circle-loader {
+	0% {
+		-webkit-transform: rotate(0deg);
+		transform: rotate(0deg);
+	}
+	100% {
+		-webkit-transform: rotate(360deg);
+		transform: rotate(360deg);
+	}
+}
+.themify_loader.loader_medium {
+	width: 92px;
+	height: 92px;	
+	line-height: 92px;	
+}
+.themify_loader.loader_large {
+	width: 120px;
+	height: 120px;	
+	line-height: 120px;	
+}
+
+/* HORIZONTAL LOADER */
+.themify_horizontal_loader {
+	margin: 12px 30px 12px 25px;
+	position: relative;
+	font-size: 11px;
+	-webkit-animation-delay: -0.16s;
+	animation-delay: -0.16s;
+}
+.themify_horizontal_loader,
+.themify_horizontal_loader:before,
+.themify_horizontal_loader:after {
+	background: #000;
+	border-radius: 100%;
+	width: 9px !important;
+	height: 9px !important;
+	-webkit-animation: horizontal-loader 1s infinite ease-in-out;
+	animation: horizontal-loader 1s infinite ease-in-out;
+}
+.themify_horizontal_loader:before,
+.themify_horizontal_loader:after {
+	position: absolute;
+	top: 0;
+	content: '';
+}
+.themify_horizontal_loader:before {
+	left: -150%;
+	-webkit-animation-delay: -0.32s;
+	animation-delay: -0.32s;
+}
+.themify_horizontal_loader:after {
+	left: 150%;
+}
+@-webkit-keyframes horizontal-loader {
+	0%,
+	80%,
+	100% {
+		opacity: 1;
+	}
+	40% {
+		opacity: .5;
+	}
+}
+@keyframes horizontal-loader {
+	0%,
+	80%,
+	100% {
+		opacity: 1;
+	}
+	40% {
+		opacity: .5;
+	}
+}
+.themify_horizontal_loader.loader_medium,
+.themify_horizontal_loader.loader_medium:before,
+.themify_horizontal_loader.loader_medium:after {
+	width: 12px !important;
+	height: 12px !important;
+}
+.themify_horizontal_loader.loader_large,
+.themify_horizontal_loader.loader_large:before,
+.themify_horizontal_loader.loader_large:after {
+	width: 18px !important;
+	height: 18px !important;
 }
 
 /* transfer buttons  
@@ -1928,6 +2054,8 @@ i.mce-ico.mce-i-themify {
 	top: 50%;
 	left: 50%;
 	width: 700px;
+	max-height: 90vh;
+	overflow-y: auto;	
 	margin: 0;
 	background: #fff;
 	color: #555;
@@ -1940,8 +2068,9 @@ i.mce-ico.mce-i-themify {
 	box-sizing: border-box;
 	max-width: 100%;
 	font-size: 1.1em;
-	-webkit-transform: translate(-50%, -50%);
-	transform: translate(-50%, -50%);
+	-webkit-transform: translate(-50%, -48%);
+	transform: translate(-50%, -48%);
+	-webkit-overflow-scrolling: touch;	
 }
 #themify .themify-modal p {
 	margin: 0 0 2em;
@@ -2202,11 +2331,6 @@ li.role-access-controller {
 	#themify fieldset {
 		padding-bottom: 2em;
 	}
-	#themify .themify-modal {
-		max-height: 550px;
-		overflow-y: auto;
-		-webkit-overflow-scrolling: touch;
-	}
 }
 @media only screen and (max-width: 1000px) {
 	#themify {
@@ -2396,6 +2520,7 @@ li.role-access-controller {
 .input-range .range-slider.ui-widget-content {
 	background: #e1e1e1;
 	color: #333333;
+	border: none;
 }
 .ui-slider {
 	position: relative;
@@ -2426,10 +2551,9 @@ li.role-access-controller {
 .input-range .range-slider.ui-slider-horizontal {
 	height: 2px;
 }
-.ui-slider-horizontal .ui-slider-handle {
+.input-range .range-slider.ui-slider-horizontal .ui-slider-handle {
 	top: -.6em;
 	margin-left: -.6em;
-
 	-webkit-border-radius: 100%;
 	-moz-border-radius: 100%;
 	border-radius: 100%;
@@ -2451,9 +2575,9 @@ li.role-access-controller {
 .ui-widget-header a {
 	color: #333333;
 }
-.range-slider .ui-state-default,
-.range-slider .ui-widget-content .ui-state-default,
-.range-slider .ui-widget-header .ui-state-default {
+.input-range .range-slider .ui-state-default,
+.input-range .range-slider .ui-widget-content .ui-state-default,
+.input-range .range-slider .ui-widget-header .ui-state-default {
 	border: 1px solid #c5c5c5;
 	background: #ffffff;
 	font-weight: normal;
@@ -2529,4 +2653,3 @@ li.role-access-controller {
     border-top-color: rgba(33,33,33,.9);
     top: -3px;
 }
-

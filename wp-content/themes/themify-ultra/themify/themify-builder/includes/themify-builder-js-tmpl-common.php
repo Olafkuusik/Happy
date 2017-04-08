@@ -79,3 +79,11 @@
 		<div class="themify_builder_data_mod_name">{{ data.name }}</div>
 	</div>
 </script>
+
+<script type="text/html" id="tmpl-builder_module_item_draggable">
+	<div class="themify_builder_module_outer">
+		<div class="themify_builder_module module-type-{{data.slug}}" data-module-slug="{{data.slug}}" data-module-name="{{data.name}}">
+			<strong class="module_name">{{data.name}}</strong> <a href="#" class="add_module_btn" title="<?php esc_html_e( 'Add module', 'themify' );?>"><?php esc_html_e( 'Add', 'themify' );?></a>
+		</div>
+	</div>
+</script>

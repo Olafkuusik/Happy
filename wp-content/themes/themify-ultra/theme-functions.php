@@ -17,8 +17,11 @@
 // Init post, page and additional post types if they exist
 add_action( 'after_setup_theme', 'themify_theme_init_types' );
 
-// Enqueue scripts and styles required by theme
-add_action( 'wp_enqueue_scripts', 'themify_theme_enqueue_scripts', 11 );
+if (!defined('DOING_AJAX')) {
+    // Enqueue scripts and styles required by theme
+    add_action( 'wp_enqueue_scripts', 'themify_theme_enqueue_scripts', 11 );
+	add_filter( 'themify_google_fonts', 'themify_theme_google_fonts' );
+}
 
 // Browser compatibility
 add_action( 'wp_head', 'themify_viewport_tag' );
@@ -72,30 +75,6 @@ function themify_theme_enqueue_scripts(){
 	//Enqueue styles
 	///////////////////
 
-	// Google Web Fonts embedding
-	$google_fonts = array();
-	/* translators: If there are characters in your language that are not supported by Open Sans, translate this to 'off'. Do not translate into your own language. */
-	if ( 'off' !== _x( 'on', 'Open Sans font: on or off', 'themify' ) ) {
-		$google_fonts['open-sans'] = 'Open+Sans:400italic,600italic,700italic,400,300,600,700';
-	}
-	if( $font == 'theme-font-slab' || $font == 'theme-font-slab-sans' ) {
-		/* translators: If there are characters in your language that are not supported by Roboto Slab, translate this to 'off'. Do not translate into your own language. */
-		if ( 'off' !== _x( 'on', 'Roboto Slab font: on or off', 'themify' ) ) {
-			$google_fonts['roboto-slab'] = 'Roboto+Slab:300,700,400';
-		}
-	}
-	if( $font == 'theme-font-serif' || $font == 'theme-font-slab-sans' ) {
-		/* translators: If there are characters in your language that are not supported by Sorts Mill Goudy, translate this to 'off'. Do not translate into your own language. */
-		if ( 'off' !== _x( 'on', 'Sorts Mill Goudy font: on or off', 'themify' ) ) {
-			$google_fonts['sorts-mill-goudy'] = 'Sorts+Mill+Goudy:400,400italic';
-		}
-	}
-	$google_fonts = apply_filters( 'themify_theme_google_fonts', $google_fonts );
-	if( ! empty( $google_fonts ) ) {
-		$google_fonts = themify_https_esc( 'http://fonts.googleapis.com/css?family=' ) . join( '|', $google_fonts ) . '&subset=latin,latin-ext';
-		wp_enqueue_style( 'google-fonts', $google_fonts );
-	}
-
 	wp_register_style( 'themify-icons', THEMIFY_URI . '/themify-icons/themify-icons.css', array(), THEMIFY_VERSION );
 
 	// Themify base styling
@@ -114,20 +93,23 @@ function themify_theme_enqueue_scripts(){
 		$design_preset_dependency[] = 'themify-woocommerce';
 	}
 	if( $color != '' && $color != 'default' ) {
-		wp_enqueue_style( $color, THEME_URI . '/styles/' . $color . '.css', $design_preset_dependency );
+		wp_enqueue_style( 'ultra-color', THEME_URI . '/styles/' . $color . '.css', $design_preset_dependency );
 	}
 
 	if( $font != '' && $font != 'default' ) {
-		wp_enqueue_style( $font, THEME_URI . '/styles/' . $font . '.css', $design_preset_dependency );
+		wp_enqueue_style( 'ultra-font', THEME_URI . '/styles/' . $font . '.css', $design_preset_dependency );
 	}
 
 	if( $header != '' && $header != 'default' && $header != 'header-none'  && $header != 'header-block'  ) {
-		wp_enqueue_style( $header, THEME_URI . '/styles/' . $header . '.css', $design_preset_dependency );
+		wp_enqueue_style( 'ultra-header', THEME_URI . '/styles/' . $header . '.css', $design_preset_dependency );
 	}
-
+        
 	///////////////////
 	//Enqueue scripts
 	///////////////////
+        
+        wp_enqueue_script( 'imagesloaded');
+        
 	if ( $themify->post_layout_type === 'slider' && is_single() ) {
 		wp_enqueue_script( 'themify-carousel-js' );
 	}
@@ -154,16 +136,15 @@ function themify_theme_enqueue_scripts(){
 	// Themify internal scripts
 	wp_enqueue_script( 'theme-script',	THEME_URI . '/js/themify.script.js', array('jquery'), $theme_version, true );
 
-	// Backstretch for header slider
-	wp_register_script( 'themify-backstretch', THEMIFY_URI.'/js/backstretch.themify-version.js', array('jquery'), false, true );
-
 	global $wp_query;
 
 	// Prepare JS variables
 	$themify_script_vars = array(
+		'themeURI' => THEME_URI,
 		'lightbox' => themify_lightbox_vars_init(),
 		'lightboxContext' => apply_filters('themify_lightbox_context', '#pagewrap'),
 		'fixedHeader' => themify_theme_fixed_header(),
+		'sticky_header'=>themify_theme_sticky_logo(),
 		'ajax_nonce'  => wp_create_nonce('ajax_nonce'),
 		'ajax_url'	  => admin_url( 'admin-ajax.php' ),
 		// Screen size at which horizontal menu is moved into side panel
@@ -178,9 +159,25 @@ function themify_theme_enqueue_scripts(){
 		'scrollToNewOnLoad' => 'scroll',
 		'resetFilterOnLoad' => 'reset',
 		'fullPageScroll' => $is_fullpage_scroll,
+                'shop_masonry'=>  themify_is_woocommerce_active() && themify_get('setting-product_disable_masonry')!=='no'?'yes':'no',
 		'scrollHighlight' => array(
-			'scroll' =>  $is_fullpage_scroll?'external':'internal', // performed by themes
+                'scroll' =>  $is_fullpage_scroll?'external':'internal', // performed by themes
 		),
+                // auto tiles
+		'tiledata' => array(
+                    'grids' => array(
+                        "post" => themify_is_touch('phone')?false:themify_set_tiles_template(),
+                        "mobile" => array("AA", "..")
+                    ),
+                    'default_grid' => 'post',
+                    'small_screen_grid' => 'mobile',
+                    'breakpoint' => 800,
+                    'padding' => 5,
+                    'full_width' => false,
+                    'animate_init' => false,
+                    'animate_resize' => true,
+                    'animate_template' => false
+                )
 	);
 
 	// Pass variable values to JavaScript
@@ -205,7 +202,7 @@ function themify_theme_enqueue_scripts(){
 	}
 
 	// Header gallery
-	wp_register_script( 'header-slider', THEME_URI . '/js/themify.header-slider.js', array( 'jquery', 'themify-backstretch' ), false, true );
+	wp_register_script( 'header-slider', THEME_URI . '/js/themify.header-slider.js', array( 'jquery' ), false, true );
 
 	//Inject variable values in gallery script
 	wp_localize_script( 'header-slider', 'themifyVars', array(
@@ -220,6 +217,37 @@ function themify_theme_enqueue_scripts(){
 
 	// WordPress internal script to move the comment box to the right place when replying to a user
 	if ( is_single() || is_page() ) wp_enqueue_script( 'comment-reply' );
+}
+
+/**
+ * Load Google fonts used by the theme
+ *
+ * @return array
+ */
+function themify_theme_google_fonts( $fonts ) {
+	$font = themify_area_design( 'font', array(
+		'default' => '',
+		'values'  => wp_list_pluck( themify_theme_font_design_options(), 'value' ),
+	) );
+
+	/* translators: If there are characters in your language that are not supported by Open Sans, translate this to 'off'. Do not translate into your own language. */
+	if ( 'off' !== _x( 'on', 'Open Sans font: on or off', 'themify' ) ) {
+		$fonts['open-sans'] = 'Open+Sans:400italic,600italic,700italic,400,300,600,700';
+	}
+	if( $font == 'theme-font-slab' || $font == 'theme-font-slab-sans' ) {
+		/* translators: If there are characters in your language that are not supported by Roboto Slab, translate this to 'off'. Do not translate into your own language. */
+		if ( 'off' !== _x( 'on', 'Roboto Slab font: on or off', 'themify' ) ) {
+			$fonts['roboto-slab'] = 'Roboto+Slab:300,700,400';
+		}
+	}
+	if( $font == 'theme-font-serif' || $font == 'theme-font-slab-sans' ) {
+		/* translators: If there are characters in your language that are not supported by Sorts Mill Goudy, translate this to 'off'. Do not translate into your own language. */
+		if ( 'off' !== _x( 'on', 'Sorts Mill Goudy font: on or off', 'themify' ) ) {
+			$fonts['sorts-mill-goudy'] = 'Sorts+Mill+Goudy:400,400italic';
+		}
+	}
+
+	return apply_filters( 'themify_theme_google_fonts', $fonts );
 }
 
 function themify_is_using_custom_setting( $name ) {
@@ -273,20 +301,27 @@ function themify_theme_is_fullpage_scroll() {
  * @return string
  */
 function themify_theme_fixed_header() {
-	$header = themify_area_design( 'header', array(
-		'values'  => wp_list_pluck( themify_theme_header_design_options(), 'value' ), ) );
-	if ( in_array( $header, array( 'header-leftpane', 'header-minbar', 'boxed-content', 'none', 'header-rightpane' ) ) ) {
-		return '';
-	}
-	if ( is_singular( array( 'post', 'page', 'portfolio' ) ) ) {
-		$fixed_header_field = themify_get( 'fixed_header' );
-		if ( 'yes' == $fixed_header_field ) {
-			return 'fixed-header';
-		} elseif ( 'no' == $fixed_header_field ) {
-			return '';
-		}
-	}
-	return themify_check( 'setting-fixed_header_disabled' ) ? '' : 'fixed-header';
+        static $fixed = NULL;
+        if(is_null($fixed)){
+            $header = themify_area_design( 'header', array(
+                    'values'  => wp_list_pluck( themify_theme_header_design_options(), 'value' ), ) );
+            if ( in_array( $header, array( 'header-leftpane', 'header-minbar', 'boxed-content', 'none', 'header-rightpane' ) ) ) {
+                    $fixed = '';
+                    return $fixed;
+            }
+            if ( is_singular( array( 'post', 'page', 'portfolio' ) ) ) {
+                    $fixed_header_field = themify_get( 'fixed_header' );
+                    if ( 'yes' == $fixed_header_field ) {
+                        $fixed = 'fixed-header';
+                        return $fixed;
+                    } elseif ( 'no' == $fixed_header_field ) {
+                            $fixed = '';
+                            return $fixed;
+                    }
+            }
+            $fixed = themify_check( 'setting-fixed_header_disabled' ) ? '' : 'fixed-header';
+        }
+        return $fixed;
 }
 
 /**
@@ -304,7 +339,7 @@ function themify_disable_parallax_header_on_mobile( $bool ) {
  * @since 1.0.0
  */
 function themify_viewport_tag() {
-	echo "\n".'<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">'."\n";
+	echo "\n".'<meta name="viewport" content="width=device-width, initial-scale=1">'."\n";
 }
 
 /* Custom Write Panels
@@ -325,55 +360,65 @@ if ( ! function_exists( 'themify_theme_init_types' ) ) {
 		foreach ( array( 'post', 'page', 'portfolio' ) as $type ) {
 			require_once( "admin/post-type-$type.php" );
 		}
-		/**
-		 * Navigation menus used in page custom panel to specify a custom menu for the page.
-		 * @since 1.0.0
-		 * @var array
-		 */
-		$nav_menus = array(	array( 'name' => '', 'value' => '', 'selected' => true ) );
-		foreach ( get_terms( 'nav_menu' ) as $menu ) {
-			$nav_menus[] = array( 'name' => $menu->name, 'value' => $menu->slug );
-		}
+	}
+}
 
-		/**
-		 * Options for header design
-		 * @since 1.0.0
-		 * @var array
-		 */
-		$header_design_options = themify_theme_header_design_options();
+function themify_theme_setup_metaboxes( $meta_boxes, $post_type ) {
 
-		/**
-		 * Options for footer design
-		 * @since 1.0.0
-		 * @var array
-		 */
-		$footer_design_options = themify_theme_footer_design_options();
+	if( ! in_array( $post_type, array( 'post', 'page', 'portfolio', 'product' ) ) ) {
+		return $meta_boxes;
+	}
 
-		/**
-		 * Options for font design
-		 * @since 1.0.0
-		 * @var array
-		 */
-		$font_design_options = themify_theme_font_design_options();
+	/**
+	 * Navigation menus used in page custom panel to specify a custom menu for the page.
+	 * @since 1.0.0
+	 * @var array
+	 */
+	$nav_menus = array(	array( 'name' => '', 'value' => '', 'selected' => true ) );
+	foreach ( get_terms( 'nav_menu' ) as $menu ) {
+		$nav_menus[] = array( 'name' => $menu->name, 'value' => $menu->slug );
+	}
 
-		/**
-		 * Options for color design
-		 * @since 1.0.0
-		 * @var array
-		 */
-		$color_design_options = themify_theme_color_design_options();
+	/**
+	 * Options for header design
+	 * @since 1.0.0
+	 * @var array
+	 */
+	$header_design_options = themify_theme_header_design_options();
 
-		$entry_id = isset( $_GET['post'] ) ? $_GET['post'] : null;
-		$background_slider = false;
-		if ( $entry_id ) {
-			$background_slider = ( get_post_meta( $entry_id, 'header_wrap', true ) == '' && get_post_meta( $entry_id, 'background_gallery', true ) != '' );
-			$background_mode = get_post_meta( $entry_id,'background_mode', true );
-		}
-		if ( ! isset( $background_mode ) || ! $background_mode ) {
-			$background_mode = 'fullcover';
-		}
+	/**
+	 * Options for footer design
+	 * @since 1.0.0
+	 * @var array
+	 */
+	$footer_design_options = themify_theme_footer_design_options();
 
-		themify_build_write_panels( apply_filters( 'themify_theme_meta_boxes', array(
+	/**
+	 * Options for font design
+	 * @since 1.0.0
+	 * @var array
+	 */
+	$font_design_options = themify_theme_font_design_options();
+
+	/**
+	 * Options for color design
+	 * @since 1.0.0
+	 * @var array
+	 */
+	$color_design_options = themify_theme_color_design_options();
+
+	$entry_id = isset( $_GET['post'] ) ? $_GET['post'] : null;
+	$background_slider = false;
+	if ( $entry_id ) {
+		$background_slider = ( get_post_meta( $entry_id, 'header_wrap', true ) == '' && get_post_meta( $entry_id, 'background_gallery', true ) != '' );
+		$background_mode = get_post_meta( $entry_id,'background_mode', true );
+	}
+	if ( ! isset( $background_mode ) || ! $background_mode ) {
+		$background_mode = 'fullcover';
+	}
+
+	if( $post_type == 'post' ) {
+		$theme_metaboxes = array(
 			array(
 				'name'    => __( 'Post Options', 'themify' ),
 				'id'      => 'post-options',
@@ -385,7 +430,7 @@ if ( ! function_exists( 'themify_theme_init_types' ) ) {
 			array(
 				'name'    => __( 'Page Appearance', 'themify' ),
 				'id'      => 'post-theme-design',
-				'options' => themify_theme_post_theme_design_meta_box( array(
+				'options' => themify_theme_page_theme_design_meta_box( array(
 					'header_design_options' => $header_design_options,
 					'footer_design_options' => $footer_design_options,
 					'font_design_options'   => $font_design_options,
@@ -395,6 +440,9 @@ if ( ! function_exists( 'themify_theme_init_types' ) ) {
 				) ),
 				'pages'   => 'post'
 			),
+		);
+	} elseif( $post_type == 'page' ) {
+		$theme_metaboxes = array(
 			array(
 				'name'    => __( 'Page Options', 'themify' ),
 				'id'      => 'page-options',
@@ -421,6 +469,21 @@ if ( ! function_exists( 'themify_theme_init_types' ) ) {
 				'pages'   => 'page'
 			),
 			array(
+				'name'    => __( 'Query Posts', 'themify' ),
+				'id'      => 'query-posts',
+				'options' => themify_theme_query_post_meta_box(),
+				'pages'   => 'page'
+			),
+			array(
+				'name'    => __( 'Query Portfolios', 'themify' ),
+				'id'      => 'query-portfolio',
+				'options' => themify_theme_query_portfolio_meta_box(),
+				'pages'   => 'page'
+			),
+		);
+	} elseif( $post_type == 'portfolio' ) {
+		$theme_metaboxes = array(
+			array(
 				'name'    => __( 'Portfolio Options', 'themify' ),
 				'id'      => 'portfolio-options',
 				'options' => themify_theme_portfolio_meta_box( array(
@@ -435,7 +498,7 @@ if ( ! function_exists( 'themify_theme_init_types' ) ) {
 			array(
 				'name'    => __( 'Page Appearance', 'themify' ),
 				'id'      => 'portfolio-theme-design',
-				'options' => themify_theme_portfolio_theme_design_meta_box( array(
+				'options' => themify_theme_page_theme_design_meta_box( array(
 					'header_design_options' => $header_design_options,
 					'footer_design_options' => $footer_design_options,
 					'font_design_options'   => $font_design_options,
@@ -445,22 +508,13 @@ if ( ! function_exists( 'themify_theme_init_types' ) ) {
 				) ),
 				'pages'   => 'portfolio'
 			),
-			array(
-				'name'    => __( 'Query Posts', 'themify' ),
-				'id'      => 'query-posts',
-				'options' => themify_theme_query_post_meta_box(),
-				'pages'   => 'page'
-			),
-			array(
-				'name'    => __( 'Query Portfolios', 'themify' ),
-				'id'      => 'query-portfolio',
-				'options' => themify_theme_query_portfolio_meta_box(),
-				'pages'   => 'page'
-			),
+		);
+	} elseif( $post_type == 'product' ) {
+		$theme_metaboxes = array(
 			array(
 				'name'    => __( 'Page Appearance', 'themify' ),
 				'id'      => 'product-theme-design',
-				'options' => themify_theme_post_theme_design_meta_box( array(
+				'options' => themify_theme_page_theme_design_meta_box( array(
 					'header_design_options' => $header_design_options,
 					'footer_design_options' => $footer_design_options,
 					'font_design_options'   => $font_design_options,
@@ -470,9 +524,12 @@ if ( ! function_exists( 'themify_theme_init_types' ) ) {
 				) ),
 				'pages'   => 'product'
 			),
-		)));
+		);
 	}
+
+	return isset( $theme_metaboxes ) ? array_merge( $theme_metaboxes, $meta_boxes ) : $meta_boxes;
 }
+add_filter( 'themify_metabox/fields/themify-meta-boxes', 'themify_theme_setup_metaboxes', 10, 2 );
 
 /* Custom Functions
 /***************************************************************************/
@@ -505,46 +562,6 @@ if ( ! function_exists( 'themify_default_main_nav' ) ) {
 			wp_list_pages('title_li=');
 		echo '</ul>';
 	}
-}
-
-/**
- * Sets custom menu selected in page custom panel as navigation, otherwise sets the default.
- *
- * @since 1.0.0
- */
-function themify_theme_menu_nav() {
-	$args = array(
-		'theme_location' => 'main-nav',
-		'fallback_cb'    => 'themify_default_main_nav',
-		'container'      => '',
-		'menu_id'        => 'main-nav',
-		'menu_class'     => 'main-nav'
-	);
-	// Get entry ID reliably
-	$queried_object = get_queried_object();
-	$entry_id = isset( $queried_object->ID ) ? $queried_object->ID : 0;
-
-	// Compile menu arguments
-	$args = wp_parse_args( $args, array(
-		'theme_location' => 'main-nav',
-		'fallback_cb' => 'themify_default_main_nav',
-		'container'   => '',
-		'menu_id'     => 'main-nav',
-		'menu_class'  => 'main-nav'
-	));
-
-	$args['walker'] = new Themify_Mega_Menu_Walker;
-
-	if ( ! ( is_search() || is_archive() || is_home() || is_tax() ) ) {
-		// See if the page has a menu assigned
-		$custom_menu = get_post_meta( $entry_id, 'custom_menu', true );
-		if ( ! empty( $custom_menu ) ) {
-			$args['menu'] = $custom_menu;
-		}
-	}
-
-	// Render the menu
-	wp_nav_menu( $args );
 }
 
 if ( ! function_exists( 'themify_theme_register_sidebars' ) ) {
@@ -640,7 +657,7 @@ if ( ! function_exists( 'themify_theme_comment' ) ) {
 
 		<li id="comment-<?php comment_ID() ?>">
 			<p class="comment-author">
-				<?php echo get_avatar( $comment, $size = '38' ); ?>
+				<?php echo get_avatar( $comment, $size = '48' ); ?>
 				<cite <?php comment_class(); ?>><span <?php comment_class(); ?>><?php echo get_comment_author_link(); ?></span></cite>
 				<br/>
 				<small class="comment-time">
@@ -697,7 +714,7 @@ if ( ! function_exists( 'themify_theme_custom_post_css' ) ) {
 	function themify_theme_custom_post_css() {
 		global $themify;
 
-		if ( in_array( get_post_type(), array( 'post', 'page', 'portfolio', 'product' ) ) ) {
+		if ( in_array( get_post_type(), array( 'post', 'page', 'portfolio', 'product' ) ) || themify_is_shop() ) {
 			$post_id = get_the_ID();
 			if ( is_page() ) {
 				$entry_id = '.page-id-' . $post_id;
@@ -753,8 +770,8 @@ if ( ! function_exists( 'themify_theme_custom_post_css' ) ) {
 			}
 						
 			$custom_color =  themify_theme_get( 'color_scheme_mode', 'color-presets' ) == 'color-custom';
-			$custom_font =  themify_theme_get( 'typography_mode', 'typography-custom' ) == 'typography-custom';
-			if ( is_singular() && ($custom_color || $custom_font) ) {
+			$custom_font =  themify_theme_get( 'typography_mode' ) == 'typography-custom';
+			if ( ( is_singular() || themify_is_shop() ) && ($custom_color || $custom_font) ) {
 				if($custom_font){
 					$rules = array_merge( $rules, array(
 						'.skin-styles' => array(
@@ -975,9 +992,8 @@ if ( ! function_exists( 'themify_theme_animated_bg_check' ) ) {
 	 */
 	function themify_theme_animated_bg_check( $area ) {
 		if ( 'header' == $area ) {
-			$entry_id = get_queried_object_id();
-			if ( $entry_id != null ) {
-				if ( 'colors' == get_post_meta( $entry_id, 'header_wrap', true ) ) {
+			if ( is_singular() || themify_is_shop() ) {
+				if ( 'colors' == themify_get( 'header_wrap' ) ) {
 					return true;
 				}
 			} else {
@@ -1070,18 +1086,6 @@ function themify_theme_header_background( $area = 'header', $classes = '' ) {
 				}
 			}
 		}
-
-		if ( themify_is_shop() ) {
-			$post_id = get_option( 'woocommerce_shop_page_id' );
-			$image_meta = get_post_meta($post_id, 'background_image', true);
-			if ( $image_meta ) {
-				$image = $image_meta;
-				$repeat_meta = get_post_meta($post_id, 'background_repeat', true);
-				if ( $repeat_meta ) {
-					$repeat = $repeat_meta;
-				}
-			}
-		}
 	}
 
 	if ( $repeat || $classes ) {
@@ -1098,6 +1102,7 @@ function themify_theme_header_background( $area = 'header', $classes = '' ) {
 if ( ! function_exists( 'themify_theme_entry_title_tag' ) ) :
 /**
  * Displays the entry title tag, outputting h1 for singular views and h2 otherwise.
+ * @Deprecated
  *
  * @since 1.0.0
  *
@@ -1137,6 +1142,11 @@ function themify_theme_header_design_options() {
 			'value' => 'header-horizontal',
 			'img'   => 'images/layout-icons/header-horizontal.png',
 			'title' => __( 'Header Horizontal', 'themify' ),
+		),
+		array(
+			'value' => 'header-top-widgets',
+			'img'   => 'images/layout-icons/header-top-widget.png',
+			'title' => __( 'Header Top Widget', 'themify' ),
 		),
 		array(
 			'value' => 'boxed-content', // hides sticky header
@@ -1411,7 +1421,7 @@ if ( ! function_exists( 'themify_theme_body_class' ) ) {
 
 		if ( ! in_array( $header, array( 'header-leftpane', 'header-rightpane', 'header-minbar', 'header-none' ) ) ) {
 			// Add transparent-header class to body if user selected it in custom panel
-			if ( ( is_single() || is_page() ) && 'transparent' == themify_get( 'header_wrap' ) ) {
+			if ( ( is_single() || is_page() || themify_is_shop() ) && 'transparent' == themify_get( 'header_wrap' ) ) {
 				$classes[] = 'transparent-header';
 			}
 		}
@@ -1477,7 +1487,7 @@ if ( ! function_exists( 'themify_theme_body_class' ) ) {
 		$filter_hover = '';
 		$apply_to = '';
 		global $themify;
-		if ( is_page() ) {
+		if ( is_page() || themify_is_shop() ) {
 
 			if ( $do_filter = themify_get( 'imagefilter_options' ) ) {
 				if ( 'initial' != $do_filter ) {
@@ -1491,7 +1501,7 @@ if ( ! function_exists( 'themify_theme_body_class' ) ) {
 				}
 			}
 
-			if ( $apply_here = themify_get('imagefilter_applyto') ) {
+			if ( $apply_here = themify_get( 'imagefilter_applyto' ) ) {
 				if ( 'initial' != $apply_here ) {
 					$apply_to = 'filter-' . $apply_here;
 				}
@@ -1530,7 +1540,9 @@ if ( ! function_exists( 'themify_theme_body_class' ) ) {
 			}
 			$classes[] = 'single-' . $layout . '-layout';
 		}
-
+                if ($themify->post_layout === 'auto_tiles' && ($k=array_search($themify->post_layout, $classes))!==false) {
+                        unset($classes[$k]);
+                }
 		if ( '' == $filter ) {
 			if ( $do_filter = themify_get( 'setting-imagefilter_options' ) ) {
 				$filter = 'filter-' . $do_filter;
@@ -1554,7 +1566,7 @@ if ( ! function_exists( 'themify_theme_body_class' ) ) {
 				}
 			}
 		}
-
+                $classes[] = themify_is_touch('phone') ? 'is_phone' : 'tile_enable';
 		$classes[] = $filter;
 		$classes[] = $filter_hover;
 		$classes[] = $apply_to;
@@ -1651,7 +1663,7 @@ if ( ! function_exists( 'themify_theme_show_area' ) ) {
 				$show = 'none' == themify_area_design( $area, array( 'values'  => wp_list_pluck( themify_theme_footer_design_options(), 'value' ) ) ) ? false : true;
 				break;
 			default:
-				if ( is_singular() && ! is_attachment() ) {
+				if ( ( is_singular() && ! is_attachment() ) || themify_is_shop() ) {
 					$exclude = themify_get( 'exclude_' . $area );
 					if ( 'yes' == $exclude ) {
 						$show = false;
@@ -1759,9 +1771,7 @@ class Themify_Background_Gallery{
 		$bggallery_id = $this->get_bggallery_id();
 		$bggallery_order = $this->get_bggallery_order();
 
-		$get_ID = ( themify_is_shop() ) ? get_option( 'woocommerce_shop_page_id' ) : get_the_ID();
-
-		$bggallery_enable = ((get_post_meta($get_ID, 'header_wrap', true) == 'slider') || (get_post_meta($get_ID, 'header_wrap', true) == '' && get_post_meta($get_ID, 'background_gallery', true) != ''));
+		$bggallery_enable = themify_get( 'header_wrap' ) == 'slider' && themify_get( 'background_gallery', '' ) != '';
 
 		// If we still don't have a background gallery ID, do nothing.
 		if( !$bggallery_id || 'default' == $bggallery_id || !$bggallery_enable ) {
@@ -1779,25 +1789,26 @@ class Themify_Background_Gallery{
 
 		if ( $images ) {
 			wp_enqueue_script( 'header-slider' );
+			$hide_controlls = get_post_meta( get_queried_object_id(), 'header_hide_controlls', true ) === 'on'
+				? 'class="tf-hide"' : '';
+				echo '
+				<div id="gallery-controller" ' . $hide_controlls . '>
+					<div class="slider">
+						<ul class="slides clearfix">';
+				foreach( $images as $image ){
+					// Get large size for background
+					$image_data = wp_get_attachment_image_src( $image->ID, apply_filters( 'themify_theme_background_gallery_image_size', 'large' ) );
+					echo '<li data-bg="',$image_data[0],'"><span class="slider-dot"></span></li>';
+				}
+				echo '		</ul>
+							<div class="carousel-nav-wrap">
+								<a href="#" class="carousel-prev" style="display: block; ">&lsaquo;</a>
+								<a href="#" class="carousel-next" style="display: block; ">&rsaquo;</a>
+							</div>
 
-			echo '
-			<div id="gallery-controller">
-				<div class="slider">
-					<ul class="slides clearfix">';
-			foreach( $images as $image ){
-				// Get large size for background
-				$image_data = wp_get_attachment_image_src( $image->ID, apply_filters( 'themify_theme_background_gallery_image_size', 'large' ) );
-				echo '<li data-bg="',$image_data[0],'"><span class="slider-dot"></span></li>';
-			}
-			echo '		</ul>
-						<div class="carousel-nav-wrap">
-							<a href="#" class="carousel-prev" style="display: block; ">&lsaquo;</a>
-							<a href="#" class="carousel-next" style="display: block; ">&rsaquo;</a>
-						</div>
-
+					</div>
 				</div>
-			</div>
-			<!-- /gallery-controller -->';
+				<!-- /gallery-controller -->';
 		}
 	}
 
@@ -1810,11 +1821,7 @@ class Themify_Background_Gallery{
 	function get_bggallery_id() {
 		$gallery_raw = '';
 
-		if ( themify_is_shop() ) {
-			$gallery_raw = get_post_meta( get_option( 'woocommerce_shop_page_id' ), 'background_gallery', true );
-		} else {
-			$gallery_raw = themify_get( 'background_gallery' );
-		}
+		$gallery_raw = themify_get( 'background_gallery' );
 
 		$sc_gallery = preg_replace( '#\[gallery(.*)ids="([0-9|,]*)"(.*)\]#i', '$2', $gallery_raw );
 
@@ -1826,11 +1833,7 @@ class Themify_Background_Gallery{
 	function get_bggallery_order() {
 		$sc_order = false;
 
-		if ( themify_is_shop() ) {
-			$gallery_raw = get_post_meta( get_option( 'woocommerce_shop_page_id' ), 'background_gallery', true );
-		} else {
-			$gallery_raw = themify_get( 'background_gallery' );
-		}
+		$gallery_raw = themify_get( 'background_gallery' );
 
 		if ( strpos( $gallery_raw, 'orderby' ) !== false ) {
 			$sc_order = preg_replace('#\[gallery(.*)orderby="([a-zA-Z0-9]*)"(.*)\]#i', '$2', $gallery_raw);
@@ -1862,7 +1865,7 @@ function themify_theme_query_classes() {
 		if ( $temp_class = themify_theme_get( 'post_content_layout' ) ) {
 			$class[] = $temp_class;
 		}
-		if ( 'yes' == themify_theme_get( 'disable_masonry' ) && 'slider' !== $themify->post_layout ) {
+		if ( 'yes' == themify_theme_get( 'disable_masonry' ) && !in_array($themify->post_layout,array('list-post','slider','auto_tiles'))) {
 			$class[] = 'masonry';
 		}
 		if ( 'no-gutter' == themify_theme_get( 'post_gutter' ) ) {
@@ -1939,6 +1942,8 @@ function themify_theme_get( $meta, $default = '', $theme_setting = '' ) {
 		if ( $value && '' != $value && 'default' != $value ) {
 			return $value;
 		}
+	} elseif( themify_is_shop() ) {
+		return themify_get( $meta, $default );
 	}
 
 	// If there is no post meta data or is '' (default), prepare to fetch theme setting
@@ -2155,7 +2160,7 @@ function themify_theme_announcement_bar_script_vars( $vars ) {
 	} elseif( $header_design == 'boxed-compact' ) {
 		$vars['margin_top_to_bar_height'] = 'body';
 	} else {
-		$vars['margin_top_to_bar_height'] = '#headerwrap';
+		$vars['margin_top_to_bar_height'] = 'body';
 	}
 
 	return $vars;
@@ -2321,7 +2326,7 @@ function themify_theme_do_animated_bg() {
 	{$selector} {
 		-webkit-animation: themifyAnimatedBG {$speed}ms infinite alternate;
 		animation: themifyAnimatedBG {$speed}ms infinite alternate;
-	};
+	}
 	</style>
 	";
 }
@@ -2367,7 +2372,7 @@ function themify_theme_split_menu_wp_nav_menu_objects( $menu_items, $args ) {
 	/* reset the keys */
 	$copy = array_values( $copy );
 
-	/* make a fake mene item */
+	/* make a fake menu item */
 	$new_menu_item = clone $copy[0];
 	$new_id = 0;
 	$new_menu_item->type = $new_menu_item->object = $new_menu_item->title = $new_menu_item->url = 'custom';
@@ -2432,7 +2437,7 @@ function themify_theme_bonus_addons_update( $match, $subs ) {
 	$theme_name = ( is_child_theme() ) ? $theme->parent()->Name : $theme->display('Name');
 	$theme_name = preg_replace( '/^Themify\s/', '', $theme_name );
 	foreach ( $subs as $key => $value ) {
-		if( stripos( $value['title'], $theme_name ) !== false && isset( $_POST['nicename_short'] ) && in_array( $_POST['nicename_short'], array( 'Pricing Table', 'Maps Pro', 'Typewriter', 'Image Pro', 'Timeline', 'WooCommmerce', 'Contact', 'Counter', 'Progress Bar', 'Countdown' ) ) ) {
+		if( stripos( $value['title'], $theme_name ) !== false && isset( $_POST['nicename_short'] ) && in_array( $_POST['nicename_short'], array( 'Slider Pro', 'Pricing Table', 'Maps Pro', 'Typewriter', 'Image Pro', 'Timeline', 'WooCommmerce', 'Contact', 'Counter', 'Progress Bar', 'Countdown' ) ) ) {
 			$match = 'true';
 			break;
 		}
@@ -2685,4 +2690,306 @@ function themify_date_format(){
         ksort ($date_format);
     }
     return $date_format;
+}
+
+/**
+ * Deprecated function, kept for backwards compatibility
+ */
+function themify_theme_menu_nav() {
+	themify_menu_nav( array( 'walker' => new Themify_Mega_Menu_Walker ) );
+}
+
+
+/**
+ * Settings module extension for post and portfolio builder
+ */
+add_filter('themify_builder_module_settings_fields','themify_builder_module_settings_options',10,2);
+function themify_builder_module_settings_options($options,$module)
+{
+	
+	if(is_object($module) && ($module->slug=='post' || $module->slug=='portfolio' || $module->slug=='products') ){
+		$module_type=$module->slug;
+                $is_product = $module_type==='products';
+                $auto_tiles = array('value' => 'auto_tiles', 'img' => THEME_URI.'/images/layout-icons/auto-tiles.png', 'label' => __('Auto Tiles', 'themify'));
+                $bindig = array(
+                            'not_empty' => array(
+                                'show' => array('post_content_layout','disable_masonry','post_gutter','portfolio_gutter')
+                            ),
+                            'list-post' => array(
+                                'hide' => array('disable_masonry','post_gutter','portfolio_gutter')
+                            ),
+                            'auto_tiles' => array(
+                                'hide' => array('disable_masonry','post_gutter','portfolio_gutter')
+                            )
+                    );
+                foreach($options as $k=>$opt){
+			if($is_product && $opt['id']==='list'){
+				$options[$k]['fields'][0]['options'][] = $auto_tiles;
+                                break;
+			}
+			elseif($opt['id']==='layout_'.$module_type){
+				$options[$k]['options'][] = $auto_tiles;
+                                $merge_bind = $module_type==='post'?
+                                                array(
+                                                'list-large-image' => array(
+                                                        'hide' => array('post_content_layout','disable_masonry','post_gutter')
+                                                ),
+                                                'list-thumb-image' => array(
+                                                        'hide' => array('post_content_layout','disable_masonry','post_gutter')
+                                                ),
+                                                'grid2-thumb' => array(
+                                                        'hide' => array('post_content_layout','disable_masonry','post_gutter')
+                                                ),
+                                                'slider' => array(
+                                                        'hide' => array('disable_masonry','post_gutter')
+                                                ),
+                                            ):
+                                            array(
+                                                'fullwidth' => array(
+                                                        'hide' => array('disable_masonry','portfolio_gutter')
+                                                ),
+                                            );
+                                $options[$k]['binding']=array_merge($bindig,$merge_bind);
+				break;
+			}
+                        
+                }   
+                if($is_product){
+                    return $options;
+                }
+                foreach($options as $k=>$opt){
+                    if ( isset( $opt['id'] ) && $opt['id'] === 'query_slug_'.$module_type ) {
+                        $index = $k;
+                        break;
+                    }
+                }
+		$post_content_layout=array('id' => $module_type.'_content_layout','type' => 'select','label' => __('Post Content Layout', 'themify'),'options' =>array('default'=>'Default','no' => __('No', 'themify'),'overlay'=>'Overlay','polaroid'=>'Polaroid','boxed'=>'Boxed'));
+		$disable_masonry=array('id' => 'disable_masonry','type' => 'select','label' => __('Post Masonry', 'themify'),'options' =>array('default' => __('Default', 'themify'),'yes'=>'Yes','no'=>'No'),'wrap_with_class' => 'tf-group-element tf-group-element-grid4 tf-group-element-grid3 tf-group-element-grid2 tf-group-element-list-large-image');
+		$post_gutter=array('id' => $module_type.'_gutter','type' => 'select','label' => __('Post Gutter', 'themify'),'options' =>array('default' => __('Default', 'themify'),'gutter'=>'gutter','no-gutter'=>'No gutter'));
+		array_splice($options,$index+1,0,array($post_content_layout,$disable_masonry,$post_gutter));
+		if($module_type==='post'){
+                        array_splice($options,$index+2,0,array(array(
+                                'id' => 'post_filter',
+                                'type' => 'select',
+                                'label' => __('Post Filter', 'themify'),
+                                'options' =>array('yes'=>'Yes','no'=>'No'),
+                                'wrap_with_class' => 'tf-group-element tf-group-element-category',
+                        )));
+                }
+               
+	}
+	
+	return $options;
+}
+
+/**
+ * Settings module extension for post and portfolio builder
+ */
+
+add_filter('themify_builder_module_display', 'themify_builder_args', 10, 4);
+function themify_builder_args($show, $mod, $builder_id, $identifier) {
+global $themify;
+$themify->post_filter = false;
+$themify->builder_args = array();
+if (!empty($mod['mod_name']) && ($mod['mod_name'] === 'post' || $mod['mod_name'] === 'portfolio')) {
+       
+        $slug = $mod['mod_name'];
+        $is_portfolio = $slug === 'portfolio';
+        $layout = $mod['mod_settings']['layout_'.$slug];
+        $masonry = $gutter = $content_layout = false;
+        
+        $content_layout = !empty($mod['mod_settings'][$slug.'_content_layout']) && $mod['mod_settings'][$slug.'_content_layout']!=='no' && !in_array($layout,array('list-large-image','list-thumb-image','grid2-thumb'))?$mod['mod_settings'][$slug.'_content_layout']:false;
+        if($content_layout==='default'){
+            $content_layout = themify_get('setting-'.$slug.'_content_layout');
+        }
+	$gutter = !empty($mod['mod_settings'][$slug.'_gutter']) && !in_array($layout,array('list-post','list-large-image','list-thumb-image','grid2-thumb','slider','fullwidth'))?$mod['mod_settings'][$slug.'_gutter']:false;
+        if($gutter==='default'){
+            $gutter = themify_get('setting-'.$slug.'_gutter');
+        }
+        
+	$masonry=( !empty($mod['mod_settings']['disable_masonry']) && $mod['mod_settings']['disable_masonry']!=='no' && !in_array($layout,array('list-post','fullwidth','auto_tiles','list-large-image','list-thumb-image','grid2-thumb','slider'))) ? 'masonry' : false;
+	if($masonry && $mod['mod_settings']['disable_masonry']==='default'){
+            $masonry = $is_portfolio?themify_get('setting-portfolio_disable_masonry'):themify_get('setting-disable_masonry');
+            $masonry = $masonry==='yes'?'masonry':false;
+        }
+        if($content_layout){
+            $themify->builder_args['content_layout'] = $content_layout;
+        }
+        if($gutter){
+            $themify->builder_args['gutter'] = $gutter;
+        }
+       
+        if($masonry){
+            $themify->builder_args['masonry'] = $masonry;
+        }
+        if(!empty($themify->builder_args)){
+            add_filter('themify_builder_module_loops_wrapper', 'themify_add_builder_classes', 10, 1);
+        }
+	if($slug === 'post'){
+            $themify->post_filter=($mod['mod_settings']['type_query_post']=='category' &&!empty($mod['mod_settings']['post_filter']) &&  $mod['mod_settings']['post_filter']=='yes') ?$mod['mod_settings']['post_filter']:false;	
+            if($themify->post_filter){
+                add_action('themify_builder_before_template_content_render','themify_builder_post_module_filter');
+            }
+	}
+}
+return $show;
+}
+
+/**
+ * Additional classes for post and portfolio builder
+ */
+
+function themify_add_builder_classes($classes){
+	global $themify;
+	remove_filter('themify_builder_module_loops_wrapper', 'themify_add_builder_classes', 10, 1);
+	$classes.=' '.implode(' ',$themify->builder_args);
+	return $classes;
+}
+
+/**
+ * Post module filter by category
+ */
+function themify_builder_post_module_filter(){
+        remove_action('themify_builder_before_template_content_render', 'themify_builder_post_module_filter');
+	get_template_part( 'includes/filter', 'portfolio' );
+	
+}
+
+add_action('themify_content_before','themify_theme_meta_boxes_query_posts_filter');
+function themify_theme_meta_boxes_query_posts_filter(){
+	global $themify;
+	if($themify->query_post_type=='post'){
+		$themify->post_filter=themify_get( 'post_filter' );
+	}
+
+}
+
+
+/*
+add category id class in post loop for masonary filter
+*/
+function themify_post_category_class( $classes ) {
+	global $post;
+	if($post->post_type=='post'){
+		$categories = wp_get_object_terms($post->ID, 'category' );
+		foreach ( $categories as $category ) {
+			$classes[] =' cat-' . $category->term_id;
+		}
+	}
+	return $classes;
+}
+add_filter( 'post_class', 'themify_post_category_class' );
+
+/*
+add content layout and gutter class for portfolio archive
+*/
+add_filter('themify_theme_loops_wrapper_class','themify_theme_query_portfolio_classes');
+function themify_theme_query_portfolio_classes($class){
+	if( is_post_type_archive('portfolio') || is_tax('portfolio-category'))
+	{
+		//remove array element that previously for content layout and gutter
+		$content_layout_index=array_search(themify_theme_get( 'post_content_layout' ),$class);
+		if(!empty($content_layout_index))
+		unset($class[$content_layout_index]);
+		
+		$gutter_index=array_search(themify_theme_get( 'post_gutter' ),$class);
+		if(!empty($gutter_index))
+		unset($class[$gutter_index]);
+		
+		$prefix='';
+		if(!themify_is_query_page())
+		$prefix='portfolio_';
+	
+		if ( $temp_class = themify_theme_get( $prefix.'content_layout' ) ) {
+			$class[] = $temp_class;
+		}
+		if ( 'no-gutter' == themify_theme_get( $prefix.'gutter' ) ) {
+			$class[] = 'no-gutter';
+		}
+	}
+	return $class;
+}
+
+function themify_theme_sticky_logo(){
+     if(themify_theme_fixed_header()){
+        global $themify_customizer;
+        $logo = json_decode($themify_customizer->get_cached_mod('sticky_header_imageselect'));
+        return isset($logo->src) && '' != $logo->src?$logo:false;
+     }
+     else{
+         return false;
+     }
+}
+
+
+if (!function_exists('themify_set_tiles_template')) {
+
+    /**
+     * Set template for auto tiled
+     * @return array
+     */
+    function themify_set_tiles_template() {
+        //Each elements must have unique char and length = 4. Otherwise the result can be unexpected. For example: can't be 1=>'AAAA' and 2=>'ABAB'
+        // Reserved chars 'X', 'Y', 'Z', 'V', 'T', 'F', 'K' used in JS
+        $knows_grids = array(1 => array("AAAA"),
+            2 => array('BBCC', 'BBCC'),
+            3 => array('DD..'),
+            4 => array('.EEF', '.EEF')
+        );
+        if (!isset($knows_grids[5])) {
+            $knows_grids[5] = $knows_grids[3];
+            foreach ($knows_grids[2] as $v) {
+                $knows_grids[5][] = $v;
+            }
+        }
+        if (!isset($knows_grids[6])) {
+            $knows_grids[6] = $knows_grids[4];
+            foreach ($knows_grids[2] as $v) {
+                $knows_grids[6][] = $v;
+            }
+        }
+        if (!isset($knows_grids[7])) {
+            $knows_grids[7] = $knows_grids[4];
+            foreach ($knows_grids[3] as $v) {
+                $knows_grids[7][] = $v;
+            }
+        }
+        if (!isset($knows_grids[8])) {
+            $knows_grids[8] = $knows_grids[7];
+            foreach ($knows_grids[1] as $v) {
+                $knows_grids[8][] = $v;
+            }
+        }
+        if (!isset($knows_grids[9])) {
+            $knows_grids[9] = $knows_grids[7];
+            foreach ($knows_grids[2] as $v) {
+                $knows_grids[9][] = $v;
+            }
+        }
+        if (!isset($knows_grids[10])) {
+            $knows_grids[10] = $knows_grids[7];
+            $knows_grids[10][] = 'MMNN';
+            $knows_grids[10][] = 'MMPP';
+        }
+        if (!isset($knows_grids[11])) {
+            $knows_grids[11] = $knows_grids[10];
+            foreach ($knows_grids[1] as $v) {
+                $knows_grids[11][] = $v;
+            }
+        }
+        if (!isset($knows_grids[12])) {
+            $knows_grids[12] = $knows_grids[10];
+            foreach ($knows_grids[2] as $v) {
+                $knows_grids[12][] = $v;
+            }
+        }
+        if (!isset($knows_grids[13])) {
+            $knows_grids[13] = $knows_grids[10];
+            $knows_grids[13][] = 'LSRR';
+            $knows_grids[13][] = 'LSRR';
+        }
+
+        return apply_filters('themify_tiledata_template', $knows_grids);
+    }
+
 }

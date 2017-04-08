@@ -23,9 +23,11 @@ global $themify; ?>
 	<?php else: ?>
 
 		<?php
-		if ( 'yes' == $themify->use_original_dimensions ) {
-			$themify->width = themify_get( 'image_width' );
-			$themify->height = themify_get( 'image_height' );
+		if(!$themify->is_shortcode && $themify->query_category == ''){
+			if ( themify_get( 'image_width' ) !== NULL || themify_get( 'image_height' ) !== NULL ) {
+				$themify->width = themify_get( 'image_width' );
+				$themify->height = themify_get( 'image_height' );
+			}
 		}
 		?>
 

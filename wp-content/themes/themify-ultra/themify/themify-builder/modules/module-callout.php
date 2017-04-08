@@ -34,7 +34,10 @@ class TB_Callout_Module extends Themify_Builder_Module {
 				'id' => 'mod_title_callout',
 				'type' => 'text',
 				'label' => __('Module Title', 'themify'),
-				'class' => 'large'
+				'class' => 'large',
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			array(
 				'id' => 'layout_callout',
@@ -45,19 +48,28 @@ class TB_Callout_Module extends Themify_Builder_Module {
 					array('img' => 'callout-button-left.png', 'value' => 'button-left', 'label' => __('Button Left', 'themify')),
 					array('img' => 'callout-button-bottom.png', 'value' => 'button-bottom', 'label' => __('Button Bottom', 'themify')),
 					array('img' => 'callout-button-bottom-center.png', 'value' => 'button-bottom-center', 'label' => __('Button Bottom Center', 'themify'))
+				),
+				'render_callback' => array(
+					'binding' => 'live'
 				)
 			),
 			array(
 				'id' => 'heading_callout',
 				'type' => 'text',
 				'label' => __('Callout Heading', 'themify'),
-				'class' => 'xlarge'
+				'class' => 'xlarge',
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			array(
 				'id' => 'text_callout',
 				'type' => 'textarea',
 				'label' => __('Callout Text', 'themify'),
-				'class' => 'fullwidth'
+				'class' => 'fullwidth',
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			array(
 				'id' => 'color_callout',
@@ -79,19 +91,28 @@ class TB_Callout_Module extends Themify_Builder_Module {
 					array('img' => 'color-red.png', 'value' => 'red', 'label' => __('Red', 'themify')),
 					array('img' => 'color-pink.png', 'value' => 'pink', 'label' => __('Pink', 'themify')),
 					array('img' => 'color-transparent.png', 'value' => 'transparent', 'label' => __('Transparent', 'themify'))
+				),
+				'render_callback' => array(
+					'binding' => 'live'
 				)
 			),
 			array(
 				'id' => 'appearance_callout',
 				'type' => 'checkbox',
 				'label' => __('Callout Appearance', 'themify'),
-				'options' => Themify_Builder_model::get_appearance()
+				'options' => Themify_Builder_model::get_appearance(),
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			array(
 				'id' => 'action_btn_link_callout',
 				'type' => 'text',
 				'label' => __('Action Button Link', 'themify'),
-				'class' => 'xlarge'
+				'class' => 'xlarge',
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			array(
 				'id' => 'open_link_new_tab_callout',
@@ -104,13 +125,19 @@ class TB_Callout_Module extends Themify_Builder_Module {
 				'options' => array(
 					'yes' => __('Yes', 'themify'),
 					'no' => __('No', 'themify')
+				),
+				'render_callback' => array(
+					'binding' => 'live'
 				)
 			),
 			array(
 				'id' => 'action_btn_text_callout',
 				'type' => 'text',
 				'label' => __('Action Button Text', 'themify'),
-				'class' => 'medium'
+				'class' => 'medium',
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 				//'help' => __('If button text is empty = default text: More' ,'themify'),
 				//'break' => true
 			),
@@ -134,13 +161,19 @@ class TB_Callout_Module extends Themify_Builder_Module {
 					array('img' => 'color-red.png', 'value' => 'red', 'label' => __('Red', 'themify')),
 					array('img' => 'color-pink.png', 'value' => 'pink', 'label' => __('Pink', 'themify')),
 					array('img' => 'color-transparent.png', 'value' => 'transparent', 'label' => __('Transparent', 'themify'))
+				),
+				'render_callback' => array(
+					'binding' => 'live'
 				)
 			),
 			array(
 				'id' => 'action_btn_appearance_callout',
 				'type' => 'checkbox',
 				'label' => __('Action Button Appearance', 'themify'),
-				'options' => Themify_Builder_Model::get_appearance()
+				'options' => Themify_Builder_Model::get_appearance(),
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			// Additional CSS
 			array(
@@ -152,10 +185,24 @@ class TB_Callout_Module extends Themify_Builder_Module {
 				'type' => 'text',
 				'label' => __('Additional CSS Class', 'themify'),
 				'class' => 'large exclude-from-reset-field',
-				'help' => sprintf( '<br/><small>%s</small>', __('Add additional CSS class(es) for custom styling', 'themify') )
+				'help' => sprintf( '<br/><small>%s</small>', __('Add additional CSS class(es) for custom styling', 'themify') ),
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			)
 		);
 		return $options;
+	}
+
+	public function get_default_settings() {
+		$settings = array(
+			'heading_callout' => esc_html__( 'Callout Heading', 'themify' ),
+			'text_callout' => esc_html__( 'Callout Text', 'themify' ),
+			'action_btn_text_callout' => esc_html__( 'Action button', 'themify' ),
+			'action_btn_link_callout' => 'https://themify.me/',
+			'action_btn_color_callout' => 'blue'
+		);
+		return $settings;
 	}
 
 	public function get_animation() {
@@ -212,7 +259,7 @@ class TB_Callout_Module extends Themify_Builder_Module {
 				'class' => 'xlarge',
 				'prop' => 'background-image',
 				'selector' => '.module-callout',
-                                'option_js' => true
+								'option_js' => true
 			),
 			array(
 				'id' => 'background_color',
@@ -232,12 +279,12 @@ class TB_Callout_Module extends Themify_Builder_Module {
 					array('value' => 'repeat', 'name' => __('Repeat All', 'themify')),
 					array('value' => 'repeat-x', 'name' => __('Repeat Horizontally', 'themify')),
 					array('value' => 'repeat-y', 'name' => __('Repeat Vertically', 'themify')),
-					array('value' => 'repeat-none', 'name' => __('Do not repeat', 'themify')),
+					array('value' => 'no-repeat', 'name' => __('Do not repeat', 'themify')),
 					array('value' => 'fullcover', 'name' => __('Fullcover', 'themify'))
 				),
 				'prop' => 'background-repeat',
 				'selector' => '.module-callout',
-                                'wrap_with_class' => 'tf-group-element tf-group-element-image'
+								'wrap_with_class' => 'tf-group-element tf-group-element-image'
 			),
 			// Font
 			array(
@@ -393,7 +440,7 @@ class TB_Callout_Module extends Themify_Builder_Module {
 						'description' => __('top', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -417,7 +464,7 @@ class TB_Callout_Module extends Themify_Builder_Module {
 						'description' => __('right', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -441,7 +488,7 @@ class TB_Callout_Module extends Themify_Builder_Module {
 						'description' => __('bottom', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -465,7 +512,7 @@ class TB_Callout_Module extends Themify_Builder_Module {
 						'description' => __('left', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -509,7 +556,7 @@ class TB_Callout_Module extends Themify_Builder_Module {
 						'description' => __('top', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -533,7 +580,7 @@ class TB_Callout_Module extends Themify_Builder_Module {
 						'description' => __('right', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -557,7 +604,7 @@ class TB_Callout_Module extends Themify_Builder_Module {
 						'description' => __('bottom', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -581,7 +628,7 @@ class TB_Callout_Module extends Themify_Builder_Module {
 						'description' => __('left', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -733,7 +780,7 @@ class TB_Callout_Module extends Themify_Builder_Module {
 				'class' => 'style_apply_all style_apply_all_border',
 				'type' => 'checkbox',
 				'label' => false,
-                                'default'=>'border',
+								'default'=>'border',
 				'options' => array(
 					array( 'name' => 'border', 'value' => __( 'Apply to all border', 'themify' ) )
 				)
@@ -853,7 +900,7 @@ class TB_Callout_Module extends Themify_Builder_Module {
 				'id' => 'module-styling',
 				'tabs' => array(
 					'general' => array(
-		        	'label' => __('General', 'themify'),
+					'label' => __('General', 'themify'),
 					'fields' => $general
 					),
 					'button' => array(
@@ -864,6 +911,31 @@ class TB_Callout_Module extends Themify_Builder_Module {
 			),
 		);
 
+	}
+
+	protected function _visual_template() {
+		$module_args = $this->get_module_args(); ?>
+		<div class="module module-<?php echo esc_attr( $this->slug ); ?> ui {{ data.layout_callout }} {{ data.color_callout }} {{ data.css_callout }} {{ data.background_repeat }} <# ! _.isUndefined( data.appearance_callout ) ? print( data.appearance_callout.split('|').join(' ') ) : ''; #>">
+			<# if ( data.mod_title_callout ) { #>
+			<?php echo $module_args['before_title']; ?>{{{ data.mod_title_callout }}}<?php echo $module_args['after_title']; ?>
+			<# } #>
+			
+			<div class="callout-inner">
+				<div class="callout-content">
+					<h3 class="callout-heading">{{{ data.heading_callout }}}</h3>
+					{{{ data.text_callout }}}
+				</div>
+				
+				<# if ( data.action_btn_text_callout ) { #>
+					<div class="callout-button">
+						<a href="{{ data.action_btn_link_callout }}" class="ui builder_button {{ data.action_btn_color_callout }} <# ! _.isUndefined( data.action_btn_appearance_callout ) ? print( data.action_btn_appearance_callout.split('|').join(' ') ) : ''; #>">
+							{{{ data.action_btn_text_callout }}}
+						</a>
+					</div>
+				<# } #>
+			</div>			
+		</div>
+	<?php
 	}
 }
 

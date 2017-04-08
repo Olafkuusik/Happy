@@ -25,7 +25,58 @@ class TB_Accordion_Module extends Themify_Builder_Module {
 				'id' => 'mod_title_accordion',
 				'type' => 'text',
 				'label' => __('Module Title', 'themify'),
-				'class' => 'large'
+				'class' => 'large',
+				'render_callback' => array(
+					'binding' => 'live'
+				)
+			),
+			array(
+				'id' => 'content_accordion',
+				'type' => 'builder',
+				'options' => array(
+					array(
+						'id' => 'title_accordion',
+						'type' => 'text',
+						'label' => __('Accordion Title', 'themify'),
+						'class' => 'large',
+						'render_callback' => array(
+							'repeater' => 'content_accordion',
+							'binding' => 'live'
+						)
+					),
+					array(
+						'id' => 'text_accordion',
+						'type' => 'wp_editor',
+						'label' => false,
+						'class' => 'fullwidth',
+						'rows' => 6,
+						'render_callback' => array(
+							'repeater' => 'content_accordion',
+							'binding' => 'live'
+						)
+					),
+					array(
+						'id' => 'default_accordion',
+						'type' => 'radio',
+						'label' => __('Default', 'themify'),
+						'default' => 'toggle',
+						'options' => array(
+							'closed' => __('closed', 'themify'),
+							'open' => __('open', 'themify')
+						),
+						'render_callback' => array(
+							'repeater' => 'content_accordion',
+							'binding' => 'live'
+						)
+					)
+				),
+				'render_callback' => array(
+					'binding' => 'live'
+				)
+			),
+			array(
+				'type' => 'separator',
+				'meta' => array( 'html' => '<hr/>')
 			),
 			array(
 				'id' => 'layout_accordion',
@@ -34,6 +85,9 @@ class TB_Accordion_Module extends Themify_Builder_Module {
 				'options' => array(
 					array('img' => 'accordion-default.png', 'value' => 'default', 'label' => __('Contiguous Panels', 'themify')),
 					array('img' => 'accordion-separate.png', 'value' => 'separate', 'label' => __('Separated Panels', 'themify'))
+				),
+				'render_callback' => array(
+					'binding' => 'live'
 				)
 			),
 			array(
@@ -45,7 +99,10 @@ class TB_Accordion_Module extends Themify_Builder_Module {
 					'toggle' => __('Toggle <small>(only clicked item is toggled)</small>', 'themify'),
 					'accordion' => __('Accordion <small>(collapse all, but keep clicked item expanded)</small>', 'themify')
 				),
-				'break' => true
+				'break' => true,
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			array(
 				'id' => 'color_accordion',
@@ -67,6 +124,9 @@ class TB_Accordion_Module extends Themify_Builder_Module {
 					array('img' => 'color-red.png', 'value' => 'red', 'label' => __('red', 'themify')),
 					array('img' => 'color-pink.png', 'value' => 'pink', 'label' => __('pink', 'themify')),
 					array('img' => 'color-transparent.png', 'value' => 'transparent', 'label' => __('Transparent', 'themify'))
+				),
+				'render_callback' => array(
+					'binding' => 'live'
 				)
 			),
 			array(
@@ -79,6 +139,9 @@ class TB_Accordion_Module extends Themify_Builder_Module {
 					array( 'name' => 'glossy', 'value' => __('Glossy', 'themify')),
 					array( 'name' => 'embossed', 'value' => __('Embossed', 'themify')),
 					array( 'name' => 'shadow', 'value' => __('Shadow', 'themify'))
+				),
+				'render_callback' => array(
+					'binding' => 'live'
 				)
 			),
 			array(
@@ -91,42 +154,19 @@ class TB_Accordion_Module extends Themify_Builder_Module {
 						'type' => 'icon',
 						'label' => __('Closed Accordion Icon', 'themify'),
 						'class' => 'large',
+						'render_callback' => array(
+							'binding' => 'live'
+						)
 					),
 					array(
 						'id' => 'icon_active_accordion',
 						'type' => 'icon',
 						'label' => __('Opened Accordion Icon', 'themify'),
 						'class' => 'large',
-					),
-				)
-			),
-			array(
-				'id' => 'content_accordion',
-				'type' => 'builder',
-				'options' => array(
-					array(
-						'id' => 'title_accordion',
-						'type' => 'text',
-						'label' => __('Accordion Title', 'themify'),
-						'class' => 'large'
-					),
-					array(
-						'id' => 'text_accordion',
-						'type' => 'wp_editor',
-						'label' => false,
-						'class' => 'fullwidth',
-						'rows' => 6
-					),
-					array(
-						'id' => 'default_accordion',
-						'type' => 'radio',
-						'label' => __('Default', 'themify'),
-						'default' => 'toggle',
-						'options' => array(
-							'closed' => __('closed', 'themify'),
-							'open' => __('open', 'themify')
+						'render_callback' => array(
+							'binding' => 'live'
 						)
-					)
+					),
 				)
 			),
 			// Additional CSS
@@ -139,10 +179,22 @@ class TB_Accordion_Module extends Themify_Builder_Module {
 				'type' => 'text',
 				'label' => __('Additional CSS Class', 'themify'),
 				'class' => 'large exclude-from-reset-field',
-				'help' => sprintf( '<br/><small>%s</small>', __( 'Add additional CSS class(es) for custom styling', 'themify') )
+				'help' => sprintf( '<br/><small>%s</small>', __( 'Add additional CSS class(es) for custom styling', 'themify') ),
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			)
 		);
 		return $options;
+	}
+
+	public function get_default_settings() {
+		$settings = array(
+			'content_accordion' => array(
+				array( 'title_accordion' => esc_html__( 'Accordion Title', 'themify' ), 'text_accordion' => esc_html__( 'Accordion content', 'themify' ) )
+			)
+		);
+		return $settings;
 	}
 
 	public function get_animation() {
@@ -658,7 +710,7 @@ class TB_Accordion_Module extends Themify_Builder_Module {
 				'label' => __('Color', 'themify'),
 				'class' => 'small',
 				'prop' => 'color',
-				'selector' => array( ' .ui.module-accordion .accordion-title .accordion-icon' )
+				'selector' => array( ' .ui.module-accordion .accordion-title .accordion-active-icon' )
 			),
 			array(
 				'id' => 'icon_active_color',
@@ -666,7 +718,7 @@ class TB_Accordion_Module extends Themify_Builder_Module {
 				'label' => __('Closed Icon Color', 'themify'),
 				'class' => 'small',
 				'prop' => 'color',
-				'selector' => array( ' .ui.module-accordion .accordion-title .accordion-active-icon' )
+				'selector' => array( ' .ui.module-accordion .accordion-title .accordion-icon' )
 			),
 			array(
 				'id' => 'multi_icon_size',
@@ -726,7 +778,7 @@ class TB_Accordion_Module extends Themify_Builder_Module {
 				'label' => __('Font Family', 'themify'),
 				'class' => 'font-family-select',
 				'prop' => 'font-family',
-				'selector' => ' .ui.module-accordion .accordion-content',
+				'selector' => ' .ui.module-accordion .accordion-content, .ui.module-accordion .accordion-content *',
 			),
 			array(
 				'id' => 'font_color_content',
@@ -950,6 +1002,44 @@ class TB_Accordion_Module extends Themify_Builder_Module {
 			),
 		);
 
+	}
+
+	protected function _visual_template() { 
+		$module_args = $this->get_module_args(); ?>
+		<div class="module module-<?php echo esc_attr( $this->slug ); ?> {{ data.css_accordion }}" data-behavior="{{ data.expand_collapse_accordion }}">
+			<# if ( data.mod_title_accordion ) { #>
+			<?php echo $module_args['before_title']; ?>{{{ data.mod_title_accordion }}}<?php echo $module_args['after_title']; ?>
+			<# }
+
+			if ( data.content_accordion ) { #>
+				<ul class="module-<?php echo esc_attr( $this->slug ); ?> ui {{ data.layout_accordion }} {{ data.color_accordion }} <# ! _.isUndefined( data.accordion_appearance_accordion ) ? print( data.accordion_appearance_accordion.split('|').join(' ') ) : ''; #>">
+					<#
+					_.each( data.content_accordion, function( item ) { #>
+						<li class="<# 'open' === item.default_accordion ? print('builder-accordion-active') : ''; #>">
+							
+							<div class="accordion-title">
+								<a href="#">
+									<# if ( data.icon_accordion ) { #>
+										<i class="accordion-icon fa {{ data.icon_accordion }}"></i>
+									<# } #>
+									
+									<# if ( data.icon_active_accordion ) { #>
+										<i class="accordion-active-icon fa {{ data.icon_active_accordion }}"></i>
+									<# } #>
+
+									{{{ item.title_accordion }}}
+								</a>
+							</div>
+
+							<div class="accordion-content <# 'open' !== item.default_accordion ? print('default-closed') : ''; #> clearfix">
+								{{{ item.text_accordion }}}
+							</div>
+						</li>
+					<# } ); #>
+				</ul>
+			<# } #>
+		</div>
+	<?php
 	}
 }
 

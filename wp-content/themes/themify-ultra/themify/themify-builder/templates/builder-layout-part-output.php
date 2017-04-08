@@ -12,12 +12,12 @@ global $ThemifyBuilder;
 
 		if( ! Themify_Builder_Model::is_frontend_editor_page() ) { // prevent duplicate CSS output
 			// output styles for layout parts as inline CSS
-			echo $ThemifyBuilder->render_row_styling( $builder_id, $row );
+			echo $ThemifyBuilder->stylesheet->render_row_styling( $builder_id, $row );
 			// Column Styling
-			add_action('themify_builder_column_start', array($ThemifyBuilder, 'render_column_styling'), 10, 3);
+			add_action('themify_builder_column_start', array($ThemifyBuilder->stylesheet, 'render_column_styling'), 10, 3);
 
 			// Sub-Column Styling
-			add_action('themify_builder_sub_column_start', array($ThemifyBuilder, 'render_sub_column_styling'), 10, 5);
+			add_action('themify_builder_sub_column_start', array($ThemifyBuilder->stylesheet, 'render_sub_column_styling'), 10, 5);
 		}
 		echo $ThemifyBuilder->get_template_row( $rows, $row, $builder_id, false, false );
 

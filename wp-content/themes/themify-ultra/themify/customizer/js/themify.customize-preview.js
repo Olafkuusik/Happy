@@ -107,12 +107,14 @@
 
 		controlBackground: function( event, model, currentData ) {
 			var $transparent = $('.color-transparent', model.container),
+				$fixedBg = $( '.fixed-bg input[type="checkbox"]', model.container ),
 				$noimage = $('.disable-control', model.container),
 				$hideElements = $('.open-media-wrap, .image-label, .background-style, .background-position', model.container),
 				$preview = $('.themify_control_preview', model.container);
 
 			var values = themifyParseJSON( currentData, model.getCurrentDevice() ),
 				isTransparent = 'transparent' === values.transparent ? true : false,
+				isBgFixed = 'fixed' === values.fixedbg,
 				isNoImage = 'noimage' === values.noimage ? true : false,
 				isImgSrc = values.src && '' !== values.src ? true : false;
 
@@ -124,6 +126,8 @@
 			} else {
 				$transparent.parent().prev().removeClass('transparent');
 			}
+
+			$fixedBg.prop( 'checked', isBgFixed );
 
 			$noimage.prop('checked', isNoImage);
 			if ( isNoImage ) {
@@ -184,7 +188,7 @@
 			var $color = $('#' + model.id + '_color_picker', model.container),
 				val = values.color || '';
 			$color.minicolors('value', val);
-			$color.minicolors('opacity', val);
+			$color.minicolors('opacity', values.opacity || '');
 			if ( _.isEmpty( val ) ) {
 				$color.closest('.color-picker').find('.remove-color').hide();
 			} else {
@@ -928,6 +932,21 @@
 			});
 		});
 	}
+	if (themifyCustomizer.borderColorControls) {
+		$.each(themifyCustomizer.borderColorControls, function (index, selector) {
+			api(index, function (value) {
+				value.bind(function (colorData) {
+					var values = themifyParseJSON(colorData),
+							$id = getStyleId(selector);
+					if (!styles[$id]) {
+						styles[$id] = [];
+					}
+					styles[$id]['border-color'] = getColor(values);
+					$.event.trigger("themify.customizer", [$id, selector]);
+				});
+			});
+		});
+	}
 	////////////////////////////////////////////////////////////////////////////
 	// Color Control End
 	////////////////////////////////////////////////////////////////////////////
@@ -935,20 +954,29 @@
 	////////////////////////////////////////////////////////////////////////////
 	// Image Control Start
 	////////////////////////////////////////////////////////////////////////////
-	if (themifyCustomizer.imageControls) {
-		$.each(themifyCustomizer.imageControls, function (index, selector) {
+	if (themifyCustomizer.imageselectControls) {
+		$.each(themifyCustomizer.imageselectControls, function (index, selector) {
 			api(index, function (value) {
 				value.bind(function (imageData) {
 					var values = $.parseJSON(imageData),
-							$selector = $(selector);
+                                                    $selector = $(selector);
 
 					if (values) {
-						var $img = $('img', $selector);
+                                                var $id = getStyleId(selector),
+                                                    $img = $('img#'+$id, $selector);
 						if ($img.length > 0) {
-							$img.remove();
+                                                    $img.remove();
 						}
 						if (values.src) {
-							$($selector).prepend('<img src="' + values.src + '" />');
+                                                    var img = '<img id="'+$id+'" src="' + values.src + '"';
+                                                    if(values.imgwidth){
+                                                        img+=' width="'+values.imgwidth+'"';
+                                                    }
+                                                    if(values.imgheight){
+                                                        img+=' height="'+values.imgheight+'"';
+                                                    }
+                                                    img+='/>';
+                                                    $($selector).prepend(img);
 						}
 					}
 				});

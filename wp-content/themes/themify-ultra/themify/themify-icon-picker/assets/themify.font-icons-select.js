@@ -113,9 +113,17 @@
 
 		setIcon: function(iconName) {
 			var $target = $(Themify_Icons.target);
-			$target.val( iconName );
+			$target.val( iconName ).trigger('change');
+
+			// icon preview
 			if ( $('.fa:not(.icon-close)', $target.parent().parent()).length > 0 ) {
-				$('.fa:not(.icon-close)', $target.parent().parent()).removeClass().addClass( 'fa fa-' + iconName );
+				$.ajax({
+					url : ajaxurl,
+					data : { action: 'tf_get_icon', tf_icon : iconName },
+					success: function( data ){
+						$('.fa:not(.icon-close)', $target.parent().parent()).removeClass().addClass( data );
+					}
+				});
 			}
 			Themify_Icons.closeLightbox();
 		},

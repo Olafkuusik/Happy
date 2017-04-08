@@ -21,29 +21,12 @@ global $themify;
 	<div id="content" class="clearfix">
     	<?php themify_content_start(); //hook ?>
 		
-		<?php 
-		/////////////////////////////////////////////
-		// Author Page	 							
-		/////////////////////////////////////////////
-		if(is_author()) : ?>
-			<?php
-			global $author, $author_name;
-			$curauth = (isset($_GET['author_name'])) ? get_user_by('slug', $author_name) : get_userdata(intval($author));
-			$author_url = $curauth->user_url;
-			?>
-			<div class="author-bio clearfix">
-				<p class="author-avatar"><?php echo get_avatar( $curauth->user_email, $size = '48' ); ?></p>
-				<h2 class="author-name"><?php _e('About ','themify'); ?> <span><?php echo $curauth->display_name; ?></span></h2>
-				<?php if($author_url != ''): ?><p class="author-url"><a href="<?php echo $author_url; ?>"><?php echo $author_url; ?></a></p><?php endif; //author url ?>
-				<div class="author-description">
-					<?php echo $curauth->user_description; ?>
-				</div>
-				<!-- /.author-description -->
-			</div>
-			<!-- /.author bio -->
-			
-			<h2 class="author-posts-by"><?php _e('Posts by','themify'); ?> <?php echo $curauth->first_name; ?> <?php echo $curauth->last_name; ?>:</h2>
-		<?php endif; ?>
+		<?php
+			// author bio
+			if( is_author() ) :
+				themify_author_bio();
+			endif;
+		?>
 
 		<?php 
 		/////////////////////////////////////////////
@@ -75,18 +58,6 @@ global $themify;
 		<?php if( is_category() || is_tag() || is_tax() ): ?>
 			<h1 class="page-title"><?php single_cat_title(); ?></h1>
 			<?php echo themify_get_term_description(); ?>
-		<?php endif; ?>
-
-		<?php 
-		/////////////////////////////////////////////
-		// Default query categories	 							
-		/////////////////////////////////////////////
-		?>
-		<?php if( !is_search() ): ?>
-			<?php
-				global $query_string;
-				query_posts( apply_filters( 'themify_query_posts_args', $query_string.'&order='.$themify->order.'&orderby='.$themify->orderby ) );
-			?>
 		<?php endif; ?>
 
 		<?php 

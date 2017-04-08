@@ -361,6 +361,8 @@ li.customize-control[class*=themify] .selected {
 .open-media-wrap img {
 	max-height: 100%;
 }
+
+.fixed-bg,
 .no-image {
 	padding-top: 5px;
 	vertical-align: bottom;
@@ -609,29 +611,39 @@ input[type=text].dimension-width,
 	margin-bottom: 10px;
 }
 
-/* Clear
+/* Clear, Import and Export
 ------------------------------------------------------*/
-.customize-control-themify_clear {
-	padding: 0 5%;
-}
-.customize-control-themify_clear .themify-control-title {
-	font-size: 14px;
-	margin: 10px 0 9px;
-}
-.clearall-icon {
-	color: red;
-	padding-right: 5px;
+.tool_wrapper {
+	padding: 0 4%;
+	display:inline-block;
+	width:auto;
+	clear:none;
 }
 
-.clearall {
+.customize-control-themify_tools .themify-control-title {
+	font-size: 14px;
+	margin: 10px 0 0;
+}
+
+.clearall, .customize-import, .customize-export {
 	color: #333;
 	-webkit-transition: color .3s ease-out;
 	transition: color .3s ease-out;
+	font-weight:normal;
 }
-.clearall:hover {
+
+.clearall:hover, .customize-import:hover, .customize-export:hover {
 	color: red;
 }
 
+.customize-import:hover{
+	cursor:pointer;
+}
+
+.customize-import .plupload-upload-uic{
+	display:inline;
+	vertical-align:top;
+}
 /* Custom Dropdowns
 ------------------------------------------------------*/
 .customize-control-themify_subaccordion_start input[type=text],

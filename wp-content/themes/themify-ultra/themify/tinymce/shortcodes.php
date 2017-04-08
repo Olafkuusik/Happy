@@ -1,7 +1,7 @@
 <?php
 
 return array(
-	'author_box' => array(
+	'themify_author_box' => array(
 		'label' => __( 'Author Box', 'themify' ),
 		'fields' => array(
 			array(
@@ -78,9 +78,8 @@ return array(
 				'label' => __( 'Additional Styles', 'themify' ),
 			),
 		),
-		'template' => '[themify_author_box<# if ( data.avatar ) { #> avatar="{{data.avatar}}"<# } #><# if ( data.avatar_size ) { #> avatar_size="{{data.avatar_size}}"<# } #><# if ( data.style = [ data.color, data.icon, data.style ].filter( Boolean ).join( " " ) ) { #> style="{{data.style}}"<# } #><# if ( data.author_link ) { #> author_link="{{data.author_link}}"<# } #>]',
 	),
-	'box' => array(
+	'themify_box' => array(
 		'label' => __( 'Box', 'themify' ),
 		'fields' => array(
 			array(
@@ -129,18 +128,19 @@ return array(
 				'label' => __( 'Additional Styles', 'themify' ),
 			),
 		),
-		'template' => '[themify_box<# if ( data.style = [ data.color, data.icon, data.style ].filter( Boolean ).join( " " ) ) { #> style="{{data.style}}"<# } #>]{{{data.selectedContent}}}[/themify_box]',
+		'closing_tag' => true,
 	),
-	'button' => array(
+	'themify_button' => array(
 		'label' => __( 'Button', 'themify' ),
 		'fields' => array(
 			array(
 				'name' => 'label',
 				'type' => 'textbox',
-				'label' => __( 'Button Text:', 'themify' )
+				'label' => __( 'Button Text:', 'themify' ),
+				'ignore' => true,
 			),
 			array(
-				'name' => 'color',
+				'name' => 'bgcolor',
 				'type' => 'listbox',
 				'values' => array(
 					array( 'value' => '', 'text' => '' ),
@@ -184,14 +184,14 @@ return array(
 				'tooltip' => sprintf( __( 'Entering %s will open link in a new window (leave blank for default).', 'themify' ), '<strong>_blank</strong>' )
 			),
 			array(
-				'name' => 'custom_color',
+				'name' => 'color',
 				'type' => 'colorbox',
 				'value' => '',
 				'label' => __( 'Custom Background Color:', 'themify' ),
 				'tooltip' => __( 'Enter color in hexadecimal format. For example, #ddd.', 'themify' )
 			),
 			array(
-				'name' => 'custom_text_color',
+				'name' => 'text',
 				'type' => 'colorbox',
 				'label' => __( 'Custom Button Text Color:', 'themify' ),
 				'tooltip' => __( 'Enter color in hexadecimal format. For example, #000.', 'themify' )
@@ -207,9 +207,10 @@ return array(
 				'label' => __( 'Additional Styles', 'themify' ),
 			),
 		),
-		'template' => '[themify_button<# if ( data.style = [ data.size, data.color, data.style, ( data.block ) ? "block" : "" ].filter( Boolean ).join( " " ) ) { #> style="{{data.style}}"<# } #> link="{{data.link}}"<# if ( data.target ) { #> target="{{data.target}}"<# } #><# if ( data.custom_color ) { #> color="{{data.custom_color}}"<# } #><# if ( data.custom_text_color ) { #> text="{{data.custom_text_color}}"<# } #>]{{{data.label}}}[/themify_button]',
+		'closing_tag' => true,
+		'wrap_with' => '{{{data.label}}}',
 	),
-	'columns' => array(
+	'themify_columns' => array(
 		'label' => __( 'Columns', 'themify' ),
 		'menu' => array(
 			'equal-half' => array(
@@ -234,13 +235,13 @@ return array(
 			)
 		),
 	),
-	'custom_slider' => array(
+	'themify_slider' => array(
 		'label' => __( 'Custom Slider', 'themify' ),
 		'fields' => array(
 			array(
 				'name' => 'visible',
 				'type' => 'textbox',
-				'label' => __( 'Number of posts visible at the same time:', 'themify' ),
+				'label' => __( 'Number of items visible at the same time:', 'themify' ),
 				'tooltip' => __( 'Default = 1.', 'themify' )
 			),
 			array(
@@ -263,13 +264,13 @@ return array(
 					array( 'value' => 'yes', 'text' => __( 'Yes', 'themify' ) ),
 					array( 'value' => 'no', 'text' => __( 'No', 'themify' ) ),
 				),
-				'label' => __( 'Wrap slider posts:', 'themify' ),
+				'label' => __( 'Wrap slider:', 'themify' ),
 				'tooltip' => __( 'Default = yes, the slider will loop back to the first item', 'themify' )
 			),
 			array(
 				'name' => 'speed',
 				'type' => 'listbox',
-				'options' => array(
+				'values' => array(
 					array( 'value' => '', 'text' => '' ),
 					array( 'value' => 'normal', 'text' => __( 'Normal', 'themify' ) ),
 					array( 'value' => 'slow', 'text' => __( 'Slow', 'themify' ) ),
@@ -294,9 +295,10 @@ return array(
 				'label' => __( 'Custom CSS class name:', 'themify' )
 			),
 		),
-		'template' => '[themify_slider<# if ( data.visible ) { #> visible="{{data.visible}}"<# } #><# if ( data.scroll ) { #> scroll="{{data.scroll}}"<# } #><# if ( data.auto ) { #> auto="{{data.auto}}"<# } #><# if ( data.wrap ) { #> wrap="{{data.wrap}}"<# } #><# if ( data.speed ) { #> speed="{{data.speed}}"<# } #><# if ( data.slider_nav ) { #> slider_nav="{{data.slider_nav}}"<# } #><# if ( data.class ) { #> class="{{data.class}}"<# } #>][themify_slide]{{{data.selectedContent}}}[/themify_slide][/themify_slider]',
+		'closing_tag' => true,
+		'wrap_with' => '[themify_slide]{{{data.selectedContent}}}[/themify_slide]',
 	),
-	'flickr' => array(
+	'themify_flickr' => array(
 		'label' => __( 'Flickr Gallery', 'themify' ),
 		'fields' => array(
 			array(
@@ -358,9 +360,8 @@ return array(
 				'tooltip' => __( 'Display latest photos or random (default = latest)', 'themify' )
 			)
 		),
-		'template' => '[themify_flickr<# if ( data.user ) { #> user="{{data.user}}"<# } #><# if ( data.set ) { #> set="{{data.set}}"<# } #><# if ( data.group ) { #> group="{{data.group}}"<# } #><# if ( data.limit ) { #> limit="{{data.limit}}"<# } #><# if ( data.size ) { #> size="{{data.size}}"<# } #><# if ( data.display ) { #> display="{{data.display}}"<# } #>]',
 	),
-	'hr' => array(
+	'themify_hr' => array(
 		'label' => __( 'Horizontal Rule', 'themify' ),
 		'fields' => array(
 			array(
@@ -392,9 +393,8 @@ return array(
 				'tooltip' => __( 'Example: 1px.', 'themify' )
 			)
 		),
-		'template' => '[themify_hr<# if ( data.color ) { #> color="{{data.color}}"<# } #><# if ( data.width ) { #> width="{{data.width}}"<# } #><# if ( data.border_width ) { #> border_width="{{data.border_width}}"<# } #>]',
 	),
-	'icon' => array(
+	'themify_icon' => array(
 		'label' => __( 'Icon', 'themify' ),
 		'fields' => array(
 			array(
@@ -433,9 +433,8 @@ return array(
 				'tooltip'  => __( 'Enter color in hexadecimal format. For example, #ddd.', 'themify' )
 			),
 		),
-		'template' => '[themify_icon<# if ( data.icon ) { #> icon="{{data.icon}}"<# } #><# if ( data.label ) { #> label="{{data.label}}"<# } #><# if ( data.link ) { #> link="{{data.link}}"<# } #><# if ( data.style ) { #> style="{{data.style}}"<# } #><# if ( data.icon_color ) { #> icon_color="{{data.icon_color}}"<# } #><# if ( data.icon_bg ) { #> icon_bg="{{data.icon_bg}}"<# } #>]'
 	),
-	'list' => array(
+	'themify_list' => array(
 		'label' => __( 'Icon List', 'themify' ),
 		'fields' => array(
 			array(
@@ -462,19 +461,20 @@ return array(
 				'label' => __( 'Style:', 'themify' ),
 			),
 		),
-		'template' => '[themify_list<# if ( data.icon ) { #> icon="{{data.icon}}"<# } #><# if ( data.style ) { #> style="{{data.style}}"<# } #><# if ( data.icon_color ) { #> icon_color="{{data.icon_color}}"<# } #><# if ( data.icon_bg ) { #> icon_bg="{{data.icon_bg}}"<# } #>]<ul><li><# if ( ! data.selectedContent ) { data.selectedContent = "&nbsp;"; } #>{{{data.selectedContent}}}</li></ul>[/themify_list]'
+		'closing_tag' => true,
+		'wrap_with' => '<ul><li><# if ( ! data.selectedContent ) { data.selectedContent = "&nbsp;"; } #>{{{data.selectedContent}}}</li></ul>',
 	),
-	'is_guest' => array(
+	'themify_is_guest' => array(
 		'label' => __( 'Is Guest', 'themify' ),
 		'fields' => array(),
-		'template' => '[themify_is_guest]{{{data.selectedContent}}}[themify_is_guest]'
+		'closing_tag' => true,
 	),
-	'is_logged_in' => array(
+	'themify_is_logged_in' => array(
 		'label' => __( 'Is Logged In', 'themify' ),
 		'fields' => array(),
-		'template' => '[themify_is_logged_in]{{{data.selectedContent}}}[themify_is_logged_in]'
+		'closing_tag' => true,
 	),
-	'list_posts' => array(
+	'themify_list_posts' => array(
 		'label' => __( 'List Posts', 'themify' ),
 		'fields' => array(
 			array(
@@ -483,10 +483,10 @@ return array(
 				'values' => array(
 					array( 'value' => '', 'text' => '' ),
 					array( 'value' => 'list-post', 'text' => __( 'Post list', 'themify' ) ),
-					array( 'value' => 'grid4', 'text' => __( '4 Grid', 'themify' ) ),
-					array( 'value' => 'grid3', 'text' => __( '3 Grid', 'themify' ) ),
-					array( 'value' => 'grid2', 'text' => __( '2 Grid', 'themify' ) ),
-					array( 'value' => 'grid2-thumb', 'text' => __( '2 Grid Thumb', 'themify' ) ),
+					array( 'value' => 'grid4', 'text' => __( 'Grid 4', 'themify' ) ),
+					array( 'value' => 'grid3', 'text' => __( 'Grid 3', 'themify' ) ),
+					array( 'value' => 'grid2', 'text' => __( 'Grid 2', 'themify' ) ),
+					array( 'value' => 'grid2-thumb', 'text' => __( 'Grid 2 Thumb', 'themify' ) ),
 					array( 'value' => 'list-thumb-image', 'text' => __( 'List Thumb', 'themify' ) ),
 				),
 				'label' => __( 'Layout Style:', 'themify' ),
@@ -509,8 +509,8 @@ return array(
 				'type' => 'listbox',
 				'values' => array(
 					array( 'value' => '', 'text' => '' ),
-					array( 'value' => 'ASC', 'text' => __( 'Descending', 'themify' ) ),
-					array( 'value' => 'DESC', 'text' => __( 'Ascending', 'themify' ) ),
+					array( 'value' => 'DESC', 'text' => __( 'Descending', 'themify' ) ),
+					array( 'value' => 'ASC', 'text' => __( 'Ascending', 'themify' ) ),
 				),
 				'label' => __( 'Post Order:', 'themify' ),
 				'tooltip' => __( 'Default = descending.', 'themify' )
@@ -616,9 +616,8 @@ return array(
 				'tooltip' => __( 'Default = no.', 'themify' )
 			),
 		),
-		'template' => '[themify_list_posts<# if ( data.limit ) { #> limit="{{data.limit}}"<# } #><# if ( data.category ) { #> category="{{data.category}}"<# } #><# if ( data.image ) { #> image="{{data.image}}"<# } #><# if ( data.image_w ) { #> image_w="{{data.image_w}}"<# } #><# if ( data.image_h ) { #> image_h="{{data.image_h}}"<# } #><# if ( data.title ) { #> title="{{data.title}}"<# } #><# if ( data.post_meta ) { #> post_meta="{{data.post_meta}}"<# } #><# if ( data.display ) { #> display="{{data.display}}"<# } #><# if ( data.more_text ) { #> more_text="{{data.more_text}}"<# } #><# if ( data.post_date ) { #> post_date="{{data.post_date}}"<# } #><# if ( data.style ) { #> style="{{data.style}}"<# } #><# if ( data.image_size ) { #> image_size="{{data.image_size}}"<# } #><# if ( data.order ) { #> order="{{data.order}}"<# } #><# if ( data.orderby ) { #> orderby="{{data.orderby}}"<# } #>]'
 	),
-	'map' => array(
+	'themify_map' => array(
 		'label' => __( 'Map', 'themify' ),
 		'fields' => array(
 			array(
@@ -667,12 +666,11 @@ return array(
 					array( 'value' => 'terrain', 'text' => __( 'Terrain', 'themify' ) ),
 				),
 				'label' => __( 'Map Type:', 'themify' ),
-				'tooltip' => __( 'Default = Road Map', 'themify' )
+				'tooltip' => __( 'Default = Road Map', 'themify' ),
 			),
 		),
-		'template' => '[themify_map<# if ( data.address ) { #> address="{{data.address}}"<# } #><# if ( data.width ) { #> width="{{data.width}}"<# } #><# if ( data.height ) { #> height="{{data.height}}"<# } #><# if ( data.zoom ) { #> zoom="{{data.zoom}}"<# } #><# if ( data.type ) { #> type="{{data.type}}"<# } #>]'
 	),
-	'post_slider' => array(
+	'themify_post_slider' => array(
 		'label' => __( 'Post Slider', 'themify' ),
 		'fields' => array(
 			array(
@@ -854,14 +852,13 @@ return array(
 				'label' => __( 'Custom CSS class name:', 'themify' )
 			),
 		),
-		'template' => '[themify_post_slider<# if ( data.limit ) { #> limit="{{data.limit}}"<# } #><# if ( data.category ) { #> category="{{data.category}}"<# } #><# if ( data.image ) { #> image="{{data.image}}"<# } #><# if ( data.image_w ) { #> image_w="{{data.image_w}}"<# } #><# if ( data.image_h ) { #> image_h="{{data.image_h}}"<# } #><# if ( data.title ) { #> title="{{data.title}}"<# } #><# if ( data.post_meta ) { #> post_meta="{{data.post_meta}}"<# } #><# if ( data.display ) { #> display="{{data.display}}"<# } #><# if ( data.more_text ) { #> more_text="{{data.more_text}}"<# } #><# if ( data.image_size ) { #> image_size="{{data.image_size}}"<# } #><# if ( data.order ) { #> order="{{data.order}}"<# } #><# if ( data.orderby ) { #> orderby="{{data.orderby}}"<# } #><# if ( data.visible ) { #> visible="{{data.visible}}"<# } #><# if ( data.scroll ) { #> scroll="{{data.scroll}}"<# } #><# if ( data.auto ) { #> auto="{{data.auto}}"<# } #><# if ( data.wrap ) { #> wrap="{{data.wrap}}"<# } #><# if ( data.speed ) { #> speed="{{data.speed}}"<# } #><# if ( data.slider_nav ) { #> slider_nav="{{data.slider_nav}}"<# } #><# if ( data.width ) { #> width="{{data.width}}"<# } #><# if ( data.height ) { #> height="{{data.height}}"<# } #><# if ( data.class ) { #> class="{{data.class}}"<# } #>]',
 	),
-	'quote' => array(
+	'themify_quote' => array(
 		'label' => __( 'Quote', 'themify' ),
 		'fields' => array(),
-		'template' => '[themify_quote]{{{data.selectedContent}}}[/themify_quote]'
+		'closing_tag' => true,
 	),
-	'twitter' => array(
+	'themify_twitter' => array(
 		'label' => __( 'Twitter Stream', 'themify' ),
 		'fields' => array(
 			array(
@@ -901,6 +898,5 @@ return array(
 				'label' => __( 'Text linked to your Twitter account:', 'themify' )
 			)
 		),
-		'template' => '[themify_twitter<# if ( data.username ) { #> username="{{data.username}}"<# } #><# if ( data.show_count ) { #> show_count="{{data.show_count}}"<# } #><# if ( data.show_timestamp ) { #> show_timestamp="{{data.show_timestamp}}"<# } #><# if ( data.show_follow ) { #> show_follow="{{data.show_follow}}"<# } #><# if ( data.follow_text ) { #> follow_text="{{data.follow_text}}"<# } #>]'
 	),
 );

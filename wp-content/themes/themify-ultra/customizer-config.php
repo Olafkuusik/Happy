@@ -53,7 +53,7 @@ function themify_theme_customizer_definition( $args ) {
 				'color_label' => __( 'Accent Font Color', 'themify' ),
 				'section' => 'themify_skin_styles',
 			),
-			'selector' => 'body #headerwrap,body .sidemenu,body #footerwrap,.footer-widgets .widgettitle,body.header-leftpane #headerwrap #menu-icon,body.header-slide-out #headerwrap #menu-icon, body.header-horizontal #headerwrap #menu-icon,body.header-minbar #headerwrap #menu-icon,body #site-description,body .header-widget .widgettitle,body input[type=reset],body input[type=submit],body button,body #respond #cancel-comment-reply-link,body .commentlist .comment-reply-link,body .post-title a,body #main-nav > .current_page_item > a,body #main-nav > .current-menu-item > a,body #main-nav > li > a:hover,body.footer-horizontal-left .back-top .arrow-up a,body.footer-horizontal-right .back-top .arrow-up a,body.footer-left-col .back-top .arrow-up a,body.footer-right-col .back-top .arrow-up a,body.woocommerce #content input.button,body.woocommerce #respond input#submit,body.woocommerce a.button,body.woocommerce button.button,body.woocommerce input.button,body.woocommerce-page #content input.button,body.woocommerce-page #respond input#submit,body.woocommerce-page a.button,body.woocommerce-page button.button,body.woocommerce-page input.button,body.woocommerce #content input.button.alt,body.woocommerce #respond input#submit.alt,body.woocommerce a.button.alt,body.woocommerce button.button.alt,body.woocommerce input.button.alt,body.woocommerce-page #content input.button.alt,body.woocommerce-page #respond input#submit.alt,body.woocommerce-page a.button.alt,body.woocommerce-page button.button.alt,body.woocommerce-page input.button.alt,body.woocommerce ul.products li.product .add_to_cart_button,body.woocommerce-page ul.products li.product .add_to_cart_button,body.woocommerce ul.products li.product .button[data-product_id],body.woocommerce-page ul.products li.product .button[data-product_id],body.woocommerce span.onsale,body.woocommerce-page span.onsale,body.woocommerce ul.products li.product .onsale,body.woocommerce-page ul.products li.product .onsale,body.woocommerce-checkout #payment div.payment_box,body.woocommerce #content nav.woocommerce-pagination ul li a:focus,body.woocommerce #content nav.woocommerce-pagination ul li a:hover,body.woocommerce #content nav.woocommerce-pagination ul li span.current,body.woocommerce nav.woocommerce-pagination ul li a:focus,body.woocommerce nav.woocommerce-pagination ul li a:hover,body.woocommerce nav.woocommerce-pagination ul li span.current,body.woocommerce-page #content nav.woocommerce-pagination ul li a:focus,body.woocommerce-page #content nav.woocommerce-pagination ul li a:hover,body.woocommerce-page #content nav.woocommerce-pagination ul li span.current,body.woocommerce-page nav.woocommerce-pagination ul li a:focus,body.woocommerce-page nav.woocommerce-pagination ul li a:hover,body.woocommerce-page nav.woocommerce-pagination ul li span.current,body.woocommerce #content table.cart a.remove:hover,body.woocommerce table.cart a.remove:hover,body.woocommerce-page #content table.cart a.remove:hover,body.woocommerce-page table.cart a.remove:hover',
+			'selector' => 'body #headerwrap,body .sidemenu,body #footerwrap,.footer-widgets .widgettitle,body.header-leftpane #headerwrap #menu-icon,body.header-slide-out #headerwrap #menu-icon, body.header-horizontal #headerwrap #menu-icon,body.header-minbar #headerwrap #menu-icon,#site-description,body .header-widget .widgettitle,body input[type=reset],body input[type=submit],body button,body #respond #cancel-comment-reply-link,body .commentlist .comment-reply-link,body .post-title a,body #main-nav > .current_page_item > a,body #main-nav > .current-menu-item > a,body #main-nav > li > a:hover,body.footer-horizontal-left .back-top .arrow-up a,body.footer-horizontal-right .back-top .arrow-up a,body.footer-left-col .back-top .arrow-up a,body.footer-right-col .back-top .arrow-up a,body.woocommerce #content input.button,body.woocommerce #respond input#submit,body.woocommerce a.button,body.woocommerce button.button,body.woocommerce input.button,body.woocommerce-page #content input.button,body.woocommerce-page #respond input#submit,body.woocommerce-page a.button,body.woocommerce-page button.button,body.woocommerce-page input.button,body.woocommerce #content input.button.alt,body.woocommerce #respond input#submit.alt,body.woocommerce a.button.alt,body.woocommerce button.button.alt,body.woocommerce input.button.alt,body.woocommerce-page #content input.button.alt,body.woocommerce-page #respond input#submit.alt,body.woocommerce-page a.button.alt,body.woocommerce-page button.button.alt,body.woocommerce-page input.button.alt,body.woocommerce ul.products li.product .add_to_cart_button,body.woocommerce-page ul.products li.product .add_to_cart_button,body.woocommerce ul.products li.product .button[data-product_id],body.woocommerce-page ul.products li.product .button[data-product_id],body.woocommerce span.onsale,body.woocommerce-page span.onsale,body.woocommerce ul.products li.product .onsale,body.woocommerce-page ul.products li.product .onsale,body.woocommerce-checkout #payment div.payment_box,body.woocommerce #content nav.woocommerce-pagination ul li a:focus,body.woocommerce #content nav.woocommerce-pagination ul li a:hover,body.woocommerce #content nav.woocommerce-pagination ul li span.current,body.woocommerce nav.woocommerce-pagination ul li a:focus,body.woocommerce nav.woocommerce-pagination ul li a:hover,body.woocommerce nav.woocommerce-pagination ul li span.current,body.woocommerce-page #content nav.woocommerce-pagination ul li a:focus,body.woocommerce-page #content nav.woocommerce-pagination ul li a:hover,body.woocommerce-page #content nav.woocommerce-pagination ul li span.current,body.woocommerce-page nav.woocommerce-pagination ul li a:focus,body.woocommerce-page nav.woocommerce-pagination ul li a:hover,body.woocommerce-page nav.woocommerce-pagination ul li span.current,body.woocommerce #content table.cart a.remove:hover,body.woocommerce table.cart a.remove:hover,body.woocommerce-page #content table.cart a.remove:hover,body.woocommerce-page table.cart a.remove:hover',
 			'prop' => 'color',
 		),
 
@@ -93,7 +93,7 @@ function themify_theme_customizer_definition( $args ) {
 					'font_family_label' => __( 'Body Font', 'themify' ),
 				),
 			),
-			'selector' => 'body, body .post-meta, body #site-description, body .post-date .year, body .post-date .month, body .post-date .day, .loops-wrapper .entry-content',
+			'selector' => 'body, body .post-meta, #site-description, body .post-date .year, body .post-date .month, body .post-date .day, .loops-wrapper .entry-content',
 			'prop' => 'font',
 		),
 
@@ -340,7 +340,7 @@ function themify_theme_customizer_definition( $args ) {
 				'type'  => 'Themify_Width_Control',
 				'label' => __( 'Content Container', 'themify' ),
 			),
-			'selector' => '#content',
+			'selector' => 'body:not(.sidebar2):not(.sidebar-none):not(.sidebar-left):not(.full_width) #content',
 			'prop' => 'width',
 		),
 
@@ -861,12 +861,25 @@ function themify_theme_customizer_definition( $args ) {
 			'prop' => 'background',
 		),
 
+		'sticky_header_imageselect' => array(
+			'control' => array(
+				'type'    => 'Themify_Image_Control',
+				'label'   => __( 'Sticky Header Logo', 'themify' ),
+				'image_options' => array(
+					'show_size_fields' => true,
+					'image_label' => ''
+				)
+			),
+			'selector' => '.fixed-header #headerwrap #site-logo a',
+			'prop' => 'logo',
+		),
+
 		'sticky_header_font' => array(
 			'control' => array(
 				'type'    => 'Themify_Font_Control',
 				'label'   => __( 'Header Font', 'themify' ),
 			),
-			'selector' => '.fixed-header #header, .fixed-header #site-description',
+			'selector' => '#headerwrap.fixed-header #header, #headerwrap.fixed-header #site-description',
 			'prop' => 'font',
 		),
 
@@ -876,7 +889,7 @@ function themify_theme_customizer_definition( $args ) {
 				'label'   => __( 'Header Font Color', 'themify' ),
 				'show_label' => false,
 			),
-		'selector' => '.fixed-header #header',
+		'selector' => '#headerwrap.fixed-header #header',
 			'prop' => 'color',
 		),
 
@@ -885,7 +898,7 @@ function themify_theme_customizer_definition( $args ) {
 				'type'    => 'Themify_Text_Decoration_Control',
 				'label'   => __( 'Header Link', 'themify' ),
 			),
-			'selector' => '.fixed-header #header a',
+			'selector' => '#headerwrap.fixed-header #header a',
 			'prop' => 'font',
 		),
 
@@ -895,7 +908,7 @@ function themify_theme_customizer_definition( $args ) {
 				'label'   => __( 'Header Link Color', 'themify' ),
 				'show_label' => false,
 			),
-			'selector' => '.fixed-header #header a',
+			'selector' => '#headerwrap.fixed-header #header a',
 			'prop' => 'color',
 		),
 
@@ -905,7 +918,7 @@ function themify_theme_customizer_definition( $args ) {
 				'type'    => 'Themify_Text_Decoration_Control',
 				'label'   => __( 'Header Link Hover', 'themify' ),
 			),
-			'selector' => '.fixed-header #header a:hover',
+			'selector' => '#headerwrap.fixed-header #header a:hover',
 			'prop' => 'font',
 		),
 
@@ -914,7 +927,7 @@ function themify_theme_customizer_definition( $args ) {
 			'control' => array(
 				'type'    => 'Themify_Color_Control',
 			),
-			'selector' => '.fixed-header #header a:hover',
+			'selector' => '#headerwrap.fixed-header #header a:hover',
 			'prop' => 'color',
 		),
 
@@ -971,13 +984,6 @@ function themify_theme_customizer_definition( $args ) {
 		// Accordion Start ---------------------------
 		'start_nav_acc' => $themify_customizer->accordion_start( __( 'Main Navigation', 'themify' ) ),
 
-		'main_nav' => array(
-			'control' => array(
-				'type'    => 'nav_menu',
-				'label'   => __( 'Main Navigation Menu', 'themify' ),
-				'location' => 'main-nav',
-			),
-		),
 
 		'main_nav_position' => array(
 			'control' => array(
@@ -1137,7 +1143,7 @@ function themify_theme_customizer_definition( $args ) {
 				'label'   => __( 'Menu Active Link', 'themify' ),
 				'color_label' => __( 'Background Color', 'themify' ),
 			),
-			'selector' => '#main-nav .current_page_item a, #main-nav .current-menu-item a',
+			'selector' => '#main-nav .current_page_item > a, #main-nav .current-menu-item > a',
 			'prop' => 'background',
 		),
 
@@ -1147,7 +1153,7 @@ function themify_theme_customizer_definition( $args ) {
 				'label'   => __( 'Menu Active Link Color', 'themify' ),
 				'show_label' => false,
 			),
-			'selector' => '#main-nav .current_page_item a, #main-nav .current-menu-item a, #main-nav > .current_page_item > a, #main-nav > .current-menu-item > a',
+			'selector' => '#main-nav .current_page_item > a, #main-nav .current-menu-item > a, #main-nav > .current_page_item > a, #main-nav > .current-menu-item > a',
 			'prop' => 'color',
 		),
 
@@ -1188,7 +1194,7 @@ function themify_theme_customizer_definition( $args ) {
 				'label'   => __( 'Dropdown Container Border', 'themify' ),
 				'show_label' => false,
 			),
-			'selector' => '#main-nav li:not(.themify-widget-menu):not(.has-mega-column):not(.has-mega-sub-menu) > ul',
+			'selector' => '#main-nav li:not(.themify-widget-menu) > ul, #main-nav .has-mega-sub-menu .mega-sub-menu, #main-nav .has-mega-column > .sub-menu',
 			'prop' => 'border',
 		),
 
@@ -1198,7 +1204,7 @@ function themify_theme_customizer_definition( $args ) {
 				'label'   => __( 'Dropdown Container Padding', 'themify' ),
 				'show_label' => false,
 			),
-			'selector' => '#main-nav li:not(.themify-widget-menu):not(.has-mega-column):not(.has-mega-sub-menu) > ul',
+			'selector' => '#main-nav li:not(.themify-widget-menu) > ul, #main-nav .has-mega-sub-menu .mega-sub-menu, #main-nav .has-mega-column > .sub-menu',
 			'prop' => 'padding',
 		),
 
@@ -1208,7 +1214,7 @@ function themify_theme_customizer_definition( $args ) {
 				'label'   => __( 'Dropdown Container Margin', 'themify' ),
 				'show_label' => false,
 			),
-			'selector' => '#main-nav li:not(.themify-widget-menu):not(.has-mega-column):not(.has-mega-sub-menu) > ul',
+			'selector' => '#main-nav li:not(.themify-widget-menu) > ul, #main-nav .has-mega-sub-menu .mega-sub-menu, #main-nav .has-mega-column > .sub-menu',
 			'prop' => 'margin',
 		),
 
@@ -1217,7 +1223,7 @@ function themify_theme_customizer_definition( $args ) {
 				'type'    => 'Themify_Font_Control',
 				'label'   => __( 'Dropdown Link', 'themify' ),
 			),
-			'selector' => '#main-nav ul a, #main-nav .current_page_item ul a, #main-nav ul .current_page_item a, #main-nav .current-menu-item ul a, #main-nav ul .current-menu-item a',
+			'selector' => '#main-nav ul a, #main-nav .current_page_item ul a, #main-nav ul .current_page_item a, #main-nav .current-menu-item ul a, #main-nav ul .current-menu-item a, #main-nav .has-mega-column > .sub-menu a',
 			'prop' => 'font',
 		),
 
@@ -1227,7 +1233,7 @@ function themify_theme_customizer_definition( $args ) {
 				'label'   => __( 'Dropdown Link Color', 'themify' ),
 				'show_label' => false,
 			),
-			'selector' => '#main-nav ul a, #main-nav .current_page_item ul a, #main-nav ul .current_page_item a, #main-nav .current-menu-item ul a, #main-nav ul .current-menu-item a, .fixed-header #main-nav ul a',
+			'selector' => '#main-nav ul a, #main-nav .current_page_item ul a, #main-nav ul .current_page_item a, #main-nav .current-menu-item ul a, #main-nav ul .current-menu-item a, .fixed-header #main-nav ul a, #main-nav .has-mega-column > .sub-menu a',
 			'prop' => 'color',
 		),
 
@@ -1238,7 +1244,7 @@ function themify_theme_customizer_definition( $args ) {
 				'show_label' => false,
 				'color_label' => __( 'Background Color', 'themify' ),
 			),
-			'selector' => '#main-nav ul a, #main-nav .current_page_item ul a, #main-nav ul .current_page_item a, #main-nav .current-menu-item ul a, #main-nav ul .current-menu-item a',
+			'selector' => '#main-nav ul a, #main-nav .current_page_item ul a, #main-nav ul .current_page_item a, #main-nav .current-menu-item ul a, #main-nav ul .current-menu-item a, #main-nav .has-mega-column > .sub-menu a',
 			'prop' => 'background',
 		),
 
@@ -1248,7 +1254,7 @@ function themify_theme_customizer_definition( $args ) {
 				'label'   => __( 'Dropdown Link Border', 'themify' ),
 				'show_label' => false,
 			),
-			'selector' => '#main-nav ul a, #main-nav .current_page_item ul a, #main-nav ul .current_page_item a, #main-nav .current-menu-item ul a, #main-nav ul .current-menu-item a',
+			'selector' => '#main-nav ul a, #main-nav .current_page_item ul a, #main-nav ul .current_page_item a, #main-nav .current-menu-item ul a, #main-nav ul .current-menu-item a, #main-nav .has-mega-column > .sub-menu a',
 			'prop' => 'border',
 		),
 
@@ -1258,7 +1264,7 @@ function themify_theme_customizer_definition( $args ) {
 				'label'   => __( 'Dropdown Link Padding', 'themify' ),
 				'show_label' => false,
 			),
-			'selector' => '#main-nav ul a, #main-nav .current_page_item ul a, #main-nav ul .current_page_item a, #main-nav .current-menu-item ul a, #main-nav ul .current-menu-item a',
+			'selector' => '#main-nav ul a, #main-nav .current_page_item ul a, #main-nav ul .current_page_item a, #main-nav .current-menu-item ul a, #main-nav ul .current-menu-item a, #main-nav .has-mega-column > .sub-menu a',
 			'prop' => 'padding',
 		),
 
@@ -1268,7 +1274,7 @@ function themify_theme_customizer_definition( $args ) {
 				'label'   => __( 'Dropdown Link Margin', 'themify' ),
 				'show_label' => false,
 			),
-			'selector' => '#main-nav ul a, #main-nav .current_page_item ul a, #main-nav ul .current_page_item a, #main-nav .current-menu-item ul a, #main-nav ul .current-menu-item a',
+			'selector' => '#main-nav ul a, #main-nav .current_page_item ul a, #main-nav ul .current_page_item a, #main-nav .current-menu-item ul a, #main-nav ul .current-menu-item a, #main-nav .has-mega-column > .sub-menu a',
 			'prop' => 'margin',
 		),
 
@@ -2475,13 +2481,6 @@ function themify_theme_customizer_definition( $args ) {
 			'prop' => 'font',
 		),
 
-		'footer_nav' => array(
-			'control' => array(
-				'type'    => 'nav_menu',
-				'label'   => __( 'Footer Navigation Menu', 'themify' ),
-				'location' => '#footer-nav',
-			),
-		),
 
 		'footer_nav_position' => array(
 			'control' => array(
@@ -2835,15 +2834,6 @@ function themify_theme_customizer_definition( $args ) {
 		'end_customcss_acc' => $themify_customizer->accordion_end(),
 		// Accordion End   ---------------------------
 
-		// This element doesn't have a live preview and it's not styling.
-		'clear' => array(
-			'control' => array(
-				'type'    => 'Themify_Clear_Control',
-				'label'   => __( 'Reset All Customization', 'themify' ),
-			),
-			'selector' => 'clear',
-			'prop' => 'clear',
-		),
 	);
 	return $args;
 }

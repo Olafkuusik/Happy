@@ -127,7 +127,7 @@ class TB_Widget_Module extends Themify_Builder_Module {
 					array('value' => 'repeat', 'name' => __('Repeat All', 'themify')),
 					array('value' => 'repeat-x', 'name' => __('Repeat Horizontally', 'themify')),
 					array('value' => 'repeat-y', 'name' => __('Repeat Vertically', 'themify')),
-					array('value' => 'repeat-none', 'name' => __('Do not repeat', 'themify')),
+					array('value' => 'no-repeat', 'name' => __('Do not repeat', 'themify')),
 					array('value' => 'fullcover', 'name' => __('Fullcover', 'themify'))
 				),
 				'prop' => 'background-repeat',
@@ -504,7 +504,7 @@ class TB_Widget_Module extends Themify_Builder_Module {
 
 		switch ( $field['type'] ) {
 			case 'widget_select':
-				$output .= '<select name="'. esc_attr( $field['id'] ) .'" id="'. esc_attr( $field['id'] ) .'" class="tfb_lb_option module-widget-select-field">';
+				$output .= '<select name="'. esc_attr( $field['id'] ) .'" id="'. esc_attr( $field['id'] ) .'" class="tfb_lb_option module-widget-select-field"'. themify_builder_get_control_binding_data( $field ) .'>';
 				$output .= '<option></option>';
 				foreach ($wp_widget_factory->widgets as $class => $widget ) {
 					$output .= '<option value="' . esc_attr( $class ) . '" data-idbase="' . esc_attr( $widget->id_base ) . '">' . esc_html( $widget->name ) . '</option>';
@@ -513,7 +513,7 @@ class TB_Widget_Module extends Themify_Builder_Module {
 			break;
 
 			case 'widget_form':
-			$output .= '<div id="'. esc_attr( $field['id'] ) .'" class="module-widget-form-container module-widget-form-placeholder tfb_lb_option"></div>';
+			$output .= '<div id="'. esc_attr( $field['id'] ) .'" class="module-widget-form-container module-widget-form-placeholder tfb_lb_option"'. themify_builder_get_control_binding_data( $field ) .'></div>';
 			break;
 		}
 		echo $output;

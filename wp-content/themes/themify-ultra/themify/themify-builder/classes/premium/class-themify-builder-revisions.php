@@ -48,8 +48,6 @@ class Themify_Builder_Revisions {
 		$this->builder = $builder;
 		$this->builder_meta_key = $GLOBALS['ThemifyBuilder_Data_Manager']->meta_key;
 
-		add_filter( 'themify_builder_admin_bar_menu_single_page', array( $this, 'add_admin_bar_menu' ) );
-
 		$ajax_events = array(
 			'load_revision_lists' => false,
 			'save_revision' => false,
@@ -69,40 +67,6 @@ class Themify_Builder_Revisions {
 		add_filter('_wp_post_revision_fields', array( $this, 'post_revision_fields'), 10, 1);
 		add_filter('_wp_post_revision_field__themify_builder_settings_json', array( $this, 'post_revision_field'), 10, 2 );
 		add_action( 'wp_restore_post_revision', array( $this, 'restore_revision' ), 10, 2 );
-	}
-
-	/**
-	 * Added revision admin bar menu.
-	 * 
-	 * @access public
-	 * @param array $menu 
-	 * @return array
-	 */
-	public function add_admin_bar_menu( $menu ) {
-		$p = get_queried_object();
-		if ( ! wp_revisions_enabled( $p ) ) return $menu;
-		
-		$menu[] = array(
-			'id' => 'revision_themify_builder',
-			'parent' => 'themify_builder',
-			'title' => __('Revisions', 'themify'),
-			'href' => '#'
-		);
-		$menu[] = array(
-			'id' => 'load_revision_themify_builder',
-			'parent' => 'revision_themify_builder',
-			'title' => __('Load Revision', 'themify'),
-			'href' => '#',
-			'meta' => array('class' => 'themify_builder_load_revision')
-		);
-		$menu[] = array(
-			'id' => 'save_revision_themify_builder',
-			'parent' => 'revision_themify_builder',
-			'title' => __('Save as Revision', 'themify'),
-			'href' => '#',
-			'meta' => array('class' => 'themify_builder_save_revision')
-		);
-		return $menu;
 	}
 
 	/**

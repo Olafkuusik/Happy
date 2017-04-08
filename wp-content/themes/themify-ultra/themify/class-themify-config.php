@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class ThemifyConfig {
 
 	var $theme_dir;
+	var $current_theme_dir;
 
 	/**
 	 * Theme configuration settings, styling and so on.
@@ -17,6 +18,7 @@ class ThemifyConfig {
 
 	function __construct() {
 		$this->theme_dir = get_template_directory(); 
+		$this->current_theme_dir = get_stylesheet_directory();
 	}
 
 	function get_config() {
@@ -28,9 +30,15 @@ class ThemifyConfig {
 	}
 
 	function read_config() {
-		$the_config_file = is_file( $this->theme_dir .'/custom-config.php' ) ? 'custom-config.php' : 'theme-config.php';
-		$the_config_file = $this->theme_dir . '/' . $the_config_file;
-
+		// Allow custom-config.php (even from child theme) override default theme-config.php
+		if ( is_file( $this->current_theme_dir . '/custom-config.php' ) ) {
+			$the_config_file = $this->current_theme_dir . '/custom-config.php';
+		} elseif( $this->current_theme_dir != $this->theme_dir AND is_file( $this->theme_dir .'/custom-config.php' ) ) {
+			$the_config_file = $this->theme_dir . '/custom-config.php';
+		} else {
+			$the_config_file = $this->theme_dir . '/theme-config.php';
+		}
+		
 		// This variable is overwritten by file included but it's initialized to avoid PHP warnings
 		$themify_theme_config = array();
 		
@@ -40,16 +48,3 @@ class ThemifyConfig {
 	}
 
 }
-
-
-/**
- * Initializes Themify class
- */
-function themify_theme_config_init(){
-	/**
-	 * Themify initialization class
-	 */
-	$GLOBALS['ThemifyConfig'] = new ThemifyConfig();
-}
-
-add_action( 'after_setup_theme', 'themify_theme_config_init', 8 );

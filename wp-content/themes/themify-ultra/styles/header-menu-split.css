@@ -1,10 +1,6 @@
 /*
 HEADER MENU SPLIT
 ================================================ */
-/* header menu split header */
-#header {
-	padding: 115px 0 15px;
-}
 
 /* header menu split site logo */
 #site-logo {
@@ -16,12 +12,6 @@ HEADER MENU SPLIT
 }
 
 /* header menu split main nav */
-#main-nav-wrap {
-	position: absolute;
-	top: 40px;
-	left: 0;
-	width: 100%;
-}
 #main-nav li {
 	vertical-align: middle;
 }
@@ -56,12 +46,6 @@ HEADER MENU SPLIT
 }
 
 /* transparent header */
-.transparent-header #header {
-	color: #fff;
-}
-.transparent-header #header a {
-	color: #fff;
-}
 .transparent-header #main-nav ul a {
 	color: #484848;
 }
@@ -84,6 +68,15 @@ HEADER MENU SPLIT
 #headerwrap.fixed-header #site-logo a {
 	padding-top: 0;
 	padding-bottom: 0;
+}
+
+/* split menu logo */
+#main-nav .themify-logo-menu-item #site-logo {
+	margin-left: .2em;
+	margin-right: .2em;
+}
+#main-nav .themify-logo-menu-item #site-logo a {
+	padding: 0; /* required to fix logo image padding */
 }
 
 /* mobile menu active */

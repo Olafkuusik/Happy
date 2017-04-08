@@ -53,8 +53,9 @@ $scroll = $scroll_opt_slider;
 $auto_scroll = $auto_scroll_opt_slider;
 $arrow = $show_arrow_slider;
 $pagination = $show_nav_slider;
-$left_margin = ! empty( $left_margin_slider ) ? $left_margin_slider .'px' : '';
-$right_margin = ! empty( $right_margin_slider ) ? $right_margin_slider .'px' : '';
+$slide_margins = array();
+$slide_margins[] = !empty( $left_margin_slider ) ? sprintf( 'margin-left:%spx;', $left_margin_slider ) : '';
+$slide_margins[] = !empty( $right_margin_slider ) ? sprintf( 'margin-right:%spx;', $right_margin_slider ) : '';
 $effect = $effect_slider;
 
 switch ( $speed_opt_slider ) {
@@ -95,33 +96,33 @@ switch ( $speed_opt_slider ) {
 		data-type="video">
 		
 		<?php foreach ( $video_content_slider as $video ): ?>
-		<li style="<?php echo ! empty( $left_margin ) ? 'margin-left:'.$left_margin.';' : ''; ?> <?php echo ! empty( $right_margin ) ? 'margin-right:'.$right_margin.';' : ''; ?>">
-			<?php if ( ! empty( $video['video_url_slider'] ) ): ?>
-			<?php $video_maxwidth = isset( $video['video_width_slider'] ) && ! empty( $video['video_width_slider'] ) ? $video['video_width_slider'] : ''; ?>
-			<div class="slide-image video-wrap"<?php echo '' != $video_maxwidth ? 'style="max-width:' . esc_attr( $video_maxwidth ) . 'px;"' : ''; ?>>
-				<?php echo str_replace('frameborder="0"','',wp_oembed_get( esc_url( $video['video_url_slider'] ) )); ?>
+		<li>
+			<div class="slide-inner-wrap" style="<?php echo implode( '', $slide_margins ); ?>">
+				<?php if ( ! empty( $video['video_url_slider'] ) ): ?>
+				<?php $video_maxwidth = isset( $video['video_width_slider'] ) && ! empty( $video['video_width_slider'] ) ? $video['video_width_slider'] : ''; ?>
+				<div class="slide-image video-wrap"<?php echo '' != $video_maxwidth ? 'style="max-width:' . esc_attr( $video_maxwidth ) . 'px;"' : ''; ?>>
+					<?php echo str_replace('frameborder="0"','',wp_oembed_get( esc_url( $video['video_url_slider'] ) )); ?>
+				</div><!-- /video-wrap -->
+				<?php endif; ?>
+				
+				<div class="slide-content">
+					<h3 class="slide-title">
+						<?php if ( isset( $video['video_title_link_slider'] ) && ! empty( $video['video_title_link_slider'] ) ): ?>
+						<a href="<?php echo esc_url( $video['video_title_link_slider'] ); ?>"<?php echo 'yes' == $open_link_new_tab_slider ? ' target="_blank"': ''; ?>><?php echo wp_kses_post( $video['video_title_slider'] ); ?></a>
+						<?php else : ?>
+						<?php echo isset( $video['video_title_slider'] ) ? wp_kses_post( $video['video_title_slider'] ) : ''; ?>
+						<?php endif; ?>
+					</h3>
+					<div class="video-caption">
+						<?php 
+							if ( isset( $video['video_caption_slider'] ) ) {
+								echo apply_filters( 'themify_builder_module_content', $video['video_caption_slider'] );
+							}
+						?>
+					</div>
+					<!-- /video-caption -->
+				</div><!-- /video-content -->
 			</div>
-			<!-- /video-wrap -->
-			<?php endif; ?>
-			
-			<div class="slide-content">
-				<h3 class="slide-title">
-					<?php if ( isset( $video['video_title_link_slider'] ) && ! empty( $video['video_title_link_slider'] ) ): ?>
-					<a href="<?php echo esc_url( $video['video_title_link_slider'] ); ?>"<?php echo 'yes' == $open_link_new_tab_slider ? ' target="_blank"': ''; ?>><?php echo wp_kses_post( $video['video_title_slider'] ); ?></a>
-					<?php else : ?>
-					<?php echo isset( $video['video_title_slider'] ) ? wp_kses_post( $video['video_title_slider'] ) : ''; ?>
-					<?php endif; ?>
-				</h3>
-				<div class="video-caption">
-					<?php 
-						if ( isset( $video['video_caption_slider'] ) ) {
-							echo apply_filters( 'themify_builder_module_content', $video['video_caption_slider'] );
-						}
-					?>
-				</div>
-				<!-- /video-caption -->
-			</div>
-			<!-- /video-content -->
 		</li>
 		<?php endforeach; // end loop video ?>
 	</ul>

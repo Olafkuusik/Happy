@@ -75,7 +75,7 @@ $this->add_post_class($animation_effect);
 			if (!is_numeric($t))
 				$is_string = true;
 			if ('' != $t) {
-				array_push($new_terms, trim($t));
+                            $new_terms[] = trim($t);
 			}
 		}
 		$tax_field = ( $is_string ) ? 'slug' : 'id';
@@ -139,9 +139,10 @@ $this->add_post_class($animation_effect);
 				$themify->hide_date = $hide_post_date_highlight;
 				$themify->hide_meta = $hide_post_meta_highlight;
 				$themify->post_layout = $layout_highlight;
+				$themify->is_builder_loop = true;
 
 				// hooks action
-				do_action_ref_array('themify_builder_override_loop_themify_vars', array($themify, $mod_name));
+                do_action_ref_array('themify_builder_override_loop_themify_vars', array( $themify, $mod_name, $fields_args ) );
 
 				$out = '';
 				if ($posts) {
@@ -199,7 +200,7 @@ $this->add_post_class($animation_effect);
 								<?php if (!$linked): ?>
 									<h1 class="post-title"><?php the_title(); ?></h1>
 								<?php else: ?>
-									<h1 class="post-title"><a href="<?php echo themify_get_featured_image_link() ?>" title="<?php the_title_attribute(); ?>"><?php the_title(); ?></a></h1>
+									<h1 class="post-title"><a href="<?php echo themify_get_featured_image_link() ?>"><?php the_title(); ?></a></h1>
 								<?php endif; //unlink post title  ?>
 								<?php themify_after_post_title(); // Hook   ?> 
 							<?php endif; //post title ?>

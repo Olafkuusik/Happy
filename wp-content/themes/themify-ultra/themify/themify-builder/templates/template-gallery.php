@@ -62,7 +62,7 @@ if (TFCache::start_cache('gallery', self::$post_id, array('ID' => $module_ID))):
     if ( '' != $sc_image_size ) 
         $fields_args['image_size_gallery'] = $sc_image_size;
 
-    $masonry_class = $layout_masonry === 'masonry' ? 'gallery-masonry' : '';
+    $masonry_class = $layout_masonry === 'masonry' && 'grid' == $layout_gallery ? 'gallery-masonry' : '';
 
     $container_class = implode(' ', apply_filters('themify_builder_module_classes', array(
         'module', 'module-' . $mod_name, $module_ID, 'gallery', 'gallery-columns-' . $columns, $masonry_class, 'layout-' . $layout_gallery, $appearance_gallery, $css_gallery, $animation_effect

@@ -17,31 +17,7 @@
 	<div class="lightbox_container">
 
 		<?php foreach( $icon_fonts as $class => $font ) : ?>
-			<div class="tf-font-group" data-group="<?php echo $font->get_id(); ?>">
-
-				<ul class="themify-lightbox-icon">
-					<?php foreach( $font->get_icons() as $category ) : ?>
-						<li data-id="<?php echo $font->get_id() . '-' . $category['key']; ?>">
-							<span><?php echo $category['label']; ?></span>
-						</li>
-					<?php endforeach; ?>
-				</ul>
-
-				<?php foreach( $font->get_icons() as $category ) : ?>
-					<section id="<?php echo $font->get_id() . '-' . $category['key']; ?>">
-						<h2 class="page-header"><?php echo $category['label']; ?></h2>
-						<div class="row">
-							<?php foreach( $category['icons'] as $icon_key => $icon_label ) : ?>
-								<a href="#" data-icon="<?php echo $icon_key; ?>">
-									<i class="<?php echo $font->get_classname( $icon_key ); ?>" aria-hidden="true"></i>
-									<?php echo $icon_label; ?>
-								</a>
-							<?php endforeach; ?>
-						</div>
-					</section><!-- #<?php echo $font->get_id() . '-' . $category['key']; ?> -->
-				<?php endforeach; ?>
-
-			</div><!-- .tf-font-group -->
+			<?php $font->picker_template(); ?>
 		<?php endforeach; ?>
 
 	</div><!-- .lightbox_container -->

@@ -68,8 +68,9 @@ $scroll = $scroll_opt_slider;
 $auto_scroll = $auto_scroll_opt_slider;
 $arrow = $show_arrow_slider;
 $pagination = $show_nav_slider;
-$left_margin = ! empty( $left_margin_slider ) ? $left_margin_slider .'px' : '';
-$right_margin = ! empty( $right_margin_slider ) ? $right_margin_slider .'px' : '';
+$slide_margins = array();
+$slide_margins[] = !empty( $left_margin_slider ) ? sprintf( 'margin-left:%spx;', $left_margin_slider ) : '';
+$slide_margins[] = !empty( $right_margin_slider ) ? sprintf( 'margin-right:%spx;', $right_margin_slider ) : '';
 $effect = $effect_slider;
 
 switch ( $speed_opt_slider ) {
@@ -112,13 +113,14 @@ switch ( $speed_opt_slider ) {
 
 		$terms = $portfolio_category_slider;
 		$temp_terms = explode(',', $terms);
-		$new_terms = array();
+        $new_terms = $new_exclude_terms = array();
 		$is_string = false;
 		foreach ( $temp_terms as $t ) {
 			if ( ! is_numeric( $t ) )
 				$is_string = true;
 			if ( '' != $t ) {
-				array_push( $new_terms, trim( $t ) );
+                $result_array = ( ( is_numeric( $t ) && 0 <= $t ) || ! is_numeric( $t ) ) ? 'new_terms' : 'new_exclude_terms';
+                array_push( $$result_array, is_numeric( $t ) ? abs( trim( $t ) ) : trim( $t ) );
 			}
 		}
 		$tax_field = ( $is_string ) ? 'slug' : 'id';
@@ -139,12 +141,20 @@ switch ( $speed_opt_slider ) {
 		if ( count( $new_terms ) > 0 && ! in_array( '0', $new_terms ) ) {
 			$args['tax_query'] = array(
 				array(
-					'taxonomy' => 'portfolio-category',
-					'field' => $tax_field,
-					'terms' => $new_terms
-				)
+					'taxonomy'  => 'portfolio-category',
+					'field'     => $tax_field,
+					'terms'     => $new_terms,
+				),
 			);
 		}
+        if ( count( $new_exclude_terms ) > 0 ) {
+            $args['tax_query'][] = array(
+                'taxonomy'  => 'portfolio-category',
+                'field'     => $tax_field,
+                'terms'     => $new_exclude_terms,
+                'operator'  => "NOT IN",
+            );
+        }
 
 		// add offset posts
 		if ( $offset_slider != '' ) 
@@ -155,71 +165,72 @@ switch ( $speed_opt_slider ) {
 		$temp_post = $post;
 		$posts = get_posts( $args );
 		if ( count( $posts ) > 0 ):
-			foreach( $posts as $post ): setup_postdata( $post );
-		?>
+			foreach( $posts as $post ): setup_postdata( $post ); ?>
 
-		<li style="<?php echo !empty($left_margin) ? 'margin-left:'.$left_margin.';' : ''; ?> <?php echo !empty($right_margin) ? 'margin-right:'.$right_margin.';' : ''; ?>">
-			<?php
-				$width = $img_w_slider;
-				$height = $img_h_slider;
-				$unlink_feat = $unlink_feat_img_slider == 'yes' ? true : false;
-				$param_image = 'w='.$width .'&h='.$height.'&ignore=true';
-				if ( $this->is_img_php_disabled() )
-					$param_image .= $image_size_slider != '' ? '&image_size=' . $image_size_slider : '';
-			
-			if ( $hide_feat_img_slider == '' || $hide_feat_img_slider == 'no' ) {   
-				// Check if there is a video url in the custom field
-				if( themify_get('video_url') != '' ){
-					global $wp_embed;
-					
-					themify_before_post_image(); // Hook
-					
-					echo $wp_embed->run_shortcode('[embed]' . esc_url( themify_get( 'video_url' ) ) . '[/embed]');
-					
-					themify_after_post_image(); // Hook
-					
-				} elseif ( $post_image = themify_get_image($param_image) ){ ?>
-					<?php themify_before_post_image(); // Hook ?>
-					<figure class="slide-image">
-						<?php if ( $unlink_feat ): ?>
-							<?php echo wp_kses_post( $post_image ); ?>
-						<?php else: ?>
-							<a href="<?php echo themify_get_featured_image_link(); ?>" title="<?php the_title_attribute(); ?>" <?php if ( 'yes' == $open_link_new_tab_slider ) : echo 'target="_blank"'; endif; ?>>
+		<li>
+			<div class="slide-inner-wrap" style="<?php echo implode( '', $slide_margins ); ?>">
+				<?php
+					$width = $img_w_slider;
+					$height = $img_h_slider;
+					$unlink_feat = $unlink_feat_img_slider == 'yes' ? true : false;
+					$param_image = 'w='.$width .'&h='.$height.'&ignore=true';
+					if ( $this->is_img_php_disabled() )
+						$param_image .= $image_size_slider != '' ? '&image_size=' . $image_size_slider : '';
+				
+				if ( $hide_feat_img_slider == '' || $hide_feat_img_slider == 'no' ) {   
+					// Check if there is a video url in the custom field
+					if( themify_get('video_url') != '' ){
+						global $wp_embed;
+						
+						themify_before_post_image(); // Hook
+						
+						echo $wp_embed->run_shortcode('[embed]' . esc_url( themify_get( 'video_url' ) ) . '[/embed]');
+						
+						themify_after_post_image(); // Hook
+						
+					} elseif ( $post_image = themify_get_image($param_image) ){ ?>
+						<?php themify_before_post_image(); // Hook ?>
+						<figure class="slide-image">
+							<?php if ( $unlink_feat ): ?>
 								<?php echo wp_kses_post( $post_image ); ?>
-							</a>
-						<?php endif; ?>
-					</figure>
-					<?php themify_after_post_image(); // Hook ?>
+							<?php else: ?>
+								<a href="<?php echo themify_get_featured_image_link(); ?>" <?php if ( 'yes' == $open_link_new_tab_slider ) : echo 'target="_blank"'; endif; ?>>
+									<?php echo wp_kses_post( $post_image ); ?>
+								</a>
+							<?php endif; ?>
+						</figure>
+						<?php themify_after_post_image(); // Hook ?>
+					<?php } ?>
 				<?php } ?>
-			<?php } ?>
 
-			<?php if ( $hide_post_title_slider != 'yes' || $display_slider != 'none' ): ?>
-			<div class="slide-content">
-				
-				<?php if ( $hide_post_title_slider == '' || $hide_post_title_slider == 'no'): ?>
-					<?php if ( $unlink_post_title_slider == 'yes'): ?>
-						<h3 class="slide-title"><?php the_title(); ?></h3>
-					<?php else: ?>
-						<h3 class="slide-title"><a href="<?php echo themify_get_featured_image_link(); ?>" title="<?php the_title_attribute(); ?>" <?php if ( 'yes' == $open_link_new_tab_slider ) : echo 'target="_blank"'; endif; ?>><?php the_title(); ?></a></h3>
-					<?php endif; //unlink post title ?>
-				<?php endif; // hide post title ?>
+				<?php if ( $hide_post_title_slider != 'yes' || $display_slider != 'none' ): ?>
+				<div class="slide-content">
+					
+					<?php if ( $hide_post_title_slider == '' || $hide_post_title_slider == 'no'): ?>
+						<?php if ( $unlink_post_title_slider == 'yes'): ?>
+							<h3 class="slide-title"><?php the_title(); ?></h3>
+						<?php else: ?>
+							<h3 class="slide-title"><a href="<?php echo themify_get_featured_image_link(); ?>" <?php if ( 'yes' == $open_link_new_tab_slider ) : echo 'target="_blank"'; endif; ?>><?php the_title(); ?></a></h3>
+						<?php endif; //unlink post title ?>
+					<?php endif; // hide post title ?>
 
-				<?php
-				// fix the issue more link doesn't output
-				global $more;
-				$more = 0;
-				?>
-				
-				<?php
-				if ( $display_slider == 'content' ) {
-					the_content();
-				} elseif ( $display_slider == 'excerpt' ) {
-					the_excerpt();
-				}
-				?>
+					<?php
+					// fix the issue more link doesn't output
+					global $more;
+					$more = 0;
+					?>
+					
+					<?php
+					if ( $display_slider == 'content' ) {
+						the_content();
+					} elseif ( $display_slider == 'excerpt' ) {
+						the_excerpt();
+					}
+					?>
+				</div>
+				<!-- /slide-content -->
+				<?php endif; ?>
 			</div>
-			<!-- /slide-content -->
-			<?php endif; ?>
 		</li>
 		<?php endforeach; wp_reset_postdata(); $post = $temp_post; ?>
 		<?php endif; ?>

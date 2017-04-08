@@ -274,6 +274,13 @@ class TB_Portfolio_Module extends Themify_Builder_Module {
 		return $options;
 	}
 
+	public function get_default_settings() {
+		return array(
+			'post_per_page_portfolio' => 4,
+			'display_portfolio' => 'excerpt'
+		);
+	}
+
 	public function get_animation() {
 		$animation = array(
 			array(

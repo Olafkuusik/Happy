@@ -548,7 +548,7 @@ function themify_meta_field_textbox( $args ) {
 	$meta_box = $args['meta_box'];
 	$meta_value = $args['meta_value'];
 	extract($args, EXTR_OVERWRITE);
-	if( isset( $meta_box['default'] ) && empty( $meta_value ) ) {
+	if( isset( $meta_box['default'] ) && empty( $meta_value ) && ! ( $meta_value === 0 || $meta_value === '0' ) ) {
 		$meta_value = $meta_box['default'];
 	}
 
@@ -714,6 +714,8 @@ function themify_meta_field_assignments( $args ) {
 	$field = $meta_box;
 	$pre = $field['name'];
 	$selected = $meta_value;
+	if( '' == $selected )
+		$selected = array();
 	$post_types = apply_filters( 'themify_assignments_post_types', get_post_types( array( 'public' => true ) ) );
 	unset( $post_types['page'] );
 	unset( $post_types['attachment'] );
@@ -887,7 +889,8 @@ function themify_get_uploader( $id = '', $args = array() ){
 		'confirm'	=> '',
 		'medialib'	=> false,
 		'formats'	=> 'jpg,jpeg,gif,png,ico,zip,txt,svg',
-		'type'		=> 'image'
+		'type'		=> 'image',
+		'action'    => 'themify_plupload',
 	);
 	// Extract $label, $preset, $thumbs, $filelist, $multiple, $message, $fallback, $confirm
 	$args = wp_parse_args($args, $defaults);
@@ -924,6 +927,7 @@ function themify_get_uploader( $id = '', $args = array() ){
 				if('' != $args['confirm']) $datas[] = 'data-confirm="' . esc_attr( $args['confirm'] ) . '"';
 				if('' != $args['featured']) $datas[] = 'data-featured="' . esc_attr( $args['featured'] ) . '"';
 				if('' != $args['formats']) $datas[] = 'data-formats="' . esc_attr( $args['formats'] ) . '"';
+				$datas[] = 'data-action="' . esc_attr( $args['action'] ) . '"';
 				?>
 				<div class="plupload-upload-uic hide-if-no-js <?php echo esc_attr( $classes ); ?>" <?php echo implode( ' ', $datas ); ?> id="<?php echo esc_attr( $id ); ?>plupload-upload-ui">
 
@@ -995,6 +999,10 @@ function themify_uploader($id = '', $args = array()){
 function themify_wp_ajax_plupload_image() {
 	$imgid = $_POST['imgid'];
 	check_ajax_referer($imgid . 'themify-plupload');
+	if( ! current_user_can( 'upload_files' ) ) {
+		die;
+	}
+
 	/** Check whether this image should be set as a preset. @var String */
 	$haspreset = isset( $_POST['haspreset'] )? $_POST['haspreset'] : '';
 	/** Decide whether to send this image to Media. @var String */
@@ -1061,6 +1069,9 @@ function themify_wp_ajax_plupload_image() {
  */
 function themify_metabox_media_lib_browse() {
 	if ( ! wp_verify_nonce( $_POST['media_lib_nonce'], 'media_lib_nonce' ) ) die(-1);
+	if( ! current_user_can( 'upload_files' ) ) {
+		die;
+	}
 
 	$file = array();
 	$postid = $_POST['post_id'];
@@ -1071,7 +1082,7 @@ function themify_metabox_media_lib_browse() {
 	update_post_meta($postid, '_'.$_POST['field_name'] . '_attach_id', $attach_id);
 
 	$thumb = wp_get_attachment_image_src( $attach_id, 'thumbnail' );
-				
+
 	//Return URL for the image field in meta box
 	$file['thumb'] = $thumb[0];
 

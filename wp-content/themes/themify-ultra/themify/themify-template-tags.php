@@ -75,39 +75,6 @@ function themify_site_description() {
 }
 endif;
 
-if ( ! function_exists( 'themify_custom_menu_nav' ) ) :
-/**
- * Sets custom menu selected in page custom panel as navigation, otherwise sets the default.
- *
- * @since 1.9.5
- *
- * @param array $args Settings to configure navigation menu
- */
-function themify_custom_menu_nav( $args = array() ) {
-	// Get page ID reliably
-	$queried_object = get_queried_object();
-	$page_id = isset( $queried_object->ID ) ? $queried_object->ID : 0;
-
-	// Compile menu arguments
-	$args = wp_parse_args( $args, array(
-		'theme_location' => 'main-nav',
-		'fallback_cb' => 'themify_default_main_nav',
-		'container'   => '',
-		'menu_id'     => 'main-nav',
-		'menu_class'  => 'main-nav'
-	));
-
-	// See if the page has a menu assigned
-	$custom_menu = get_post_meta( $page_id, 'custom_menu', true );
-	if ( ! empty( $custom_menu ) ) {
-		$args['menu'] = $custom_menu;
-	}
-
-	// Render the menu
-	wp_nav_menu( $args );
-}
-endif;
-
 if ( ! function_exists( 'themify_zoom_icon' ) ) :
 /**
  * Returns zoom icon markup for lightboxed featured image
@@ -369,7 +336,7 @@ if( ! function_exists( 'themify_has_post_video' ) ) :
  * @since 2.7.3
  */
 function themify_has_post_video() {
-	return themify_get( 'video_url' ) != '';
+	return themify_get( 'video_url', '' ) != '';
 }
 endif;
 
@@ -407,18 +374,8 @@ function themify_area_design( $key = 'header', $args = array() ) {
 		'values'  => array( 'header-horizontal', 'header-block', 'none' )
 	) );
 
-	$is_shop = themify_is_shop() ? true : false;
-
-	if ( is_singular() || $is_shop ) {
-		global $post;
-		if ( $is_shop && is_object( $post ) ) {
-			$temp_post = $post;
-			$post = get_post( get_option( 'woocommerce_shop_page_id' ) );
-		}
+	if ( is_singular() || themify_is_shop() ) {
 		$single = themify_get( $args['field'] );
-		if ( $is_shop && is_object( $post ) ) {
-			$post = $temp_post;
-		}
 		if ( in_array( $single, $args['values'] ) ) {
 			$design = $single;
 		}
@@ -467,9 +424,6 @@ function themify_get_featured_image_link( $args = array() ) {
 		$link = esc_url(themify_get('external_link'));
 	} elseif ( themify_get('lightbox_link') != '') {
 		$link = esc_url(themify_get('lightbox_link'));
-		if(themify_check('iframe_url')) {
-			$link = themify_get_lightbox_iframe_link( $link );
-		}
 		$link = $link . '" class="themify_lightbox';
 	} elseif(themify_check('link_url')) {
 		$link = themify_get('link_url');
@@ -534,57 +488,6 @@ function themify_is_query_page(){
 }
 endif;
 
-if( ! function_exists( 'themify_post_title' ) ) :
-/**
- * Display post title
- *
- * @since 2.7.7
- */
-function themify_post_title( $args = array() ) {
-	global $themify;
-
-	if( $themify->hide_title != 'yes' ) {
-		themify_before_post_title();
-
-		extract( themify_parse_args( $args, array(
-			'tag' => themify_post_title_tag(),
-			'class' => 'post-title entry-title',
-			'use_permalink' => false,
-		), 'post_title' ) );
-
-		if( $themify->unlink_title == 'yes' ) { ?>
-			<<?php echo $tag; ?> class="<?php echo $class; ?>"><?php the_title(); ?></<?php echo $tag; ?>>
-		<?php } else { ?>
-			<<?php echo $tag; ?> class="<?php echo $class; ?>"><a href="<?php echo $use_permalink ? get_permalink() : themify_get_featured_image_link(); ?>" title="<?php the_title_attribute(); ?>"><?php the_title(); ?></a></<?php echo $tag; ?>>
-		<?php }
-
-		themify_after_post_title();
-	}
-}
-endif;
-
-if( ! function_exists( 'themify_post_title_tag' ) ) :
-/**
- * Get the HTML tag to be used for post titles
- *
- * @since 2.7.7
- * @return string
- */
-function themify_post_title_tag() {
-	global $themify;
-
-	$tag = 'h2';
-	if( is_single()
-		// if loop is rendering inside a shortcode, use default
-		&& ( ! isset( $themify->is_shortcode ) || ( isset( $themify->is_shortcode ) && $themify->is_shortcode != true ) )
-	) {
-		$tag = 'h1';
-	}
-
-	return apply_filters( 'themify_post_title_tag', $tag );
-}
-endif;
-
 if( ! function_exists( 'themify_post_media' ) ) :
 /**
  * Display post video or the featured image
@@ -597,7 +500,7 @@ function themify_post_media( $args = array() ) {
 	extract( themify_parse_args( $args, array(
 		'class' => 'post-image ' . $themify->image_align,
 		'use_permalink' => false,
-	), 'post_title' ) );
+	), 'post_media' ) );
 
 	//check if there is a video url in the custom field
 	if( themify_has_post_video() ){
@@ -628,6 +531,29 @@ function themify_post_media( $args = array() ) {
 }
 endif;
 
+if( ! function_exists( 'themify_post_title_tag' ) ) :
+/**
+ * Get the HTML tag to be used for post titles
+ *
+ * @since 2.7.7
+ * @return string
+ */
+function themify_post_title_tag() {
+	global $themify;
+
+	$tag = 'h2';
+	if( is_singular()
+		// if loop is rendering inside a shortcode or Builder, use default
+		&& ( ! isset( $themify->is_shortcode ) || ( isset( $themify->is_shortcode ) && $themify->is_shortcode != true ) )
+		&& ( ! isset( $themify->is_builder_loop ) || ( isset( $themify->is_builder_loop ) && $themify->is_builder_loop != true ) )
+	) {
+		$tag = 'h1';
+	}
+
+	return apply_filters( 'themify_post_title_tag', $tag );
+}
+endif;
+
 if( ! function_exists( 'themify_post_title' ) ) :
 /**
  * Template tag to display the post title
@@ -635,23 +561,163 @@ if( ! function_exists( 'themify_post_title' ) ) :
  * uses themify_parse_args to filter the $args
  */
 function themify_post_title( $args = array() ) {
+	global $themify;
+
 	extract( themify_parse_args( $args, array(
-		'tag' => 'h1',
+		'tag' => themify_post_title_tag(),
 		'class' => 'post-title entry-title',
 		'before' => '',
 		'after' => '',
 		'before_title' => '',
 		'after_title' => '',
 		'echo' => true,
-		'unlink' => false,
+		'unlink' => isset( $themify->unlink_title ) && $themify->unlink_title == 'yes' ? true : false,
 	), 'post_title' ) );
 
-	$link_before = $unlink ? '' : '<a href="' . themify_get_featured_image_link() .'" title="' . the_title_attribute( array( 'echo' => false ) ) . '">';
+	$link_before = $unlink ? '' : '<a href="' . themify_get_featured_image_link() .'">';
 	$link_after = $unlink ? '' : '</a>';
 
 	$before = "{$before} <{$tag} class=\"{$class}\">{$before_title}{$link_before}";
 	$after = "{$link_after}{$after_title} </{$tag}>{$after}";
 
+	themify_before_post_title(); // Hook
 	the_title( $before, $after, $echo );
+	themify_after_post_title(); // Hook
+}
+endif;
+
+if( ! function_exists( 'themify_menu_nav' ) ) :
+/**
+ * Display main navigation menu
+ *
+ * @param $args array customize the arguments sent to wp_nav_menu
+ * @return string|null output of the wp_nav_menu if $args['echo'] == false, otherwise null
+ */
+function themify_menu_nav( $args = array() ) {
+
+	// Compile menu arguments
+	$args = themify_parse_args( $args, array(
+		'theme_location' => 'main-nav',
+		'fallback_cb' => 'themify_default_main_nav',
+		'container'   => '',
+		'menu_id'     => 'main-nav',
+		'menu_class'  => 'main-nav'
+	), 'menu_nav' );
+
+	if ( is_singular() || themify_is_shop() ) {
+		// See if the page has a menu assigned
+		$custom_menu = themify_get( 'custom_menu' );
+		if ( ! empty( $custom_menu ) ) {
+			$args['menu'] = $custom_menu;
+		}
+	}
+
+	// Render the menu
+	return wp_nav_menu( $args );
+}
+endif;
+
+if( ! function_exists( 'themify_custom_menu_nav' ) ) :
+/**
+ * Alias to themify_menu_nav()
+ */
+function themify_custom_menu_nav( $args = array() ) {
+	themify_menu_nav( $args );
+}
+endif;
+
+if( ! function_exists( 'themify_comments_popup_link' ) ) :
+/**
+ * Generate the popup comment link
+ *
+ * @since 2.9.9
+ */
+function themify_comments_popup_link( $args = array() ) {
+	if( ! themify_get( 'setting-comments_posts' ) && comments_open() ) {
+		extract( themify_parse_args( $args, array(
+			'echo' => true,
+			'zero' => '0',
+			'one' => '1',
+			'more' => '%',
+			'class' => 'post-comment',
+		), 'comment_popup_link' ) );
+
+		ob_start(); ?>
+		<sup class="<?php echo $class; ?>">
+			<?php comments_popup_link( $zero, $one, $more ); ?>
+		</sup>
+		<?php
+		$output = ob_get_clean();
+		if( $echo )
+			echo $output;
+		return $output;
+	}
+}
+endif;
+
+if( ! function_exists( 'themify_author_bio' ) ) :
+/**
+ * Display author biography, used in author archive pages
+ *
+ * @since 3.0.8
+ */
+function themify_author_bio() {
+	global $author, $author_name;
+
+	$curauth = ( isset( $_GET['author_name'] ) ) ? get_user_by( 'slug', $author_name ) : get_userdata( intval( $author ) );
+	$author_url = $curauth->user_url;
+	?>
+	<div class="author-bio clearfix">
+		<p class="author-avatar"><?php echo get_avatar( $curauth->user_email, $size = '48' ); ?></p>
+		<h2 class="author-name">
+			<?php printf( __( 'About <span>%s</span>', 'themify' ), $curauth->display_name ); ?></span>
+		</h2>
+		<?php if( $author_url != '' ) : ?>
+			<p class="author-url">
+				<a href="<?php echo esc_attr( $author_url ); ?>"><?php echo esc_html( $author_url ); ?></a>
+			</p>
+		<?php endif; //author url ?>
+		<div class="author-description">
+			<?php echo esc_html( $curauth->user_description ); ?>
+		</div><!-- /.author-description -->
+	</div><!-- /.author bio -->
+
+	<h2 class="author-posts-by"><?php printf( __( 'Posts by %1$s %2$s', 'themify' ), $curauth->first_name, $curauth->last_name ); ?>:</h2>
+	<?php
+}
+endif;
+
+if( ! function_exists( 'themify_loop_get_context' ) ) :
+/**
+ * Get current context, where the template file is being rendered in.
+ * Used mainly in loop.php template file, since this template file can be called to render inside itself
+ *
+ * @return string|NULL
+ * @since 3.1.1
+ */
+function themify_loop_get_context( $type = 'post' ) {
+	global $themify;
+
+	if( isset( $themify->is_shortcode ) && $themify->is_shortcode ) {
+		return 'shortcode';
+	} elseif( isset( $themify->is_builder_loop ) && $themify->is_builder_loop ) {
+		return 'builder';
+	} elseif( is_singular( $type ) ) {
+		return 'single';
+	}
+}
+endif;
+
+if( ! function_exists( 'themify_loop_is_singular' ) ) :
+/**
+ * Check if current context is "single post page" and not inside a shortcode or Builder module
+ * Note: this may return false even if is_singular( $type ) returns true, using this function context matters.
+ *
+ * @return bool
+ * @since 3.1.1
+ */
+function themify_loop_is_singular( $type = 'post' ) {
+	$context = themify_loop_get_context( $type );
+	return 'single' == $context;
 }
 endif;

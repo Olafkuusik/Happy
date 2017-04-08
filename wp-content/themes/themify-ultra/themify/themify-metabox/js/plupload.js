@@ -18,7 +18,7 @@ function themify_create_pluploader(obj) {
 	pconfig["file_data_name"] = imgId + pconfig["file_data_name"];
 	pconfig["multipart_params"]["imgid"] = imgId;
 	pconfig["multipart_params"]["_ajax_nonce"] = $this.find(".ajaxnonceplu").attr("id").replace("ajaxnonceplu", "");
-	
+
 	if($this.hasClass('add-preset')) {
 		haspreset = true;
 		pconfig["multipart_params"]['haspreset'] = 'haspreset'; 
@@ -44,7 +44,9 @@ function themify_create_pluploader(obj) {
 	if($this.data('formats')) {
 		pconfig['filters'][0]['extensions'] = $this.data('formats');
 	}
-	
+
+	pconfig['multipart_params']['action'] = $this.data( 'action' );
+
 	var uploader = new plupload.Uploader(pconfig);
 	
 	uploader.bind('Init', function(up) { });

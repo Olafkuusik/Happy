@@ -27,7 +27,7 @@ global $themify; ?>
 		// If it's a taxonomy, set the related post type
 		$set_post_type = str_replace( '-category', '', $wp_query->query_vars['taxonomy'] );
 		if ( in_array( $wp_query->query_vars['taxonomy'], get_object_taxonomies( $set_post_type ) ) ) {
-			$themify_query = $query_string . '&post_type=' . $set_post_type . '&paged=' . $paged;
+			$themify_query = $query_string . '&post_type=' . $set_post_type . '&paged=' . urlencode( $paged );
 			query_posts( $themify_query );
 		}
 		?>

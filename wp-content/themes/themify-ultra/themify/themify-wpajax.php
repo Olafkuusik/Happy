@@ -30,8 +30,7 @@ $themify_ajax_actions = array(
 	'refresh_webfonts',
 	'import_sample_content',
 	'erase_sample_content',
-	'notice_dismiss',
-        'clear_all_caches'
+	'notice_dismiss'
 );
 foreach($themify_ajax_actions as $action){
 	add_action('wp_ajax_themify_' . $action, 'themify_' . $action);
@@ -63,13 +62,6 @@ function themify_get_404_pages(){
         echo wp_json_encode($items);
     }
     wp_die();
-}
-
-function  themify_clear_all_caches(){
-    check_ajax_referer('ajax-nonce', 'nonce');
-    // Clear the cache
-    TFCache::removeDirectory(TFCache::get_cache_dir());
-    wp_send_json_success('success');
 }
 
 //Search only by post title
@@ -337,7 +329,9 @@ function themify_save(){
 		$v = explode("=", $a);
 		$temp[$v[0]] = urldecode( str_replace("+"," ",preg_replace_callback('/%([0-9a-f]{2})/i', 'themify_save_replace_cb', urlencode($v[1]))) );
 	}
-	themify_set_data($temp);
+
+	themify_set_data( apply_filters( 'themify_save_data', $temp ) );
+
 	_e('Your settings were saved', 'themify');
        $remove = $temp['setting-script_minification'] === 'disable' || !isset($temp['setting-cache_gzip']);
 	TFCache::removeDirectory(TFCache::get_cache_dir() . 'scripts/');
@@ -463,13 +457,12 @@ function themify_export() {
 				return false;
 			}
 		} else {
-			if(ini_get('zlib.output_compression')) {
+			if ( ini_get( 'zlib.output_compression' ) ) {
 				/**
 				 * Turn off output buffer compression for proper zip download.
 				 * @since 2.0.2
 				 */
-				$srv_stg = 'ini' . '_' . 'set';
-				call_user_func( $srv_stg, 'zlib.output_compression', 'Off');
+				ini_set( 'zlib.output_compression', 'Off' );
 			}
 			ob_start();
 			header('Content-Type: application/force-download');

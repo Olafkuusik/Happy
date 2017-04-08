@@ -52,24 +52,30 @@ ThemifyGallery = {
 					targetItems,
 					$link = ( $self.find( '> a' ).length > 0 ) ? $self.find( '> a' ).attr( 'href' ) : $self.attr('href'),
 					$type = ThemifyGallery.getFileType($link),
-					$groupItems = $type == 'inline' || $type == 'iframe' ? [] : $self.closest( '.themify_builder_row, .loops-wrapper' ).find( '.themify_lightbox > img' ).parent(),
+					$is_video = ThemifyGallery.isVideo($link),
+					$groupItems = $type == 'inline' || $type == 'iframe' ? [] : ($self.data('rel')?$('a[data-rel="'+$self.data('rel')+'"]'):$self.closest( '.themify_builder_row, .loops-wrapper' ).find( '.themify_lightbox > img' ).parent()),
 					index = $groupItems.length > 1 ? $groupItems.index( this ) : 0,
 					$title = (typeof $(this).children('img').attr('alt') !== 'undefined') ? $(this).children('img').attr('alt') : $(this).attr('title'),
-					$iframe_width = (ThemifyGallery.isVideo($link)) ? '100%' : (ThemifyGallery.getParam('width', $link)) ? ThemifyGallery.getParam('width', $link) : '94%',
-					$iframe_height = (ThemifyGallery.isVideo($link)) ? '100%' : (ThemifyGallery.getParam('height', $link)) ? ThemifyGallery.getParam('height', $link) : '100%';
-					if($iframe_width.indexOf("%") == -1) $iframe_width += 'px';
-					if($iframe_height.indexOf("%") == -1) $iframe_height += 'px';
+					$iframe_width = $is_video ? '100%' : (ThemifyGallery.getParam('width', $link)) ? ThemifyGallery.getParam('width', $link) : '94%',
+					$iframe_height = $is_video ? '100%' : (ThemifyGallery.getParam('height', $link)) ? ThemifyGallery.getParam('height', $link) : '100%';
+				if($iframe_width.indexOf("%") == -1) $iframe_width += 'px';
+				if($iframe_height.indexOf("%") == -1) $iframe_height += 'px';
 
-				if( ThemifyGallery.isYoutube( $link ) ) {
-					// for youtube videos, sanitize the URL properly
-					$link = ThemifyGallery.getYoutubePath( $link );
+				if($is_video){
+					if( ThemifyGallery.isYoutube( $link ) ) {
+						// for youtube videos, sanitize the URL properly
+						$link = ThemifyGallery.getYoutubePath( $link );
+					}
+					else if( ThemifyGallery.isVimeo( $link ) ) {
+						$link = $link.split('?')[0];
+					}
 				}
 				if( $groupItems.length > 1 && index !== -1 ) {
 					targetItems = [];
 
 					$groupItems.each( function( i, el ) {
 						targetItems.push( {
-							src: $(el).attr( 'href' ),
+							src: ThemifyGallery.getiFrameLink( $(el).attr( 'href' ) ),
 							title: (typeof $(el).find('img').attr('alt') !== 'undefined') ? $(el).find('img').attr('alt') : '',
 							type: ThemifyGallery.getFileType( $(el).attr( 'href' ) )
 						} );
@@ -78,7 +84,7 @@ ThemifyGallery = {
 				} else {
 					index = 0; // ensure index is set to 0 so the proper popup shows
 					targetItems = {
-						src: $link,
+						src: ThemifyGallery.getiFrameLink( $link ),
 						title: $title,
 					};
 				}
@@ -138,7 +144,7 @@ ThemifyGallery = {
 						}
 					});
 				}
-				if(ThemifyGallery.isVideo($link)){
+				if($is_video){
 					$args['mainClass'] += ' video-frame';
 				} else {
 					$args['mainClass'] += ' standard-frame';
@@ -208,6 +214,9 @@ ThemifyGallery = {
 			// Images in WP Gallery
 			if(themifyScript.lightbox.lightboxGalleryOn){
 				$(context).on('click', ThemifyGallery.config.lightboxGallery, function(event){
+					if( 'image' !== ThemifyGallery.getFileType( $(this).attr( 'href' ) ) ) {
+						return;
+					}
 					event.preventDefault();
 					var $gallery = $(ThemifyGallery.config.lightboxGallery, $(this).parent().parent().parent()),
 						images = [];
@@ -265,7 +274,7 @@ ThemifyGallery = {
 	},
 	
 	getFileType: function( itemSrc ) {
-		if ( itemSrc.match( /\.(gif|jpg|jpeg|tiff|png)$/i ) ) {
+		if ( itemSrc.match( /\.(gif|jpg|jpeg|tiff|png)(\?fit=\d+(,|%2C)\d+)?$/i ) ) { // ?fit is added by JetPack
 			return 'image';
 		} else if(itemSrc.match(/\bajax=true\b/i)) {
 			return 'ajax';
@@ -275,17 +284,17 @@ ThemifyGallery = {
 			return 'iframe';
 		}
 	},
-	
 	isVideo: function( itemSrc ) {
 		return ThemifyGallery.isYoutube( itemSrc )
-			|| itemSrc.match(/vimeo\.com/i) || itemSrc.match(/\b.mov\b/i)
+			|| ThemifyGallery.isVimeo(itemSrc) || itemSrc.match(/\b.mov\b/i)
 			|| itemSrc.match(/\b.swf\b/i);
 	},
-
 	isYoutube : function( itemSrc ) {
 		return itemSrc.match( /youtube\.com\/watch/i ) || itemSrc.match( /youtu\.be/i );
 	},
-
+	isVimeo : function( itemSrc ) {
+		return itemSrc.match(/vimeo\.com/i)
+	},
 	getYoutubePath : function( url ) {
 		if( url.match( /youtu\.be/i ) ) {
 			// convert youtu.be/ urls to youtube.com
@@ -294,7 +303,16 @@ ThemifyGallery = {
 			return '//youtube.com/watch?v=' + ThemifyGallery.getParam( 'v', url );
 		}
 	},
-	
+	/**
+	 * Add ?iframe=true to the URL if the lightbox is showing external page
+	 * this enables us to detect the page is in an iframe in the server
+	 */
+	getiFrameLink : function( link ) {
+		if( ThemifyGallery.getFileType( link ) == 'iframe' && ThemifyGallery.isVideo( link ) === null ) {
+			link = Themify.UpdateQueryString( 'iframe', 'true', link )
+		}
+		return link;
+	},
 	getParam: function(name, url){
 		name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
 		var regexS = "[\\?&]"+name+"=([^&#]*)";

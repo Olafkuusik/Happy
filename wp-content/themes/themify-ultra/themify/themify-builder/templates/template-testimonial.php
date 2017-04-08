@@ -68,13 +68,14 @@ $paged = $this->get_paged_query();
         $limit = $post_per_page_testimonial;
         $terms = $category_testimonial;
         $temp_terms = explode(',', $terms);
-        $new_terms = array();
+        $new_terms = $new_exclude_terms = array();
         $is_string = false;
         foreach ($temp_terms as $t) {
             if (!is_numeric($t))
                 $is_string = true;
             if ('' != $t) {
-                array_push($new_terms, trim($t));
+                $result_array = ( ( is_numeric( $t ) && 0 <= $t ) || ! is_numeric( $t ) ) ? 'new_terms' : 'new_exclude_terms';
+                array_push( $$result_array, is_numeric( $t ) ? abs( trim( $t ) ) : trim( $t ) );
             }
         }
         $tax_field = ( $is_string ) ? 'slug' : 'id';
@@ -92,10 +93,18 @@ $paged = $this->get_paged_query();
         if (count($new_terms) > 0 && !in_array('0', $new_terms) && 'category' == $type_query_testimonial) {
             $args['tax_query'] = array(
                 array(
-                    'taxonomy' => 'testimonial-category',
-                    'field' => $tax_field,
-                    'terms' => $new_terms
-                )
+                    'taxonomy'  => 'testimonial-category',
+                    'field'     => $tax_field,
+                    'terms'     => $new_terms,
+                ),
+            );
+        }
+        if ( count( $new_exclude_terms ) > 0 && 'category' == $type_query_testimonial) {
+            $args['tax_query'][] = array(
+                'taxonomy'  => 'testimonial-category',
+                'field'     => $tax_field,
+                'terms'     => $new_exclude_terms,
+                'operator'  => "NOT IN",
             );
         }
 
@@ -140,9 +149,10 @@ $paged = $this->get_paged_query();
                 $themify->hide_date = $hide_post_date_testimonial;
                 $themify->hide_meta = $hide_post_meta_testimonial;
                 $themify->post_layout = $layout_testimonial;
+				$themify->is_builder_loop = true;
 
                 // hooks action
-                do_action_ref_array('themify_builder_override_loop_themify_vars', array($themify, $mod_name));
+                do_action_ref_array('themify_builder_override_loop_themify_vars', array( $themify, $mod_name, $fields_args ) );
 
                 $out = '';
                 if ($posts) {

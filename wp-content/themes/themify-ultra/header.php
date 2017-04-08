@@ -20,12 +20,16 @@
 
 	<?php if ( themify_theme_show_area( 'header' ) && themify_theme_do_not_exclude_all( 'header' ) ) : ?>
 		<div id="headerwrap" <?php themify_theme_header_background() ?>>
-
+                        <?php   
+                        $show_mobile_menu = themify_theme_do_not_exclude_all( 'mobile-menu' );
+                        $show_menu_navigation = $show_mobile_menu && themify_theme_show_area( 'menu_navigation' );
+                      ?>
 			<?php themify_header_before(); // hook ?>
-
-			<div class="header-icons">
-				<a id="menu-icon" href="#mobile-menu"></a>
-			</div>
+                        <?php if($show_menu_navigation):?>
+                            <div class="header-icons">
+                                <a id="menu-icon" href="#mobile-menu"></a>
+                            </div>
+                        <?php endif;?>
 
 			<header id="header" class="pagewidth clearfix" itemscope="itemscope" itemtype="https://schema.org/WPHeader">
 
@@ -42,7 +46,7 @@
 				</div>
 				<!-- /.header-bar -->
 
-				<?php if ( themify_theme_do_not_exclude_all( 'mobile-menu' ) ) : ?>
+				<?php if ( $show_mobile_menu ) : ?>
 					<div id="mobile-menu" class="sidemenu sidemenu-off">
 
 						<div class="navbar-wrapper clearfix">
@@ -69,9 +73,9 @@
 								<!-- /searchform-wrap -->
 							<?php endif; // exclude search form ?>
 
-							<?php if ( themify_theme_show_area( 'menu_navigation' ) ) : ?>
+							<?php if ( $show_menu_navigation ) : ?>
 								<nav id="main-nav-wrap" itemscope="itemscope" itemtype="https://schema.org/SiteNavigationElement">
-									<?php themify_theme_menu_nav(); ?>
+									<?php themify_menu_nav( array( 'walker' => new Themify_Mega_Menu_Walker ) ); ?>
 									<!-- /#main-nav -->
 									
 									<?php if ( themify_is_woocommerce_active() && themify_theme_show_area( 'cart_icon' ) ) : global $woocommerce; ?>

@@ -65,6 +65,39 @@ function themify_builder_get_binding_data($field) {
 	}
 }
 
+function themify_builder_get_control_binding_data( $field, $format = 'data' ) {
+	$return = '';
+	$default_type = $field['type'];
+	
+	if ( 'text' == $field['type'] && isset( $field['colorpicker'] ) && true == $field['colorpicker'] ) 
+		$default_type = 'color';
+
+	if ( 'builder' == $field['type'] ) 
+		$default_type = 'repeater';
+
+	if ( 'text' == $field['type'] && isset( $field['iconpicker'] ) && true == $field['iconpicker'] ) 
+		$default_type = 'icon';
+
+	$defaults = array(
+		'binding' => 'refresh',
+		'control_type' => $default_type
+	);
+	if ( ! isset( $field['render_callback'] ) ) $field['render_callback'] = array();
+	$args = wp_parse_args( $field['render_callback'], $defaults );
+	if ( 'class' == $format ) {
+		$return = ' data_control_binding_' . $args['binding'] . ' data_control_type_' . $args['control_type']; 
+		$return .= isset( $args['repeater'] ) && ! empty( $args['repeater'] ) ? ' data_control_repeater_'. $args['repeater'] : '';
+	} else {
+		$return = ' data-control-binding="' . $args['binding'] . '" data-control-type="' . $args['control_type']. '"';
+		$return .= isset( $args['repeater'] ) && ! empty( $args['repeater'] ) ? ' data-control-repeater="'. $args['repeater'] .'"' : '';
+	}
+
+	if ( isset( $field['render_callback']['selector'] ) ) {
+		$return .= ' data-control-selector="'. $field['render_callback']['selector'] .'"';
+	}
+	return $return;
+}
+
 function themify_builder_module_settings_field_builder($field) {
 	?>
 	<?php foreach ($field['options'] as $option): ?>
@@ -98,9 +131,9 @@ function themify_builder_module_settings_field_builder($field) {
 					<?php if (isset($option['colorpicker']) && $option['colorpicker'] == true) : ?>
 						<span class="builderColorSelect"><span></span></span> 
 						<input type="text" class="<?php echo isset($option['class']) ? esc_attr($option['class']) : ''; ?> colordisplay" <?php echo themify_builder_get_binding_data($option); ?> />
-						<input id="<?php echo esc_attr($option['id']); ?>" name="<?php echo esc_attr($option['id']); ?>" value="<?php if (isset($option['value'])) echo esc_attr($option['value']); ?>" class="builderColorSelectInput tfb_lb_option_child" type="hidden"  data-input-id="<?php echo esc_attr($option['id']); ?>" />
+						<input id="<?php echo esc_attr($option['id']); ?>" name="<?php echo esc_attr($option['id']); ?>" value="<?php if (isset($option['value'])) echo esc_attr($option['value']); ?>" class="builderColorSelectInput tfb_lb_option_child" type="hidden"  data-input-id="<?php echo esc_attr($option['id']); ?>" <?php echo themify_builder_get_binding_data($option); echo themify_builder_get_control_binding_data( $option ); ?> />
 					<?php else : ?>
-						<input name="<?php echo esc_attr($option['id']); ?>" class="<?php echo isset($option['class']) ? esc_attr($option['class']) : ''; ?> tfb_lb_option_child <?php echo isset($add_class) ? esc_attr($add_class) : ''; ?>" type="text" data-input-id="<?php echo esc_attr($option['id']); ?>" <?php echo themify_builder_get_binding_data($option); ?> />
+						<input name="<?php echo esc_attr($option['id']); ?>" class="<?php echo isset($option['class']) ? esc_attr($option['class']) : ''; ?> tfb_lb_option_child <?php echo isset($add_class) ? esc_attr($add_class) : ''; ?>" type="text" data-input-id="<?php echo esc_attr($option['id']); ?>" <?php echo themify_builder_get_binding_data($option); echo themify_builder_get_control_binding_data( $option ); ?> />
 						<?php if (isset($option['iconpicker']) && $option['iconpicker'] == true) : ?>
 							<a class="button button-secondary hide-if-no-js themify_fa_toggle" href="#"><?php _e('Insert Icon', 'themify'); ?></a>
 						<?php endif; ?>
@@ -111,7 +144,7 @@ function themify_builder_module_settings_field_builder($field) {
 					<?php endif; ?>
 
 				<?php elseif ('image' == $option['type']): ?>
-					<input data-input-id="<?php echo esc_attr($option['id']); ?>" name="<?php echo esc_attr($option['id']); ?>" placeholder="<?php if (isset($option['value'])) echo esc_attr($option['value']); ?>" class="<?php echo esc_attr($option['class']); ?> themify-builder-uploader-input tfb_lb_option_child" type="text" /><br />
+					<input data-input-id="<?php echo esc_attr($option['id']); ?>" name="<?php echo esc_attr($option['id']); ?>" placeholder="<?php if (isset($option['value'])) echo esc_attr($option['value']); ?>" class="<?php echo esc_attr($option['class']); ?> themify-builder-uploader-input tfb_lb_option_child" type="text"<?php echo themify_builder_get_control_binding_data( $option ); ?> /><br />
 
 					<div class="small">
 
@@ -133,7 +166,7 @@ function themify_builder_module_settings_field_builder($field) {
 					</p>
 
 				<?php elseif ('audio' == $option['type']): ?>
-					<input data-input-id="<?php echo esc_attr($option['id']); ?>" name="<?php echo esc_attr($option['id']); ?>" placeholder="<?php if (isset($option['value'])) echo esc_attr($option['value']); ?>" class="<?php echo esc_attr($option['class']); ?> themify-builder-uploader-input tfb_lb_option_child" type="text" /><br />
+					<input data-input-id="<?php echo esc_attr($option['id']); ?>" name="<?php echo esc_attr($option['id']); ?>" placeholder="<?php if (isset($option['value'])) echo esc_attr($option['value']); ?>" class="<?php echo esc_attr($option['class']); ?> themify-builder-uploader-input tfb_lb_option_child" type="text" <?php echo themify_builder_get_binding_data($option); echo themify_builder_get_control_binding_data( $option ); ?> /><br />
 
 					<div class="small">
 
@@ -150,7 +183,7 @@ function themify_builder_module_settings_field_builder($field) {
 					</div>
 
 				<?php elseif ($option['type'] == 'textarea'): ?>
-					<textarea name="<?php echo esc_attr($option['id']); ?>" class="<?php echo esc_attr($option['class']); ?> tfb_lb_option_child" <?php echo (isset($option['rows'])) ? 'rows="' . esc_attr($option['rows']) . '"' : ''; ?> data-input-id="<?php echo esc_attr($option['id']); ?>"></textarea><br />
+					<textarea name="<?php echo esc_attr($option['id']); ?>" class="<?php echo esc_attr($option['class']); ?> tfb_lb_option_child" <?php echo (isset($option['rows'])) ? 'rows="' . esc_attr($option['rows']) . '"' : ''; ?> data-input-id="<?php echo esc_attr($option['id']); ?>"<?php echo themify_builder_get_control_binding_data( $option ); ?>></textarea><br />
 
 					<?php if (isset($option['radio'])): ?>
 						<div data-input-id="<?php echo esc_attr($option['radio']['id']); ?>" class="tfb_lb_option_child tf-radio-choice">
@@ -163,7 +196,7 @@ function themify_builder_module_settings_field_builder($field) {
 					<?php endif; // endif radio input   ?>
 
 				<?php elseif ($option['type'] == 'select') : ?>
-					<select data-input-id="<?php echo esc_attr($option['id']); ?>" name="<?php echo esc_attr($option['id']); ?>" class="tfb_lb_option_child">
+					<select data-input-id="<?php echo esc_attr($option['id']); ?>" name="<?php echo esc_attr($option['id']); ?>" class="tfb_lb_option_child" <?php themify_builder_get_binding_data( $option ); echo themify_builder_get_control_binding_data( $option ); ?>>
 						<?php if (isset($option['empty'])): ?>
 							<option value="<?php echo esc_attr($option['empty']['val']); ?>"><?php echo esc_html($option['empty']['label']); ?></option>
 						<?php endif; ?>
@@ -177,7 +210,9 @@ function themify_builder_module_settings_field_builder($field) {
 					</select>
 
 				<?php elseif ('layout' == $option['type']): ?>
-					<p id="<?php echo esc_attr($option['id']); ?>" class="layout_icon tfb_lb_option_child themify-layout-icon">
+					
+					<p data-input-id="<?php echo esc_attr($option['id']); ?>" class="layout_icon tfb_lb_option_child themify-layout-icon"<?php themify_builder_get_binding_data( $option ); echo themify_builder_get_control_binding_data( $option ); ?>>
+
 						<?php foreach ($option['options'] as $option): ?>
 							<a href="#" id="<?php echo esc_attr($option['value']); ?>" title="<?php echo esc_attr($option['label']); ?>" class="tfl-icon">
 								<?php $image_url = ( filter_var($option['img'], FILTER_VALIDATE_URL) ) ? $option['img'] : THEMIFY_BUILDER_URI . '/img/builder/' . $option['img']; ?>
@@ -189,7 +224,9 @@ function themify_builder_module_settings_field_builder($field) {
 
 					<?php
 				elseif ('wp_editor' == $option['type']):
-					wp_editor('', $option['id'], array('editor_class' => $option['class'] . ' tfb_lb_wp_editor tfb_lb_option_child', 'textarea_rows' => 12));
+					$editor_class = $option['class'] . ' tfb_lb_wp_editor tfb_lb_option_child';
+					$editor_class .= themify_builder_get_control_binding_data( $option, 'class' );
+					wp_editor('', $option['id'], array('editor_class' => $editor_class, 'textarea_rows' => 12));
 					?>
 
 				<?php elseif ('checkbox' == $option['type']): ?>
@@ -233,7 +270,7 @@ function themify_builder_module_settings_field_builder($field) {
 						$option_js = (isset($option['option_js']) && $option['option_js'] == true) ? 'tf-option-checkbox-js' : '';
 						$option_js_wrap =$option_js ? 'tf-option-checkbox-enable' : '';
 					?>
-					<div data-input-id="<?php echo esc_attr($option['id']); ?>" class="tfb_lb_option_child tf-radio-choice">
+					<div data-input-id="<?php echo esc_attr($option['id']); ?>" class="tfb_lb_option_child tf-radio-choice"<?php echo themify_builder_get_control_binding_data( $option ); ?>>
 						<?php foreach ($option['options'] as $k => $v): ?>
 							<?php $checked = isset($option['default']) && $k == $option['default'] ? 'checked="checked" data-checked="checked"' : ''; ?>
 							<?php $data_el = $option_js ? 'data-selected="tf-group-element-' . $k . '"' : ''; ?>
@@ -286,6 +323,7 @@ if (!function_exists('themify_builder_module_settings_field')) {
 	 * @return string
 	 */
 	function themify_builder_module_settings_field($module_options, $module_name) {
+		global $ThemifyBuilder;
 		foreach ($module_options as $field):
 
 			$id = isset($field['id']) ? $field['id'] : '';
@@ -334,17 +372,19 @@ if (!function_exists('themify_builder_module_settings_field')) {
 					}
 					echo '</div>';
 				} else if ('wp_editor' == $field['type']) {
-					wp_editor('', $field['id'], array('editor_class' => $field['class'] . ' tfb_lb_wp_editor tfb_lb_option', 'textarea_rows' => 12));
+					$editor_class = $field['class'] . ' tfb_lb_wp_editor tfb_lb_option';
+					$editor_class .= themify_builder_get_control_binding_data( $field, 'class' );
+					wp_editor('', $field['id'], array('editor_class' => $editor_class, 'textarea_rows' => 12));
 				} elseif ('builder' == $field['type']) {
 					?>
 					<div class="<?php echo (isset($field['wrap_with_class'])) ? esc_attr($field['wrap_with_class']) : ''; ?>">
 						<hr />
 
-						<div id="<?php echo esc_attr($field['id']); ?>" class="themify_builder_module_opt_builder_wrap themify_builder_row_js_wrapper tfb_lb_option">
+						<div id="<?php echo esc_attr($field['id']); ?>" class="themify_builder_module_opt_builder_wrap themify_builder_row_js_wrapper tfb_lb_option"<?php echo themify_builder_get_control_binding_data( $field ); ?>>
 
-							<div class="themify_builder_row clearfix">
+							<div class="tb_repeatable_field clearfix">
 
-								<div class="themify_builder_row_top">
+								<div class="tb_repeatable_field_top">
 									<div class="row_menu">
 										<div class="menu_icon">
 										</div>
@@ -358,13 +398,13 @@ if (!function_exists('themify_builder_module_settings_field')) {
 								</div>
 								<!-- /row_top -->
 
-								<div class="themify_builder_row_content">
+								<div class="tb_repeatable_field_content">
 									<?php themify_builder_module_settings_field_builder($field); ?>
 								</div>
 								<!-- /themify_builder_row_content -->
 
 							</div>
-							<!-- /builder_row -->
+							<!-- /tb_repeatable_field -->
 
 						</div>
 						<!-- /themify_builder_module_opt_builder_wrap -->
@@ -376,21 +416,49 @@ if (!function_exists('themify_builder_module_settings_field')) {
 				} else {
 					?>
 					<div class="themify_builder_input<?php echo isset($field['pushed']) && $field['pushed'] != '' ? ' ' . $field['pushed'] : ''; ?>">
+						<?php
+						$input_props = array();
+						$input_props['id'] = esc_attr( $field['id'] );
+						$input_props['name'] = esc_attr( $field['id'] );
+						$input_props['class'] = 'tfb_lb_option';
+						if ( isset( $field['class'] ) ) $input_props['class'] .= ' ' . $field['class'];
+						
+						// validation rules
+						if ( isset( $field['required'] ) ) {
+							$default_required = array(
+								'rule' => 'not_empty',
+								'message' => esc_html__( 'Please enter required field.', 'themify' )
+							);
+							if ( is_array( $field['required'] ) ) {
+								$field['required'] = wp_parse_args( $field['required'], $default_required );
+							} else {
+								$field['required'] = $default_required;
+							}
+							$input_props['data-validation'] = $field['required']['rule'];
+							$input_props['data-error-msg'] = $field['required']['message'];
+						}
+						if ( isset( $field['data'] ) && is_array( $field['data'] ) ) {
+							foreach( $field['data'] as $data_key => $data_value ) {
+								$input_props['data-' . $data_key ] = $data_value;
+							}
+						}
+						?>
 						<?php if ('text' == $field['type']): ?>
 
 							<?php if (isset($field['colorpicker']) && $field['colorpicker'] == true) : ?>
+								<?php $input_props['class'] .= ' builderColorSelectInput'; ?>
 								<span class="builderColorSelect"><span></span></span> 
 								<input type="text" class="<?php echo esc_attr($field['class']); ?> colordisplay" <?php echo themify_builder_get_binding_data($field); ?> />
-								<input id="<?php echo esc_attr($field['id']); ?>" name="<?php echo esc_attr($field['id']); ?>" value="<?php if (isset($field['value'])) echo esc_attr($field['value']); ?>" class="builderColorSelectInput tfb_lb_option" type="hidden" />
+								<input type="hidden" <?php echo $ThemifyBuilder->get_element_attributes( $input_props ); ?> value="<?php if (isset($field['value'])) echo esc_attr($field['value']); ?>"<?php echo themify_builder_get_control_binding_data( $field ); ?> />
 							<?php else : ?>
-								<input id="<?php echo esc_attr($field['id']); ?>" name="<?php echo esc_attr($field['id']); ?>" value="<?php if (isset($field['value'])) echo esc_attr($field['value']); ?>" class="<?php echo isset($field['class']) ? $field['class'] : '' ?> <?php echo isset($add_class) ? esc_attr($add_class) : ''; ?> tfb_lb_option" type="text" <?php echo themify_builder_get_binding_data($field); ?> />
+								<input type="text" <?php echo $ThemifyBuilder->get_element_attributes( $input_props ); ?> value="<?php if (isset($field['value'])) echo esc_attr($field['value']); ?>" <?php echo themify_builder_get_binding_data($field); echo themify_builder_get_control_binding_data($field); ?> />
 								<?php
 								if (isset($field['after'])) : echo wp_kses_post($field['after']);
 								endif;
 								?>
 
 								<?php if (isset($field['unit'])): ?>
-									<select id="<?php echo esc_attr($field['unit']['id']); ?>" class="tfb_lb_option" <?php echo themify_builder_get_binding_data($field); ?>>
+									<select id="<?php echo esc_attr($field['unit']['id']); ?>" class="tfb_lb_option" <?php echo themify_builder_get_binding_data($field); echo themify_builder_get_control_binding_data( $field['unit'] ); ?>>
 										<?php foreach ($field['unit']['options'] as $u): ?>
 											<option value="<?php echo esc_attr($u['value']); ?>" <?php echo ( isset($field['unit']['selected']) && $field['unit']['selected'] == $u['value'] ) ? 'selected="selected"' : ''; ?>><?php echo esc_html($u['value']); ?></option>
 										<?php endforeach; ?>
@@ -399,7 +467,7 @@ if (!function_exists('themify_builder_module_settings_field')) {
 							<?php endif; ?>
 
 						<?php elseif ('icon' == $field['type']): ?>
-							<input id="<?php echo esc_attr($field['id']); ?>" name="<?php echo esc_attr($field['id']); ?>" value="<?php if (isset($field['value'])) echo esc_attr($field['value']); ?>" class="themify_field_icon <?php if (isset($field['class'])) echo esc_attr($field['class']); ?> tfb_lb_option" type="text" <?php echo themify_builder_get_binding_data($field); ?> />
+							<input id="<?php echo esc_attr($field['id']); ?>" name="<?php echo esc_attr($field['id']); ?>" value="<?php if (isset($field['value'])) echo esc_attr($field['value']); ?>" class="themify_field_icon <?php if (isset($field['class'])) echo esc_attr($field['class']); ?> tfb_lb_option" type="text" <?php echo themify_builder_get_binding_data($field); echo themify_builder_get_control_binding_data( $field ); ?> />
 							<a class="button button-secondary hide-if-no-js themify_fa_toggle" href="#" data-target="#<?php echo esc_attr($field['id']); ?>"><?php _e('Insert Icon', 'themify'); ?></a>
 
 						<?php elseif ('radio' == $field['type']): ?>
@@ -407,7 +475,7 @@ if (!function_exists('themify_builder_module_settings_field')) {
 							$option_js = (isset($field['option_js']) && $field['option_js'] == true) ? 'tf-option-checkbox-js' : '';
 							$option_js_wrap =$option_js ? 'tf-option-checkbox-enable' : '';
 							?>
-							<div id="<?php echo esc_attr($field['id']); ?>" class="tfb_lb_option tf-radio-input-container <?php echo esc_attr($option_js_wrap); ?>">
+							<div id="<?php echo esc_attr($field['id']); ?>" class="tfb_lb_option tf-radio-input-container <?php echo esc_attr($option_js_wrap); ?>"<?php echo themify_builder_get_control_binding_data( $field ); ?>>
 								<?php foreach ($field['options'] as $k => $v): ?>
 									<?php
 									$default_checked = (isset($field['default']) && $field['default'] == $k) ? 'checked="checked"' : '';
@@ -424,7 +492,9 @@ if (!function_exists('themify_builder_module_settings_field')) {
 							</div>
 
 						<?php elseif ('layout' == $field['type']): ?>
-							<p id="<?php echo esc_attr($field['id']); ?>" class="layout_icon tfb_lb_option themify-layout-icon">
+
+							<p id="<?php echo esc_attr($field['id']); ?>" class="layout_icon tfb_lb_option themify-layout-icon"<?php themify_builder_get_binding_data( $field ); echo themify_builder_get_control_binding_data( $field ); ?>>
+
 								<?php foreach ($field['options'] as $option): ?>
 									<a href="#" id="<?php echo esc_attr($option['value']); ?>" title="<?php echo esc_attr($option['label']); ?>" class="tfl-icon">
 										<?php $image_url = ( filter_var($option['img'], FILTER_VALIDATE_URL) ) ? $option['img'] : THEMIFY_BUILDER_URI . '/img/builder/' . $option['img']; ?>
@@ -435,7 +505,7 @@ if (!function_exists('themify_builder_module_settings_field')) {
 							</p>
 
 						<?php elseif ('image' == $field['type']): ?>
-							<input id="<?php echo esc_attr($field['id']); ?>" name="<?php echo esc_attr($field['id']); ?>" placeholder="<?php if (isset($field['value'])) echo esc_attr($field['value']); ?>" class="<?php echo esc_attr($field['class']); ?> themify-builder-uploader-input tfb_lb_option" type="text" <?php echo themify_builder_get_binding_data($field); ?> /><br />
+							<input id="<?php echo esc_attr($field['id']); ?>" name="<?php echo esc_attr($field['id']); ?>" placeholder="<?php if (isset($field['value'])) echo esc_attr($field['value']); ?>" class="<?php echo esc_attr($field['class']); ?> themify-builder-uploader-input tfb_lb_option" type="text" <?php echo themify_builder_get_binding_data($field); echo themify_builder_get_control_binding_data( $field ); ?> /><br />
 
 							<div class="small">
 
@@ -462,7 +532,7 @@ if (!function_exists('themify_builder_module_settings_field')) {
 							endif;
 							$option_js_wrap = (isset($field['option_js']) && $field['option_js'] == true) ? ' tf-option-checkbox-enable' : '';
 							?>
-							<div id="<?php echo esc_attr($field['id']); ?>" class="tfb_lb_option themify-checkbox<?php echo $option_js_wrap ?>">
+							<div id="<?php echo esc_attr($field['id']); ?>" class="tfb_lb_option themify-checkbox<?php echo $option_js_wrap ?>"<?php echo themify_builder_get_control_binding_data( $field ); ?>>
 								<?php foreach ($field['options'] as $opt): ?>
 									<?php
 									$checkbox_checked = '';
@@ -494,12 +564,12 @@ if (!function_exists('themify_builder_module_settings_field')) {
 							?>
 
 						<?php elseif ('textarea' == $field['type']): ?>
-							<textarea id="<?php echo esc_attr($field['id']); ?>" name="<?php echo esc_attr($field['id']); ?>" class="<?php echo esc_attr($field['class']); ?> tfb_lb_option" <?php if (isset($field['rows'])) echo 'rows="' . $field['rows'] . '"'; ?> type="text" <?php echo themify_builder_get_binding_data($field); ?>></textarea>
+							<textarea <?php echo $ThemifyBuilder->get_element_attributes( $input_props ); ?> <?php if (isset($field['rows'])) echo 'rows="' . $field['rows'] . '"'; ?><?php echo themify_builder_get_binding_data($field); echo themify_builder_get_control_binding_data( $field ); ?>></textarea>
 
 						<?php elseif ('select' == $field['type']): ?>
 
 							<?php if (!isset($field['hide']) || $field['hide'] == false): ?>
-								<select id="<?php echo esc_attr($field['id']); ?>" name="<?php echo esc_attr($field['id']); ?>" class="tfb_lb_option" <?php echo themify_builder_get_binding_data($field); ?>>
+								<select <?php echo $ThemifyBuilder->get_element_attributes( $input_props ); ?><?php echo themify_builder_get_binding_data($field); echo themify_builder_get_control_binding_data( $field ); ?>>
 									<?php if (isset($field['empty'])): ?>
 										<option value="<?php echo esc_attr($field['empty']['val']); ?>"><?php echo esc_html($field['empty']['label']); ?></option>
 									<?php endif; ?>
@@ -511,6 +581,7 @@ if (!function_exists('themify_builder_module_settings_field')) {
 									}
 									?>
 								</select>
+								<?php if (isset($field['after'])) echo wp_kses_post($field['after']); ?>
 							<?php endif; // isset hide ?>
 
 							<?php if (isset($field['help'])): ?>
@@ -518,7 +589,7 @@ if (!function_exists('themify_builder_module_settings_field')) {
 							<?php endif; // isset help  ?>
 
 						<?php elseif ('selectbasic' == $field['type']): ?>
-							<select id="<?php echo esc_attr($field['id']); ?>" name="<?php echo esc_attr($field['id']); ?>" class="tfb_lb_option" <?php echo themify_builder_get_binding_data($field); ?>>
+							<select id="<?php echo esc_attr($field['id']); ?>" name="<?php echo esc_attr($field['id']); ?>" class="tfb_lb_option" <?php echo themify_builder_get_binding_data($field); echo themify_builder_get_control_binding_data( $field ); ?>>
 								<?php
 								foreach ($field['options'] as $value) {
 									$selected = ( isset($field['default']) && $field['default'] == $value ) ? ' selected="selected"' : '';
@@ -528,7 +599,7 @@ if (!function_exists('themify_builder_module_settings_field')) {
 							</select>
 
 						<?php elseif ('select_menu' == $field['type']): ?>
-							<select id="<?php echo esc_attr($field['id']); ?>" name="<?php echo esc_attr($field['id']); ?>" class="tfb_lb_option select_menu_field" <?php echo themify_builder_get_binding_data($field); ?>>
+							<select id="<?php echo esc_attr($field['id']); ?>" name="<?php echo esc_attr($field['id']); ?>" class="tfb_lb_option select_menu_field" <?php echo themify_builder_get_binding_data($field); echo themify_builder_get_control_binding_data( $field ); ?>>
 								<option value=""><?php esc_html_e('Select a Menu...', 'themify'); ?></option>
 								<?php
 								foreach ($field['options'] as $key => $value) {
@@ -584,7 +655,7 @@ if (!function_exists('themify_builder_module_settings_field')) {
                                                         ?>
 							<?php _e('or', 'themify') ?>
 							<input class="small query_category_multiple" type="text" /><br /><small><?php _e('multiple category IDs (eg. 2,5,8) or slug (eg. news,blog,featured) or exclude category IDs(eg. -2,-5,-8)', 'themify'); ?></small><br />
-							<input type="hidden" id="<?php echo esc_attr($field['id']); ?>" name="<?php echo esc_attr($field['id']); ?>" value="" class="tfb_lb_option themify-option-query-cat" />
+							<input type="hidden" id="<?php echo esc_attr($field['id']); ?>" name="<?php echo esc_attr($field['id']); ?>" value="" class="tfb_lb_option themify-option-query-cat"<?php echo themify_builder_get_control_binding_data($field); ?> />
 
 							<?php
 						///////////////////////////////////////////
@@ -644,7 +715,7 @@ if (!function_exists('themify_builder_module_settings_field')) {
 							<?php foreach ($field['options'] as $fieldsec): ?>
 
 								<?php if ($fieldsec['type'] == 'select'): ?>
-									<select id="<?php echo esc_attr($fieldsec['id']); ?>" name="<?php echo esc_attr($fieldsec['id']); ?>" class="tfb_lb_option" <?php echo themify_builder_get_binding_data($field); ?>>
+									<select id="<?php echo esc_attr($fieldsec['id']); ?>" name="<?php echo esc_attr($fieldsec['id']); ?>" class="tfb_lb_option" <?php echo themify_builder_get_binding_data($field); echo themify_builder_get_control_binding_data( $fieldsec ); ?>>
 										<?php if (isset($fieldsec['empty'])): ?>
 											<option value="<?php echo esc_attr($fieldsec['empty']['val']); ?>"><?php echo esc_html($fieldsec['empty']['label']); ?></option>
 										<?php endif; ?>
@@ -659,7 +730,7 @@ if (!function_exists('themify_builder_module_settings_field')) {
                                                                         <?php echo isset($fieldsec['help']) ? wp_kses_post($fieldsec['help']) : ''; ?><br />
 
 								<?php elseif ($fieldsec['type'] == 'text'): ?>
-									<input id="<?php echo esc_attr($fieldsec['id']); ?>" name="<?php echo esc_attr($fieldsec['id']); ?>" class="<?php echo esc_attr($fieldsec['class']); ?> tfb_lb_option" class="<?php echo esc_attr($fieldsec['class']); ?> tfb_lb_option" type="text" />
+									<input id="<?php echo esc_attr($fieldsec['id']); ?>" name="<?php echo esc_attr($fieldsec['id']); ?>" class="<?php echo esc_attr($fieldsec['class']); ?> tfb_lb_option" type="text"<?php echo themify_builder_get_control_binding_data( $fieldsec ); ?> />
 									<?php echo (isset($fieldsec['unit'])) ? '<small>' . esc_html($fieldsec['unit']) . '</small>' : ''; ?>
                                                                         <?php echo isset($fieldsec['help']) ? wp_kses_post($fieldsec['help']) : ''; ?><br />
                                                                 <?php else:?>
@@ -1014,8 +1085,8 @@ if (!function_exists('themify_builder_styling_field')) {
 			case 'builder':
 				?>
 				<div id="<?php echo esc_attr($styling['id']); ?>" class="themify_builder_row_opt_builder_wrap themify_builder_row_js_wrapper tfb_lb_option">
-					<div class="themify_builder_row clearfix">
-						<div class="themify_builder_row_top">
+					<div class="tb_repeatable_field clearfix">
+						<div class="tb_repeatable_field_top">
 							<div class="row_menu">
 								<div class="menu_icon"></div>
 								<ul style="display:none" class="themify_builder_dropdown">
@@ -1025,7 +1096,7 @@ if (!function_exists('themify_builder_styling_field')) {
 							</div>
 							<div class="toggle_row"></div>
 						</div>
-						<div class="themify_builder_row_content">
+						<div class="tb_repeatable_field_content">
 							<?php themify_builder_module_settings_field_builder($styling) ?>
 						</div>
 					</div>

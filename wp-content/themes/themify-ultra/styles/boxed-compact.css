@@ -18,6 +18,9 @@ body {
 body:not(.fixed-header-on) #pagewrap #headerwrap {
 	top: 0;
 }
+#headerwrap {
+	position: absolute;
+}
 #header {
 	text-align: inherit;
 	padding: .5em 1em;
@@ -101,6 +104,21 @@ body:not(.fixed-header-on) #pagewrap #headerwrap {
 }
 
 /* boxed compact main nav */
+body:not(.slide-cart):not(.mobile_menu_active) #main-nav-wrap {
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex; /* Safari */
+	display: flex;
+	-webkit-align-items: center; /* Safari 7.0+ */
+	align-items: center;
+	-webkit-justify-content: flex-end;
+	justify-content: flex-end;
+	position: relative;
+}
+body:not(.slide-cart):not(.mobile_menu_active) #main-nav {
+	position: static;
+}
 #main-nav {
 	float: right;
 	clear: right;
@@ -172,24 +190,24 @@ body:not(.fixed-header-on) #pagewrap #headerwrap {
 
 /* mobile menu active */
 /* boxed compact site description */
-.mobile_menu_active.boxed-compact #headerwrap #site-description {
+.mobile_menu_active #site-description {
 	margin: 2px 0 0;
 }
 /* boxed compact social widget */
-.mobile_menu_active.boxed-compact #header .social-widget {
+.mobile_menu_active #header .social-widget {
 	margin: 0 0 1em;
 	float: none;
 	display: block;
 }
-.mobile_menu_active.boxed-compact .social-links .icon-medium i {
+.mobile_menu_active .social-links .icon-medium i {
 	margin: auto;
 }
 
-.mobile_menu_active.boxed-compact #headerwrap #searchform-wrap {
+.mobile_menu_active #headerwrap #searchform-wrap {
 	float: none;
 	display: block;
 }
-.mobile_menu_active.boxed-compact #headerwrap #searchform #s {
+.mobile_menu_active #headerwrap #searchform #s {
 	width: 100%;
 	float: none;
 	-webkit-transition: none;
@@ -202,7 +220,7 @@ body:not(.fixed-header-on) #pagewrap #headerwrap {
 	position: static;
 	height: auto;
 }
-.mobile_menu_active.boxed-compact #headerwrap #searchform .icon-search:before {
+.mobile_menu_active #headerwrap #searchform .icon-search:before {
 	font-size: 18px;
 	margin: 0;
 	padding: 3px;
@@ -214,19 +232,19 @@ body:not(.fixed-header-on) #pagewrap #headerwrap {
 .mobile_menu_active.slide-cart #main-nav-wrap {
 	display: block;
 }
-.mobile_menu_active.slide-cart #headerwrap #menu-icon {
-	right: 55px;
-}
-.mobile_menu_active.slide-cart #headerwrap.fixed-header #menu-icon {
-	right: 75px;
-}
 .mobile_menu_active .cart-wrap {
 	top: 35px;
 }
 
 /* boxed compact header widget */
-.mobile_menu_active.boxed-compact #headerwrap .header-widget {
+.mobile_menu_active #headerwrap .header-widget {
 	display: block;
 	text-align: inherit;
 	max-height: none !important;
+}
+.mobile_menu_active .pull-down {
+	display: none;
+}
+.pull-down {
+	float: right;
 }

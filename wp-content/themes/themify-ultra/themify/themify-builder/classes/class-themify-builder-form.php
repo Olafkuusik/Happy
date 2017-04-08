@@ -30,20 +30,20 @@ final class Themify_Builder_Form {
      */
     static public function render($fields) {
         foreach ($fields as $field) {
-            echo ( $field['type'] != 'separator' ) ? '<div class="themify_builder_field">' : '';
+            echo ( $field['type'] !== 'separator' ) ? '<div class="themify_builder_field">' : '';
             if (isset($field['label'])) {
                 echo '<div class="themify_builder_label">' . esc_html($field['label']) . '</div>';
             }
-            echo ( $field['type'] != 'separator' ) ? '<div class="themify_builder_input">' : '';
-            if ($field['type'] != 'multi') {
+            echo ( $field['type'] !== 'separator' ) ? '<div class="themify_builder_input">' : '';
+            if ($field['type'] !== 'multi') {
                 self::print_field($field);
             } else {
                 foreach ($field['fields'] as $field2) {
                     self::print_field($field2);
                 }
             }
-            echo ( $field['type'] != 'separator' ) ? '</div>' : ''; // themify_builder_input
-            echo ( $field['type'] != 'separator' ) ? '</div>' : ''; // themify_builder_field
+            echo ( $field['type'] !== 'separator' ) ? '</div>' : ''; // themify_builder_input
+            echo ( $field['type'] !== 'separator' ) ? '</div>' : ''; // themify_builder_field
         }
     }
 

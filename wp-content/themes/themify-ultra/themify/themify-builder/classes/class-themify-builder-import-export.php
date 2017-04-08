@@ -48,28 +48,28 @@ class Themify_Builder_Import_Export {
 			$builder_data = $ThemifyBuilder->get_builder_data( $postid );
 						if (is_array($builder_data) && !empty($builder_data)) {
 							foreach ($builder_data as &$row) {
-								if(isset($row['styling']) && isset($row['styling']['background_slider']) && $row['styling']['background_slider']){
+								if(isset($row['styling']) && !empty($row['styling']['background_slider'])){
 									$row['styling']['background_slider'] = self::replace_with_image_path($row['styling']['background_slider']);
 								}
-								if (isset($row['cols']) && !empty($row['cols'])) {
+								if (!empty($row['cols'])) {
 									foreach ($row['cols'] as &$col) {
-										if(isset($col['styling']) && isset($col['styling']['background_slider']) && $col['styling']['background_slider']){
+										if(isset($col['styling']) && !empty($col['styling']['background_slider'])){
 											$col['styling']['background_slider']  = self::replace_with_image_path($col['styling']['background_slider']);
 										}
-										if (isset($col['modules']) && !empty($col['modules'])) {
+										if (!empty($col['modules'])) {
 											foreach ($col['modules'] as &$mod) {
-												if (isset($mod['mod_name']) && $mod['mod_name']=='gallery' && $mod['mod_settings']['shortcode_gallery']) {
+												if (isset($mod['mod_name']) && $mod['mod_name']==='gallery' && $mod['mod_settings']['shortcode_gallery']) {
 													$mod['mod_settings']['shortcode_gallery'] = self::replace_with_image_path($mod['mod_settings']['shortcode_gallery']);
 												}
 												// Check for Sub-rows
-												if (isset($mod['cols']) && !empty($mod['cols'])) {
+												if (!empty($mod['cols'])) {
 													foreach ($mod['cols'] as &$sub_col) {
-														if(isset($sub_col['styling']) && isset($sub_col['styling']['background_slider']) && $sub_col['styling']['background_slider']){
+														if(isset($sub_col['styling']) && !empty($sub_col['styling']['background_slider'])){
 															$sub_col['styling']['background_slider'] = self::replace_with_image_path($sub_col['styling']['background_slider']);
 														}
-														if (isset($sub_col['modules']) && !empty($sub_col['modules'])) {
+														if (!empty($sub_col['modules'])) {
 															foreach ($sub_col['modules'] as &$sub_module) {
-																if (isset($sub_module['mod_name']) && $sub_module['mod_name']=='gallery' && $sub_module['mod_settings']['shortcode_gallery']) {
+																if (isset($sub_module['mod_name']) && $sub_module['mod_name']==='gallery' && $sub_module['mod_settings']['shortcode_gallery']) {
 																	$sub_module['mod_settings']['shortcode_gallery'] = self::replace_with_image_path($sub_module['mod_settings']['shortcode_gallery']);
 																}
 															}
@@ -114,7 +114,8 @@ class Themify_Builder_Import_Export {
 					header("Content-Disposition: attachment; filename=\"".$file."\"");
 					header('Content-Length: '.filesize( $file ));
 					header("Content-Transfer-Encoding: binary");
-					ob_end_clean(); //Fix to solve "corrupted compressed file" error!*/
+					if ( ob_get_length() > 0 )
+						ob_end_clean(); //Fix to solve "corrupted compressed file" error!*/
 					
 					echo $wp_filesystem->get_contents( $file );
 					unlink( $datafile );
@@ -124,13 +125,12 @@ class Themify_Builder_Import_Export {
 					return false;
 				}
 			} else {
-				if ( ini_get('zlib.output_compression') ) {
+				if ( ini_get( 'zlib.output_compression' ) ) {
 					/**
 					 * Turn off output buffer compression for proper zip download.
 					 * @since 2.0.2
 					 */
-					$srv_stg = 'ini' . '_' . 'set';
-					call_user_func( $srv_stg, 'zlib.output_compression', 'Off');
+					ini_set( 'zlib.output_compression', 'Off' );
 				}
 				ob_start();
 				header('Content-Type: application/force-download');

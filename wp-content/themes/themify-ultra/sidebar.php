@@ -5,18 +5,19 @@
  * @since 1.0.0
  */
 ?>
+<?php if(!post_password_required()):?>
+    <?php themify_sidebar_before(); // hook ?>
 
-<?php themify_sidebar_before(); // hook ?>
+    <aside id="sidebar" itemscope="itemscope" itemtype="https://schema.org/WPSidebar">
 
-<aside id="sidebar" itemscope="itemscope" itemtype="https://schema.org/WPSidebar">
+        <?php themify_sidebar_start(); // hook ?>
 
-	<?php themify_sidebar_start(); // hook ?>
-    
 	<?php dynamic_sidebar( 'sidebar-main' ); ?>
-    
-	<?php themify_sidebar_end(); // hook ?>
 
-</aside>
-<!-- /#sidebar -->
+        <?php themify_sidebar_end(); // hook ?>
 
-<?php themify_sidebar_after(); // hook ?>
+    </aside>
+    <!-- /#sidebar -->
+
+    <?php themify_sidebar_after(); // hook ?>
+<?php endif;?>

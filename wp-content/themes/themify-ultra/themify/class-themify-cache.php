@@ -12,8 +12,8 @@ class TFCache {
     public static $turnoff_cache = NULL;
     private static $role = array();
     private static $script_iscreated = false;
-    private static $style_iscreated = false;
-    private static $is_footer = false;
+    public static $style_iscreated = false;
+    public static $is_footer = false;
     private static $id = false;
     private static $started = 0;
 
@@ -91,7 +91,7 @@ class TFCache {
     private static function getExpire(){
         static $time = false;
         if(!$time){
-            $time = themify_get('setting-page_builder_expiry');
+            $time = !defined('THEMIFY_BUILDER_VERSION')?themify_get('setting-page_builder_expiry'):themify_builder_get('setting-page_builder_expiry');
             $time = $time>0?intval($time):2;
             $time = 24*$time;
         }
@@ -114,7 +114,7 @@ class TFCache {
 	public static function  check_builder_cache(){
 		static  $is_builder_cache_activate = null;
 		if(is_null($is_builder_cache_activate)){
-			$is_builder_cache_activate = themify_check('setting-page_builder_cache') && themify_get('setting-page_builder_is_active')=== 'enable';
+			$is_builder_cache_activate = !defined('THEMIFY_BUILDER_VERSION')?(themify_check('setting-page_builder_cache') && themify_get('setting-page_builder_is_active')=== 'enable'):self::is_cache_activate();
 		}
 		return $is_builder_cache_activate;
 	}
@@ -127,7 +127,7 @@ class TFCache {
     public static function is_cache_activate() {
         static $active = null;
         if(is_null($active)){
-            $active = themify_get('setting-script_minification')==='enable';
+            $active = !defined('THEMIFY_BUILDER_VERSION')?themify_get('setting-script_minification')==='enable':(themify_builder_get('builder_disable_cache')=== 'enable' && themify_builder_get('builder_is_active')=== 'enable');
         }
         return $active;
     }
@@ -158,7 +158,7 @@ class TFCache {
    private static function is_minify_all(){
         static $active = null;
         if(is_null($active)){
-            $active = !self::$turnoff_cache && self::check_builder_cache();
+            $active = !defined('THEMIFY_BUILDER_VERSION')?(!self::$turnoff_cache && self::check_builder_cache()):true;
         }
         return $active;
     }
@@ -433,7 +433,7 @@ class TFCache {
         }
         return $script_tag;
     }
-
+    
     public static function style_loader_tag($style_tag, $handler, $href) {
         if (self::$style_iscreated) {
             self::$style_iscreated = false;
@@ -470,7 +470,7 @@ class TFCache {
                 $css.="\n";
                 $wp_filesystem = Themify_Filesystem::get_instance();
                 $output = $wp_filesystem->execute->get_contents( $cache_dir );
-                $output .= $css;
+                $output.= $css;
                 $output = $minifier->moveImportsToTop( $output );
                 $wp_filesystem->execute->put_contents( $cache_dir, $output );
             }
@@ -590,7 +590,7 @@ class TFCache {
      *
      * return string
      */
-    private static function create_scripts_dir($type = 'scripts', $filename = false) {
+    public static function create_scripts_dir($type = 'scripts', $filename = false) {
         $dir = self::get_page_cache_dir($type);
         $cache_dir = self::get_cache_dir();
         $cache_dir.=trim($dir, '/') . '/';
@@ -826,6 +826,11 @@ class TFCache {
             self::rewrite_htaccess();
         }
     }
+    public static function  clear_caches(){
+        check_ajax_referer('ajax-nonce', 'nonce');
+        self::removeDirectory(TFCache::get_cache_dir());
+        wp_send_json_success('success');
+    }
 
     public static function rewrite_htaccess($remove = false) {
         $wp_filesystem = Themify_Filesystem::get_instance();
@@ -846,7 +851,7 @@ class TFCache {
     public static function is_cache_gzip_enabled(){
         static $enabled = NULL;
         if(is_null($enabled)){
-            $enabled = themify_check('setting-cache_gzip');
+            $enabled = !defined('THEMIFY_BUILDER_VERSION')?themify_check('setting-cache_gzip'):false;
         }
         return $enabled;
     }
@@ -865,8 +870,10 @@ class TFCache {
     }
 
 }
-if (TFCache::check_version() && TFCache::is_cache_activate() && !isset($_POST['action']) && !isset($_GET['builder_grid_activate'])) {
+
+if ((!defined('THEMIFY_BUILDER_VERSION') || Themify_Builder_Model::is_premium()) && TFCache::check_version() && TFCache::is_cache_activate() && (!isset($_POST['action']) || (isset($_POST['action']) && $_POST['action']==='themify_clear_all_caches')) && !isset($_GET['builder_grid_activate'])) {
     TFCache::$turnoff_cache = TFCache::is_builder_cache_activate();
+    add_action('wp_ajax_themify_clear_all_caches', array('TFCache', 'clear_caches'));
     if(TFCache::$turnoff_cache && TFCache::check_builder_cache()){
             return;
     }

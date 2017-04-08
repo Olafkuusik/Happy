@@ -32,12 +32,16 @@ function themify_set_data( $data ) {
 	if ( empty( $data ) || ! is_array( $data ) ) {
 		$data = array();
 	}
+
+	$old_data = themify_get_data();
+	$data = wp_parse_args( $data, $old_data );
+
 	foreach ( $data as $name => $value ) {
 		if ( 'save' == $name || 'page' == $name ) {
 			unset( $data[$name] );
 		}
 	}
-	update_option( 'themify_data', $data);
+	update_option( 'themify_data', $data );
 	$themify_data = themify_sanitize_data( $data );
 	$themify_cached = false;
 	return $themify_data; // MUST return $themify_data since it's the sanitized value
@@ -50,7 +54,7 @@ function themify_set_data( $data ) {
 function themify_get_data() {
 	global $themify_data, $themify_cached;
 	if ( !$themify_cached ) {
-		$themify_data = get_option( 'themify_data' );
+		$themify_data = get_option( 'themify_data', array() );
 		$themify_data = themify_sanitize_data( $themify_data );
 		$themify_cached = true;
 	}

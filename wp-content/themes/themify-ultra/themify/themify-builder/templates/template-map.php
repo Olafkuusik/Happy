@@ -16,9 +16,9 @@ if (TFCache::start_cache('map', self::$post_id, array('ID' => $module_ID))):
         'zoom_map' => 15,
         'w_map' => '100%',
         'w_map_static' => 500,
-        'unit_w' => '',
+        'unit_w' => '%',
         'h_map' => '300px',
-        'unit_h' => '',
+        'unit_h' => 'px',
         'b_style_map' => '',
         'b_width_map' => '',
         'b_color_map' => '',
@@ -61,7 +61,7 @@ if (TFCache::start_cache('map', self::$post_id, array('ID' => $module_ID))):
         $style .= 'border: ';
         $style .= ( isset($mod_settings['b_style_map']) ) ? $mod_settings['b_style_map'] : '';
         $style .= ( isset($mod_settings['b_width_map']) ) ? ' ' . $mod_settings['b_width_map'] . 'px' : '';
-        $style .= ( isset($mod_settings['b_color_map']) ) ? ' ' . $this->get_rgba_color($mod_settings['b_color_map']) : '';
+        $style .= ( isset($mod_settings['b_color_map']) ) ? ' ' . $this->stylesheet->get_rgba_color($mod_settings['b_color_map']) : '';
         $style .= ';';
     }
     ?>
@@ -89,10 +89,10 @@ if (TFCache::start_cache('map', self::$post_id, array('ID' => $module_ID))):
         <?php else : ?>
             <?php
             $style .= 'width:';
-            $style .= ( isset($mod_settings['w_map']) ) ? $mod_settings['w_map'] . $mod_settings['unit_w'] : '100%';
+            $style .= ( isset($mod_settings['w_map']) ) ? $mod_settings['w_map'] . $unit_w : '100%';
             $style .= ';';
             $style .= 'height:';
-            $style .= ( isset($mod_settings['h_map']) ) ? $mod_settings['h_map'] . $mod_settings['unit_h'] : '300px';
+            $style .= ( isset($mod_settings['h_map']) ) ? $mod_settings['h_map'] . $unit_h : '300px';
             $style .= ';';
 
             if (!empty($address_map) || !empty($latlong_map)) {

@@ -17,16 +17,19 @@ class TB_Layout_Part_Module extends Themify_Builder_Module {
 	public function get_options() {
 		$options = array(
 			array(
-				'id' => 'mod_title_layout_part',
-				'type' => 'text',
+				'id'    => 'mod_title_layout_part',
+				'type'  => 'text',
 				'label' => __('Module Title', 'themify'),
 				'class' => 'large'
 			),
 			array(
-				'id' => 'selected_layout_part',
-				'type' => 'layout_part_select',
+				'id'    => 'selected_layout_part',
+				'type'  => 'layout_part_select',
 				'label' => __('Select Layout Part', 'themify'),
-				'class' => ''
+				'class' => '',
+				'render_callback' => array(
+					'control_type' => 'select'
+				)
 			),
 			// Additional CSS
             array(
@@ -34,10 +37,10 @@ class TB_Layout_Part_Module extends Themify_Builder_Module {
 				'meta' => array( 'html' => '<hr/>')
 			),
 			array(
-				'id' => 'add_css_layout_part',
-				'type' => 'text',
+				'id'    => 'add_css_layout_part',
+				'type'  => 'text',
 				'label' => __('Additional CSS Class', 'themify'),
-				'help' => sprintf( '<br/><small>%s</small>', __('Add additional CSS class(es) for custom styling', 'themify') ),
+				'help'  => sprintf( '<br/><small>%s</small>', __('Add additional CSS class(es) for custom styling', 'themify') ),
 				'class' => 'large exclude-from-reset-field'
 			)
 		);
@@ -54,10 +57,10 @@ class TB_Layout_Part_Module extends Themify_Builder_Module {
 		$output = '';
 		switch ( $field['type'] ) {
 			case 'layout_part_select':
-				$output .= '<select name="'. esc_attr( $field['id'] ) .'" id="'. esc_attr( $field['id'] ) .'" class="tfb_lb_option">';
+				$output .= '<select name="'. esc_attr( $field['id'] ) .'" id="'. esc_attr( $field['id'] ) .'" class="tfb_lb_option"'.themify_builder_get_control_binding_data( $field ).'>';
 				$output .= '<option></option>';
 				$args = array(
-					'post_type' => $Themify_Builder_Layouts->layout_part->post_type_name,
+					'post_type'      => $Themify_Builder_Layouts->layout_part->post_type_name,
 					'posts_per_page' => -1
 				);
 				$posts = get_posts( $args );

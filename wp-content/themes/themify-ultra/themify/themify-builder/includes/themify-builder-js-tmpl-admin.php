@@ -26,18 +26,25 @@
 	<div class="themify_grid_drag themify_drag_right"></div>
 	<div class="themify_grid_drag themify_drag_left"></div>
 	<ul class="themify_builder_column_action">
-		<li><a href="#" class="themify_builder_option_column" data-title="<?php esc_html_e( 'Styling', 'themify' );?>" rel="themify-tooltip-bottom"><span class="ti-brush"></span></a></li>
-		<li class="separator"></li>
-		<li><a href="#" class="themify_builder_export_component" data-title="<?php esc_html_e( 'Export', 'themify' );?>" rel="themify-tooltip-bottom" data-component="{{ data.component_name }}"><span class="ti-export"></span></a></li>
-		<li><a href="#" class="themify_builder_import_component" data-title="<?php esc_html_e( 'Import', 'themify' );?>" rel="themify-tooltip-bottom" data-component="{{ data.component_name }}"><span class="ti-import"></span></a></li>
-		<li class="separator"></li>
-		<li><a href="#" class="themify_builder_copy_component" data-title="<?php esc_html_e( 'Copy', 'themify' );?>" rel="themify-tooltip-bottom" data-component="{{ data.component_name }}"><span class="ti-files"></span></a></li>
-		<li><a href="#" class="themify_builder_paste_component" data-title="<?php esc_html_e( 'Paste', 'themify' );?>" rel="themify-tooltip-bottom" data-component="{{ data.component_name }}"><span class="ti-clipboard"></span></a></li>
-		<li class="separator last-sep"></li>
+		<li class="menu_icon"><a href="#" class="js-column-menu-icon"><span class="ti-menu"></span></a>
+			<ul>
+				<li><a href="#" class="themify_builder_option_column" data-title="<?php esc_html_e( 'Styling', 'themify' );?>" rel="themify-tooltip-bottom"><span class="ti-brush"></span> <?php esc_html_e( 'Styling', 'themify' );?></a></li>
+				<li class="separator"></li>
+				<li><a href="#" class="themify_builder_export_component" data-title="<?php esc_html_e( 'Export', 'themify' );?>" rel="themify-tooltip-bottom" data-component="{{ data.component_name }}"><span class="ti-export"></span> <?php esc_html_e( 'Export', 'themify' );?></a></li>
+				<li><a href="#" class="themify_builder_import_component" data-title="<?php esc_html_e( 'Import', 'themify' );?>" rel="themify-tooltip-bottom" data-component="{{ data.component_name }}"><span class="ti-import"></span> <?php esc_html_e( 'Import', 'themify' );?></a></li>
+				<li class="separator"></li>
+				<li><a href="#" class="themify_builder_copy_component" data-title="<?php esc_html_e( 'Copy', 'themify' );?>" rel="themify-tooltip-bottom" data-component="{{ data.component_name }}"><span class="ti-files"></span> <?php esc_html_e( 'Copy', 'themify' );?></a></li>
+				<li><a href="#" class="themify_builder_paste_component" data-title="<?php esc_html_e( 'Paste', 'themify' );?>" rel="themify-tooltip-bottom" data-component="{{ data.component_name }}"><span class="ti-clipboard"></span> <?php esc_html_e( 'Paste', 'themify' );?></a></li>
+				<li class="separator last-sep"></li>
+			</ul>
+		</li>
 		<li class="themify_builder_column_dragger_li"><a href="#" class="themify_builder_column_dragger"><span class="ti-arrows-horizontal"></span></a></li>
 	</ul>
 	<div class="themify_module_holder">
-                <div class="empty_holder_text"><?php _e('drop module here', 'themify') ?></div>
+		<div class="empty_holder_text">
+			<a href="#" class="tb_empty_row_btn js-tb_empty_row_btn"></a>
+			<span><?php _e('drop module here', 'themify') ?></span>
+		</div>
 	</div>
 	<div class="column-data-styling" data-styling=""></div>
 </script>
@@ -52,12 +59,15 @@
 			<li><a href="#" class="themify_builder_copy_component" data-title="<?php esc_html_e( 'Copy', 'themify' );?>" rel="themify-tooltip-bottom" data-component="sub-row"><span class="ti-files"></span></a></li>
 			<li><a href="#" class="themify_builder_paste_component" data-title="<?php esc_html_e( 'Paste', 'themify' );?>" rel="themify-tooltip-bottom" data-component="sub-row"><span class="ti-clipboard"></span></a></li>
 			<li class="separator"></li>
+			<li><a href="#" data-title="<?php _e('Styling', 'themify') ?>" class="themify_builder_style_subrow" rel="themify-tooltip-bottom"><span class="ti-brush"></span></a></li>
 			<li><a href="#" class="sub_row_duplicate" data-title="<?php esc_html_e( 'Duplicate', 'themify' );?>" rel="themify-tooltip-bottom"><span class="ti-layers"></span></a></li>
 			<li><a href="#" class="sub_row_delete" data-title="<?php esc_html_e( 'Delete', 'themify' );?>" rel="themify-tooltip-bottom"><span class="ti-close"></span></a></li>
 		</ul>
 	</div>
-
-	<div class="themify_builder_sub_row_content"></div>
+	<div class="sub_row_inner_wrapper">
+		<div class="themify_builder_sub_row_content"></div>
+	</div>
+	<div class="subrow-data-styling" data-styling=""></div>
 </script>
 
 <script type="text/html" id="tmpl-builder_row_item">

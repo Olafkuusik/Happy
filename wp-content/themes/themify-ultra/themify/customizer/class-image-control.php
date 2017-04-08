@@ -42,7 +42,7 @@ class Themify_Image_Control extends Themify_Control {
 						<li>            
 				<?php endif;?>
 					<div class="themify-customizer-brick">
-							<?php $this->render_image( $values ); ?>
+						<?php $this->render_image( $values, $this->image_options ); ?>
 					</div>
 
 

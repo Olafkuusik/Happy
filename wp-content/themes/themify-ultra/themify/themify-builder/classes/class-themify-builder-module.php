@@ -133,7 +133,7 @@ abstract class Themify_Builder_Module {
 				$out[] = $module[ $field['id'] ];
 			}
 			// builder field type
-			elseif( $field['type'] == 'builder' && is_array( $module[ $field['id'] ] ) ) {
+			elseif( $field['type'] === 'builder' && is_array( $module[ $field['id'] ] ) ) {
 				// gather text field types included in the "builder" field type
 				$text_fields = array();
 				foreach( $field['options'] as $row_field ) {
@@ -372,5 +372,122 @@ abstract class Themify_Builder_Module {
 	 */
 	public function get_title( $module ) {
 		return '';
+	}
+
+	public function print_template() {
+		ob_start();
+
+		$this->_visual_template();
+
+		$content_template = ob_get_clean();
+
+		if ( empty( $content_template ) ) {
+			return;
+		}
+		?>
+		<script type="text/html" id="tmpl-builder-<?php echo $this->slug; ?>-content">
+			<?php echo $content_template; ?>
+		</script>
+		<?php
+	}
+
+	public function print_template_form() {
+		ob_start();
+
+		$this->_form_template();
+
+		$output = ob_get_clean();
+
+		if ( empty( $output ) ) {
+			return;
+		}
+		?>
+		<script type="text/html" id="tmpl-builder_form_module_<?php echo esc_attr( $this->slug ); ?>">
+			<?php echo $output; ?>
+		</script>
+		<?php
+	}
+
+	protected function _visual_template() {}
+
+	public function get_default_settings() { return array(); }
+
+	public function get_module_args() {
+		return apply_filters( 'themify_builder_module_args', array() );
+	}
+
+	public function get_form_settings() {
+		$module_form_settings = array(
+			'setting' => array(
+				'name' => ucfirst( $this->name ),
+				'options' => apply_filters('themify_builder_module_settings_fields', $this->get_options(), $this)
+			),
+			'styling' => array(
+				'name' => esc_html__( 'Styling', 'themify' ),
+				'options' => apply_filters('themify_builder_styling_settings_fields', $this->get_styling(), $this)
+			)
+		);
+
+		if ( method_exists( $this, 'get_animation' ) ) {
+				$module_form_settings['animation'] = array(
+						'name' => esc_html__( 'Animation', 'themify' ),
+						'options' => apply_filters('themify_builder_animation_settings_fields', $this->get_animation(), $this)
+				);
+		}
+		return apply_filters( 'themify_builder_module_lightbox_form_settings', $module_form_settings, $this );
+	}
+
+	protected function _form_template() { 
+		$module_form_settings = $this->get_form_settings();
+	?>
+	
+		<form id="tfb_module_settings">
+
+			<div id="themify_builder_lightbox_options_tab_items">
+		
+				<?php foreach( $module_form_settings as $setting_key => $setting ):
+					if ( isset( $setting['options'] ) && count( $setting['options'] ) == 0 ) continue; ?>
+					<li><a href="#themify_builder_options_<?php echo esc_attr( $setting_key ); ?>">
+						<?php echo esc_attr( $setting['name'] ); ?></a>
+					</li>
+				<?php endforeach; ?>
+			</div>
+
+			<div id="themify_builder_lightbox_actions_items">
+				<button id="builder_submit_module_settings" class="builder_button"><?php _e('Save', 'themify') ?></button>
+			</div>
+
+			<?php foreach( $module_form_settings as $setting_key => $setting ): ?>
+			
+			<div id="themify_builder_options_<?php echo esc_attr( $setting_key ); ?>" class="themify_builder_options_tab_wrapper<?php echo $setting_key==='styling'?' themify_builder_style_tab':''?>"<?php echo $setting_key==='styling'?' data-module="'.$this->slug .'"':''?>>
+				<div class="themify_builder_options_tab_content">
+					<?php
+					if ( isset( $setting['options'] ) && count( $setting['options'] ) > 0 ) {
+
+						if ( 'setting' === $setting_key ) {
+							themify_builder_module_settings_field( $setting['options'], $this->slug );
+						} else {
+							themify_render_styling_settings( $setting['options'] );
+						}
+
+						if ( 'styling' === $setting_key ) { ?>
+							<p>
+								<a href="#" class="reset-styling" data-reset="module">
+									<i class="ti ti-close"></i>
+									<?php _e('Reset Styling', 'themify') ?>
+								</a>
+							</p>
+						<?php
+						}
+					}
+					?>
+				</div>
+			</div>
+
+			<?php endforeach; ?>
+
+		</form>
+
+	<?php
 	}
 }

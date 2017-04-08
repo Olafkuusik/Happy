@@ -56,7 +56,7 @@
 	padding-top: 15px;
 	border-top: solid 1px #ccc;
 }
-#themify_lightbox_fa .lightbox_container a {
+#themify_lightbox_fa .lightbox_container section a {
 	width: 195px;
 	line-height: 1;
 	margin-bottom: 3px;
@@ -72,23 +72,23 @@
 	overflow: hidden;
 	border-radius: 5px;
 }
-#themify_lightbox_fa .lightbox_container a:hover,
-#themify_lightbox_fa .lightbox_container a.selected {
+#themify_lightbox_fa .lightbox_container section a:hover,
+#themify_lightbox_fa .lightbox_container section a.selected {
 	background: #9a9a9a;
 	color: #fff;
 }
-#themify_lightbox_fa .lightbox_container a i {
+#themify_lightbox_fa .lightbox_container section a i {
 	margin-right: 1em;
 	font-size: 16px;
 	color: #333;
 	display: inline-block;
 	vertical-align: middle;
 }
-#themify_lightbox_fa .lightbox_container a.selected i,
-#themify_lightbox_fa .lightbox_container a:hover i {
+#themify_lightbox_fa .lightbox_container section a.selected i,
+#themify_lightbox_fa .lightbox_container section a:hover i {
 	color: #fff;
 }
-#themify_lightbox_fa .lightbox_container a:hover i {
+#themify_lightbox_fa .lightbox_container section a:hover i {
 	transform: scale(1.4, 1.4);
 }
 #themify_lightbox_fa .page-header {

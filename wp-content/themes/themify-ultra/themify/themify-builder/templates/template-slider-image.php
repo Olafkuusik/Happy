@@ -59,8 +59,9 @@ $auto_scroll = $auto_scroll_opt_slider;
 $arrow = $show_arrow_slider;
 
 $pagination = $show_nav_slider;
-$left_margin = ! empty( $left_margin_slider ) ? $left_margin_slider .'px' : '';
-$right_margin = ! empty( $right_margin_slider ) ? $right_margin_slider .'px' : '';
+$slide_margins = array();
+$slide_margins[] = !empty( $left_margin_slider ) ? sprintf( 'margin-left:%spx;', $left_margin_slider ) : '';
+$slide_margins[] = !empty( $right_margin_slider ) ? sprintf( 'margin-right:%spx;', $right_margin_slider ) : '';
 $effect = $effect_slider;
 
 switch ( $speed_opt_slider ) {
@@ -99,77 +100,76 @@ switch ( $speed_opt_slider ) {
 		data-pause-on-hover="<?php echo esc_attr( $pause_on_hover_slider ); ?>" >
 
 		<?php foreach ( $img_content_slider as $content ): ?>
-		<li style="<?php echo !empty($left_margin) ? 'margin-left:'.$left_margin.';' : ''; ?> <?php echo !empty($right_margin) ? 'margin-right:'.$right_margin.';' : ''; ?>">
-
-			<?php if( ! empty( $content['img_url_slider'] ) ): ?>
-				<div class="slide-image">
-					<?php
-					$image_url = isset( $content['img_url_slider'] )? esc_url( $content['img_url_slider'] ) : '';
-					$image_w = $img_w_slider;
-					$image_h = $img_h_slider;
-					$image_title = isset( $content['img_title_slider'] )? $content['img_title_slider'] : '';
-					if ( $alt_by_url = Themify_Builder_Model::get_alt_by_url( $image_url ) ) {
-						$image_alt = $alt_by_url;
-					} else {
-						$image_alt = $image_title;
-					}
-					$param_image_src = 'src='.$image_url.'&w='.$image_w .'&h='.$image_h.'&alt='.$image_alt.'&ignore=true';
-					if ( $this->is_img_php_disabled() ) {
-						// get image preset
-						$preset = $image_size_slider != '' ? $image_size_slider : themify_get('setting-global_feature_size');
-						if ( isset( $_wp_additional_image_sizes[ $preset ]) && $image_size_slider != '') {
-							$image_w = intval( $_wp_additional_image_sizes[ $preset ]['width'] );
-							$image_h = intval( $_wp_additional_image_sizes[ $preset ]['height'] );
-						} else {
-							$image_w = $image_w != '' ? $image_w : get_option($preset.'_size_w');
-							$image_h = $image_h != '' ? $image_h : get_option($preset.'_size_h');
-						}
-						$image = '<img src="' . esc_url( $image_url ) . '" alt="' . esc_attr( $image_alt ) . '" width="' . esc_attr( $image_w ) . '" height="' . esc_attr( $image_h ) . '">';
-					} else {
-						$image = themify_get_image( $param_image_src );
-					}
-					?>
-					<?php if ( ! empty( $content['img_link_slider'] ) ): ?>
+		<li>
+			<div class="slide-inner-wrap" style="<?php echo implode( '', $slide_margins ); ?>">
+				<?php if( ! empty( $content['img_url_slider'] ) ): ?>
+					<div class="slide-image">
 						<?php
-						if( isset( $content['img_link_params'] ) && $content['img_link_params'] == 'lightbox' ) {
-							$content['img_link_slider'] = themify_get_lightbox_iframe_link( $content['img_link_slider'] );
-							$attr = ' class="themify_lightbox"';
-						} elseif( isset( $content['img_link_params'] ) && $content['img_link_params'] == 'newtab' ) {
-							$attr = ' target="_blank"';
+						$image_url = isset( $content['img_url_slider'] )? esc_url( $content['img_url_slider'] ) : '';
+						$image_w = $img_w_slider;
+						$image_h = $img_h_slider;
+						$image_title = isset( $content['img_title_slider'] )? $content['img_title_slider'] : '';
+						if ( $alt_by_url = Themify_Builder_Model::get_alt_by_url( $image_url ) ) {
+							$image_alt = $alt_by_url;
 						} else {
-							$attr = '';
+							$image_alt = $image_title;
+						}
+						$param_image_src = 'src='.$image_url.'&w='.$image_w .'&h='.$image_h.'&alt='.$image_alt.'&ignore=true';
+						if ( $this->is_img_php_disabled() ) {
+							// get image preset
+							$preset = $image_size_slider != '' ? $image_size_slider : themify_get('setting-global_feature_size');
+							if ( isset( $_wp_additional_image_sizes[ $preset ]) && $image_size_slider != '') {
+								$image_w = intval( $_wp_additional_image_sizes[ $preset ]['width'] );
+								$image_h = intval( $_wp_additional_image_sizes[ $preset ]['height'] );
+							} else {
+								$image_w = $image_w != '' ? $image_w : get_option($preset.'_size_w');
+								$image_h = $image_h != '' ? $image_h : get_option($preset.'_size_h');
+							}
+							$image = '<img src="' . esc_url( $image_url ) . '" alt="' . esc_attr( $image_alt ) . '" width="' . esc_attr( $image_w ) . '" height="' . esc_attr( $image_h ) . '">';
+						} else {
+							$image = themify_get_image( $param_image_src );
 						}
 						?>
-						<a href="<?php echo esc_url( trim($content['img_link_slider'] )); ?>" alt="<?php echo esc_attr( $image_alt ); ?>"<?php echo $attr; ?>>
-							<?php echo wp_kses_post( $image ); ?>
-						</a>
-					<?php else: ?>
-						<?php echo wp_kses_post( $image ); ?>
-					<?php endif; ?>
-				</div><!-- /slide-image -->
-			<?php endif; ?>
-
-			<?php if ( $image_title != '' || isset( $content['img_caption_slider'] ) ):  ?>
-				<div class="slide-content">
-
-					<?php if ( $image_title != '' ): ?>
-					<h3 class="slide-title">
-						<?php if ( isset( $content['img_link_slider'] ) && $content['img_link_slider'] != '' ): ?>
-							<a href="<?php echo esc_url( $content['img_link_slider'] ); ?>"<?php echo $attr; ?>><?php echo wp_kses_post( $image_title ); ?></a>
+						<?php if ( ! empty( $content['img_link_slider'] ) ): ?>
+							<?php
+							if( isset( $content['img_link_params'] ) && $content['img_link_params'] == 'lightbox' ) {
+								$attr = ' data-rel="'.$module_ID.'" class="themify_lightbox"';
+							} elseif( isset( $content['img_link_params'] ) && $content['img_link_params'] == 'newtab' ) {
+								$attr = ' target="_blank"';
+							} else {
+								$attr = '';
+							}
+							?>
+							<a href="<?php echo esc_url( trim($content['img_link_slider'] )); ?>" alt="<?php echo esc_attr( $image_alt ); ?>"<?php echo $attr; ?>>
+								<?php echo wp_kses_post( $image ); ?>
+							</a>
 						<?php else: ?>
-							<?php echo wp_kses_post( $image_title ); ?>
+							<?php echo wp_kses_post( $image ); ?>
 						<?php endif; ?>
-					</h3>
-					<?php endif; ?>
+					</div><!-- /slide-image -->
+				<?php endif; ?>
 
-					<?php 
-						if( isset( $content['img_caption_slider'] ) ) {
-							echo apply_filters( 'themify_builder_module_content', $content['img_caption_slider'] );
-						}
-					?>
-				</div><!-- /slide-content -->
-			<?php endif; ?>
+				<?php if ( $image_title != '' || isset( $content['img_caption_slider'] ) ):  ?>
+					<div class="slide-content">
 
+						<?php if ( $image_title != '' ): ?>
+						<h3 class="slide-title">
+							<?php if ( isset( $content['img_link_slider'] ) && $content['img_link_slider'] != '' ): ?>
+								<a href="<?php echo esc_url( $content['img_link_slider'] ); ?>"<?php echo $attr; ?>><?php echo wp_kses_post( $image_title ); ?></a>
+							<?php else: ?>
+								<?php echo wp_kses_post( $image_title ); ?>
+							<?php endif; ?>
+						</h3>
+						<?php endif; ?>
+
+						<?php 
+							if( isset( $content['img_caption_slider'] ) ) {
+								echo apply_filters( 'themify_builder_module_content', $content['img_caption_slider'] );
+							}
+						?>
+					</div><!-- /slide-content -->
+				<?php endif; ?>
+			</div>
 		</li>
 		<?php endforeach; ?>
 	</ul><!-- /themify_builder_slider -->

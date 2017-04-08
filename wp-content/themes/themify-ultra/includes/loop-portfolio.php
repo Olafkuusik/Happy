@@ -14,7 +14,6 @@ if ( ! is_wp_error( $categories ) ) {
 		}
 	}
 }
-$is_portfolio = is_singular( 'portfolio' );
 ?>
 
 <?php themify_post_before(); //hook ?>
@@ -25,7 +24,7 @@ $is_portfolio = is_singular( 'portfolio' );
         <a href="<?php echo themify_get_featured_image_link(); ?>" data-post-permalink="yes" style="display: none;"></a>
     <?php endif;?>
 
-	<?php if ( $is_portfolio && ! $themify->is_shortcode ) : ?>
+	<?php if ( themify_loop_is_singular( 'portfolio' ) ) : ?>
 
 		<?php if ( $themify->hide_meta != 'yes' ): ?>
 			<p class="post-meta entry-meta">
@@ -34,20 +33,14 @@ $is_portfolio = is_singular( 'portfolio' );
 		<?php endif; //post meta ?>
 
 		<?php if($themify->hide_title != 'yes'): ?>
-			<<?php themify_theme_entry_title_tag(); ?> class="post-title entry-title">
-				<?php if($themify->unlink_title == 'yes'): ?>
-					<?php the_title(); ?>
-				<?php else: ?>
-					<a href="<?php echo themify_get_featured_image_link(); ?>" title="<?php the_title_attribute(); ?>"><?php the_title(); ?></a>
-				<?php endif; //unlink post title ?>
-			</<?php themify_theme_entry_title_tag(); ?>>
+			<?php themify_post_title(); ?>
 		<?php endif; //post title ?>
 
 		 <?php get_template_part('includes/portfolio-meta', get_post_type()); ?>
 
 	<?php endif; // is singular portfolio ?>
 
-	<?php if ( !$is_portfolio || ($is_portfolio && $themify->is_shortcode ) ) : ?>
+	<?php if ( ! themify_loop_is_singular( 'portfolio' ) ) : ?>
 
 		<?php if( $themify->hide_image != 'yes' ) : ?>
 			<?php get_template_part( 'includes/post-media', get_post_type() ); ?>
@@ -57,7 +50,7 @@ $is_portfolio = is_singular( 'portfolio' );
 
 	<div class="post-content">
 
-		<?php if ( !$is_portfolio || ( $is_portfolio && $themify->is_shortcode ) ) : ?>
+		<?php if ( ! themify_loop_is_singular( 'portfolio' ) ) : ?>
 			<div class="disp-table">
 				<div class="disp-row">
 					<div class="disp-cell valignmid">
@@ -73,7 +66,7 @@ $is_portfolio = is_singular( 'portfolio' );
 								<?php if($themify->unlink_title == 'yes'): ?>
 									<?php the_title(); ?>
 								<?php else: ?>
-									<a href="<?php echo themify_get_featured_image_link(); ?>" title="<?php the_title_attribute(); ?>"><?php the_title(); ?></a>
+									<a href="<?php echo themify_get_featured_image_link(); ?>"><?php the_title(); ?></a>
 								<?php endif; //unlink post title ?>
 							</h2>
 						<?php endif; //post title ?>
@@ -98,7 +91,7 @@ $is_portfolio = is_singular( 'portfolio' );
 
 		<?php edit_post_link(__('Edit', 'themify'), '<span class="edit-button">[', ']</span>'); ?>
 
-		<?php if ( !$is_portfolio || ($is_portfolio && $themify->is_shortcode ) ) : ?>
+		<?php if ( ! themify_loop_is_singular( 'portfolio' ) ) : ?>
 
 					</div>
 					<!-- /.disp-cell -->

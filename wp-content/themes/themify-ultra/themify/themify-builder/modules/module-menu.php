@@ -41,7 +41,49 @@ class TB_Menu_Module extends Themify_Builder_Module {
 				'label' => __('Custom Menu', 'themify'),
 				'options' => $menus,
 				'help' => sprintf(__('Add more <a href="%s" target="_blank">menu</a>', 'themify'), admin_url( 'nav-menus.php' )),
-				'break' => true
+				'break' => true,
+				'render_callback' => array(
+					'control_type' => 'select'
+				)
+			),
+			array(
+				'id' => 'allow_menu_breakpoint',
+				'pushed' => 'pushed',
+				'type' => 'checkbox',
+				'label' => false,
+				'options' => array(
+					array( 'name' => 'allow_menu', 'value' => __( 'Enable mobile menu', 'themify' ) )
+				),
+				'option_js' => true,
+			),
+			array(
+				'id' => 'menu_breakpoint',
+				'pushed' => 'pushed',
+				'type' => 'text',
+				'label' => false,
+				'class' => 'small',
+				'after' => __('Mobile menu breakpoint (px)', 'themify'),
+				'binding' => array(
+					'empty' => array(
+						'hide' => array('menu_slide_direction')
+					),
+					'not_empty' => array(
+						'show' => array('menu_slide_direction')
+					)
+				),
+				'wrap_with_class' => 'ui-helper-hidden tf-group-element tf-checkbox-element tf-checkbox-element-allow_menu'
+			),
+			array(
+				'id' => 'menu_slide_direction',
+				'pushed' => 'pushed',
+				'type' => 'select',
+				'label' => false,
+				'after' => __('Mobile slide direction', 'themify'),
+				'options' => array(
+					'right' => __('Right', 'themify'),
+					'left' => __('Left', 'themify')
+				),
+				'wrap_with_class' => 'ui-helper-hidden tf-group-element tf-checkbox-element tf-checkbox-element-allow_menu',
 			),
 			array(
 				'id' => 'color_menu',

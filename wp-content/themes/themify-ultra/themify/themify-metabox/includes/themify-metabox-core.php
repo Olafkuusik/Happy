@@ -35,13 +35,8 @@ class Themify_Metabox {
 		static $meta_boxes = null;
 
 		if( ! isset( $meta_boxes ) ) {
-			$types = get_post_types();
-			foreach( $types as $type ) {
-				$options = $this->get_meta_box_options( 'themify-meta-boxes', $type );
-				if( empty( $options ) ) {
-					unset( $types[$type] );
-				}
-			}
+			// Themify Custom Panel by default is added to all post types
+			$types = get_post_types( '', 'names' );
 			$meta_boxes = apply_filters( 'themify_metaboxes', array(
 				'themify-meta-boxes' => array(
 					'id' => 'themify-meta-boxes',
@@ -89,7 +84,7 @@ class Themify_Metabox {
 					$themify_write_panels = array();
 
 				$themify_write_panels = apply_filters( 'themify_do_metaboxes', $themify_write_panels );
-				$this->panel_options['themify-meta-boxes'] = array_filter( $themify_write_panels );
+				$this->panel_options['themify-meta-boxes'] = array_filter( apply_filters( "themify_metabox/fields/{$meta_box}", $themify_write_panels, $post_type ) );
 			} else {
 				$this->panel_options[$meta_box] = array_filter( apply_filters( "themify_metabox/fields/{$meta_box}", array(), $post_type ) );
 			}
@@ -196,7 +191,7 @@ class Themify_Metabox {
 			delete_post_meta( $post_id, $field['name'] );
 		}
 
-		if( $new_meta != '' && $new_meta != $old_meta ) {
+		if( $new_meta !== '' && $new_meta != $old_meta ) {
 			update_post_meta( $post_id, $field['name'], $new_meta );
 		}
 	}
@@ -207,6 +202,11 @@ class Themify_Metabox {
 		$post_id = $post->ID;
 		$tabs = $this->get_meta_box_options( $metabox['id'], $typenow );
 		if( empty( $tabs ) ) {
+
+			if( $metabox['id'] == 'themify-meta-boxes' ) {
+				// this is a hack to prevent Themify Custom Panel from showing up when it has no options to show
+				echo '<style>#themify-meta-boxes, .metabox-prefs label[for="themify-meta-boxes-hide"] { display: none !important; }</style>';
+			}
 			return;
 		}
 
@@ -368,7 +368,6 @@ class Themify_Metabox {
 			 // additional post data to send to our ajax hook
 			'multipart_params' 		=> array(
 				'_ajax_nonce' => '', // added by uploader
-				'action' => 'themify_plupload', // the ajax action name
 				'imgid' => 0 // added by uploader
 			)
 		);
@@ -408,10 +407,12 @@ class Themify_Metabox {
 	 * @since 1.8.2
 	 */
 	function protected_meta( $protected, $meta_key, $meta_type ) {
+		global $typenow;
+
 		static $protected_metas = array();
 		if( $protected_metas == null ) {
 			foreach( $this->get_meta_boxes() as $meta_box ) {
-				$protected_metas = array_merge( themify_metabox_get_field_names( $this->get_meta_box_options( $meta_box['id'] ) ), $protected_metas );
+				$protected_metas = array_merge( themify_metabox_get_field_names( $this->get_meta_box_options( $meta_box['id'], $typenow ) ), $protected_metas );
 			}
 		}
 

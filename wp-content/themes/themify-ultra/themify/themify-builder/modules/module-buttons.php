@@ -21,42 +21,52 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 
 	public function get_options() {
 		return  array(
-            array(
-                'id'=>'buttons_size',
+			array(
+				'id'=>'buttons_size',
 				'type' => 'radio',
 				'label' => __( 'Size', 'themify' ),
 				'options' => array(
-				'normal'=> __( 'Normal', 'themify' ),
-                'small'=>__( 'Small', 'themify' ),
-                'large'=> __( 'Large', 'themify' ),
-                'xlarge'=>__( 'xLarge', 'themify' )
-			),
-	            'default' => 'normal',
+					'normal'=> __( 'Normal', 'themify' ),
+					'small'=>__( 'Small', 'themify' ),
+					'large'=> __( 'Large', 'themify' ),
+					'xlarge'=>__( 'xLarge', 'themify' )
+				),
+				'default' => 'normal',
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			array(
-                'id'=>'buttons_style',
+				'id'=>'buttons_style',
 				'type' => 'radio',
-				'label' => __( 'Button Background Style', 'themify' ),
-                'options' => array(
+				'label' => __( 'Button Style', 'themify' ),
+				'options' => array(
 					'circle'=> __( 'Circle', 'themify' ),
-	                    'rounded'=>__( 'Rounded', 'themify' ),
-	                    'squared'=> __( 'Squared', 'themify' ),
-	                    'outline'=>__('Outlined', 'themify')
+					'rounded'=>__( 'Rounded', 'themify' ),
+					'squared'=> __( 'Squared', 'themify' ),
+					'outline'=>__('Outlined', 'themify')
 				),
-            	'default' => 'rounded',
+				'default' => 'rounded',
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
-            array(
+			array(
 				'id' => 'content_button',
 				'type' => 'builder',
-                'new_row_text'=>__('Add new button','themify'),
+				'new_row_text'=>__('Add new button','themify'),
 				'options' => array(
-                    array(
+					array(
 						'id' => 'label',
 						'type' => 'text',
 						'label' => __( 'Text', 'themify' ),
 						'class' => 'fullwidth',
+						'render_callback' => array(
+							'repeater' => 'content_button',
+							'binding' => 'live'
+						)
 					),
-                    array(
+					array(
 						'id' => 'link',
 						'type' => 'text',
 						'label' => __( 'Link', 'themify' ),
@@ -68,6 +78,10 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 							'not_empty' => array(
 								'show' => array('link_options', 'lightbox_size')
 							)
+						),
+						'render_callback' => array(
+							'repeater' => 'content_button',
+							'binding' => 'live'
 						)
 					),
 					array(
@@ -82,7 +96,11 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 						'new_line' => false,
 						'default' => 'regular',
 						'option_js' => true,
-						'wrap_with_class' => 'link_options'
+						'wrap_with_class' => 'link_options',
+						'render_callback' => array(
+							'repeater' => 'content_button',
+							'binding' => 'live'
+						)
 					),
 					array(
 						'id' => 'lightbox_size',
@@ -93,7 +111,11 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 								'id' => 'lightbox_width',
 								'type' => 'text',
 								'label' => __( 'Width', 'themify' ),
-								'value' => ''
+								'value' => '',
+								'render_callback' => array(
+									'repeater' => 'content_button',
+									'binding' => 'live'
+								)
 							),
 							array(
 								'id' => 'lightbox_size_unit_width',
@@ -103,13 +125,21 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 									'pixels' => __('px ', 'themify'),
 									'percents' => __('%', 'themify')
 								),
-								'default' => 'pixels'
+								'default' => 'pixels',
+								'render_callback' => array(
+									'repeater' => 'content_button',
+									'binding' => 'live'
+								)
 							),
 							array(
 								'id' => 'lightbox_height',
 								'type' => 'text',
 								'label' => __( 'Height', 'themify' ),
-								'value' => ''
+								'value' => '',
+								'render_callback' => array(
+									'repeater' => 'content_button',
+									'binding' => 'live'
+								)
 							),
 							array(
 								'id' => 'lightbox_size_unit_height',
@@ -119,7 +149,11 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 									'pixels' => __('px ', 'themify'),
 									'percents' => __('%', 'themify')
 								),
-								'default' => 'pixels'
+								'default' => 'pixels',
+								'render_callback' => array(
+									'repeater' => 'content_button',
+									'binding' => 'live'
+								)
 							)
 						),
 						'wrap_with_class' => 'tf-group-element tf-group-element-lightbox lightbox_size'
@@ -128,56 +162,92 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 						'id' => 'button_container',
 						'type' => 'multi',
 						'label' => __( 'Color', 'themify' ),
-                        'wrap_with_class' => 'fullwidth',
-                        'options' => array(
-                            array(
-                                'id' => 'button_color_bg',
-                                'type' => 'layout',
-                                'label' =>'',
-                                'options' => array(
-                                    array('img' => 'color-default.png', 'value' => 'default', 'label' => __('default', 'themify')),
-                                    array('img' => 'color-black.png', 'value' => 'black', 'label' => __('black', 'themify')),
-                                    array('img' => 'color-grey.png', 'value' => 'gray', 'label' => __('gray', 'themify')),
-                                    array('img' => 'color-blue.png', 'value' => 'blue', 'label' => __('blue', 'themify')),
-                                    array('img' => 'color-light-blue.png', 'value' => 'light-blue', 'label' => __('light-blue', 'themify')),
-                                    array('img' => 'color-green.png', 'value' => 'green', 'label' => __('green', 'themify')),
-                                    array('img' => 'color-light-green.png', 'value' => 'light-green', 'label' => __('light-green', 'themify')),
-                                    array('img' => 'color-purple.png', 'value' => 'purple', 'label' => __('purple', 'themify')),
-                                    array('img' => 'color-light-purple.png', 'value' => 'light-purple', 'label' => __('light-purple', 'themify')),
-                                    array('img' => 'color-brown.png', 'value' => 'brown', 'label' => __('brown', 'themify')),
-                                    array('img' => 'color-orange.png', 'value' => 'orange', 'label' => __('orange', 'themify')),
-                                    array('img' => 'color-yellow.png', 'value' => 'yellow', 'label' => __('yellow', 'themify')),
-                                    array('img' => 'color-red.png', 'value' => 'red', 'label' => __('red', 'themify')),
-                                    array('img' => 'color-pink.png', 'value' => 'pink', 'label' => __('pink', 'themify')),
-                                ),
-                                'bottom' => false,
-                                'wrap_with_class' => 'fullwidth',
-	                        ),
-		                    array(
-		                        'id' => 'icon',
-		                        'type' => 'text',
-		                        'iconpicker'=>true,
-		                        'label' => __('Icon', 'themify'),
-		                        'class' => 'fullwidth themify_field_icon',
-		                        'wrap_with_class' => 'fullwidth'
-		                    ),
-	                    ),
+						'wrap_with_class' => 'fullwidth',
+						'options' => array(
+							array(
+								'id' => 'button_color_bg',
+								'type' => 'layout',
+								'label' =>'',
+								'options' => array(
+									array('img' => 'color-default.png', 'value' => 'default', 'label' => __('default', 'themify')),
+									array('img' => 'color-black.png', 'value' => 'black', 'label' => __('black', 'themify')),
+									array('img' => 'color-grey.png', 'value' => 'gray', 'label' => __('gray', 'themify')),
+									array('img' => 'color-blue.png', 'value' => 'blue', 'label' => __('blue', 'themify')),
+									array('img' => 'color-light-blue.png', 'value' => 'light-blue', 'label' => __('light-blue', 'themify')),
+									array('img' => 'color-green.png', 'value' => 'green', 'label' => __('green', 'themify')),
+									array('img' => 'color-light-green.png', 'value' => 'light-green', 'label' => __('light-green', 'themify')),
+									array('img' => 'color-purple.png', 'value' => 'purple', 'label' => __('purple', 'themify')),
+									array('img' => 'color-light-purple.png', 'value' => 'light-purple', 'label' => __('light-purple', 'themify')),
+									array('img' => 'color-brown.png', 'value' => 'brown', 'label' => __('brown', 'themify')),
+									array('img' => 'color-orange.png', 'value' => 'orange', 'label' => __('orange', 'themify')),
+									array('img' => 'color-yellow.png', 'value' => 'yellow', 'label' => __('yellow', 'themify')),
+									array('img' => 'color-red.png', 'value' => 'red', 'label' => __('red', 'themify')),
+									array('img' => 'color-pink.png', 'value' => 'pink', 'label' => __('pink', 'themify')),
+								),
+								'bottom' => false,
+								'wrap_with_class' => 'fullwidth',
+								'render_callback' => array(
+									'repeater' => 'content_button',
+									'binding' => 'live'
+								)
+							)
+						)
+					),
+					array(
+						'id' => 'icon_container',
+						'type' => 'multi',
+						'label' => __('Icon', 'themify'),
+						'wrap_with_class' => 'fullwidth',
+						'options' => array(
+							array(
+								'id' => 'icon',
+								'type' => 'text',
+								'iconpicker' => true,
+								'label' => '',
+								'class' => 'fullwidth themify_field_icon',
+								'wrap_with_class' => 'fullwidth',
+								'render_callback' => array(
+									'repeater' => 'content_button',
+									'binding' => 'live',
+									'control_type' => 'textonchange'
+								)
+							)
+						)
 					)
+				),
+				'render_callback' => array(
+					'binding' => 'live'
 				)
 			),
 			// Additional CSS
-            array(
-                'type' => 'separator',
-                'meta' => array('html' => '<hr/>')
-            ),
-            array(
-                'id' => 'css_button',
-                'type' => 'text',
-                'label' => __('Additional CSS Class', 'themify'),
-                'class' => 'large exclude-from-reset-field',
-                'help' => sprintf('<br/><small>%s</small>', __('Add additional CSS class(es) for custom styling', 'themify'))
-            )
+			array(
+				'type' => 'separator',
+				'meta' => array('html' => '<hr/>')
+			),
+			array(
+				'id' => 'css_button',
+				'type' => 'text',
+				'label' => __('Additional CSS Class', 'themify'),
+				'class' => 'large exclude-from-reset-field',
+				'help' => sprintf('<br/><small>%s</small>', __('Add additional CSS class(es) for custom styling', 'themify')),
+				'render_callback' => array(
+					'binding' => 'live'
+				)
+			)
 		);
+	}
+
+	public function get_default_settings() {
+		$settings = array(
+			'content_button' => array(
+				array( 
+					'label' => esc_html__( 'Button Text', 'themify' ), 
+					'link' => 'https://themify.me/',
+					'link_options' => 'regular'
+				)
+			)
+		);
+		return $settings;
 	}
 
 	public function get_animation() {
@@ -227,14 +297,14 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 				'type' => 'separator',
 				'meta' => array('html'=>'<h4>'.__('Background', 'themify').'</h4>'),
 			),
-            array(
+			array(
 				'id' => 'background_image',
 				'type' => 'image_and_gradient',
 				'label' => __('Background Image', 'themify'),
 				'class' => 'xlarge',
 				'prop' => 'background-image',
 				'selector' => ' div.module-buttons',
-                                'option_js' => true
+								'option_js' => true
 			),
 			array(
 				'id' => 'background_color',
@@ -244,7 +314,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 				'prop' => 'background-color',
 				'selector' => array( ' div.module-buttons'),
 			),
-            // Font
+			// Font
 			array(
 				'type' => 'separator',
 				'meta' => array('html'=>'<hr />')
@@ -262,7 +332,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 				'prop' => 'font-family',
 				'selector' => ' div.module-buttons',
 			),
-                        array(
+						array(
 				'id' => 'font_color',
 				'type' => 'color',
 				'label' => __('Font Color', 'themify'),
@@ -330,7 +400,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 				'prop' => 'text-align',
 				'selector' => ' div.module-buttons'
 			),
-            // Padding
+			// Padding
 			array(
 				'type' => 'separator',
 				'meta' => array('html'=>'<hr />')
@@ -358,7 +428,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 						'description' => __('top', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -382,7 +452,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 						'description' => __('right', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -406,7 +476,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 						'description' => __('bottom', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -430,7 +500,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 						'description' => __('left', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -474,7 +544,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 						'description' => __('top', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -498,7 +568,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 						'description' => __('right', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -522,7 +592,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 						'description' => __('bottom', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -546,7 +616,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 						'description' => __('left', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -698,7 +768,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 				'class' => 'style_apply_all style_apply_all_border',
 				'type' => 'checkbox',
 				'label' => false,
-                                'default'=>'border',
+								'default'=>'border',
 				'options' => array(
 					array( 'name' => 'border', 'value' => __( 'Apply to all border', 'themify' ) )
 				)
@@ -735,12 +805,12 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 				'type' => 'separator',
 				'meta' => array('html'=>'<hr />')
 			),
-            array(
+			array(
 				'id' => 'separator_link',
 				'type' => 'separator',
 				'meta' => array('html'=>'<h4>'.__('Link', 'themify').'</h4>'),
 			),
-            array(
+			array(
 				'id' => 'link_color',
 				'type' => 'color',
 				'label' => __('Color', 'themify'),
@@ -798,7 +868,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 						'description' => __('top', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -822,7 +892,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 						'description' => __('right', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -846,7 +916,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 						'description' => __('bottom', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -870,7 +940,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 						'description' => __('left', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -914,7 +984,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 						'description' => __('top', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -938,7 +1008,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 						'description' => __('right', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -962,7 +1032,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 						'description' => __('bottom', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -986,7 +1056,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 						'description' => __('left', 'themify'),
 						'meta' => array(
 							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
+														array('value' => 'em', 'name' => __('em', 'themify')),
 							array('value' => '%', 'name' => __('%', 'themify'))
 						)
 					),
@@ -1138,7 +1208,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 				'class' => 'style_apply_all style_apply_all_border',
 				'type' => 'checkbox',
 				'label' => false,
-                                'default'=>'border',
+								'default'=>'border',
 				'options' => array(
 					array( 'name' => 'border', 'value' => __( 'Apply to all border', 'themify' ) )
 				)
@@ -1151,7 +1221,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 				'id' => 'module-styling',
 				'tabs' => array(
 					'general' => array(
-		        	'label' => __('General', 'themify'),
+					'label' => __('General', 'themify'),
 					'fields' => $general
 					),
 					'button_link' => array(
@@ -1162,6 +1232,35 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 			),
 		);
 
+	}
+
+	protected function _visual_template() { ?>
+		<div class="module module-<?php echo esc_attr( $this->slug ); ?> {{ data.css_button }}">
+			<# if ( data.content_button ) { #>
+				<div class="module-<?php echo esc_attr( $this->slug ); ?> {{ data.buttons_size }} {{ data.buttons_style }}">
+					<# _.each( data.content_button, function( item ) { #>
+						
+						<div class="module-buttons-item">
+							<# if ( item.link ) { #>
+							<a class="ui builder_button {{ item.button_color_bg }}" href="{{ item.link }}">
+							<# } #>
+							
+							<# if ( item.icon ) { #>
+							<i class="fa {{ item.icon }}"></i>
+							<# } #>
+
+							<span>{{ item.label }}</span>
+
+							<# if ( item.link ) { #>
+							</a>
+							<# } #>
+						</div>
+
+					<# } ); #>
+				</div>
+			<# } #>
+		</div>
+	<?php
 	}
 }
 

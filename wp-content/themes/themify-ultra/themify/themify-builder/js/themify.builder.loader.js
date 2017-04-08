@@ -11,18 +11,12 @@ var tbLoaderVars, themifyBuilder;
 
 	$(document).ready(function(){
 
-		var $tbContent = $('.themify_builder_content');
-		var in_customizer = false;
-		var builderLoader = $('<div/>', {
+		var $tbContent = $('.themify_builder_content'),
+                    in_customizer = typeof wp !== 'undefined' && typeof wp.customize !== 'undefined',// check for wp.customize return boolean
+                    builderLoader = $('<div/>', {
 			id: 'themify_builder_alert',
 			class: 'themify-builder-alert busy'
 		});
-
-		// check for wp.customize return boolean
-		if ( typeof wp !== 'undefined' ) {
-			in_customizer =  typeof wp.customize !== 'undefined' ? true : false;
-		}
-
 		if ( $tbContent.length > 0 && ! in_customizer ) {
 			$tbContent.after( '<a class="themify_builder_turn_on js-turn-on-builder" href="#"><span class="dashicons dashicons-edit"></span>' + tbLoaderVars.turnOnBuilder + '</a>' );
 		}
@@ -31,10 +25,10 @@ var tbLoaderVars, themifyBuilder;
 		$('#wp--wrap').remove();
 
 		$('body').on('click.tbloader', '.toggle_tf_builder a:first, a.js-turn-on-builder', function(e){
-
+			
 			e.preventDefault();
 
-			if( $( '.themify-builder-alert' ).length == 0 ) {
+			if( $( '.themify-builder-alert' ).length === 0 ) {
 				$( 'body' ).append( builderLoader );
 			}
 
@@ -119,7 +113,7 @@ var tbLoaderVars, themifyBuilder;
 										}
 
 										// Remove click event
-										$('body').off('click.tbloader');
+									//	$('body').off('click.tbloader');
 
 										// Initialize Builder
 										// Event replaces $(document).ready() and $(window).load()
@@ -137,9 +131,13 @@ var tbLoaderVars, themifyBuilder;
 
 							} );
 						}
+						else{
+							$('body').trigger('builderscriptsloaded.themify');
+						}
 
 						// responsive iframe
-						var responsiveSrc = updateQueryString('builder_grid_activate', 1, window.location.href );
+						var responsiveSrc = updateQueryString('tb-preview', 1, window.location.href );
+                                                responsiveSrc = responsiveSrc.replace('#builder_active','');
 						$('#themify_builder_site_canvas_iframe').attr('src', responsiveSrc).on('load', function(){
 							$('body').trigger('builderiframeloaded.themify');
 						});

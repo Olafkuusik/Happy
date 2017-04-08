@@ -75,14 +75,14 @@ add_filter( 'themify_after_post_title_parse_args', 'themify_builder_post_title_a
         $terms = preg_replace('/\|[multiple|single]*$/', '', $terms);
 
         $temp_terms = explode(',', $terms);
-        $exclude = ( '-' == substr($terms, 0, 1) );
-        $new_terms = array();
+        $new_terms = $new_exclude_terms = array();
         $is_string = false;
         foreach ($temp_terms as $t) {
             if (!is_numeric($t))
                 $is_string = true;
             if ('' != $t) {
-                $new_terms[] = $is_string ? trim($t) : ($exclude ? abs($t) : intval($t));
+                $result_array = ( ( is_numeric( $t ) && 0 <= $t ) || ! is_numeric( $t ) ) ? 'new_terms' : 'new_exclude_terms';
+                array_push( $$result_array, is_numeric( $t ) ? abs( trim( $t ) ) : trim( $t ) );
             }
         }
         $tax_field = ( $is_string ) ? 'slug' : 'id';
@@ -100,11 +100,18 @@ add_filter( 'themify_after_post_title_parse_args', 'themify_builder_post_title_a
         if (count($new_terms) > 0 && !in_array('0', $new_terms) && 'post_slug' !== $type_query_post) {
             $args['tax_query'] = array(
                 array(
-                    'taxonomy' => $type_query_post,
-                    'field' => $tax_field,
-                    'terms' => $new_terms,
-                    'operator' => $exclude ? 'NOT IN' : 'IN',
-                )
+                    'taxonomy'  => $type_query_post,
+                    'field'     => $tax_field,
+                    'terms'     => $new_terms,
+                ),
+            );
+        }
+        if (count($new_exclude_terms) > 0 && 'post_slug' !== $type_query_post) {
+            $args['tax_query'][] = array(
+                'taxonomy'  => $type_query_post,
+                'field'     => $tax_field,
+                'terms'     => $new_exclude_terms,
+                'operator'  => "NOT IN",
             );
         }
 
@@ -149,7 +156,8 @@ add_filter( 'themify_after_post_title_parse_args', 'themify_builder_post_title_a
                 $themify->post_layout = $layout_post;
 
                 // hooks action
-                do_action_ref_array('themify_builder_override_loop_themify_vars', array($themify, $mod_name));
+                do_action_ref_array('themify_builder_override_loop_themify_vars', array( $themify, $mod_name, $fields_args ) );
+
                 $out = '';
                 if ($posts) {
                     $out .= themify_get_shortcode_template($posts);
@@ -224,7 +232,7 @@ add_filter( 'themify_after_post_title_parse_args', 'themify_builder_post_title_a
                                 <?php if ($unlink_post_title_post == 'yes'): ?>
                                     <h2 class="post-title"><?php the_title(); ?></h2>
                                 <?php else: ?>
-                                    <h2 class="post-title"><a href="<?php echo themify_get_featured_image_link(); ?>" title="<?php the_title_attribute(); ?>"><?php the_title(); ?></a></h2>
+                                    <h2 class="post-title"><a href="<?php echo themify_get_featured_image_link(); ?>"><?php the_title(); ?></a></h2>
                                 <?php endif; //unlink post title    ?>
                                 <?php themify_after_post_title(); // Hook ?> 
                             <?php endif; //post title  ?>    

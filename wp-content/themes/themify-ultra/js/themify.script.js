@@ -15,7 +15,7 @@ var FixedHeader = {}, LayoutAndFilter = {}, themifyScript, ThemifySlider, Themif
 		isFullPageScroll = ('undefined' !== typeof $.fn.fullpage) && (themifyScript.fullPageScroll ? true : false) && ($sections.length > 0),
 		usesRows = $sections.length === 0,
 		sectionClass = '.section-post',
-		sectionsWrapper = '#loops-wrapper',
+		sectionsWrapper = 'div:not(.module-layout-part) > #loops-wrapper',
 		fixedHeader = $('body').hasClass('fixed-header'),
 		wowInit2;
 
@@ -23,7 +23,7 @@ var FixedHeader = {}, LayoutAndFilter = {}, themifyScript, ThemifySlider, Themif
 	if (usesRows) {
 		isFullPageScroll = ('undefined' !== typeof $.fn.fullpage) && (themifyScript.fullPageScroll ? true : false) && ($('.themify_builder').length > 0) && $('body').hasClass('full-section-scrolling');
 		sectionClass = '.themify_builder_row';
-		sectionsWrapper = '.themify_builder_content';
+		sectionsWrapper = 'div:not(.module-layout-part) > .themify_builder_content';
 	}
 // Fixed Header /////////////////////////
 FixedHeader = {
@@ -64,6 +64,17 @@ FixedHeader = {
 			if( $( '#gallery-controller' ).length > 0 ) {
 				FixedHeader.hasHeaderSlider = true;
 			}
+                        if(themifyScript.sticky_header){
+                            var img = '<img id="sticky_header_logo" src="' + themifyScript.sticky_header.src + '"';
+                                if(themifyScript.sticky_header.imgwidth){
+                                    img+=' width="'+themifyScript.sticky_header.imgwidth+'"';
+                                }
+                                if(themifyScript.sticky_header.imgheight){
+                                    img+=' height="'+themifyScript.sticky_header.imgheight+'"';
+                                }
+                                img+='/>';
+                            $('#site-logo a').prepend(img);
+                        }
 			$( 'body' ).on( 'announcement_bar_position', FixedHeader.calculateHeaderHeight );
 			$( 'body' ).on( 'announcement_bar_scroll_on_after', FixedHeader.calculateHeaderHeight );
 		}
@@ -210,8 +221,16 @@ function getClassToId($section) {
 // Create fullpage scrolling //////////////////////////////
 function createFullScrolling() {
 	var $body = $('body'),
+		initFullPage = false,
+		currentHash = themifyScript.hash.replace( '#', '' ),
 		sectionSelector = usesRows ? sectionsWrapper + ' > ' + sectionClass : sectionClass,
-		autoScrolling = !usesRows && '' != themifyScript.hash.replace('#', '') ? false : true;
+		autoScrolling = !usesRows && '' != themifyScript.hash.replace('#', '') ? false : true,
+		anchors = $( sectionSelector ).map( function() {
+			var $this = $( this ),
+				anchorName = usesRows && $this.is('[class*="tb_section-"]') ? getClassToId( $this ) : $this.attr('id');
+			return anchorName ? anchorName : '';
+		} );
+		
 	$(sectionsWrapper).fullpage({
 		resize: false,
 		sectionSelector: sectionSelector,
@@ -220,6 +239,7 @@ function createFullScrolling() {
 		navigation: true,
 		lockAnchors: true,
 		autoScrolling: autoScrolling,
+		anchors: anchors,
 		afterRender: function () {
 			if (!autoScrolling) { // hack deep linking not working when use section row
 				$.fn.fullpage.setAutoScrolling(true);
@@ -232,7 +252,7 @@ function createFullScrolling() {
 			setTimeout(function () {
 				$('.section_loader').hide();
 				
-				if ('undefined' !== typeof Themify && 'undefined' !== typeof wowInit2) {
+				if ('undefined' !== typeof ThemifyBuilderModuleJs && 'undefined' !== typeof wowInit2) {
 					wowInit2();
 				}
 			}, 1000);
@@ -248,24 +268,26 @@ function createFullScrolling() {
 				$aSectionHref.closest('li').addClass('current_page_item').siblings().removeClass('current_page_item current-menu-item');
 			}
 
-			if (history.pushState) {
-				history.pushState(null, null, '#' + section_id);
-			}
-
 			$body.trigger('themify_onepage_after_render', [$section, section_id]);
 		},
 		afterLoad: function () {
 			var $section = $(sectionClass + '.active', $(sectionsWrapper)),
-					section_id = usesRows && $section.is('[class*="tb_section-"]') ? getClassToId($section) : $section.prop('id'),
-					$aSectionHref = $('#main-nav').find('a[href$="#' + section_id + '"]');
+				section_id = usesRows && $section.is('[class*="tb_section-"]') ? getClassToId($section) : $section.prop('id'),
+				$aSectionHref = $('#main-nav').find('a[href$="#' + section_id + '"]');
 
 			if ($aSectionHref.length > 0) {
 				$aSectionHref.closest('li').addClass('current_page_item').siblings().removeClass('current_page_item current-menu-item');
 			}
 
-			if (history.pushState) {
-				history.pushState(null, null, '#' + section_id);
+			if( history.pushState && section_id ) {
+				if( initFullPage && currentHash !== section_id ) {
+					history.pushState(null, null, '#' + section_id);
+				} else {
+					history.replaceState(null, null, '#' + section_id);
+				}
 			}
+
+			initFullPage = true;
 
 			$body.trigger('themify_onepage_afterload', [$section, section_id]);
 		},
@@ -366,14 +388,21 @@ function doInfinite( $container, selector ) {
 				Themify.InitGallery();
 				if ( 'object' === typeof $container.data('isotope') ) {
 					if( typeof $.fn.isotope !== 'function' ) {
-						Themify.LoadAsync(themify_vars.url + '/js/jquery.isotope.min.js', function() {
+						Themify.LoadAsync(themifyScript.themeURI + '/js/jquery.isotope.min.js', function() {
 							$container.isotope('appended', $newElems );
+						},
+						null,
+						null,
+						function () {
+							return ('undefined' !== typeof $.fn.isotope);
 						} );
 					} else {
 						$container.isotope('appended', $newElems );
 					}
 				}
-
+                                if ($container.hasClass('auto_tiles') && $('body').hasClass('tile_enable')) {
+					$container.trigger('infiniteloaded.themify', [$newElems]);
+				}
 				if ( LayoutAndFilter.filterActive ) {
 					// If new elements with new categories were added enable them in filter bar
 					LayoutAndFilter.enableFilters();
@@ -416,13 +445,10 @@ function doInfinite( $container, selector ) {
 LayoutAndFilter = {
 	filterActive: false,
 	init: function() {
-		themifyScript.disableMasonry = $('body').hasClass('masonry-enabled') ? '' : 'disable-masonry';
-		if ( 'disable-masonry' !== themifyScript.disableMasonry ) {
-			$('.post-filter + .portfolio.list-post,.loops-wrapper.grid4,.loops-wrapper.grid3,.loops-wrapper.grid2,.loops-wrapper.portfolio.grid4,.loops-wrapper.portfolio.grid3,.loops-wrapper.portfolio.grid2').not('.builder-posts-wrap').prepend('<div class="grid-sizer">').prepend('<div class="gutter-sizer">');
-			this.enableFilters();
-			this.filter();
-			this.filterActive = true;
-		}
+		$('.post-filter+.loops-wrapper:not(.auto_tiles),.masonry:not(.list-post):not(.auto_tiles)').prepend('<div class="grid-sizer"></div><div class="gutter-sizer"></div>');
+		this.enableFilters();
+		this.filter();
+		this.filterActive = true;
 	},
 	enableFilters: function() {
 		var $filter = $('.post-filter');
@@ -431,7 +457,7 @@ LayoutAndFilter = {
 				var $li = $(this),
 					$entries = $li.parent().next(),
 					cat = $li.attr('class').replace(/(current-cat)|(cat-item)|(-)|(active)/g, '').replace(' ', '');
-				if ( $entries.find('.portfolio-post.cat-' + cat).length <= 0 ) {
+				if ( $entries.find('.post.cat-' + cat).length <= 0 ) {
 					$li.hide();
 				} else {
 					$li.show();
@@ -445,31 +471,58 @@ LayoutAndFilter = {
 				$filter.addClass('filter-visible').on('click', 'a', function( e ) {
 					e.preventDefault();
 					var $li = $(this).parent(),
-						$entries = $li.parent().next();
+						$entries = $li.parent().next(),
+                                                $cat = false,
+                                                $auto = $('body').hasClass('tile_enable') && $entries.hasClass('auto_tiles');
 					if ( $li.hasClass('active') ) {
 						$li.removeClass('active');
-						$entries.isotope({
-							masonry: {
-								columnWidth: '.grid-sizer',
-								gutter: '.gutter-sizer'
-							},
-							filter: '.portfolio-post',
-							isOriginLeft : ! $( 'body' ).hasClass( 'rtl' )
-						});
+                                                if (!$auto) {
+                                                    $entries.isotope({
+                                                            masonry: {
+                                                                    columnWidth: $entries.children('.grid-sizer').length>0?'.grid-sizer':null,
+                                                                    gutter: $entries.children('.gutter-sizer').length>0?'.gutter-sizer':null
+                                                            },
+                                                            filter: '.post',
+                                                            isOriginLeft : ! $( 'body' ).hasClass( 'rtl' )
+                                                    });
+                                                }
 					} else {
 						$li.siblings('.active').removeClass('active');
 						$li.addClass('active');
-						$entries.isotope({
-							filter: '.cat-' + $li.attr('class').replace(/(current-cat)|(cat-item)|(-)|(active)/g, '').replace(' ', ''),
-							isOriginLeft : ! $( 'body' ).hasClass( 'rtl' )
-						});
+                                                $cat = $li.attr('class').replace(/(current-cat)|(cat-item)|(-)|(active)/g, '').replace(' ', '');
+                                                if (!$auto) {
+                                                    $entries.isotope({
+                                                            filter: '.cat-' + $cat,
+                                                            isOriginLeft : ! $( 'body' ).hasClass( 'rtl' )
+                                                    });
+                                                }
+					}
+                                        if (!e.isTrigger && $auto && $entries.data('themify_tiles')) {
+						var $post = $entries.children('.post');
+						$post.show();
+						if ($cat) {
+							$post.not('.cat-' + $cat).hide();
+						}
+						$entries.data('themify_tiles').update();
+						setTimeout(function () {
+							$.themify_tiles.resizeParent($entries);
+							$filter.removeClass('filter-disable');
+						}, Math.round(parseFloat($entries.css('transition-duration')) * 1000) + 100);
+
+					}
+					else {
+						$filter.removeClass('filter-disable');
 					}
 				});
 			};
-		if ( $filter.find('a').length > 0 && 'undefined' !== typeof $.fn.isotope ) {
-
+		if ( $filter.find('a').length ) {
 			if( typeof $.fn.isotope !== 'function' ) {
-				Themify.LoadAsync(themify_vars.url + '/js/jquery.isotope.min.js', initFilter );
+                        Themify.LoadAsync(themifyScript.themeURI + '/js/jquery.isotope.min.js', initFilter,
+                            null,
+                            null,
+                            function () {
+                                return ('undefined' !== typeof $.fn.isotope);
+                            } );
 			} else {
 				initFilter();
 			}
@@ -497,43 +550,32 @@ LayoutAndFilter = {
 		});
 	},
 	layout: function() {
-		if ( 'disable-masonry' !== themifyScript.disableMasonry ) {
-			$('.post-filter + .portfolio.list-post,.loops-wrapper.portfolio.grid4,.loops-wrapper.portfolio.grid3,.loops-wrapper.portfolio.grid2,.loops-wrapper.portfolio-taxonomy').not('.builder-posts-wrap').isotope({
-				masonry: {
-					columnWidth: '.grid-sizer',
-					gutter: '.gutter-sizer'
-				},
-				itemSelector : '.portfolio-post',
-				isOriginLeft : ! $( 'body' ).hasClass( 'rtl' )
-			}).addClass('masonry-done');
-
 			
-
-			$('.loops-wrapper.grid4,.loops-wrapper.grid3,.loops-wrapper.grid2').not('.portfolio-taxonomy,.portfolio,.builder-posts-wrap')
-				.isotope({
-					masonry: {
-						columnWidth: '.grid-sizer',
-						gutter: '.gutter-sizer'
-					},
-					itemSelector: '.loops-wrapper > article',
-					isOriginLeft : ! $( 'body' ).hasClass( 'rtl' )
-				})
-				.addClass('masonry-done')
-				.isotope( 'once', 'layoutComplete', function() {
-					$(window).trigger('resize');
-				});
-
-			var $products = $('.woocommerce.archive').find('#content').find('ul.products');
-			if ( $products.length ) {
-				$products.imagesLoaded(function(){
-					$products.isotope({
-						layoutMode: 'packery',
-						itemSelector : '.product',
-						isOriginLeft : ! $( 'body' ).hasClass( 'rtl' )
-					}).addClass('masonry-done');
-				});
-			}
-		}
+                $('.post-filter+.loops-wrapper,.masonry:not(.list-post)')
+                        .addClass('masonry-done')
+                        .isotope({
+                                masonry: {
+                                        columnWidth: '.grid-sizer',
+                                        gutter: '.gutter-sizer'
+                                },
+                                itemSelector: '.loops-wrapper > article',
+                                isOriginLeft : ! $( 'body' ).hasClass( 'rtl' )
+                        })
+                        .isotope( 'once', 'layoutComplete', function() {
+                                $(window).trigger('resize');
+                        });
+                if(themifyScript.shop_masonry==='yes'){
+                    var $products = $('.woocommerce.archive').find('#content').find('ul.products');
+                    if ( $products.length ) {
+                            $products.imagesLoaded(function(){
+                                    $products.isotope({
+                                            layoutMode: 'packery',
+                                            itemSelector : '.product',
+                                            isOriginLeft : ! $( 'body' ).hasClass( 'rtl' )
+                                    }).addClass('masonry-done');
+                            });
+                    }
+                }
 		var $gallery = $('.gallery-wrapper.packery-gallery');
 		if ( $gallery.length > 0 ) {
 					$gallery.imagesLoaded(function(){
@@ -545,7 +587,7 @@ LayoutAndFilter = {
 		}
 	},
 	reLayout: function() {
-		$('.loops-wrapper').each(function(){
+		$('.masonry').not('.list-post').each(function(){
 			var $loopsWrapper = $(this);
 			if ( 'object' === typeof $loopsWrapper.data('isotope') ) {
 				$loopsWrapper.isotope('layout');
@@ -555,10 +597,12 @@ LayoutAndFilter = {
 		if ( $gallery.length > 0 && 'object' === typeof $gallery.data('isotope') ) {
 			$gallery.isotope('layout');
 		}
-		var $products = $('.woocommerce.archive').find('#content').find('ul.products');
-		if ( $products.length && 'object' === typeof $products.data('isotope') ) {
-			$products.isotope('layout');
-		}
+                if(themifyScript.shop_masonry==='yes'){
+                    var $products = $('.woocommerce.archive').find('#content').find('ul.products');
+                    if ( $products.length && 'object' === typeof $products.data('isotope') ) {
+                            $products.isotope('layout');
+                    }
+                }
 	}
 };
 
@@ -581,6 +625,11 @@ $(document).ready(function() {
 		});
 	}
 
+	///// Header Top Widget 
+	var header_top_widget_content = $('.header-top-widgets .header-widget').wrap('</p>').parent().html();
+	if(header_top_widget_content != undefined){
+		$('.header-top-widgets #headerwrap').prepend("<div class='header-widget-full clearfix'><div class='header-widget-inner'>"+ header_top_widget_content +"</div></div>");
+	}
 	/////////////////////////////////////////////
 	// Scroll to row when a menu item is clicked.
 	/////////////////////////////////////////////
@@ -591,11 +640,24 @@ $(document).ready(function() {
 	/////////////////////////////////////////////
 	// Initialize Packery Layout and Filter
 	/////////////////////////////////////////////
-	LayoutAndFilter.init();
-	if( typeof $.fn.isotope !== 'function' ) {
-		Themify.LoadAsync(themify_vars.url + '/js/jquery.isotope.min.js', LayoutAndFilter.layout );
-	} else {
-		LayoutAndFilter.layout();
+	if( $('.post-filter+.loops-wrapper,.masonry:not(.list-post)').length>0
+		|| (themifyScript.shop_masonry==='yes' && $('.woocommerce.archive').find('#content').find('ul.products').length>0)
+		|| $('.gallery-wrapper.packery-gallery').length>0 ) {
+		if( typeof $.fn.isotope !== 'function' ) {
+			Themify.LoadAsync(themifyScript.themeURI + '/js/jquery.isotope.min.js', function(){
+				
+				LayoutAndFilter.init();
+				LayoutAndFilter.layout()
+			},
+                            null,
+                            null,
+                            function () {
+                                return ('undefined' !== typeof $.fn.isotope);
+                            });
+		} else {
+			LayoutAndFilter.init();
+			LayoutAndFilter.layout();
+		}
 	}
 	
 	/////////////////////////////////////////////
@@ -654,7 +716,7 @@ $(document).ready(function() {
 
 		if( $header.length ) {
 			if( typeof $.fn.niceScroll !== 'function' ) {
-				Themify.LoadAsync(themify_vars.url + '/js/jquery.nicescroll.js', headerNicescroll );
+				Themify.LoadAsync(themifyScript.themeURI + '/js/jquery.nicescroll.js', headerNicescroll );
 			} else {
 				headerNicescroll();
 			}
@@ -683,7 +745,7 @@ $(document).ready(function() {
 
 		if( $header.length || $body.hasClass( 'header-slide-out' ) ) {
 			if( typeof $.fn.niceScroll !== 'function' ) {
-				Themify.LoadAsync(themify_vars.url + '/js/jquery.nicescroll.js', nicescrollMenu );
+				Themify.LoadAsync(themifyScript.themeURI + '/js/jquery.nicescroll.js', nicescrollMenu );
 			} else {
 				nicescrollMenu();
 			}
@@ -715,16 +777,19 @@ $(document).ready(function() {
         });
 	}
 
-	if ( $body.hasClass( 'header-leftpane' ) || $body.hasClass( 'header-rightpane' ) || $body.hasClass( 'header-minbar' ) || $body.hasClass( 'header-slide-out' ) ){
+
+	if ( !($body.hasClass( 'header-overlay' )) ) {
+
 		$("#main-nav li.menu-item-has-children > a, #main-nav li.page_item_has_children > a").after(
 			"<span class='child-arrow'></span>"
 		);
-		$('#main-nav li.menu-item-has-children > .child-arrow, #main-nav li.page_item_has_children > a').click(function(){
+		$('#main-nav li.menu-item-has-children > .child-arrow, #main-nav li.page_item_has_children > .child-arrow').click(function(){
 			$(this).toggleClass('toggle-on');
 			return true;
 		});
+
 	}
-	
+
 	/////////////////////////////////////////////
 	// Slide cart icon
 	/////////////////////////////////////////////
@@ -750,7 +815,7 @@ $(document).ready(function() {
 
 	if( jQuery(".header-horizontal .header-widget, .header-top-bar .header-widget, .boxed-compact .header-widget, .header-stripe .header-widget").length ) {
 		if( typeof $.fn.niceScroll !== 'function' ) {
-			Themify.LoadAsync(themify_vars.url + '/js/jquery.nicescroll.js', nicescrollHeaderStuff );
+			Themify.LoadAsync(themifyScript.themeURI + '/js/jquery.nicescroll.js', nicescrollHeaderStuff );
 		} else {
 			nicescrollHeaderStuff();
 		}
@@ -759,13 +824,13 @@ $(document).ready(function() {
 	var $headerWidgets = $('.header-horizontal, .header-top-bar, .boxed-compact, .header-stripe').find('.header-widget');
 	if ( $headerWidgets.length > 0 ) {
 		// Header Horizontal, Header Topbar, Boxed Compact Add pull down wrapper
-		$( '.header-horizontal #header, .header-top-bar #header, .boxed-compact #header, .header-stripe #header' ).append( $( '<a href="#" class="pull-down">' ) );
+		$( '.header-horizontal #main-nav, .header-top-bar #main-nav, .boxed-compact #main-nav, .header-stripe #main-nav' ).after( $( '<a href="#" class="pull-down">' ) );
 		
 		// Pull Down onclick Header Horizontal, Header Topbar, Boxed Compact Only
 		$('.pull-down').on('click', function(e) {
 			if( ! is_touch_device() ) {
 				if( typeof $.fn.niceScroll !== 'function' ) {
-					Themify.LoadAsync(themify_vars.url + '/js/jquery.nicescroll.js', function() {
+					Themify.LoadAsync(themifyScript.themeURI + '/js/jquery.nicescroll.js', function() {
 						$headerWidgets.getNiceScroll().resize();
 					} );
 				} else {
@@ -788,7 +853,7 @@ $(document).ready(function() {
 		if (viewport < 1200) {
 			if( nicescrollItems.length && ! is_touch_device() ) {
 				if( typeof $.fn.niceScroll !== 'function' ) {
-					Themify.LoadAsync(themify_vars.url + '/js/jquery.nicescroll.js', function() {
+					Themify.LoadAsync(themifyScript.themeURI + '/js/jquery.nicescroll.js', function() {
 						nicescrollItems.getNiceScroll().remove();
 					} );
 				} else {
@@ -863,24 +928,38 @@ $(document).ready(function() {
 		}
 	} );
 
-	/////////////////////////////////////////////
-	// Mega menu width
-	/////////////////////////////////////////////
+	var initResize = 0;
+
 	$(window).resize(function(){
+		/////////////////////////////////////////////
+		// Mega menu width
+		/////////////////////////////////////////////
 		var $megamenuwidth = $('#header').width();		 
 		var vviewport = $(window).width();
 		/* Adjust for scroll bar width */
-		if (vviewport > 1183) {
-			if( $( 'body' ).hasClass( 'header-top-bar' ) || $body.hasClass( 'header-horizontal' ) || $body.hasClass( 'boxed-compact' ) || $body.hasClass( 'header-stripe' ) || $body.hasClass( 'header-magazine' ) ) {
+		if (vviewport > tf_mobile_menu_trigger_point) {
+			if( $( 'body' ).hasClass( 'header-top-bar' ) || $body.hasClass( 'header-horizontal' ) || $body.hasClass( 'header-top-widgets' ) || $body.hasClass( 'boxed-compact' ) || $body.hasClass( 'header-stripe' ) || $body.hasClass( 'header-magazine' ) ) {
 				$('#main-nav li.has-mega-column > ul, #main-nav li.has-mega-sub-menu > .mega-sub-menu').css(
 					'width', $megamenuwidth
 				);
 			}
 		} else {
-			if( $( 'body' ).hasClass( 'header-top-bar' ) || $body.hasClass( 'header-horizontal' ) || $body.hasClass( 'boxed-compact' ) || $body.hasClass( 'header-stripe' ) || $body.hasClass( 'header-magazine' ) ) {
+			if( $( 'body' ).hasClass( 'header-top-bar' ) || $body.hasClass( 'header-horizontal' ) || $body.hasClass( 'header-top-widgets' ) || $body.hasClass( 'boxed-compact' ) || $body.hasClass( 'header-stripe' ) || $body.hasClass( 'header-magazine' ) ) {
 				$('#main-nav li.has-mega-column > ul').removeAttr("style");
 				$('#main-nav li.has-mega-sub-menu > .mega-sub-menu').removeAttr("style"); 
 			}
+		}
+		/////////////////////////////////////////////
+		// Nicescroll for mobile menu
+		/////////////////////////////////////////////
+		if( $('.mobile_menu_active').length && typeof nicescrollMobile === 'function' && !initResize ) {
+			if( typeof $.fn.niceScroll !== 'function' ) {
+				Themify.LoadAsync( themifyScript.themeURI + '/js/jquery.nicescroll.js', nicescrollMobile );
+			} else {
+				nicescrollMobile();
+			}
+
+			initResize = 1;
 		}
 	});
 	
@@ -888,10 +967,10 @@ $(document).ready(function() {
 	// Header Overlay toggle-able dropdown
 	/////////////////////////////////////////////
 	// Set Dropdown Arrow
-	$(".header-overlay #main-nav li.menu-item-has-children > a").after(
+	$(".header-overlay #main-nav li.menu-item-has-children > a, .header-overlay #main-nav li.page_item_has_children > a").after(
 		"<span class='child-arrow'></span>"
 	);	
-	$('.header-overlay #main-nav li.menu-item-has-children > .child-arrow').click(function(){
+	$('.header-overlay #main-nav li.menu-item-has-children > .child-arrow, .header-overlay #main-nav li.page_item_has_children > .child-arrow').click(function(){
 		$(this).toggleClass('toggle-on');
 		$(this).next('div, ul').toggle('fast'); 
 		return true;
@@ -913,9 +992,9 @@ $(document).ready(function() {
 		}
 	};
 
-	if( $('#mobile-menu').length  ) {
+	if( $('.mobile_menu_active').length  ) {
 		if( typeof $.fn.niceScroll !== 'function' ) {
-			Themify.LoadAsync(themify_vars.url + '/js/jquery.nicescroll.js', nicescrollMobile );
+			Themify.LoadAsync( themifyScript.themeURI + '/js/jquery.nicescroll.js', nicescrollMobile );
 		} else {
 			nicescrollMobile();
 		}
@@ -935,10 +1014,10 @@ $(document).ready(function() {
 		};
 		// Get rid of wow js animation since animation is managed with fullpage js
 		var callbackTimer = setInterval(function () {
-			if ('undefined' !== typeof Themify) {
+			if ('undefined' !== typeof ThemifyBuilderModuleJs) {
 				clearInterval(callbackTimer);
-				wowInit2 = Themify.wowInit;
-				Themify.wowInit = function () {};
+				wowInit2 = ThemifyBuilderModuleJs.wowInit;
+				ThemifyBuilderModuleJs.wowInit = function () {};
 			}
 		}, 100);
 
@@ -955,10 +1034,10 @@ $(document).ready(function() {
 		});
 		$body.on('themify_onepage_afterload', function (e, $panel) {
 			// Trigger wow display for elements in this panel
-			if (tbLocalScript && tbLocalScript.animationInviewSelectors && typeof Themify.wow !== 'undefined' && Themify.wow) {
+			if (tbLocalScript && tbLocalScript.animationInviewSelectors && typeof ThemifyBuilderModuleJs.wow !== 'undefined' && ThemifyBuilderModuleJs.wow) {
 				$(tbLocalScript.animationInviewSelectors).each(function (i, selector) {
 					$(selector, $panel).each(function () {
-						Themify.wow.show(this);
+						ThemifyBuilderModuleJs.wow.show(this);
 					});
 				});
 			}
@@ -967,8 +1046,8 @@ $(document).ready(function() {
 			if ($.fn.waypoint) {
 				Waypoint.refreshAll();
 			}
-			if ('undefined' !== typeof Themify && Themify.wow !== null && typeof Themify.wow.scrollHandler() === 'boolean') {
-				Themify.wow.scrollHandler();
+			if ('undefined' !== typeof ThemifyBuilderModuleJs && ThemifyBuilderModuleJs.wow !== null && typeof ThemifyBuilderModuleJs.wow.scrollHandler() === 'boolean') {
+				ThemifyBuilderModuleJs.wow.scrollHandler();
 			}
 
 		});
@@ -1025,7 +1104,7 @@ $(document).ready(function() {
 	};
 	if( $('.has-mega-sub-menu').length ) {
 		if( typeof $.fn.ThemifyMegaMenu !== 'function' ) {
-			Themify.LoadAsync(themify_vars.url + '/js/themify.mega-menu.js', megaMenuInit );
+			Themify.LoadAsync( themifyScript.themeURI + '/js/themify.mega-menu.js', megaMenuInit );
 		} else {
 			megaMenuInit();
 		}
@@ -1124,25 +1203,31 @@ $(window).load(function() {
 	/////////////////////////////////////////////
 	// Entry Filter Layout
 	/////////////////////////////////////////////
-	
-	if( typeof $.fn.isotope !== 'function' ) {
-		Themify.LoadAsync(themify_vars.url + '/js/jquery.isotope.min.js', function() {
+	if( $('.masonry:not(.list-post), .gallery-wrapper.packery-gallery').length>0 || (themifyScript.shop_masonry==='yes' && $('.woocommerce.archive #content ul.products').length>0) ) {
+		if( typeof $.fn.isotope !== 'function' ) {
+			Themify.LoadAsync(themifyScript.themeURI + '/js/jquery.isotope.min.js', function() {
+				$body.imagesLoaded( function() {
+					$(window).resize();
+					LayoutAndFilter.reLayout();
+				},
+				null,
+				null,
+				function () {
+					return ('undefined' !== typeof $.fn.isotope);
+				} );
+			} );
+		} else {
 			$body.imagesLoaded( function() {
 				$(window).resize();
 				LayoutAndFilter.reLayout();
 			});
-		} );
-	} else {
-		$body.imagesLoaded( function() {
-			$(window).resize();
-			LayoutAndFilter.reLayout();
-		});
+		}
 	}
 	
 	
 	// EDGE MENU //
 	jQuery(function ($) {
-		$("#main-nav li").on('mouseenter mouseleave dropdown_open', function (e) {
+		$("#main-nav li, #footer-nav li").on('mouseenter mouseleave dropdown_open', function (e) {
 			if ($('ul', this).length) {
 				var elm = $('ul:first', this);
 				var off = elm.offset();
@@ -1156,7 +1241,6 @@ $(window).load(function() {
 				} else {
 					$(this).removeClass('edge');
 				}
-
 			}
 		});
 	});	
@@ -1182,7 +1266,7 @@ $(window).load(function() {
 							$.fn.fullpage.moveTo($sectionEl.index() + 1);
 							$(tbLocalScript.animationInviewSelectors).each(function (i, selector) {
 								$(selector, $sectionEl).addBack().each(function () {
-									Themify.wow.show(this);
+									ThemifyBuilderModuleJs.wow.show(this);
 								});
 							});
 						}
@@ -1274,6 +1358,87 @@ $(window).load(function() {
 
 		return false;
 	});
+        
+        	
+        function ThemifyTiles(container) {
+            var dummy = $('<div class="post-tiled tiled-square-small" style="visibility: hidden !important; opacity: 0;" />').appendTo(container.first()),
+                    $gutter = themifyScript.tiledata['padding'],
+                    $small = parseFloat(dummy.width());
+					dummy.remove();
+
+            container.each(function () {
+                var $this = $(this);
+                $(this).imagesLoaded().always(function (instance) {
+                    $this.children('.product').addClass('post');
+                    var $post = $this.children('.post');
+                    themifyScript.tiledata['padding'] = $this.hasClass('no-gutter') ? 0 : $gutter;
+                    $this.themify_tiles(themifyScript.tiledata, $small);
+                    setClasses($post, $small);
+                });
+            });
+
+        }
+        ;
+        function AjaxThemifyTiles(container) {
+
+            $(document).ajaxComplete(function (e, request, settings) {
+                if (settings.type === 'POST' && settings.url.indexOf('wpf_search')) {
+                    ThemifyTiles($('.loops-wrapper.auto_tiles'))
+                }
+            });
+        }
+        var container = $('.auto_tiles');
+        if (container.length > 0 && $body.hasClass('tile_enable')) {
+            if ('undefined' === typeof Tiles) {
+                Themify.LoadAsync(themifyScript.themeURI + '/js/tiles.js', function () {
+                    if (!$.fn.themify_tiles) {
+                        if('undefined' === typeof $.fn.backstretch){
+                            Themify.LoadAsync(themify_vars.url + '/js/backstretch.js', function () {
+                                Themify.LoadAsync(themifyScript.themeURI + '/js/themify-tiles.js', function () {
+                                    ThemifyTiles(container);
+                                    AjaxThemifyTiles(container);
+                                },
+                                null,
+                                null,
+                                function () {
+                                    return ('undefined' !== typeof $.fn.themify_tiles);
+                                });
+                            },
+                            null,
+                            null,
+                            function () {
+                                return ('undefined' !== typeof $.fn.backstretch);
+                            });
+                        }
+                        else{
+                            Themify.LoadAsync(themifyScript.themeURI + '/js/themify-tiles.js', function () {
+                                ThemifyTiles(container);
+                                AjaxThemifyTiles(container);
+                            },
+                            null,
+                            null,
+                            function () {
+                                return ('undefined' !== typeof $.fn.themify_tiles);
+                            });
+                        }
+                    }
+                    else {
+                        ThemifyTiles(container);
+                        AjaxThemifyTiles(container);
+                    }
+                }
+                , null,
+                        null,
+                        function () {
+                            return ('undefined' !== typeof Tiles);
+                        });
+            }
+            else {
+                ThemifyTiles(container);
+                AjaxThemifyTiles(container);
+            }
+
+        }
 
 });
 })(jQuery);

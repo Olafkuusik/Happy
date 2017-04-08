@@ -1432,6 +1432,33 @@
 				$hideElements.hide();
 			}
 		},
+		fixedBg: function( $obj ) {
+			var control = this, $field = $(control.field, control.container);
+
+			$obj.on('click', function () {
+				var $self = $(this);
+				if ($self.prop('checked')) {
+					if ( control.isResponsiveStyling() ) {
+						if ( _.isUndefined( control.value[control.id][control.getCurrentDevice()] ) ) 
+							control.value[control.id][control.getCurrentDevice()] = {};
+						
+						control.value[control.id][control.getCurrentDevice()].fixedbg = 'fixed';
+					} else {
+						control.value[control.id].fixedbg = 'fixed';
+					}
+				} else {
+					if ( control.isResponsiveStyling() ) {
+						if ( _.isUndefined( control.value[control.id][control.getCurrentDevice()] ) ) 
+							control.value[control.id][control.getCurrentDevice()] = {};
+						
+						control.value[control.id][control.getCurrentDevice()].fixedbg = '';
+					} else {
+						control.value[control.id].fixedbg = '';
+					}
+				}
+				$field.val(JSON.stringify(control.value[control.id])).trigger('change');
+			});
+		},
 		ready: function () {
 			var control = this,
 					$field = $(control.field, control.container);
@@ -1440,6 +1467,9 @@
 
 			// Checkbox to hide controls
 			control.noImage($('.disable-control', control.container));
+
+			// Fixed Background
+			control.fixedBg( $( '.fixed-bg input[type="checkbox"]', control.container ) );
 
 			// Open Media Library
 			control.openMedia();
@@ -1495,6 +1525,10 @@
 					$field = $(control.field, control.container);
 
 			control.value[control.id] = $field.val() ? $.parseJSON($field.val()) : {};
+
+			// Image width and height
+			control.input($('.img-width', control.container), 'imgwidth');
+			control.input($('.img-height', control.container), 'imgheight');
 
 			// Open Media Library
 			control.openMedia();
@@ -1784,10 +1818,10 @@
 	////////////////////////////////////////////////////////////////////////////
 
 	////////////////////////////////////////////////////////////////////////////
-	// Clear Control Start
+	// Tools Control Start
 	////////////////////////////////////////////////////////////////////////////
-	api.ThemifyClear = api.ThemifyControl.extend({
-		field: '.themify_clear_control',
+	api.ThemifyTools = api.ThemifyControl.extend({
+		field: '.themify_tools_control',
 		clearing: false,
 		saveOptionCallback: function () {
 			// Save and reload
@@ -1795,22 +1829,28 @@
 		},
 		ready: function () {
 			var control = this;
-
+			
+			////////////////////////////////////////////////////////////////////////////
+			// Clear Tool Start
+			////////////////////////////////////////////////////////////////////////////
 			api.bind('saved', function () {
-				if (api.ThemifyClear.field) {
+				if (api.ThemifyTools.field) {
 					if ( 'true' === control.getParameterByName('cleared') ) {
 						window.location.reload();
 					} else {
-						window.top.location = control.addQueryArg('cleared', 'true', window.top.location.href);
+						var hashlink = control.addQueryArg('cleared', 'true', (window.top.location.href));
+						hashlink = (hashlink[hashlink.length-1] == '#') ? hashlink.replace('#' , '') : hashlink;
+						console.log(hashlink);
+						window.top.location = hashlink;
 					}
-					api.ThemifyClear.field = false;
+					api.ThemifyTools.field = false;
 				}
 			});
 
 			$('.clearall', control.container).on('click', function () {
 				if (window.confirm(themifyCustomizerControls.clearMessage)) {
 					// Tell the event hooked to 'saved' that we want to reload.
-					api.ThemifyClear.field = true;
+					api.ThemifyTools.field = true;
 
 					// Clear all option fields
 					$('.themify-customizer-value-field').each(function () {
@@ -1836,11 +1876,43 @@
 					}
 				}
 			});
+			
+			////////////////////////////////////////////////////////////////////////////
+			// Clear Tool End
+			////////////////////////////////////////////////////////////////////////////
+			
+			////////////////////////////////////////////////////////////////////////////
+			// Export Tool Start
+			////////////////////////////////////////////////////////////////////////////
+			
+			$('.customize-export', control.container).on('click', function (e) {
+				if($('#customize-header-actions').find('.save').val() != 'Saved'){
+					if (!window.confirm(themifyCustomizerControls.exportMessage)) {
+						e.preventDefault();
+					}
+				}
+			});
+			
+			////////////////////////////////////////////////////////////////////////////
+			// Export Tool End
+			////////////////////////////////////////////////////////////////////////////
+			
+			////////////////////////////////////////////////////////////////////////////
+			// Import Tool Start
+			////////////////////////////////////////////////////////////////////////////
+			
+			var $plupload = $('.customize-import .plupload-upload-uic');
+			themify_create_pluploader($plupload);
+			$plupload.find('.plupload-button').css({'padding':'0px', 'border':'none', 'color':'inherit', 'background':'none', 'margin':'0px', 'font-family':'inherit', 'font-size':'inherit', 'box-shadow':'none', 'font-weight':'inherit', 'height':'inherit'});
+			
+			////////////////////////////////////////////////////////////////////////////
+			// Import Tool End
+			////////////////////////////////////////////////////////////////////////////
 		}
 	});
-	api.controlConstructor.themify_clear = api.ThemifyClear;
+	api.controlConstructor.themify_tools = api.ThemifyTools;
 	////////////////////////////////////////////////////////////////////////////
-	// Clear Control End
+	// Tools Control End
 	////////////////////////////////////////////////////////////////////////////
 
 })(wp, jQuery);

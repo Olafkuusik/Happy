@@ -232,10 +232,12 @@ log</a> for details.</p>', 'themify' ),
 	$versions = $response['body'];
 	$newVersionFramework = false;
 	$newVersionTheme = false;
-        $is_free = false;
+	$is_free = false;
 	//Begin check
 	if ( isset( $versions ) && '' != $versions ) {
 		$versions = themify_xml2array( $versions );
+		if( ! ( is_array( $versions ) && isset( $versions['versions'] ) ) )
+			return;
 		$theme_notifications = '';
 		$fw_notifications = '';
 		foreach($versions['versions']['_c']['version'] as $update){

@@ -106,9 +106,9 @@ class ThemifyBuilder_Data_Manager {
 		Themify_Builder::remove_cache($post_id);
 
 		if (!empty($builder_data)) {
-            // Write Stylesheet
-            $results = $ThemifyBuilder->write_stylesheet(array('id' => $post_id, 'data' => $builder_data));
-        }
+                        // Write Stylesheet
+                        $ThemifyBuilder->stylesheet->write_stylesheet(array('id' => $post_id, 'data' => $builder_data));
+                }
 		
 		/**
 		 * Fires After Builder Saved.
@@ -142,26 +142,26 @@ class ThemifyBuilder_Data_Manager {
 		if ($import && is_array($builder_data) && !empty($builder_data)) {
 			$builder_data = json_decode(json_encode($builder_data),true);
 			foreach ($builder_data as &$row) {
-				if(isset($row['styling']['background_slider']) && $row['styling']['background_slider']){
+				if(!empty($row['styling']['background_slider'])){
 					$row['styling']['background_slider'] = Themify_Builder_Import_Export::replace_ids_image_path($row['styling']['background_slider'],$post_id);
 				}
-				if (isset($row['cols']) && !empty($row['cols'])) {
+				if (!empty($row['cols'])) {
 					foreach ($row['cols'] as &$col) {
 						if(isset($col['styling']['background_slider']) && $col['styling']['background_slider']){
 							$col['styling']['background_slider']  = Themify_Builder_Import_Export::replace_ids_image_path($col['styling']['background_slider'],$post_id);
 						}
-						if (isset($col['modules']) && !empty($col['modules'])) {
+						if (!empty($col['modules'])) {
 							foreach ($col['modules'] as &$mod) {
-								if (isset($mod['mod_name']) && $mod['mod_name']=='gallery' && $mod['mod_settings']['shortcode_gallery']) {
+								if (isset($mod['mod_name']) && $mod['mod_name']==='gallery' && $mod['mod_settings']['shortcode_gallery']) {
 									$mod['mod_settings']['shortcode_gallery'] = Themify_Builder_Import_Export::replace_ids_image_path($mod['mod_settings']['shortcode_gallery'],$post_id);
 								}
 								// Check for Sub-rows
-								if (isset($mod['cols']) && !empty($mod['cols'])) {
+								if (!empty($mod['cols'])) {
 									foreach ($mod['cols'] as &$sub_col) {
-										if(isset($sub_col['styling']['background_slider']) && $sub_col['styling']['background_slider']){
+										if(!empty($sub_col['styling']['background_slider'])){
 											$sub_col['styling']['background_slider'] = Themify_Builder_Import_Export::replace_ids_image_path($sub_col['styling']['background_slider'],$post_id);
 										}
-										if (isset($sub_col['modules']) && !empty($sub_col['modules'])) {
+										if (!empty($sub_col['modules'])) {
 											foreach ($sub_col['modules'] as &$sub_module) {
 												if (isset($sub_module['mod_name']) && $sub_module['mod_name']=='gallery' && $sub_module['mod_settings']['shortcode_gallery']) {
 													$sub_module['mod_settings']['shortcode_gallery'] = Themify_Builder_Import_Export::replace_ids_image_path($sub_module['mod_settings']['shortcode_gallery'],$post_id);
@@ -178,11 +178,29 @@ class ThemifyBuilder_Data_Manager {
 		}
 		$builder_data = self::array_map_deep( $builder_data, 'wp_slash' );
 		$builder_data = $this->json_remove_unicode( $builder_data );
-
 		/* slashes are removed by update_post_meta, apply twice to protect slashes */
-		return $builder_data = wp_slash( $builder_data );
+		$builder_data = wp_slash( $builder_data );
+
+		/**
+		 * Ensure site URLs are saved without being escaped
+		 * This is so the "search and replace" tools can later find the site URL without issue
+		 * Ticket: #5336
+		 */
+		$builder_data = map_deep( $builder_data, array( $this, 'unescape_home_url' ) );
+
+		return $builder_data;
 	}
-		
+
+	/**
+	 * Finds escaped home_url() and returns the unescaped version
+	 *
+	 * @return string|mixed
+	 */
+	function unescape_home_url( $value ) {
+		$formatted_url = str_replace( '/', '\\\/', home_url() );
+		return is_string( $value ) ? str_replace( $formatted_url, home_url(), $value ) : $value;
+	}
+
 	/**
 	 * Remove unicode sequences back to original character
 	 * 
@@ -191,11 +209,7 @@ class ThemifyBuilder_Data_Manager {
 	 * @return json
 	 */
 	public function json_remove_unicode( $data ) {
-		if ( version_compare( PHP_VERSION, '5.4', '>=') ) {
-			return json_encode( $data, JSON_UNESCAPED_UNICODE );
-		} else {
-			return json_encode( $data );
-		}
+            return version_compare( PHP_VERSION, '5.4', '>=')?json_encode( $data, JSON_UNESCAPED_UNICODE ):json_encode( $data );
 	}
 
 	/**
@@ -238,8 +252,9 @@ class ThemifyBuilder_Data_Manager {
 	 */
 	public function builder_154_update() {
 		global $ThemifyBuilder;
-		if( get_option( 'builder_154_update_done' ) == 'yes' )
+		if( get_option( 'builder_154_update_done' ) === 'yes' ){
 			return;
+                }
 		$posts_count = 1;
 		$posts_per_page = 10;
 		for($i=0;$i<$posts_count;$i++){
@@ -258,13 +273,13 @@ class ThemifyBuilder_Data_Manager {
 				)
 			);
 			if( $posts ) {
-				if($posts_count==1){
+				if($posts_count===1){
 						$posts_count = ceil($posts->found_posts/$posts_per_page);
 				}
 				while ( $posts->have_posts() ) {
-						$posts->the_post();
-						/* get the data, it will automatically update the database */
-						$ThemifyBuilder->get_builder_data( get_the_ID() );
+                                        $posts->the_post();
+                                        /* get the data, it will automatically update the database */
+                                        $ThemifyBuilder->get_builder_data( get_the_ID() );
 				}
 
 			}

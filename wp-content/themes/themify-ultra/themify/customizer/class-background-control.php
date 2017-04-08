@@ -28,6 +28,8 @@ class Themify_Background_Control extends Themify_Control {
 
 		// Disable
 		$noimage = isset( $values->noimage ) ? $values->noimage : '';
+		// Fixed Background
+		$fixed_bg_value = isset( $values->fixedbg ) ? $values->fixedbg : '';
 
 		// Style Dropdown
 		$styles = array(
@@ -85,6 +87,14 @@ class Themify_Background_Control extends Themify_Control {
 													<option value="<?php echo esc_attr( $position ); ?>" <?php selected( $current_position, $position ); ?>><?php echo esc_html( $label ); ?></option>
 											<?php endforeach; ?>
 									</select>
+							</div>
+
+							<div class="fixed-bg">
+								<?php $fixed_bg = $this->id . '_fixed_bg'; ?>
+								<input id="<?php echo esc_attr( $fixed_bg ); ?>" type="checkbox" <?php checked( $fixed_bg_value, 'fixed' ); ?> value="fixed"/>
+								<label for="<?php echo esc_attr( $fixed_bg ); ?>">
+										<?php _e( 'Fixed Background Attachment', 'themify' ); ?>
+								</label>
 							</div>
 
 							<!-- No Background Image-->

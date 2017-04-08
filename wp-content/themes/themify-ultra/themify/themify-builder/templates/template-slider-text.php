@@ -47,8 +47,9 @@ $scroll = $scroll_opt_slider;
 $auto_scroll = $auto_scroll_opt_slider;
 $arrow = $show_arrow_slider;
 $pagination = $show_nav_slider;
-$left_margin = ! empty( $left_margin_slider ) ? $left_margin_slider .'px' : '';
-$right_margin = ! empty( $right_margin_slider ) ? $right_margin_slider .'px' : '';
+$slide_margins = array();
+$slide_margins[] = !empty( $left_margin_slider ) ? sprintf( 'margin-left:%spx;', $left_margin_slider ) : '';
+$slide_margins[] = !empty( $right_margin_slider ) ? sprintf( 'margin-right:%spx;', $right_margin_slider ) : '';
 $effect = $effect_slider;
 
 switch ( $speed_opt_slider ) {
@@ -88,16 +89,17 @@ switch ( $speed_opt_slider ) {
 		data-pause-on-hover="<?php echo esc_attr( $pause_on_hover_slider ); ?>" >
 		
 		<?php foreach ( $text_content_slider as $content ): ?>
-		<li style="<?php echo ! empty( $left_margin ) ? 'margin-left:'.$left_margin.';' : ''; ?> <?php echo ! empty( $right_margin ) ? 'margin-right:'.$right_margin.';' : ''; ?>">
-			<div class="slide-content">
-				<?php
-					if ( isset( $content['text_caption_slider'] ) ) {
-						echo apply_filters( 'themify_builder_module_content', $content['text_caption_slider'] );
-					}
-				?>
-			</div>
-			<!-- /slide-content -->
-		</li>
+			<li>
+				<div class="slide-inner-wrap" style="<?php echo implode( '', $slide_margins ); ?>">
+					<div class="slide-content">
+						<?php
+							if ( isset( $content['text_caption_slider'] ) ) {
+								echo apply_filters( 'themify_builder_module_content', $content['text_caption_slider'] );
+							}
+						?>
+					</div><!-- /slide-content -->
+				</div>
+			</li>
 		<?php endforeach; ?>
 	</ul>
 	<!-- /themify_builder_slider -->

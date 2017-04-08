@@ -19,17 +19,20 @@ if ( $header_widget_option != 'none' ) :
 	if ( themify_theme_has_widgets( 'header-widget-', $columns[$header_widget_option] ) ) : ?>
 
 		<div class="header-widget clearfix">
-			<?php
-			$x = 0;
-			foreach ( $columns[$header_widget_option] as $col ) :
-				$x++;
-				$class = ( 1 == $x ) ? 'first' : ''; ?>
-				<div class="<?php echo esc_attr( $col . ' ' . $class ); ?>">
-					<?php dynamic_sidebar( 'header-widget-' . $x ); ?>
-				</div>
-			<?php endforeach; ?>
+			<div class="header-widget-inner">
+				<?php
+				$x = 0;
+				foreach ( $columns[$header_widget_option] as $col ) :
+					$x++;
+					$class = ( 1 == $x ) ? 'first' : ''; ?>
+					<div class="<?php echo esc_attr( $col . ' ' . $class ); ?>">
+						<?php dynamic_sidebar( 'header-widget-' . $x ); ?>
+					</div>
+				<?php endforeach; ?>
+			</div>
+			<!-- /.header-widget-inner -->
 		</div>
-		<!-- /.header-widgets -->
+		<!-- /.header-widget -->
 
 	<?php
 	endif; // end has widgets

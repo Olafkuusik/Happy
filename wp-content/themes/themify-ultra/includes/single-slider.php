@@ -53,10 +53,10 @@ $config = apply_filters( 'themify_single_post_slider_args', array(
 			}
 			?>
 			<li>
-				<img src="<?php echo $img ?>" alt="<?php echo $alt ?>" />
+				<img src="<?php echo esc_url( $img ); ?>" alt="<?php echo esc_attr( $alt ); ?>" />
 				<?php if ($caption): ?>
 					<div class="slide-caption">
-						<?php echo $caption ?>
+						<?php echo esc_html( $caption ); ?>
 					</div>
 				<?php endif; ?>
 			</li>

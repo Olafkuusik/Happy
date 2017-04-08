@@ -121,10 +121,7 @@ class Themify {
 			$this->layout = 'sidebar1';
 		}
 
-		$this->post_layout = themify_get( 'setting-default_post_layout' );
-		if ( $this->post_layout == '' ) {
-			$this->post_layout = 'list-post';
-		}
+		$this->post_layout = themify_get( 'setting-default_post_layout', 'list-post' );
 
 		$this->page_title = themify_get( 'setting-hide_page_title' );
 		$this->hide_title = themify_get( 'setting-default_post_title' );
@@ -227,7 +224,7 @@ class Themify {
 		if (is_numeric($post_image_height) ) {
 			$this->height = $post_image_height;
 		}
-		if ( is_page() ) {
+		if ( is_page() || themify_is_shop() ) {
 			// Set Page Number for Pagination
 			if ( get_query_var( 'paged' ) ) {
 				$this->paged = get_query_var( 'paged' );
@@ -247,7 +244,6 @@ class Themify {
 			} else {
 				$this->layout = 'sidebar1';
 			}
-
 			// Set Page Title
 			if ( themify_get( 'hide_page_title' ) != 'default' && themify_check( 'hide_page_title' ) ) {
 				$this->page_title = themify_get( 'hide_page_title' );
@@ -304,7 +300,7 @@ class Themify {
 
 				$this->page_navigation = 'default' != themify_get( $this->query_post_type . '_hide_navigation' ) ? themify_get( $this->query_post_type . '_hide_navigation' ) : 'no';
 
-				$this->display_content = themify_get( $this->query_post_type . '_display_content' );
+				$this->display_content = themify_get( $this->query_post_type . '_display_content', 'excerpt' );
 				$this->posts_per_page = themify_get( $this->query_post_type . '_posts_per_page' );
 				$this->order = themify_get( $this->query_post_type . '_order' );
 				$this->orderby = themify_get( $this->query_post_type . '_orderby' );
@@ -452,7 +448,7 @@ class Themify {
 				$this->{'hide_meta' . $k} = themify_check( 'hide_meta' . $k ) ? themify_get( 'hide_meta' . $k ) : themify_get( $post_meta_key . $v );
 			}
 			if($this->post_layout_type !== 'split'){
-				$sidebar_mode = array('sidebar-none', 'sidebar1', 'sidebar2', 'sidebar2 content-left', 'sidebar2 content-right');
+				$sidebar_mode = array('sidebar-none', 'sidebar1','sidebar1 sidebar-left', 'sidebar2', 'sidebar2 content-left', 'sidebar2 content-right');
 				$this->layout = in_array( themify_get( 'layout' ), $sidebar_mode )  ? themify_get( 'layout' ) : themify_get( 'setting-default_page_post_layout' );
 				// set default layout
 				if ( $this->layout == '' ) {

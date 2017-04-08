@@ -1,6 +1,7 @@
 /* THEME COLOR TURQUOISE
 ================================================ */
 /* general bg & color */
+#slide-cart,
 .header-minbar .sidemenu,
 .header-leftpane #headerwrap, 
 .header-rightpane #headerwrap,
@@ -48,20 +49,10 @@
 	color: inherit;
 }
 
-/* transparent header */
-.transparent-header #headerwrap a {
-	color: #fff; /* require for transparent-header */
-}
-
 /* fixed header */
 .transparent-header #headerwrap.fixed-header,
 #headerwrap.fixed-header {
 	background-color: rgba(60,204,197,0.9);
-}
-
-/* header widgets pull down */
-.pull-down:before {
-	border-color: #3cccc5;
 }
 
 /* full section scrolling loader */
@@ -72,9 +63,6 @@
 /* header stripe */
 .header-stripe #header #site-logo {
 	background-color: #3cccc5;
-}
-.header-stripe #header .pull-down:before {
-	border-bottom-color: #3cccc5;
 }
 
 /* header overlay */
@@ -288,6 +276,7 @@ button:hover,
 .mobile_menu_active .sidemenu {
 	background-color: #3cccc5;
 }
+#slide-cart a:hover,
 .mobile_menu_active #headerwrap a:hover,
 .mobile_menu_active #headerwrap #main-nav a:hover,
 .mobile_menu_active #headerwrap #main-nav ul a:hover {

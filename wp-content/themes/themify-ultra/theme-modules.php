@@ -524,11 +524,11 @@ function themify_image_filter( $data = array() ) {
 	$preset = themify_check( $key1 ) ? themify_get( $key1 ) : 'featuredonly';
 	$out .= '<p>
 				<span class="label">' . __( 'Apply to', 'themify' ) . '</span>' .
-		        sprintf('<label for="%1$s"><input type="radio" id="%1$s" name="%1$s" %2$s value="featuredonly" /> %3$s</label>',
+		        sprintf('<label><input type="radio" id="%1$s" name="%1$s" %2$s value="featuredonly" /> %3$s</label>',
 				$key1, checked( $preset, 'featuredonly', false ), __( 'Featured Images Only', 'themify' ) ) .
 				'<br/>
 				<span class="pushlabel">' .
-		        sprintf('<label for="%1$s"><input type="radio" id="%1$s" name="%1$s" %2$s value="allimages" /> %3$s</label>',
+		        sprintf('<label><input type="radio" id="%1$s" name="%1$s" %2$s value="allimages" /> %3$s</label>',
 				$key1, checked( themify_get( $key1 ), 'allimages', false ), __( 'All Images', 'themify' ) ) . '
 				</span>
 			</p>';
@@ -552,7 +552,7 @@ function themify_related_posts( $data = array() ) {
 	$options = array(
 		array( 'value' => 'category', 'name' => __( 'Category', 'themify' ) ),
 		array( 'value' => 'tag', 'name' => __( 'Tags', 'themify' ) ),
-		array( 'value' => 'none', 'name' => __( 'None', 'themify' ) ),
+		array( 'value' => 'none', 'name' => __( 'Disable Related Posts', 'themify' ) ),
 	);
 
 	/**
@@ -577,7 +577,7 @@ function themify_related_posts( $data = array() ) {
 	 * Taxonomy to use
 	 */
 	$html .= '<p>
-				<span class="label">' . __( 'Relate Entries By', 'themify' ) . '</span>
+				<span class="label">' . __( 'Show Related Posts By', 'themify' ) . '</span>
 				<select name="' . esc_attr( $key ) . '">' . themify_options_module( $options, $key . '' ) . '
 				</select>
 			</p>';
@@ -671,7 +671,10 @@ function themify_default_layout( $data = array() ){
 		array('value' => 'grid4', 'img' => 'images/layout-icons/grid4.png', 'title' => __( 'Grid 4', 'themify' )),
 		array('value' => 'grid3', 'img' => 'images/layout-icons/grid3.png', 'title' => __( 'Grid 3', 'themify' )),
 		array('value' => 'grid2', 'img' => 'images/layout-icons/grid2.png', 'title' => __( 'Grid 2', 'themify' )),
-		array('value' => 'slider', 'img' => 'images/layout-icons/slider-default.png', 'title' => __( 'Slider', 'themify' )),
+		array('value' => 'list-large-image', 'img' => 'images/layout-icons/list-large-image.png', 'title' => __('List Large Image', 'themify')),
+		array('value' => 'list-thumb-image', 'img' => 'images/layout-icons/list-thumb-image.png', 'title' => __('List Thumb Image', 'themify')),
+		array('value' => 'grid2-thumb', 'img' => 'images/layout-icons/grid2-thumb.png', 'title' => __('Grid 2 Thumb', 'themify')),
+                array('value' => 'auto_tiles', 'img' => 'images/layout-icons/auto-tiles.png', 'title' => __('Auto Tiles', 'themify'))
 	);
 
 	/**
@@ -762,7 +765,8 @@ function themify_default_layout( $data = array() ){
 						themify_options_module( array(
 							array( 'name' => __( 'Default', 'themify' ), 'value' => '' ),
 							array( 'name' => __( 'Overlay', 'themify' ), 'value' => 'overlay' ),
-							array( 'name' => __( 'Polaroid', 'themify' ), 'value' => 'polaroid' )
+							array( 'name' => __( 'Polaroid', 'themify' ), 'value' => 'polaroid' ),
+							array( 'name' => __( 'Boxed', 'themify' ), 'value' => 'boxed' )
 						), 'setting-post_content_layout' ) . '
 					</select>
 				</p>';
@@ -926,7 +930,7 @@ if (!function_exists('themify_pagination_infinite')) {
 		$output .= '<input ' . checked( themify_check( 'setting-more_posts' ) ? themify_get( 'setting-more_posts' ) : 'infinite', 'infinite', false ) . ' type="radio" name="setting-more_posts" value="infinite" /> ';
 		$output .= __('Infinite Scroll (posts are loaded on the same page)', 'themify');
 		$output .= '<br/>';
-		$output .= '<label data-show-if-element="[name=setting-more_posts]:checked" data-show-if-value="infinite" for="setting-autoinfinite"  for="setting-autoinfinite"><input class="disable-autoinfinite" type="checkbox" id="setting-autoinfinite" name="setting-autoinfinite" '.checked( themify_check( 'setting-autoinfinite' ), true, false ).'/> ' . __('Disable automatic infinite scroll', 'themify').'</label>';
+		$output .= '<label data-show-if-element="[name=setting-more_posts]:checked" data-show-if-value="infinite" for="setting-autoinfinite"  for="setting-autoinfinite"><input class="disable-autoinfinite" type="checkbox" id="setting-autoinfinite" name="setting-autoinfinite" '.checked( themify_get( 'setting-autoinfinite' ), 'on', false ).'/> ' . __('Disable automatic infinite scroll', 'themify').'</label>';
 		$output .= '<br/><br/>';
 
 		//Numbered pagination
@@ -1073,6 +1077,12 @@ function themify_shop_layout( $data = array() ){
 		__('Yes', 'themify') => 'yes',
 		__('No', 'themify') => 'no'
 	);
+        
+        $binary_options = array(
+		array('name'=>__('Yes', 'themify'),'value'=>'yes'),
+		array('name'=>__('No', 'themify'),'value'=>'no')
+	); 
+        
 	$content_options = array(
 		__('None', 'themify') => '',
 		__('Short Description', 'themify') => 'excerpt',
@@ -1099,7 +1109,17 @@ function themify_shop_layout( $data = array() ){
 		$output .= '<a href="#" class="preview-icon '.$class.'" title="'.$option['title'].'"><img src="'.THEME_URI.'/'.$option['img'].'" alt="'.$option['value'].'"  /></a>';
 	}
 	$output .= '<input type="hidden" name="setting-shop_layout" class="val" value="'.$val.'" /></p>';
+        
 	$output .= shop_archive_layout();
+        /**
+	 * Enable Masonry
+	 */
+	$output .=	'<p>
+					<span class="label">' . __('Post Masonry', 'themify') . '</span>
+					<select name="setting-product_disable_masonry">' .
+						themify_options_module($binary_options, 'setting-product_disable_masonry') . '
+					</select>
+				</p>';
 	$output .= '<p><span class="label">' . __('Products Per Page', 'themify') . '</span>
 				<input type="text" name="setting-shop_products_per_page" value="' . themify_get( 'setting-shop_products_per_page' ) . '" class="width2" /></p>';
 

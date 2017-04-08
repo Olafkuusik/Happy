@@ -541,16 +541,16 @@ class Themify_Microdata {
 		$image_url = '';
 
 		if ( preg_match( '%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $video_url, $match ) ) {
-			$request = wp_remote_get( "http://www.youtube.com/oembed?url=". urlencode( $video_url ) ."&format=json" );
+			$request = wp_remote_get( "https://www.youtube.com/oembed?url=". urlencode( $video_url ) ."&format=json" );
 		} elseif ( false !== stripos( $video_url, 'vimeo' ) ) {
-			$request = wp_remote_get( 'http://vimeo.com/api/oembed.json?url='.urlencode( $video_url ) );
+			$request = wp_remote_get( 'https://vimeo.com/api/oembed.json?url='.urlencode( $video_url ) );
 		} elseif( false !== stripos( $video_url, 'funnyordie' ) ) {
-			$request = wp_remote_get( 'http://www.funnyordie.com/oembed.json?url='.urlencode( $video_url ) );
+			$request = wp_remote_get( 'https://www.funnyordie.com/oembed.json?url='.urlencode( $video_url ) );
 		} elseif( false !== stripos( $video_url, 'dailymotion' ) ) {
 			$video_id = parse_url( $video_url, PHP_URL_PATH );
 			$request = wp_remote_get( 'https://api.dailymotion.com/' . str_replace( '/embed/', '', $video_id ) . '?fields=thumbnail_large_url', array( 'sslverify' => false ) );
 		} elseif( false !== stripos( $video_url, 'blip' ) ) {
-			$request = wp_remote_get( 'http://blip.tv/oembed?url=' . $video_url, array( 'sslverify' => false ) );
+			$request = wp_remote_get( 'https://blip.tv/oembed?url=' . $video_url, array( 'sslverify' => false ) );
 		}
 
 		if ( ! is_wp_error( $request ) ) {

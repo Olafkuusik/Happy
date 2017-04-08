@@ -15,7 +15,7 @@ if (TFCache::start_cache('video', self::$post_id, array('ID' => $module_ID))):
 		'url_video' => '',
 		'autoplay_video' => 'no',
 		'width_video' => '',
-		'unit_video' => '',
+		'unit_video' => 'px',
 		'title_video' => '',
 		'title_link_video' => false,
 		'caption_video' => '',
@@ -41,10 +41,10 @@ if (TFCache::start_cache('video', self::$post_id, array('ID' => $module_ID))):
 	if(!function_exists('themify_modify_youtube_embed_url')){
 		function themify_modify_youtube_embed_url($html, $url, $args) {
 			$parse_url = parse_url($url);
-			if((isset($parse_url['query']) && $parse_url['query']) || (isset($parse_url['fragment']) && $parse_url['fragment'])){
+			if(!empty($parse_url['query']) || !empty($parse_url['fragment'])){
 				$parse_url['host'] = str_replace('www.','',$parse_url['host']);
-				$query = isset($parse_url['query']) && $parse_url['query']?$parse_url['query']:false;
-				$query.= isset($parse_url['fragment']) && $parse_url['fragment']?$parse_url['fragment']:'';
+				$query = !empty($parse_url['query'])?$parse_url['query']:false;
+				$query.= !empty($parse_url['fragment'])?$parse_url['fragment']:'';
 				if(trim($parse_url['path'],'/')!=='playlist' && ($parse_url['host']==='youtu.be' || $parse_url['host']==='youtube.com')){
 					$query = preg_replace('@v=([^"&]*)@','',$query);
 					$query = str_replace('&038;','&',$query);
@@ -72,11 +72,23 @@ if (TFCache::start_cache('video', self::$post_id, array('ID' => $module_ID))):
 		<div class="video-wrap" <?php echo '' != $video_maxwidth ? 'style="max-width:' . esc_attr($video_maxwidth) . ';"' : ''; ?>>
 			<?php
 			$video = wp_oembed_get( esc_url( $url_video ) );
-			$video = str_replace( 'frameborder="0"', '', $video );
-			if( $autoplay_video == 'yes' ) {
-				$video = preg_replace_callback( '/src=["\'](http[^"\']*)["\']/', array( 'TB_Video_Module', 'autoplay_callback' ), $video );
-			}
-			echo $video;
+                        if($video){
+                            $video = str_replace( 'frameborder="0"', '', $video );
+                            if( $autoplay_video == 'yes' ) {
+                                    $video = preg_replace_callback( '/src=["\'](http[^"\']*)["\']/', array( 'TB_Video_Module', 'autoplay_callback' ), $video );
+                            }     
+                            echo $video;
+                        }
+                        else{
+                            global $wp_embed;
+                            $video = $wp_embed->run_shortcode('[embed]'.$url_video.'[/embed]');
+                            if($video){
+                                if( $autoplay_video == 'yes' ) {
+                                    $video = str_replace('src','autoplay="on" src',$video);
+                                }
+                                echo do_shortcode($video);
+                            }
+                        }
 			?>
 		</div>
 		<!-- /video-wrap -->

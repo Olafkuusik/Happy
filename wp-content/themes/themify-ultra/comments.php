@@ -46,37 +46,7 @@
 
 		<?php if ( comments_open() ) : ?>
 
-			<?php
-			global $req, $aria_req, $user_identity;
-			global $aria_req;
-	$custom_comment_form = array( 'fields' => apply_filters( 'comment_form_default_fields', array(
-				'author' => '<p class="comment-form-author">' .
-						'<input id="author" name="author" type="text" value="' .
-						esc_attr( $commenter['comment_author'] ) . '" size="30"' . $aria_req . ' class="required" />' .
-						'<label for="author">' . __( 'Name' , 'themify' ) . ' <small>' . __( '(required)', 'themify' ) . '</small></label> ' .
-						( $req ? '<span class="required">*</span>' : '' ) .
-						'</p>',
-				'email'  => '<p class="comment-form-email">' .
-						'<input id="email" name="email" type="text" value="' . esc_attr(  $commenter['comment_author_email'] ) . '" size="30"' . $aria_req . ' class="required email" />' .
-						'<label for="email">' . __( 'Mail' , 'themify' ) . ' <small>' . __( '(required)', 'themify' ) . '</small></label> ' .
-						( $req ? '<span class="required">*</span>' : '' ) .
-						'</p>',
-				'url'    =>  '<p class="comment-form-url">' .
-						'<input id="url" name="url" type="text" value="' . esc_attr(  $commenter['comment_author_url'] ) . '" size="30"' . $aria_req . ' />' .
-						'<label for="url">' . __( 'Website' , 'themify' ) . '</label> ' .
-						'</p>') ),
-				'comment_field' => '<p class="comment-form-comment">' .
-						'<textarea id="comment" name="comment" cols="45" rows="8" aria-required="true" class="required"></textarea>' .
-						'</p>',
-				'logged_in_as' => '<p class="logged-in-as">' . sprintf( __( 'Logged in as <a href="%s">%s</a>. <a href="%s">Log out?</a>', 'themify' ), admin_url( 'profile.php' ), $user_identity, wp_logout_url( apply_filters( 'the_permalink', get_permalink( get_the_id() ) ) )	) . '</p>',
-				'title_reply' => __( 'Leave a Reply' , 'themify' ),
-				'comment_notes_before' => '',
-				'comment_notes_after' => '',
-				'cancel_reply_link' => __( 'Close' , 'themify' ),
-				'label_submit' => __( 'Submit Comment' , 'themify' ),
-			);
-			comment_form($custom_comment_form);
-			?>
+			<?php comment_form(); ?>
 
 		<?php endif; // end comments_open() ?>
 

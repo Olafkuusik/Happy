@@ -6,6 +6,23 @@
  */
 
 /**
+ * Add Themify Settings link to admin bar
+ * @since 1.1.2
+ */
+function themify_admin_bar() {
+	global $wp_admin_bar;
+	if ( !is_super_admin() || !is_admin_bar_showing() )
+		return;
+	$wp_admin_bar->add_menu( array(
+		'id' => 'themify-settings',
+		'parent' => 'appearance',
+		'title' => __( 'Themify Settings', 'themify' ),
+		'href' => admin_url( 'admin.php?page=themify' )
+	));
+}
+add_action( 'wp_before_admin_bar_render', 'themify_admin_bar' );
+
+/**
  * Generate CSS code from Styling panel
  */
 function themify_get_css() {
@@ -54,17 +71,17 @@ function themify_get_css() {
 										$temp .= "border: ".$v['value']['same']."px ".$v['value']['same_style']." #".$v['value']['same_color'].";\n";
 									} else {
 										if( isset( $v['value']['top'] ) && isset( $v['value']['top_style'] ) && isset( $v['value']['top_color'] ) && $v['value']['top'] != '' && $v['value']['top_style'] != '' && $v['value']['top_color'] != '' ) {
-											$temp .= "border-top: ".$v['value']['top']."px ".$v['value']['top_style']." #".$v['value']['top_color'].";\n";
+											$temp .= "border-top: ".$v['value']['top']."px ".$v['value']['top_style']." " . themify_sanitize_hex_color( $v['value']['top_color'] ) .";\n";
 										}
 										if ( isset( $v['value']['right'] ) && isset( $v['value']['right_style'] ) && isset( $v['value']['right_color'] ) && $v['value']['right'] != '' && $v['value']['right_style'] != '' && $v['value']['right_color'] != '' ) {
-											$temp .= "border-right: ".$v['value']['right']."px ".$v['value']['right_style']." #".$v['value']['right_color'].";\n";
+											$temp .= "border-right: ".$v['value']['right']."px ".$v['value']['right_style']." " . themify_sanitize_hex_color( $v['value']['right_color'] ) .";\n";
 										}
 										if ( isset( $v['value']['bottom'] ) && isset( $v['value']['bottom_style'] ) && isset( $v['value']['bottom_color'] ) && $v['value']['bottom'] != '' && $v['value']['bottom_style'] != '' && $v['value']['bottom_color'] != '' ) {
 
-											$temp .= "border-bottom: ".$v['value']['bottom']."px ".$v['value']['bottom_style']." #".$v['value']['bottom_color'].";\n";
+											$temp .= "border-bottom: ".$v['value']['bottom']."px ".$v['value']['bottom_style']." " . themify_sanitize_hex_color( $v['value']['bottom_color'] ) . ";\n";
 										}
 										if ( isset( $v['value']['left'] ) && isset( $v['value']['left_style'] ) && isset( $v['value']['left_color'] ) && $v['value']['left'] != '' && $v['value']['left_style'] != '' && $v['value']['left_color'] != '' ) {
-											$temp .= "border-left: ".$v['value']['left']."px ".$v['value']['left_style']." #".$v['value']['left_color'].";\n";
+											$temp .= "border-left: ".$v['value']['left']."px ".$v['value']['left_style']." " . themify_sanitize_hex_color( $v['value']['left_color'] ) .";\n";
 										}
 									}
 								break;
@@ -120,7 +137,7 @@ function themify_get_css() {
 								case "color":
 									if ( isset( $v['value']['value'] ) && $v['value']['value'] != '' && $v['value']['value'] != ' ' ) {
 										$temp .= $attribute.": ";
-										$temp .= "#".$v['value']['value'].";\n";
+										$temp .= themify_sanitize_hex_color( $v['value']['value'] ) . ";\n";
 									}
 								break;
 								case "background-color":
@@ -128,7 +145,7 @@ function themify_get_css() {
 										$temp .= $attribute.": transparent;\n";
 									} elseif ( isset( $v['value']['value'] ) && $v['value']['value'] != '' && $v['value']['value'] != ' ' ) {
 										$temp .= $attribute.": ";
-										$temp .= "#".$v['value']['value'].";\n";
+										$temp .= themify_sanitize_hex_color( $v['value']['value'] ) .";\n";
 									}
 								break;
 								case "background-image":
@@ -150,12 +167,7 @@ function themify_get_css() {
 									if ( isset( $v['value']['value'] ) && $v['value']['value'] != '' && $v['value']['value'] != ' ' ) {
 										$temp .= $attribute.": ";
 
-										// check google fonts
-										if ( themify_is_google_fonts( $v['value']['value'] ) ) {
-											$temp .= '"' . $v['value']['value'] . '"' .";\n";
-										} else {
-											$temp .= $v['value']['value'] .";\n";
-										}
+										$temp .= '"' . $v['value']['value'] . '"' .";\n";
 									}
 								break;
 								case "line-height":
@@ -319,30 +331,18 @@ function themify_body_classes( $classes ) {
 	}
 
 	// Add default layout and post layout
-	$layout = themify_get('setting-default_layout');
 	$post_layout = themify_get('setting-default_post_layout');
 
 	// Set content width
 	if ( is_search() ) {
 		$classes[] = 'default_width';
-	} elseif ( is_singular() ) {
+	} elseif ( is_singular() || themify_is_shop() ) {
 		$classes[] = themify_check( 'content_width' ) ? themify_get( 'content_width' ) : 'default_width';
-	}
-
-	// It's a page
-	if( is_page() ){
-		// It's a page
-		$layout = (themify_get('page_layout') != 'default' && themify_check('page_layout')) ? themify_get('page_layout') : themify_get('setting-default_page_layout');
 	}
 
 	if( themify_is_query_page() ) {
 		$classes[] = 'query-page';
 		$classes[] = isset($themify->query_post_type) ? 'query-'.$themify->query_post_type: 'query-post';
-	}
-
-	// It's a post
-	if( is_single() ){
-		$layout = (themify_get('layout') != 'default' && themify_check('layout')) ? themify_get('layout') : themify_get('setting-default_page_post_layout');
 	}
 
 	// It's a singular view (post, page, portfolio, any custom post type)
@@ -354,10 +354,10 @@ function themify_body_classes( $classes ) {
 	}
 
 	// If still empty, set default
-	if( apply_filters('themify_default_layout_condition', '' == $layout) ){
-		$layout = apply_filters('themify_default_layout', 'sidebar1');
+	if( apply_filters('themify_default_layout_condition', '' == $themify->layout) ){
+		$themify->layout = apply_filters('themify_default_layout', 'sidebar1');
 	}
-	$classes[] = $layout;
+	$classes[] = $themify->layout;
 
 	// non-homepage pages
 	if( ! ( is_home() || is_front_page() ) ) {
@@ -381,9 +381,9 @@ function themify_body_classes( $classes ) {
 
 	$classes[] = themify_is_touch() ? 'touch' : 'no-touch';
 		
-		if(themify_get('setting-lightbox_content_images')){
-			$classes[] = 'themify_lightboxed_images';
-		}
+	if(themify_get('setting-lightbox_content_images')){
+		$classes[] = 'themify_lightboxed_images';
+	}
 		
 	return apply_filters('themify_body_classes', $classes);
 }
@@ -407,6 +407,7 @@ function themify_post_class( $classes ) {
 	$classes[] = ( ! isset( $themify->hide_meta_tag ) || ( isset( $themify->hide_meta_tag ) && $themify->hide_meta_tag != 'yes' ) ) ? 'has-post-tag' : 'no-post-tag';
 	$classes[] = ( ! isset( $themify->hide_meta_comment ) || ( isset( $themify->hide_meta_comment ) && $themify->hide_meta_comment != 'yes' ) ) ? 'has-post-comment' : 'no-post-comment';
 	$classes[] = ( ! isset( $themify->hide_meta_author ) || ( isset( $themify->hide_meta_author ) && $themify->hide_meta_author != 'yes' ) ) ? 'has-post-author' : 'no-post-author';
+	$classes[] = ( is_admin() && get_post_type() === 'product' ) ? 'product' : '';
 
 	return apply_filters( 'themify_post_classes', $classes );
 }
@@ -433,27 +434,6 @@ if ( 'on' == themify_get( 'setting-disable_responsive_design' ) ) {
 	add_action( 'init', 'themify_disable_responsive_design' );
 }
 
-if ( ! function_exists( 'themify_enable_mobile_zoom' ) ) :
-/**
- * Enable pinch to zoom on mobile by changing viewport tag
- *
- * @since 2.1.5
- */
-function themify_enable_mobile_zoom() {
-	  // remove theme viewport tag first
-	remove_action('wp_head', 'themify_viewport_tag');
-
-	// add custom viewport tag
-	function themify_mobile_zoom_viewport_tag() {
-		echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
-	};
-	add_action( 'wp_head', 'themify_mobile_zoom_viewport_tag' );
-}
-endif;
-if ( themify_get( 'setting-enable_mobile_zoom' ) == 'on' ) {
-	add_action( 'init', 'themify_enable_mobile_zoom' );
-}
-
 if ( ! function_exists( 'themify_wp_video_shortcode' ) ) :
 /**
  * Removes height in video to replicate this fix https://github.com/markjaquith/WordPress/commit/3d8e31fb82cc1485176c89d27b736bcd9d2444ba#diff-297bf46a572d5f80513d3fed476cd2a2R1862
@@ -473,96 +453,6 @@ function themify_wp_video_shortcode( $out, $atts ) {
 endif;
 add_filter( 'wp_video_shortcode', 'themify_wp_video_shortcode', 10, 2 );
 
-if( ! function_exists('themify_parse_video_embed_vars') ) :
-/**
- * Add wmode transparent and post-video container for responsive purpose
- * Remove webkitallowfullscreen and mozallowfullscreen for HTML validation purpose
- * @param string $html The embed markup.
- * @param string $url The URL embedded.
- * @return string The modified embed markup.
- */
-function themify_parse_video_embed_vars($html, $url) {
-	$services = array(
-		'youtube.com',
-		'youtu.be',
-		'blip.tv',
-		'vimeo.com',
-		'dailymotion.com',
-		'hulu.com',
-		'viddler.com',
-		'qik.com',
-		'revision3.com',
-		'wordpress.tv',
-		'wordpress.com',
-		'funnyordie.com'
-	);
-	$video_embed = false;
-	foreach( $services as $service ) {
-		if( stripos($html, $service) ) {
-			$video_embed = true;
-			break;
-		}
-	}
-	if( $video_embed ) {
-		if ( strpos( $html, "<iframe " ) !== false ) {
-			$html = str_replace( array( ' webkitallowfullscreen', ' mozallowfullscreen' ), '', $html );
-		}
-		$html = '<div class="post-video">' . $html . '</div>';
-		if( strpos( $html, "<embed src=" ) !== false ) {
-			$html = str_replace('</param><embed', '</param><param name="wmode" value="transparent"></param><embed wmode="transparent" ', $html);
-		}
-		elseif( strpos( $html, 'wmode=transparent' ) === false ) {
-			if( stripos($url, 'youtube') || stripos($url, 'youtu.be') ) {
-
-				if( stripos($url, 'youtu.be') ) {
-					$parsed = parse_url($url);
-					$ytq = isset( $parsed['query'] )? $parsed['query']: '';
-					$url = 'http://www.youtube.com/embed' . $parsed['path'] . '?wmode=transparent&fs=1' . $ytq;
-				} else {
-					$parsed = parse_url($url);
-					parse_str($parsed['query'], $query);
-
-					$parsed['scheme'] .= '://';
-
-					if ( isset( $query['v'] ) && '' != $query['v'] ) {
-						$parsed['path'] = '/embed/' . $query['v'];
-						unset( $query['v'] );
-					} else {
-						$parsed['path'] = '/embed/';
-					}
-
-					$query['wmode'] = 'transparent';
-					$query['fs'] = '1';
-
-					$parsed['query'] = '?';
-					foreach ( $query as $param => $value ) {
-						$parsed['query'] .= $param . '=' . $value . '&';
-					}
-					$parsed['query'] = substr($parsed['query'], 0, -1);
-
-					$url = implode('', $parsed);
-				}
-				$url = str_replace('038;','&',$url);
-
-				$html = preg_replace('/src="(.*)" (frameborder)/i', 'src="' . esc_url( themify_https_esc( $url ) ) . '" $2', $html);
-			} else {
-				if ( is_ssl() && ( false !== stripos( $html, 'http:' ) ) ) {
-					$html = str_replace( 'http:', 'https:', $html );
-				}
-				$search = array('?fs=1', '?fs=0');
-				$replace = array('?fs=1&wmode=transparent', '?fs=0&wmode=transparent');
-				$html = str_replace($search, $replace, $html);
-				
-			}
-		} 
-	}
-	else {
-		$html = '<div class="post-embed">' . $html . '</div>';
-	}
-	
-	return str_replace('frameborder="0"','',$html);
-}
-endif;
 add_filter( 'embed_oembed_html', 'themify_parse_video_embed_vars', 10, 2 );
 
 /**
@@ -874,49 +764,67 @@ if( !isset($themify_data['setting-exclude_img_rss']) || '' == $themify_data['set
 /**
  * Show custom 404 page (function)
  */
-function themify_404_display_static_page( $posts ) {
-	remove_filter( 'posts_results', 'themify_404_display_static_page', 999 ); 
+function themify_404_display_static_page_result( $posts ) {
+	remove_filter( 'posts_results', 'themify_404_display_static_page_result', 999,1 ); 
 	
-	if ( ! is_admin() ) {
-		$pageid = themify_get( 'setting-page_404' );
+        $pageid = themify_get( 'setting-page_404' );
 
-		if ( 0 != $pageid ) {
-			if ( empty( $posts ) && is_main_query() && ! is_robots() && ! is_home() && ! is_feed() && ! is_search() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
+        if ( 0 != $pageid ) {
+                $condition = is_main_query() && ! is_robots() && ! is_home() && ! is_feed() && ! is_search() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX );
 
-				$posts = array( get_post( $pageid ) );
-				add_action( 'wp', 'themify_404_header' );
-				add_filter( 'body_class', 'themify_404_body_class' );
-				add_filter( 'template_include', 'themify_404_template', 99 );
+                if ( empty( $posts ) && $condition ) {
 
-			}
-			else {
-				$count = count( $posts );
+                        $posts = array( get_post( $pageid ) );
+                        add_action( 'wp', 'themify_404_header' );
+                        add_filter( 'body_class', 'themify_404_body_class' );
+                        add_filter( 'template_include', 'themify_404_template', 99 );
 
-				if ( 1 == $count ) {
-					// Show 404 if is draft or private AND user is not logged
-					if ( ('draft' == $posts[0]->post_status || 'private' == $posts[0]->post_status) && ! is_user_logged_in() && is_main_query() && ! is_robots() && ! is_home() && ! is_feed() && ! is_search() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
+                }
+                else {
+                        $count = count( $posts );
 
-						$posts = array( get_post( $pageid ) );
-						add_action( 'wp', 'themify_404_header' );
-						add_filter( 'body_class', 'themify_404_body_class' );
-						add_filter( 'template_include', 'themify_404_template', 99 );
+                        if ( 1 === $count ) {
+                                $condition = $condition && ! is_user_logged_in();
+                                // Show 404 if is draft or private AND user is not logged
+                                if ($condition && ('draft' == $posts[0]->post_status || 'private' == $posts[0]->post_status)) {
 
-					}
-					// Do a 404 if the 404 page is opened directly
-					elseif ( 'page' == $posts[0]->post_type && $posts[0]->ID == $pageid ) {
+                                        $posts = array( get_post( $pageid ) );
+                                        add_action( 'wp', 'themify_404_header' );
+                                        add_filter( 'body_class', 'themify_404_body_class' );
+                                        add_filter( 'template_include', 'themify_404_template', 99 );
 
-						add_action( 'wp', 'themify_404_header' );
-						add_filter( 'body_class', 'themify_404_body_class' );
+                                }
+                                // Do a 404 if the 404 page is opened directly
+                                elseif ( 'page' === $posts[0]->post_type && $posts[0]->ID == $pageid ) {
 
-					}
-				}
-			}
-		}
-	}
+                                        add_action( 'wp', 'themify_404_header' );
+                                        add_filter( 'body_class', 'themify_404_body_class' );
 
+                                }
+                        }
+                }
+        }
 	return $posts;
 }
-add_filter( 'posts_results', 'themify_404_display_static_page', 999 );
+
+function themify_404_display_static_page_pre_get($query){
+    if ($query->is_404()) {
+        remove_filter( 'pre_get_posts', 'themify_404_display_static_page_pre_get', 999,1 ); 
+        global $wpdb;
+        if(0 != themify_get( 'setting-page_404' ) && empty($wpdb->last_result) && $query->is_main_query() && !$query->is_robots() && !$query->is_home() && ! $query->is_feed() && ! $query->is_search() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX )){
+            add_action( 'wp', 'themify_404_header' );
+            add_filter( 'body_class', 'themify_404_body_class' );
+            add_filter( 'template_include', 'themify_404_template', 99 );
+            remove_filter( 'posts_results', 'themify_404_display_static_page_result', 999,1 ); 
+        }
+    }
+    return $query;
+}
+
+if ( ! is_admin() && ! is_customize_preview() ) {
+    add_filter( 'posts_results', 'themify_404_display_static_page_result', 999,1 );
+    add_filter( 'pre_get_posts', 'themify_404_display_static_page_pre_get', 999,1 );
+}
 
 /**
  * Send a 404 HTTP header
@@ -1029,13 +937,26 @@ function themify_theme_load_skin_functions() {
 add_action( 'after_setup_theme', 'themify_theme_load_skin_functions', 1 );
 
 /**
+ * Adds the global variable in JS that controls the mobile menu breakpoint
+ *
+ * This is added separately from script in themify_mobile_menu_script() to ensure the
+ * variable is always present in the page.
+ */
+function themify_set_global_menu_trigger_point() { ?>
+	<script>
+		var tf_mobile_menu_trigger_point = <?php echo themify_get( 'setting-mobile_menu_trigger_point', 1200 ); ?>;
+	</script><?php
+}
+add_action( 'wp_head', 'themify_set_global_menu_trigger_point' );
+
+/**
  * JavaScript code that toggles "mobile_menu_active" body class, based on browser window size
  *
  * @since 2.9.2
  */
-function themify_mobile_menu_script() { ?>
-<script>
-	var tf_mobile_menu_trigger_point = <?php echo themify_get( 'setting-mobile_menu_trigger_point', 1200 ) ?>;
+function themify_mobile_menu_script() {
+?>
+<script type="text/javascript">
 	function themifyMobileMenuTrigger() {
 		if( document.body.clientWidth <= tf_mobile_menu_trigger_point ) {
 			jQuery( 'body' ).addClass( 'mobile_menu_active' );
@@ -1049,3 +970,151 @@ function themify_mobile_menu_script() { ?>
 <?php
 }
 add_action( 'themify_body_start', 'themify_mobile_menu_script' );
+
+/**
+ * Prevent framework.css stylesheet from loading in the page, the stylesheet is loaded in main.js
+ *
+ * @return html
+ */
+function themify_framework_stylesheet_style_tag( $tag, $handle, $href, $media ) {
+	if( 'themify-framework' == $handle ) {
+		$tag = '<meta name="themify-framework-css" content="" id="themify-framework-css">' . "\n";
+	}
+
+	return $tag;
+}
+add_filter( 'style_loader_tag', 'themify_framework_stylesheet_style_tag', 10, 4 );
+
+/**
+ * Change order and orderby parameters in the index loop, per options in Themify > Settings > Default Layouts
+ *
+ * @since 3.1.2
+ */
+function themify_archive_post_order( $query ) {
+	if ( ( is_home() || is_archive() ) && $query->is_main_query() ) {
+		global $themify;
+		$query->set( 'order', $themify->order );
+		$query->set( 'orderby', $themify->orderby );
+	}
+
+	return $query;
+}
+add_filter( 'pre_get_posts', 'themify_archive_post_order' );
+
+if ( ! function_exists( 'themify_shortcode_list' ) ) {
+	/**
+	 * Return list of Themify shortcodes.
+	 *
+	 * @since 1.9.4
+	 *
+	 * @return array Collection of shortcodes as keys and callbacks as values.
+	 */
+	function themify_shortcode_list() {
+		return array(
+			'is_logged_in' => 'themify_shortcode',
+			'is_guest'     => 'themify_shortcode',
+			'button'       => 'themify_shortcode',
+			'quote'        => 'themify_shortcode',
+			'col'          => 'themify_shortcode',
+			'sub_col'      => 'themify_shortcode',
+			'img'          => 'themify_shortcode',
+			'hr'           => 'themify_shortcode',
+			'map'          => 'themify_shortcode',
+			'list_posts'   => 'themify_shortcode_list_posts',
+			'flickr'       => 'themify_shortcode_flickr',
+			'twitter'      => 'themify_shortcode_twitter',
+			'box'          => 'themify_shortcode_box',
+			'post_slider'  => 'themify_shortcode_post_slider',
+			'slider'       => 'themify_shortcode_slider',
+			'slide'        => 'themify_shortcode_slide',
+			'author_box'   => 'themify_shortcode_author_box',
+			'icon'         => 'themify_shortcode_icon',
+		);
+	}
+}
+
+/**
+ * Enqueues JS, CSS and writes inline scripts
+ */
+add_action( 'wp_enqueue_scripts', 'themify_shortcodes_js_css', 8 );
+
+/**
+ * Add Themify Shortcodes, an unprefixed version and a prefixed version.
+ */
+foreach( themify_shortcode_list() as $themify_sc => $themify_sc_callback) {
+	add_shortcode( $themify_sc, $themify_sc_callback );
+	add_shortcode( 'themify_' . $themify_sc, $themify_sc_callback );
+}
+// Backwards compatibility
+add_shortcode( 'themify_video', 'wp_video_shortcode' );
+
+add_shortcode( 'themify_list', 'themify_shortcode_icon_list' );
+
+/**
+ * Fix empty auto paragraph in shortcodes
+ */
+add_filter( 'the_content', 'themify_fix_shortcode_empty_paragraph' );
+
+/**
+ * Enable shortcodes in footer text areas
+ */
+add_filter( 'themify_the_footer_text_left', 'do_shortcode' );
+add_filter( 'themify_the_footer_text_right', 'do_shortcode' );
+
+/**
+ * Enable shortcode in excerpt
+ */
+add_filter('the_excerpt', 'do_shortcode');	
+add_filter('the_excerpt', 'shortcode_unautop');
+
+/**
+ * Enable shortcode in text widget
+ */
+add_filter('widget_text', 'do_shortcode');	
+add_filter('widget_text', 'shortcode_unautop');
+
+/**
+ * Flush twitter transient data
+ */
+add_action( 'save_post', 'themify_twitter_flush_transient' );
+
+/**
+ * Enqueue JavaScript and stylesheets required by shortcodes
+ * @since 1.1.2
+ */	
+function themify_shortcodes_js_css() {
+	global $themify_twitter_instance;
+	$themify_twitter_instance = 0;
+
+	wp_enqueue_style( 'themify-framework', THEMIFY_URI . '/css/themify.framework.css' );
+
+	//Enqueue main js that will load others needed js
+	if ( ! wp_script_is( 'themify-main-script' ) ) {
+		wp_register_script( 'themify-main-script', THEMIFY_URI.'/js/main.js', array('jquery'), THEMIFY_VERSION, true );
+		wp_localize_script( 'themify-main-script', 'themify_vars', apply_filters( 'themify_main_script_vars', array(
+			'version' => THEMIFY_VERSION,
+			'url' => THEMIFY_URI,
+			'map_key' => themify_get( 'setting-google_map_key' ),
+		) ) );
+		wp_enqueue_script( 'themify-main-script' );
+	}
+
+	// Register carousel script
+	wp_register_script('themify-carousel-js', THEMIFY_URI . "/js/carousel.js", '', THEMIFY_VERSION, true);
+}
+
+/**
+ * Set the Twitter API keys, required for the [themify_twitter] shortcode
+ *
+ * @return array
+ */
+function themify_set_twitter_credentials() {
+	$data = themify_get_data();
+	$prefix = 'setting-twitter_settings_';
+
+	return array(
+		'consumer_key' => isset( $data[$prefix.'consumer_key'] )? $data[$prefix.'consumer_key'] : '',
+		'consumer_secret' => isset( $data[$prefix.'consumer_secret'] )? $data[$prefix.'consumer_secret'] : '',
+	);
+}
+add_filter( 'themify_twitter_credentials', 'themify_set_twitter_credentials' );

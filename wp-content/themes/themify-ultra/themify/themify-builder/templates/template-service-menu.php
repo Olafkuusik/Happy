@@ -111,14 +111,6 @@ if (TFCache::start_cache('service-menu', self::$post_id, array('ID' => $module_I
 	}
 	$image = apply_filters( 'themify_image_make_responsive_image', $image );
 
-	// check whether link is image or url
-	if ( ! empty( $link_service_menu ) ) {
-		$check_img = $this->is_img_link( $link_service_menu );
-		if ( ! $check_img && $lightbox ) {
-			$link_service_menu = themify_get_lightbox_iframe_link( $link_service_menu );
-		}
-	}
-	
 	$container_props = apply_filters( 'themify_builder_module_container_props', array(
         'id' => $module_ID,
         'class' => $container_class

@@ -89,14 +89,6 @@ if (TFCache::start_cache('image', self::$post_id, array('ID' => $module_ID))):
 	}
 	$image = apply_filters( 'themify_image_make_responsive_image', $image );
 
-	// check whether link is image or url
-	if (!empty($link_image)) {
-		$check_img = $this->is_img_link($link_image);
-		if (!$check_img && $lightbox) {
-			$link_image = themify_get_lightbox_iframe_link($link_image);
-		}
-	}
-	
 	$container_props = apply_filters( 'themify_builder_module_container_props', array(
         'id' => $module_ID,
         'class' => $container_class

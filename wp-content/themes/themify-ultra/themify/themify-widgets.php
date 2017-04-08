@@ -91,16 +91,13 @@ class Themify_Social_Links extends WP_Widget {
 
 					// Image Icon
 					$img_name = $pre.'img_'.$fid;
-					$img_val = ! isset( $data[$img_name] ) || '' == $data[$img_name] ? '' : '<img src="' . esc_url( $data[ $img_name ] ) . '" alt="'. esc_attr( $title_val ) .'" />';
+					$img_val = ! isset( $data[$img_name] ) || '' == $data[$img_name] ? '' : '<img src="' . esc_url( $data[ $img_name ] ) . '" alt="'. esc_attr( $show_link_name ? '' : $title_val ) .'" />';
 
 					// Font Icon
 					$font_icon = '';
 					if ( $font_icon_class = themify_get( $pre.'ficon_'.$fid ) ) {
 						$fi_style = '';
 						$font_icon_class = themify_get_icon( $font_icon_class );
-						if ( stripos( $font_icon_class, 'icon-' ) !== false ) {
-							$font_icon_class = str_replace( 'icon-', 'fa-', $font_icon_class );
-						}
 						if ( $font_icon_color = themify_get_color( $pre.'ficolor_'.$fid ) ) {
 							$fi_style .= 'color: ' . $font_icon_color . ';';
 						}
@@ -116,14 +113,13 @@ class Themify_Social_Links extends WP_Widget {
 					if('' != $link_val){
 						echo sprintf('
 							<li class="social-link-item %s %s %s">
-								<a href="%s" title="%s" %s>%s %s %s</a>
+								<a href="%s" %s>%s %s %s</a>
 							</li>
 							<!-- /themify-link-item -->',
 							sanitize_title($title_val),
 							esc_attr( $icon_type ),
 							esc_attr( $icon_size ),
 							esc_url( $link_val ),
-							esc_attr( $title_val ),
 							$new_window_attr,
 							$font_icon,
 							$img_val,
@@ -304,7 +300,7 @@ class Themify_Feature_Posts extends WP_Widget {
 					}
 
 					if ( $show_thumb ) {
-						themify_image('f_image=true&ignore=true&w='.$instance['thumb_width'].'&h='.$instance['thumb_height'].'&before=<a href="' . esc_url( $link ) . '">&after=</a>&class=post-img');
+						themify_image('f_image=true&ignore=true&w='.$instance['thumb_width'].'&h='.$instance['thumb_height'].'&before=<a'. themify_aria_hidden( $show_title, false ) . ' href="' . esc_url( $link ) . '">&after=</a>&class=post-img' );
 					}
 
 					if ( $show_title ) echo '<a href="' . esc_url( $link ) . '" class="feature-posts-title">' . get_the_title() . '</a> <br />';
@@ -892,7 +888,7 @@ class Themify_Recent_Comments extends WP_Widget {
 				<li>
 					<?php
 						if ( $show_avatar ) {
-							echo '<a href="' . esc_url( $comm_link ) . '">' . get_avatar($comment,$size=$avatar_size) . '</a>';
+							echo '<a href="' . esc_url( $comm_link ) . '">' . get_avatar($comment,$size=$avatar_size, '', sprintf( __( 'Avatar of %s', 'themify' ), $comment->comment_author ) ) . '</a>';
 						}
 						$comment_text = get_comment_excerpt( $comment->comment_ID );
 						if(0 != $excerpt_length) {
@@ -1274,7 +1270,7 @@ class Themify_Twitter extends WP_Widget {
 		</p>
 		
 		<p>
-			<?php echo sprintf(__('<small>Twitter access token is required at <a href="%s">Themify > Settings > Twitter</a>.</small>', 'themify'), admin_url('admin.php?page=themify#setting')); ?>
+			<?php echo sprintf(__('<small>Twitter access token is required at <a href="%s">Themify > Settings > Twitter</a>.</small>', 'themify'), admin_url('admin.php?page=themify#setting-twitter_settings')); ?>
 		</p>
 		
 		<?php

@@ -90,6 +90,7 @@
                     $masonary = $('#' + $post_type + 'disable_masonry').closest('.themify_field_row'),
                     $content_layout = $post_type == '' ? $('#post_content_layout') : $('#portfolio_content_layout'),
                     $content_layout = $content_layout.closest('.themify_field_row'),
+					$gutter = $('#' + $post_type + 'post_gutter').closest('.themify_field_row'),
                     $category = $('#' + $post_type + 'query_category').val() || $('#' + $post_type + 'query_category + input').val();
 
 
@@ -100,21 +101,29 @@
                 $content_layout.hide();
                 return;
             }
-            if ($val === 'list-post' || $val === 'custom_tiles' || $val === 'auto_tiles') {
+            if ($val === 'list-post' || $val === 'auto_tiles' || $val === 'slider' || $val === 'list-large-image' || $val === 'list-thumb-image' || $val === 'grid2-thumb') {
                 $masonary.slideUp();
-                if ($val === 'list-post') {
-                    $media.slideDown()
-                    $content_layout.slideDown()
+                if ($val !== 'auto_tiles') {
+                    $gutter.slideUp();
+                    if($val==='list-post'){
+                        $content_layout.slideDown();
+                        $media.slideDown();
+                    }
+                    else{
+                        $content_layout.slideUp();
+                    }
                 }
                 else {
                     $media.slideUp();
+                    $gutter.slideDown();
                     $content_layout.slideUp();
                 }
             }
             else {
                 $masonary.slideDown()
                 $media.slideDown()
-                $content_layout.slideDown()
+                $content_layout.slideDown();
+                $gutter.slideDown();
             }
         });
         function query_change($this){
@@ -183,11 +192,26 @@
                 $image_deminission.show();
             }
         });
+		$('input[name="setting-default_post_layout"]').change(function () {
+			var $content_layout = $(this).closest('.subtab').find('select[name="setting-post_content_layout"]').closest('p');
+            var $masonary = $(this).closest('.subtab').find('select[name="setting-disable_masonry"]').closest('p');
+			var $gutter = $(this).closest('.subtab').find('select[name="setting-post_gutter"]').closest('p');
+            if ($(this).val() === 'list-large-image' || $(this).val() === 'list-thumb-image' || $(this).val() === 'grid2-thumb') {
+                $content_layout.hide();
+				$masonary.hide();
+				$gutter.hide();
+            }
+            else {
+				$content_layout.show();
+				$masonary.show();
+				$gutter.show();
+            }
+        });
         // Don't call trigger change,otherwise the query input will be empty
         query_change($('#query_category'));
         query_change($('#portfolio_query_category'));
         $('input[name="header_wrap"]:checked').trigger('click');
-        $('input[name="post_layout"],input[name="setting-default_page_post_layout_type"],input[name="setting-default_portfolio_single_portfolio_layout_type"]').trigger('change');
+        $('input[name="post_layout"],input[name="setting-default_page_post_layout_type"],input[name="setting-default_post_layout"],input[name="setting-default_portfolio_single_portfolio_layout_type"]').trigger('change');
         
         // Mobile Menu Customizer)
         $( 'body' ).on( 'click', '#customize-control-start_mobile_menu_acc_ctrl', function ( e ) {

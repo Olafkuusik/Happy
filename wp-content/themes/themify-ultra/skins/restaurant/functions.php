@@ -69,7 +69,7 @@ add_filter( 'themify_after_page_title_parse_args', 'themify_theme_restaurant_pag
 function themify_theme_restaurant_post_title( $args ) {
 	global $themify;
 
-	if ( isset( $themify->post_layout ) && $themify->post_layout == 'list-post' ) {
+	if ( ( isset( $themify->post_layout ) && $themify->post_layout == 'list-post' ) || ( is_singular() && $args['tag'] == 'h1' ) ) {
 		$args['class'] .= ' fancy-heading';
 		$args['before_title'] = '
 			<span class="maketable">

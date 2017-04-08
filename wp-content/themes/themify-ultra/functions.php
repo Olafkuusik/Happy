@@ -12,7 +12,6 @@
 
 $theme_includes = apply_filters( 'themify_theme_includes',
 	array(	'themify/themify-database.php',
-			'themify/class-themify-config.php',
 			'themify/themify-utils.php',
 			'themify/themify-config.php',
 			'themify/themify-modules.php',

@@ -16,19 +16,68 @@ class TB_Fancy_Heading_Module extends Themify_Builder_Module {
 		return isset( $module['mod_settings']['heading'] ) ? esc_html( $module['mod_settings']['heading'] ) : '';
 	}
 
+	private function get_heading_margin_multi_field( $level = 'main', $margin_side = 'top' ) {
+		$level = strtolower( trim($level) );
+		$margin_side = strtolower( trim($margin_side) );
+
+		switch ($margin_side) {
+			case 'bottom':
+				$translated_description = __('bottom', 'themify'); break;
+			case 'left':
+				$translated_description = __('left', 'themify'); break;
+			case 'right':
+				$translated_description = __('right', 'themify'); break;
+			case 'top':
+				$translated_description = __('top', 'themify'); break;
+			default:
+				$translated_description = $margin_side;
+		}
+
+		return array(
+			'id' => 'multi_' . $level . '_margin_' . $margin_side,
+			'type' => 'multi',
+			'label' => ('top'===$margin_side ? __('Margin', 'themify') : ''),
+			'fields' => array(
+				array(
+					'id' => $level . '_margin_' . $margin_side,
+					'type' => 'text',
+					'class' => 'style_margin style_field xsmall',
+					'prop' => 'margin-' . $margin_side,
+					'selector' => '.module-fancy-heading .fancy-heading .' . $level . '-head',
+				),
+				array(
+					'id' => $level . '_margin_' . $margin_side . '_unit',
+					'type' => 'select',
+					'description' => $translated_description,
+					'meta' => array(
+						array('value' => 'px', 'name' => __('px', 'themify')),
+						array('value' => 'em', 'name' => __('em', 'themify')),
+						array('value' => '%', 'name' => __('%', 'themify'))
+					)
+				),
+			)
+		);
+	}
+
 	public function get_options() {
 		$options = array(
 			array(
 				'id' => 'heading',
 				'type' => 'text',
 				'label' => __('Heading', 'themify'),
-				'class' => 'fullwidth'
+				'class' => 'fullwidth',
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			array(
 				'id' => 'sub_heading',
 				'type' => 'text',
 				'label' => __('Sub Heading', 'themify'),
-				'class' => 'fullwidth'
+				'class' => 'fullwidth',
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			array(
 				'id' => 'heading_tag',
@@ -39,7 +88,9 @@ class TB_Fancy_Heading_Module extends Themify_Builder_Module {
 					'h2' => __( 'h2', 'themify' ),
 					'h3' => __( 'h3', 'themify' )
 				),
-				'class' => 'small'
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			array(
 				'id' => 'text_alignment',
@@ -50,7 +101,9 @@ class TB_Fancy_Heading_Module extends Themify_Builder_Module {
 					'themify-text-left' => __( 'Left', 'themify' ),
 					'themify-text-right' => __( 'Right', 'themify' )
 				),
-				'class' => 'small'
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			// Additional CSS
 			array(
@@ -62,10 +115,21 @@ class TB_Fancy_Heading_Module extends Themify_Builder_Module {
 				'type' => 'text',
 				'label' => __('Additional CSS Class', 'themify'),
 				'class' => 'large exclude-from-reset-field',
-				'help' => sprintf( '<br/><small>%s</small>', __( 'Add additional CSS class(es) for custom styling', 'themify' ) )
+				'help' => sprintf( '<br/><small>%s</small>', __( 'Add additional CSS class(es) for custom styling', 'themify' ) ),
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			)
 		);
 		return $options;
+	}
+
+	public function get_default_settings() {
+		$settings = array(
+			'heading' => esc_html__( 'Heading', 'themify' ),
+			'sub_heading' => esc_html__( 'Sub Heading', 'themify' )
+		);
+		return $settings;
 	}
 
 	public function get_animation() {
@@ -143,7 +207,7 @@ class TB_Fancy_Heading_Module extends Themify_Builder_Module {
 					array('value' => 'repeat', 'name' => __('Repeat All', 'themify')),
 					array('value' => 'repeat-x', 'name' => __('Repeat Horizontally', 'themify')),
 					array('value' => 'repeat-y', 'name' => __('Repeat Vertically', 'themify')),
-					array('value' => 'repeat-none', 'name' => __('Do not repeat', 'themify')),
+					array('value' => 'no-repeat', 'name' => __('Do not repeat', 'themify')),
 					array('value' => 'fullcover', 'name' => __('Fullcover', 'themify'))
 				),
 				'prop' => 'background-repeat',
@@ -594,6 +658,9 @@ class TB_Fancy_Heading_Module extends Themify_Builder_Module {
 					)
 				)
 			),
+			// Main Heading Margin
+			$this->get_heading_margin_multi_field('main', 'top'),
+			$this->get_heading_margin_multi_field('main', 'bottom'),
 		);
 
 		$subheading = array(
@@ -665,6 +732,9 @@ class TB_Fancy_Heading_Module extends Themify_Builder_Module {
 					)
 				)
 			),
+			// Sub Heading Margin
+			$this->get_heading_margin_multi_field('sub', 'top'),
+			$this->get_heading_margin_multi_field('sub', 'bottom'),
 		);
 
 		return array(
@@ -687,6 +757,21 @@ class TB_Fancy_Heading_Module extends Themify_Builder_Module {
 				)
 			),
 		);
+	}
+
+	protected function _visual_template() { 
+		$module_args = $this->get_module_args(); ?>
+		<div class="module module-<?php echo esc_attr( $this->slug ); ?> {{ data.css_class }}">
+			<# 
+			var heading_tag = _.isUndefined( data.heading_tag ) ? 'h1' : data.heading_tag,
+				text_alignment = _.isUndefined( data.text_alignment ) ? 'themify-text-center' : data.text_alignment;
+			#>
+			<{{ heading_tag }} class="fancy-heading {{ text_alignment }}">
+				<span class="main-head">{{{ data.heading }}}</span>
+				<span class="sub-head">{{{ data.sub_heading }}}</span>
+			</{{ heading_tag }}>
+		</div>
+	<?php
 	}
 }
 ///////////////////////////////////////

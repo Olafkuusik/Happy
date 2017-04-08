@@ -41,9 +41,7 @@ global $themify; ?>
 			<?php endif; //post date ?>
 
 			<?php if($themify->hide_title != 'yes'): ?>
-				<?php themify_before_post_title(); // Hook ?>
-				<?php themify_post_title( array( 'unlink' => $themify->unlink_title == 'yes', 'tag' => themify_theme_entry_title_tag( false ) ) ); ?>
-				<?php themify_after_post_title(); // Hook ?>
+				<?php themify_post_title(); ?>
 			<?php endif; //post title ?>
 
 			<?php if ( $themify->hide_meta != 'yes' ) : ?>
@@ -77,7 +75,7 @@ global $themify; ?>
 
 					<?php if( themify_check('setting-excerpt_more') ) : ?>
 
-						<p><a href="<?php echo esc_url( get_permalink() ); ?>" title="<?php the_title_attribute(); ?>" class="more-link"><?php echo themify_check('setting-default_more_text')? themify_get('setting-default_more_text') : __('More &rarr;', 'themify') ?></a></p>
+						<p><a href="<?php echo esc_url( get_permalink() ); ?>" class="more-link"><?php echo themify_check('setting-default_more_text')? themify_get('setting-default_more_text') : __('More &rarr;', 'themify') ?></a></p>
 
 					<?php endif; ?>
 

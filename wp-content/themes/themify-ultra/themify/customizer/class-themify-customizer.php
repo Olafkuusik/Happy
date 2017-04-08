@@ -56,19 +56,11 @@ class Themify_Customizer {
 		define('THEMIFY_CUSTOMIZER_URI', THEMIFY_URI . '/customizer');
 		define('THEMIFY_CUSTOMIZER_DIR', THEMIFY_DIR . '/customizer');
 
-		if ($this->is_advanced_mode()) {
-			if (is_file(THEME_DIR . '/customizer-config.php')) {
-				require_once THEME_DIR . '/customizer-config.php';
-			}
-		} else {
-			if (is_file(THEME_DIR . '/customizer-basic-config.php')) {
-				require_once THEME_DIR . '/customizer-basic-config.php';
-			} elseif (is_file(THEME_DIR . '/customizer-config.php')) {
-				// This is for backwards compatibility in case user upgrades framework but not theme
-				// in which case the customizer-basic-config.php won't be there yet.
-				require_once THEME_DIR . '/customizer-config.php';
-			}
+		$config_file = array( 'customizer-config.php' );
+		if( ! $this->is_advanced_mode() ) {
+			array_unshift( $config_file, 'customizer-basic-config.php' );
 		}
+		locate_template( $config_file, true );
 
 		// Build list of settings for live preview and CSS generation
 		add_action('customize_register', array($this, 'build_settings_and_styles'), 12);
@@ -97,6 +89,12 @@ class Themify_Customizer {
 
 		// Add another breakpoints
 		add_filter( 'customize_previewable_devices', array( $this, 'add_devices' ) );
+
+		// Download Customizer Settings
+		add_action('after_setup_theme', array( $this, 'customizer_export'), 10);
+		
+		// Ajax hook for Customizer import file
+		add_action('wp_ajax_themify_plupload_customizer', array( $this, 'customizer_import'));
 	}
 
 	/**
@@ -111,6 +109,17 @@ class Themify_Customizer {
 		// Build Controls
 		////////////////////////
 		$this->settings = apply_filters('themify_customizer_settings', array());
+		
+		////////////////////////
+		// Rest/Import/Export Buttons
+		////////////////////////
+		$this->settings['tools'] = array( 'control' => array(
+											'type'    => 'Themify_Tools_Control',
+											'label'   => __( 'Tools', 'themify' ),
+										),
+										'selector' => 'tools',
+										'prop' => 'tools',
+									);
 
 		////////////////////////
 		// Build CSS Styling
@@ -179,6 +188,11 @@ class Themify_Customizer {
 		// Minicolors JS
 		wp_enqueue_script('themify-colorpicker-js', THEMIFY_METABOX_URI . 'js/jquery.minicolors.js', array('jquery'), THEMIFY_VERSION);
 
+		// Plupload
+		wp_enqueue_script( 'plupload-all' );
+		wp_enqueue_script( 'themify-plupload' );
+		//wp_enqueue_script('themify-plupload-js', THEMIFY_METABOX_URI . 'js/plupload.js', array('jquery'), THEMIFY_VERSION);
+
 
 		//Combobox JS
 		wp_enqueue_style('themify-combobox', THEMIFY_CUSTOMIZER_URI . '/css/jquery.scombobox.min.css', array(), THEMIFY_VERSION);
@@ -190,6 +204,7 @@ class Themify_Customizer {
 		$controls = array(
 			'nonce' => wp_create_nonce('ajax-nonce'),
 			'clearMessage' => __('This will reset all styling and customization. Do you want to proceed?', 'themify'),
+			'exportMessage' => __('You have un-saved settings. If proceed then export will not have them. Do you want to proceed?', 'themify'),
 			'confirm_on_unload' => __('You have unsaved data.', 'themify'),
                         'header_transparnet'=>  $this->get_header_transparent()?__('Transparent header is being selected in header background option, thus header background does not reflect on preview but it will show on pages with regular header background mode.','themify'):false
 		);
@@ -243,6 +258,8 @@ class Themify_Customizer {
 				$controls['widthControls'][$key] = $params['selector'];
 			} elseif ($this->endsWith($key, '_height')) {
 				$controls['heightControls'][$key] = $params['selector'];
+			} elseif ($this->endsWith($key, 'border_color')) {
+				$controls['borderColorControls'][$key] = $params['selector'];
 			} elseif ($this->endsWith($key, '_color')) {
 				$controls['colorControls'][$key] = $params['selector'];
 			} elseif ($this->endsWith($key, 'customcss')) {
@@ -369,7 +386,7 @@ class Themify_Customizer {
 	'image-control',
 	'logo-control',
 	'tagline-control',
-	'clear-control',
+	'tools-control',
 	'sub-accordion',) as $control) {
 			require_once THEMIFY_CUSTOMIZER_DIR . "/class-$control.php";
 		}
@@ -648,7 +665,7 @@ class Themify_Customizer {
 					}
 				}
 			}
-			$this->enqueue_fonts();
+			add_filter( 'themify_google_fonts', array( $this, 'enqueue_fonts' ) );
 		} else {
 			add_action( 'wp_head', array( $this, 'output_css' ) );
 		}
@@ -701,21 +718,19 @@ class Themify_Customizer {
 	 * @since 2.2.6
 	 * @since 2.2.7 Fonts are enqueued in a single call.
 	 */
-	function enqueue_fonts() {
+	function enqueue_fonts( $fonts ) {
 		$this->generate_css(true); // Call only to enqueue fonts.
 		$breakpoints = array( 'tablet_landscape', 'tablet', 'mobile' );
 		foreach( $breakpoints as $device ) {
 			$this->generate_css( true, $device );
 		}
-		if (!empty($this->customizer_fonts)) {
-			$subsets = 'latin';
-			$user_subsets = str_replace(' ', '', themify_get('setting-webfonts_subsets'));
-			if (!empty($user_subsets)) {
-				$subsets .= ",$user_subsets";
+		if ( ! empty( $this->customizer_fonts ) ) {
+			foreach( $this->customizer_fonts as $font ) {
+				$fonts[] = $font;
 			}
-			$customizer_fonts = str_replace(' ', '+', implode('|', $this->customizer_fonts));
-			wp_enqueue_style('customizer-google-fonts', themify_https_esc('http://fonts.googleapis.com/css') . '?family=' . $customizer_fonts . '&subset=' . $subsets);
 		}
+
+		return $fonts;
 	}
 
 	function dd( $debug ) {
@@ -723,7 +738,150 @@ class Themify_Customizer {
 		print_r( $debug );
 		echo '</pre>';
 	}
+	
+	/**
+	 * Export Customizer Settings to zip file and prompt to download
+	 * @since 3.0.2
+	 */
+	function customizer_export() {
+		if ( isset( $_GET['export'] ) && 'themify-customizer' == $_GET['export'] ) {
+			check_admin_referer( 'themify_customizer_export_nonce' );
+			$theme = wp_get_theme();
+			$mods = get_theme_mods();
+			$mods['theme'] = strtolower($theme->display('Name'));
+			$mods['timestamp'] = dechex(time());
 
+			if ( ! function_exists( 'WP_Filesystem' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/file.php';
+			}
+			WP_Filesystem();
+			global $wp_filesystem;
+
+			if(class_exists('ZipArchive')){
+				$datafile = 'customizer_export.txt';
+				$wp_filesystem->put_contents( $datafile, serialize( $mods ) );
+				$files_to_zip = array( $datafile );
+				$file = $mods['theme'] . '_themify_customizer_export_' . date('Y_m_d') . '.zip';
+				$result = themify_create_zip( $files_to_zip, $file, true );
+			}
+			if(isset($result) && $result){
+				if ( ( isset( $file ) ) && ( $wp_filesystem->exists( $file ) ) ) {
+					ob_start();
+					header('Pragma: public');
+					header('Expires: 0');
+					header("Content-type: application/force-download");
+					header('Content-Disposition: attachment; filename="' . $file . '"');
+					header("Content-Transfer-Encoding: Binary"); 
+					header("Content-length: ".filesize($file));
+					header('Connection: close');
+					ob_clean();
+					flush();
+					echo $wp_filesystem->get_contents( $file );
+					$wp_filesystem->delete( $datafile );
+					$wp_filesystem->delete( $file );
+					exit();
+				} else {
+					return false;
+				}
+			} else {
+				if ( ini_get( 'zlib.output_compression' ) ) {
+					ini_set( 'zlib.output_compression', 'Off' );
+				}
+				ob_start();
+				header('Content-Type: application/force-download');
+				header('Pragma: public');
+				header('Expires: 0');
+				header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+				header('Cache-Control: private',false);
+				header('Content-Disposition: attachment; filename="'.$mods['theme'].'_themify_customizer_export_'.date("Y_m_d").'.txt"');
+				header('Content-Transfer-Encoding: binary');
+				ob_clean();
+				flush();
+				echo serialize($mods);
+				exit();
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * AJAX - Plupload execution routines for customizer import file
+	 * @since 3.0.2
+	 * @package themify
+	 */
+	function customizer_import() {
+		$imgid = $_POST['imgid'];
+		
+		check_ajax_referer($imgid . 'themify-plupload');
+
+		/** Handle file upload storing file|url|type. @var Array */
+		$file = wp_handle_upload($_FILES[$imgid . 'async-upload'], array('test_form' => true, 'action' => 'themify_plupload_customizer'));
+
+		// if $file returns error, return it and exit the function
+		if ( isset( $file['error'] ) && ! empty( $file['error'] ) ) {
+			echo json_encode($file);
+			exit;
+		}
+
+		//let's see if it's an image, a zip file or something else
+		$ext = explode('/', $file['type']);
+
+		// Import routines
+		if( 'zip' == $ext[1] || 'rar' == $ext[1] || 'plain' == $ext[1] ){
+
+			$url = wp_nonce_url('customize.php');
+
+			if (false === ($creds = request_filesystem_credentials($url) ) ) {
+				return true;
+			}
+			if ( ! WP_Filesystem($creds) ) {
+				request_filesystem_credentials($url, '', true);
+				return true;
+			}
+
+			global $wp_filesystem;
+			$base_path = wp_upload_dir();
+			$base_path = trailingslashit( $base_path['path'] );
+
+			if( 'zip' == $ext[1] || 'rar' == $ext[1] ) {
+				unzip_file($file['file'], $base_path);
+				if( $wp_filesystem->exists( $base_path . 'customizer_export.txt' ) ) {
+					$data = $wp_filesystem->get_contents( $base_path . 'customizer_export.txt' );
+					$this->set_data( unserialize( $data ) );
+					$wp_filesystem->delete($base_path . 'customizer_export.txt');
+					$wp_filesystem->delete($file['file']);
+				} else {
+					$file['error'] = __('Data could not be loaded1', 'themify');
+				}
+			} else {
+				if( $wp_filesystem->exists( $file['file'] ) ){
+					$data = $wp_filesystem->get_contents( $file['file'] );
+					$this->set_data( unserialize( $data ) );
+					$wp_filesystem->delete($file['file']);
+				} else {
+					$file['error'] = __('Data could not be loaded2', 'themify');
+				}
+			}
+			
+		}
+		$file['type'] = $ext[1];
+		// send the uploaded file url in response
+		echo json_encode($file);
+		exit;
+	}
+	
+	private function set_data($data){
+		$mods = get_theme_mods();
+		foreach($data as $key => $mod){
+			if(isset($this->settings[$key])){
+				$mods[$key] = $data[$key];
+			}
+		}
+		$theme = get_option( 'stylesheet' );
+		$mods = apply_filters( "pre_set_{$theme}_mods", $mods);
+		update_option( "theme_mods_$theme", $mods );
+		do_action('customize_save_after');
+	}
 	/**
 	 * Generate CSS rules and output them.
 	 * @uses filter 'themify_theme_styling' over output.
@@ -755,23 +913,43 @@ class Themify_Customizer {
 			if (isset($style[0])) {
 				if (is_array($style[0])) {
 					foreach (array_map('unserialize', array_unique(array_map('serialize', $style))) as $mstyle) {
-						if ('logo' === $mstyle['prop'] || 'tagline' === $mstyle['prop']) {
+						if ('logo' === $mstyle['prop'] || 'tagline' === $mstyle['prop'] || 'sticky-logo' === $mstyle['prop']) {
 							if ($logo_props = $this->build_image_size_rule($mstyle['key'])) {
 								$css[$selector . ' img'] = $logo_props;
 							}
 							if ('logo' === $mstyle['prop']) {
 								$css[$selector . ' a'] = $this->build_color_rule($mstyle['key']);
 							}
+
+							if( 'sticky-logo' === $mstyle['prop'] ) {
+								$bg = $this->build_css_rule($selector, 'background', $mstyle['key'], isset($mstyle['prefix']) ? $mstyle['prefix'] : '', isset($mstyle['suffix']) ? $mstyle['suffix'] : '', $fonts_only, $device );
+								if( !empty( $bg ) ) {
+									$css[$selector . ' > *'] = 'display: none;';
+									$css[$selector] = 'display: inline-block; background-size: contain; background-repeat: no-repeat;'
+										. $this->build_image_size_rule( $mstyle['key'] )
+										. $bg;
+								}
+							}
 						}
 						$css[$selector] .= $this->build_css_rule($selector, $mstyle['prop'], $mstyle['key'], isset($mstyle['prefix']) ? $mstyle['prefix'] : '', isset($mstyle['suffix']) ? $mstyle['suffix'] : '', $fonts_only, $device );
 					}
 				} else {
-					if ('logo' === $style['prop'] || 'tagline' === $style['prop']) {
+					if ('logo' === $style['prop'] || 'tagline' === $style['prop'] || 'sticky-logo' === $style['prop']) {
 						if ($logo_props = $this->build_image_size_rule($style['key'])) {
 							$css[$selector . ' img'] = $logo_props;
 						}
 						if ('logo' === $style['prop']) {
 							$css[$selector . ' a'] = $this->build_color_rule($style['key']);
+						}
+
+						if( 'sticky-logo' === $style['prop'] ) {
+							$bg = $this->build_css_rule($selector, 'background', $style['key'], isset($style['prefix']) ? $style['prefix'] : '', isset($style['suffix']) ? $style['suffix'] : '', $fonts_only, $device );
+							if( !empty( $bg ) ) {
+								$css[$selector . ' > *'] = 'display: none;';
+								$css[$selector] = 'display: inline-block; background-size: contain; background-repeat: no-repeat;'
+									. $this->build_image_size_rule( $style['key'] )
+									. $bg;
+							}
 						}
 					}
 					$css[$selector] .= $this->build_css_rule($selector, $style['prop'], $style['key'], isset($style['prefix']) ? $style['prefix'] : '', isset($style['suffix']) ? $style['suffix'] : '', $fonts_only, $device
@@ -824,7 +1002,7 @@ class Themify_Customizer {
 	 * @return array
 	 */
 	public function get_breakpoints() {
-		$breakpoints = array( 'tablet_landscape' => 1024, 'tablet' => 768, 'mobile' => 480 );
+		$breakpoints = themify_get_breakpoints();
 
 		// Check if there any custom breakpoint value
 		foreach( $breakpoints as $bp => $value ) {
@@ -1046,6 +1224,13 @@ class Themify_Customizer {
 					$opacity = ( isset($color->opacity) && '' != $color->opacity ) ? $color->opacity : 1;
 					$out .= $opacity < 1 ? "\n\tcolor: rgba(" . $this->hex2rgb($color->color) . ',' . $opacity . ');' : "\n\tcolor: #$color->color;";
 				}
+			} elseif ('border-color' === $style) {
+				// Border Color Rule
+				$color = json_decode($mod);
+				if (isset($color->color) && '' != $color->color) {
+					$opacity = ( isset($color->opacity) && '' != $color->opacity ) ? $color->opacity : 1;
+					$out .= $opacity < 1 ? "\n\tborder-color: rgba(" . $this->hex2rgb($color->color) . ',' . $opacity . ');' : "\n\tborder-color: #$color->color;";
+				}
 			} elseif ('background' === $style) {
 				// Background Rule
 				$bg = json_decode($mod);
@@ -1060,6 +1245,9 @@ class Themify_Customizer {
 				}
 				if (isset($bg->position) && '' != $bg->position) {
 					$out .= "\n\tbackground-position: {$bg->position};";
+				}
+				if( isset($bg->fixedbg) && 'fixed' === $bg->fixedbg ) {
+					$out .= 'background-attachment: fixed;';
 				}
 				if (isset($bg->transparent) && '' != $bg->transparent) {
 					$out .= "\n\tbackground-color: $bg->transparent;";
@@ -1252,6 +1440,16 @@ class Themify_Customizer {
 		$devices['tablet_landscape'] = array(
 			'label' => esc_html__( 'Enter tablet landscape preview mode', 'themify' )
 		);
+
+		if( !function_exists('themify_compare_devices') ) {
+			function themify_compare_devices($x, $y) {
+				$order = array( 'desktop','tablet_landscape','tablet','mobile' );
+				return array_search($x, $order) > array_search($y, $order);
+			}
+		}
+
+		uksort($devices, "themify_compare_devices");
+
 		return $devices;
 	}
 

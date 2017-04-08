@@ -33,6 +33,10 @@ class TB_Video_Module extends Themify_Builder_Module {
 					array('img' => 'video-left.png', 'value' => 'video-left', 'label' => __('Video Left', 'themify')),
 					array('img' => 'video-right.png', 'value' => 'video-right', 'label' => __('Video Right', 'themify')),
 					array('img' => 'video-overlay.png', 'value' => 'video-overlay', 'label' => __('Video Overlay', 'themify')),
+				),
+				'render_callback' => array(
+					'binding' => 'live',
+					'selector' => '' // empty means apply to module container
 				)
 			),
 			array(
@@ -64,6 +68,9 @@ class TB_Video_Module extends Themify_Builder_Module {
 					'options' => array(
 						array( 'id' => 'pixel_unit', 'value' => 'px'),
 						array( 'id' => 'percent_unit', 'value' => '%')
+					),
+					'render_callback' => array(
+						'control_type' => 'select'
 					)
 				)
 			),
@@ -99,6 +106,13 @@ class TB_Video_Module extends Themify_Builder_Module {
 			)
 		);
 		return $options;
+	}
+
+	public function get_default_settings() {
+		$settings = array(
+			'url_video' => 'https://www.youtube.com/watch?v=waM20ewLj34'
+		);
+		return $settings;
 	}
 
 	public function get_animation() {

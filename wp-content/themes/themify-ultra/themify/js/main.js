@@ -13,17 +13,28 @@ var Themify, ThemifyGallery;
 	});
 
 	Themify = {
-		wow: null,
+		fonts:[],
+		cssLazy:[],
 		triggerEvent: function (a, b) {
 			var c;
 			document.createEvent ? (c = document.createEvent("HTMLEvents"), c.initEvent(b, !0, !0)) : document.createEventObject && (c = document.createEventObject(), c.eventType = b), c.eventName = b, a.dispatchEvent ? a.dispatchEvent(c) : a.fireEvent && htmlEvents["on" + b] ? a.fireEvent("on" + c.eventType, c) : a[b] ? a[b]() : a["on" + b] && a["on" + b]()
+		},
+		UpdateQueryString : function ( a, b, c ) {
+			c||(c=window.location.href);var d=RegExp("([?|&])"+a+"=.*?(&|#|$)(.*)","gi");if(d.test(c))return b!==void 0&&null!==b?c.replace(d,"$1"+a+"="+b+"$2$3"):c.replace(d,"$1$3").replace(/(&|\?)$/,"");if(b!==void 0&&null!==b){var e=-1!==c.indexOf("?")?"&":"?",f=c.split("#");return c=f[0]+e+a+"="+b,f[1]&&(c+="#"+f[1]),c}return c
 		},
 		Init: function () {
 			if (typeof tbLocalScript !== 'undefined' && tbLocalScript) {
 				var $self = Themify;
 				$(document).ready(function () {
-					tbLocalScript.isTouch = $('body').hasClass('touch');
-					$self.LoadAsync(tbLocalScript.builder_url + '/js/themify.builder.script.js'); // this script should be always loaded even there is no builder content because it's also requires for themify_shortcode for exp: animation js
+                                    tbLocalScript.isTouch = $('body').hasClass('touch');
+                                    if( $( '.themify_builder_content div:not(.js-turn-on-builder)' ).length ) {
+                                            $self.LoadAsync(tbLocalScript.builder_url + '/js/themify.builder.script.js', function(){
+                                                    $( 'body' ).trigger( 'themifyBuilderScriptLoaded' );
+                                            }); // this script should be always loaded even there is no builder content because it's also requires for themify_shortcode for exp: animation js
+                                    }
+                                    else{
+                                            $self.bindEvents();
+					}
 				});
 				$('body').on('builderscriptsloaded.themify', function () {
 					$self.LoadAsync(tbLocalScript.builder_url + '/js/themify.builder.script.js');
@@ -36,36 +47,88 @@ var Themify, ThemifyGallery;
 		bindEvents: function () {
 			var $self = Themify;
 			if (window.loaded) {
-				$('.shortcode.slider, .shortcode.post-slider, .slideshow-wrap').css({'height': 'auto', 'visibility': 'visible'});
-				$self.InitCarousel();
-				$self.InitGallery();
-				$self.InitMap();
-				$self.wowInit();
-				$self.loadTFIcons();
+				$self.domready();
+				$self.windowload();
 			}
 			else {
-				$(window).load(function () {
-					$('.shortcode.slider, .shortcode.post-slider, .slideshow-wrap').css({'height': 'auto', 'visibility': 'visible'});
-					$self.InitGallery();
-				});
-				$(document).ready(function () {
-					$self.InitCarousel();
-					$self.InitMap();
-					$self.wowInit();
-					$self.loadTFIcons();
-				});
+				$(window).load( $self.windowload );
+				$(document).ready( $self.domready );
 			}
-			$('body').on('builder_load_module_partial builder_toggle_frontend', this.InitMap); // builder toggle/update module map.
+			$('body').on('builder_load_module_partial builder_toggle_frontend', $self.InitMap)
+                                .on( 'builder_load_module_partial builder_toggle_frontend', $self.LazyLoad);
 		},
-		loadTFIcons : function() {
-			if( $( 'span[class*="ti-"], i[class*="ti-"]' ).length ) {
-				this.LoadCss(themify_vars.url + '/themify-icons/themify-icons.css', null);
+		domready : function() {
+			Themify.LazyLoad();
+			Themify.InitCarousel();
+			Themify.InitMap();
+		},
+		windowload : function() {
+			$('.shortcode.slider, .shortcode.post-slider, .slideshow-wrap').css({'height': 'auto', 'visibility': 'visible'});
+			Themify.InitGallery();
+		},
+		LazyLoad: function() {
+			var editMode = $('body').hasClass('themify_builder_active'),
+                            self = Themify,
+                            isLoaded = function( css ) { return $.inArray( css, self.cssLazy ) !== -1; },
+                            is_fontawesome = editMode || $('.fa').length>0,
+                            is_themify_icons = editMode || $( 'span[class*="ti-"], i[class*="ti-"], .module-menu[data-menu-breakpoint]').length>0;
+                            if(!editMode){
+                                    if(!is_fontawesome){
+                                            is_fontawesome = self.checkFont('FontAwesome');
+                                    }
+                                    if(!is_themify_icons){
+                                            is_themify_icons = self.checkFont('Themify');
+                                    }
+                            }
+                            else if(typeof tbLocalScript !== 'undefined' && tbLocalScript && $('link#builder-styles').length===0 && ! isLoaded( 'builder-styles' ) ){
+                            
+                                self.LoadCss(  tbLocalScript.builder_url + '/css/themify-builder-style.css', themify_vars.version );
+				self.cssLazy.push( 'builder-styles' );
+                            }
+			
+                        /*Load addons css/js,we don't need to wait the loading of builder*/
+                        if(typeof tbLocalScript !== 'undefined' && tbLocalScript && Object.keys(tbLocalScript.addons).length>0){
+                            for(var i in tbLocalScript.addons){
+                                if(!isLoaded( i )  && $(tbLocalScript.addons[i].selector).length>0){
+                                    if(tbLocalScript.addons[i].css){
+                                        self.LoadCss(tbLocalScript.addons[i].css, tbLocalScript.addons[i].ver );
+                                    }
+                                    
+                                    if(tbLocalScript.addons[i].js){
+                                        if(tbLocalScript.addons[i].external){
+                                            var s = document.createElement('script');
+                                            s.type = 'text/javascript';
+                                            s.text = tbLocalScript.addons[i].external;
+                                            var t = document.getElementsByTagName('script')[0];
+                                            t.parentNode.insertBefore(s, t);
+                                        }
+                                        self.LoadAsync(tbLocalScript.addons[i].js,null, tbLocalScript.addons[i].ver );
+                                    }
+                                    self.cssLazy.push( i );
+                                }
+                            }
+                        }
+			if( (editMode  || is_fontawesome) && ! isLoaded( 'font-awesome' ) ) {
+				self.LoadCss( themify_vars.url + '/fontawesome/css/font-awesome.min.css', themify_vars.version );
+				self.cssLazy.push( 'font-awesome' );
 			}
+			if( (editMode  || is_themify_icons) && !isLoaded( 'themify-icons' )) {
+				self.LoadCss(themify_vars.url + '/themify-icons/themify-icons.css', themify_vars.version);
+				self.cssLazy.push( 'themify-icons' );
+			}
+			if( $( 'i[class*="icon-"]' ).length>0 && typeof themify_vars.fontello_path == 'string' && !isLoaded( 'themify-fontello' )) {
+				self.LoadCss( themify_vars.fontello_path );
+				self.cssLazy.push( 'themify-fontello' );
+			}
+			if(!isLoaded( 'themify-framework' ) && $( '.shortcode' ).length>0) {
+				self.LoadCss( themify_vars.url + '/css/themify.framework.css', null, $( '#themify-framework-css' )[0] );
+				self.cssLazy.push( 'themify-framework' );
+			}  
 		},
 		InitCarousel: function () {
 			if ($('.slides[data-slider]').length > 0) {
 				var $self = this;
-				$self.LoadAsync(themify_vars.url + '/js/jquery.imagesloaded.min.js', function () {
+				$self.LoadAsync(themify_vars.includesURL + 'js/imagesloaded.min.js', function () {
 						if('undefined' === typeof $.fn.carouFredSel){
 							$self.LoadAsync(themify_vars.url + '/js/carousel.js', $self.carouselCalback, null, null, function () {
 								return ('undefined' !== typeof $.fn.carouFredSel);
@@ -82,42 +145,46 @@ var Themify, ThemifyGallery;
 		carouselCalback: function () {
 
 			$('.slides[data-slider]').each(function () {
-				$(this).find("> br, > p").remove();
+				if ($(this).data('themify_slider_ready') || $(this).closest('.caroufredsel_wrapper').length > 0) {
+                                    return true;
+				}
+				$(this).data('themify_slider_ready',1).find("> br, > p").remove();
+				
 				var $this = $(this),
-						$data = JSON.parse(window.atob($(this).data('slider'))),
-						height = (typeof $data.height === 'undefined') ? 'auto' : $data.height,
-						$numsldr = $data.numsldr,
-						$slideContainer = 'undefined' !== typeof $data.custom_numsldr ? '#' + $data.custom_numsldr : '#slider-' + $numsldr,
-						$speed = $data.speed >= 1000 ? $data.speed : 1000 * $data.speed,
-						$args = {
-							responsive: true,
-							swipe: true,
-							circular: $data.wrapvar,
-							infinite: $data.wrapvar,
-							auto: {
-								play: $data.auto == 0 ? false : true,
-								timeoutDuration: $data.auto >= 1000 ? $data.auto : 1000 * $data.auto,
-								duration: $speed,
-								pauseOnHover: $data.pause_hover
-							},
-							scroll: {
-								items: parseInt($data.scroll),
-								duration: $speed,
-								fx: $data.effect
-							},
-							items: {
-								visible: {
-									min: 1,
-									max: parseInt($data.visible)
-								},
-								width: 120,
-								height: height
-							},
-							onCreate: function (items) {
-								$this.closest('.caroufredsel_wrapper').outerHeight($this.outerHeight(true));
-								$($slideContainer).css({'visibility': 'visible', 'height': 'auto'});
-							}
-						};
+                                    $data = JSON.parse(window.atob($(this).data('slider'))),
+                                    height = (typeof $data.height === 'undefined') ? 'auto' : $data.height,
+                                    $numsldr = $data.numsldr,
+                                    $slideContainer = 'undefined' !== typeof $data.custom_numsldr ? '#' + $data.custom_numsldr : '#slider-' + $numsldr,
+                                    $speed = $data.speed >= 1000 ? $data.speed : 1000 * $data.speed,
+                                    $args = {
+                                            responsive: true,
+                                            swipe: true,
+                                            circular: $data.wrapvar,
+                                            infinite: $data.wrapvar,
+                                            auto: {
+                                                    play: $data.auto == 0 ? false : true,
+                                                    timeoutDuration: $data.auto >= 1000 ? $data.auto : 1000 * $data.auto,
+                                                    duration: $speed,
+                                                    pauseOnHover: $data.pause_hover
+                                            },
+                                            scroll: {
+                                                    items: parseInt($data.scroll),
+                                                    duration: $speed,
+                                                    fx: $data.effect
+                                            },
+                                            items: {
+                                                    visible: {
+                                                            min: 1,
+                                                            max: parseInt($data.visible)
+                                                    },
+                                                    width: 120,
+                                                    height: height
+                                            },
+                                            onCreate: function (items) {
+                                                    $this.closest('.caroufredsel_wrapper').outerHeight($this.outerHeight(true));
+                                                    $($slideContainer).css({'visibility': 'visible', 'height': 'auto'});
+                                            }
+                                    };
 				if ($data.slider_nav) {
 					$args.prev = $slideContainer + ' .carousel-prev';
 					$args.next = $slideContainer + ' .carousel-next';
@@ -250,79 +317,50 @@ var Themify, ThemifyGallery;
 				}, delay);
 			});
 		},
-		wowInit: function () {
-                    if ((typeof tbLocalScript === 'undefined' || !tbLocalScript) || (typeof tbLocalScript.animationInviewSelectors!=='undefined' && tbLocalScript.animationInviewSelectors.length > 0)) {
-                            if (!Themify.wow) {
-                                    Themify.LoadAsync(themify_vars.url + '/js/wow.js', Themify.wowCallback, null, null, function () {
-                                            return (Themify.wow);
-                                    });
-                            }
-                            else {
-                                    Themify.wowCallback();
-                                    return (Themify.wow);
-                            }
-                    }
-		},
-		wowCallback: function () {
-			var self = Themify;
-			if (themify_vars.TB) {
-				ThemifyBuilderModuleJs.animationOnScroll();
-			}
-			self.wow = new WOW({
-				live: true,
-				offset: typeof tbLocalScript !== 'undefined' && tbLocalScript ? parseInt(tbLocalScript.animationOffset) : 100
-			});
-			self.wow.init();
-
-			$('body').on('builder_load_module_partial builder_toggle_frontend', function () {
-				self.wow.doSync();
-				self.wow.sync();
-			});
-
-			// duck-punching WOW to get delay and iteration from classnames
-			if (typeof self.wow.__proto__ !== 'undefined') {
-				self.wow.__proto__.applyStyle = function (box, hidden) {
-					var delay, duration, iteration;
-					duration = box.getAttribute('data-wow-duration');
-					delay = box.getAttribute('class').match(/animation_effect_delay_((?:\d+\.?\d*|\.\d+))/);
-					if (null != delay)
-						delay = delay[1] + 's';
-					iteration = box.getAttribute('class').match(/animation_effect_repeat_(\d*)/);
-					if (null != iteration)
-						iteration = iteration[1];
-					return this.animate((function (_this) {
-						return function () {
-							return _this.customStyle(box, hidden, duration, delay, iteration);
-						};
-					})(this));
-				};
-			}
-		},
 		LoadAsync: function (src, callback, version, defer, test) {
-			var id = src.split("/").pop().replace(/\./g, '_'), // Make script filename as ID
-					existElemens = document.getElementById(id);
-
+                    function hash(str){
+                        var hash = 0;
+                        for (var i = 0; i < str.length; i++) {
+                            var char = str.charCodeAt(i);
+                            hash = ((hash<<5)-hash)+char;
+                            hash = hash & hash; // Convert to 32bit integer
+                        }
+                        return hash;
+                    }
+                    var id = hash(src), // Make script path as ID
+                            existElemens = document.getElementById(id);
 			if (existElemens) {
 				if (callback) {
 					if (test) {
-						var callbackTimer = setInterval(function () {
-							var call = false;
-							try {
-								call = test.call();
-							} catch (e) {
-							}
+                                            var callbackTimer = setInterval(function () {
+                                                    var call = false;
+                                                    try {
+                                                            call = test.call();
+                                                    } catch (e) {
+                                                    }
 
-							if (call) {
-								clearInterval(callbackTimer);
-								callback.call();
-							}
-						}, 100);
+                                                    if (call) {
+                                                        clearInterval(callbackTimer);
+                                                        callback.call();
+                                                    }
+                                            }, 100);
 					} else {
 						setTimeout(callback, 110);
 					}
 				}
 				return;
 			}
+                        else if(test){
+                            try {
+                                if(test.call()){
+                                    if(callback){
+                                        callback.call();
+                                    }
+                                    return;
+                                }
+                            } catch (e) {
+                            }
+                        }
 			var s, r, t;
 			r = false;
 			s = document.createElement('script');
@@ -347,9 +385,9 @@ var Themify, ThemifyGallery;
 			t = document.getElementsByTagName('script')[0];
 			t.parentNode.insertBefore(s, t);
 		},
-		LoadCss: function (href, version, before, media) {
-
-			if ($("link[href='" + href + "']").length > 0) {
+		LoadCss: function (href, version, before, media, callback) {
+			var fullHref = version ? href + '?version=' + version : href;
+			if ($("link[href='" + fullHref + "']").length > 0) {
 				return;
 			}
 			var doc = window.document;
@@ -365,7 +403,7 @@ var Themify, ThemifyGallery;
 
 			var sheets = doc.styleSheets;
 			ss.rel = "stylesheet";
-			ss.href = version ? href + '?version=' + version : href;
+			ss.href = fullHref;
 			// temporarily set media to something inapplicable to ensure it'll fetch without blocking render
 			ss.media = "only x";
 			ss.async = 'async';
@@ -373,12 +411,15 @@ var Themify, ThemifyGallery;
 			// Inject link
 			// Note: `insertBefore` is used instead of `appendChild`, for safety re: http://www.paulirish.com/2011/surefire-dom-element-insertion/
 			ref.parentNode.insertBefore(ss, (before ? ref : ref.nextSibling));
-			// A method (exposed on return object for external use) that mimics onload by polling until document.styleSheets until it includes the new sheet.
+			// A method (exposed on return object for external use) that mimics onload by polling document.styleSheets until it includes the new sheet.
 			var onloadcssdefined = function (cb) {
 				var resolvedHref = ss.href;
 				var i = sheets.length;
 				while (i--) {
 					if (sheets[ i ].href === resolvedHref) {
+						if( callback ) {
+							callback();
+						}
 						return cb();
 					}
 				}
@@ -393,6 +434,45 @@ var Themify, ThemifyGallery;
 				ss.media = media || "all";
 			});
 			return ss;
+		},
+		checkFont:function(font) {
+			// Maakt een lijst met de css van alle @font-face items.
+			if($.inArray(font,this.fonts)){
+				return true;
+			}
+			if(this.fonts.length===0){
+				var o = [],
+				sheets = document.styleSheets,
+				rules = null,
+				i = sheets.length, j;
+				while( 0 <= --i ){
+					rules = sheets[i].cssRules || sheets[i].rules || [];
+					j = rules.length;
+
+					while( 0 <= --j ){
+						if(rules[j].style) {
+							var fontFamily = '';
+							if(rules[j].style.fontFamily){
+								fontFamily = rules[j].style.fontFamily;
+							}
+							else{
+								fontFamily = rules[j].style.cssText.match(/font-family\s*:\s*([^;\}]*)\s*[;}]/i);
+								if(fontFamily){
+									fontFamily = fontFamily[1];
+								}
+							}
+							if(fontFamily===font){
+								return true;
+							}
+							if(fontFamily){
+                                                            o.push(fontFamily);
+							}
+						}
+					}
+				}
+				this.fonts = $.unique( o );
+			}
+			return $.inArray(font,this.fonts);
 		},
 		video: function () {
 			if ($('.themify_video_desktop a').length > 0) {
@@ -425,18 +505,20 @@ var Themify, ThemifyGallery;
 		InitGallery: function ($el, $args) {
 			var lightboxConditions = typeof themifyScript === 'object' && ((themifyScript.lightbox.lightboxContentImages && $(themifyScript.lightbox.contentImagesAreas).length>0) || $(themifyScript.lightbox.lightboxSelector).length > 0);
                             if(!lightboxConditions){
-                                    lightboxConditions = typeof themifyScript === 'object' && themifyScript.lightbox.lightboxGalleryOn && ($(themifyScript.lightbox.lightboxContentImagesSelector).length > 0 || (typeof themifyScript.lightbox.gallerySelector!=='undefined' && $(themifyScript.lightbox.gallerySelector).length > 0));
+                                lightboxConditions = typeof themifyScript === 'object' && themifyScript.lightbox.lightboxGalleryOn && ($(themifyScript.lightbox.lightboxContentImagesSelector).length > 0 || (typeof themifyScript.lightbox.gallerySelector!=='undefined' && $(themifyScript.lightbox.gallerySelector).length > 0));
                             }
 			var self = this;
-			if (lightboxConditions || $('.module.module-gallery').length > 0 || $('.module.module-image').length > 0) {
+			if( lightboxConditions ) {
 				this.LoadCss(themify_vars.url + '/css/lightbox.css', null);
 				this.LoadAsync(themify_vars.url + '/js/lightbox.js', function () {
 					Themify.lightboxCallback($el, $args);
 				}, null, null, function () {
 					return ('undefined' !== typeof $.fn.magnificPopup);
 				});
+			}
+			if ( $('.module.module-gallery,.module.module-image').length > 0) {
 				
-				if( $( '.gallery-masonry' ).length ) {
+				if( $( '.gallery-masonry' ).length > 0) {
 					this.LoadAsync(themify_vars.includesURL + 'js/imagesloaded.min.js', function () {
 						self.LoadAsync(themify_vars.includesURL + 'js/masonry.min.js', function () {
 							$( '.gallery-masonry' ).imagesLoaded(function() {
@@ -445,6 +527,9 @@ var Themify, ThemifyGallery;
 									columnWidth: 1,
 									originLeft : ! $( 'body' ).hasClass( 'rtl' )
 								}); 
+                                                                if(!lightboxConditions){
+                                                                    $('body').addClass('themify_lightbox_loaded').removeClass('themify_lightboxed_images');
+                                                                }
 							});
 						}, null, null, function () {
 							return ('undefined' !== typeof $.fn.masonry);
@@ -453,9 +538,13 @@ var Themify, ThemifyGallery;
 						return ('undefined' !== typeof $.fn.imagesLoaded);
 					});
 				}
-			} else {
+                                else if(!lightboxConditions){
+                                        $('body').addClass('themify_lightbox_loaded').removeClass('themify_lightboxed_images');
+                                    }
+			} else if(!lightboxConditions){
 				$('body').addClass('themify_lightbox_loaded').removeClass('themify_lightboxed_images');
 			}
+                        
 		},
 		GalleryCallBack: function ($el, $args) {
 			if (!$el) {

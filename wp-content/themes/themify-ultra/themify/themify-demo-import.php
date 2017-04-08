@@ -84,7 +84,7 @@ function themify_import_sample_content_setup() {
 			}
 
 			foreach ( $item['postmeta'] as $meta )
-				$$meta['key'] = $meta['value'];
+				${$meta['key']} = $meta['value'];
 
 			if ( 'taxonomy' == $_menu_item_type && isset( $this->processed_terms[intval($_menu_item_object_id)] ) ) {
 				$_menu_item_object_id = $this->processed_terms[intval($_menu_item_object_id)];
@@ -146,7 +146,13 @@ function themify_import_sample_content_setup() {
 				update_post_meta( $id, '_themify_mega_menu_dual', $_themify_mega_menu_dual );
 			}
 			if( isset( $_themify_menu_widget ) ) {
-				update_post_meta( $id, '_themify_menu_widget', $_themify_menu_widget );
+				update_post_meta( $id, '_themify_menu_widget', maybe_unserialize( $_themify_menu_widget ) );
+			}
+			if( isset( $_themify_dropdown_columns ) ) {
+				update_post_meta( $id, '_themify_dropdown_columns', $_themify_dropdown_columns );
+			}
+			if( isset( $_themify_mega_menu_columns_layout ) ) {
+				update_post_meta( $id, '_themify_mega_menu_columns_layout', $_themify_mega_menu_columns_layout );
 			}
 		}
 	}

@@ -18,18 +18,67 @@ class TB_Box_Module extends Themify_Builder_Module {
 		return $return;
 	}
 
+	private function get_heading_margin_multi_field( $h_level = 'h1', $margin_side = 'top' ) {
+		$h_level = strtolower( trim($h_level) );
+		$margin_side = strtolower( trim($margin_side) );
+
+		switch ($margin_side) {
+			case 'bottom':
+				$translated_description = __('bottom', 'themify'); break;
+			case 'left':
+				$translated_description = __('left', 'themify'); break;
+			case 'right':
+				$translated_description = __('right', 'themify'); break;
+			case 'top':
+				$translated_description = __('top', 'themify'); break;
+			default:
+				$translated_description = $margin_side;
+		}
+
+		return array(
+			'id' => 'multi_' . $h_level . '_margin_' . $margin_side,
+			'type' => 'multi',
+			'label' => ('top'===$margin_side ? __('Margin', 'themify') : ''),
+			'fields' => array(
+				array(
+					'id' => $h_level . '_margin_' . $margin_side,
+					'type' => 'text',
+					'class' => 'style_margin style_field xsmall',
+					'prop' => 'margin-' . $margin_side,
+					'selector' => '.module-box ' . $h_level,
+				),
+				array(
+					'id' => $h_level . '_margin_' . $margin_side . '_unit',
+					'type' => 'select',
+					'description' => $translated_description,
+					'meta' => array(
+						array('value' => 'px', 'name' => __('px', 'themify')),
+						array('value' => 'em', 'name' => __('em', 'themify')),
+						array('value' => '%', 'name' => __('%', 'themify'))
+					)
+				),
+			)
+		);
+	}
+
 	public function get_options() {
 		$options = array(
 			array(
 				'id' => 'mod_title_box',
 				'type' => 'text',
 				'label' => __('Module Title', 'themify'),
-				'class' => 'large'
+				'class' => 'large',
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			array(
 				'id' => 'content_box',
 				'type' => 'wp_editor',
-				'class' => 'fullwidth'
+				'class' => 'fullwidth',
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			array(
 				'id' => 'color_box',
@@ -51,7 +100,10 @@ class TB_Box_Module extends Themify_Builder_Module {
 					array('img' => 'color-red.png', 'value' => 'red', 'label' => __('red', 'themify')),
 					array('img' => 'color-pink.png', 'value' => 'pink', 'label' => __('pink', 'themify'))
 				),
-				'bottom' => true
+				'bottom' => true,
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			array(
 				'id' => 'appearance_box',
@@ -63,6 +115,9 @@ class TB_Box_Module extends Themify_Builder_Module {
 					array( 'name' => 'glossy', 'value' => __('Glossy', 'themify')),
 					array( 'name' => 'embossed', 'value' => __('Embossed', 'themify')),
 					array( 'name' => 'shadow', 'value' => __('Shadow', 'themify'))
+				),
+				'render_callback' => array(
+					'binding' => 'live'
 				)
 			),
 			// Additional CSS
@@ -75,10 +130,20 @@ class TB_Box_Module extends Themify_Builder_Module {
 				'type' => 'text',
 				'label' => __('Additional CSS Class', 'themify'),
 				'help' => sprintf( '<br/><small>%s</small>', __('Add additional CSS class(es) for custom styling', 'themify') ),
-				'class' => 'large exclude-from-reset-field'
+				'class' => 'large exclude-from-reset-field',
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			)
 		);
 		return $options;
+	}
+
+	public function get_default_settings() {
+		$settings = array(
+			'content_box' => esc_html__( 'Box content', 'themify' )
+		);
+		return $settings;
 	}
 
 	public function get_animation() {
@@ -155,7 +220,7 @@ class TB_Box_Module extends Themify_Builder_Module {
 					array('value' => 'repeat', 'name' => __('Repeat All', 'themify')),
 					array('value' => 'repeat-x', 'name' => __('Repeat Horizontally', 'themify')),
 					array('value' => 'repeat-y', 'name' => __('Repeat Vertically', 'themify')),
-					array('value' => 'repeat-none', 'name' => __('Do not repeat', 'themify')),
+					array('value' => 'no-repeat', 'name' => __('Do not repeat', 'themify')),
 					array('value' => 'fullcover', 'name' => __('Fullcover', 'themify'))
 				),
 				'prop' => 'background-repeat',
@@ -731,6 +796,9 @@ class TB_Box_Module extends Themify_Builder_Module {
 					)
 				)
 			),
+			// Heading 1 Margin
+			$this->get_heading_margin_multi_field( 'h1', 'top' ),
+			$this->get_heading_margin_multi_field( 'h1', 'bottom' ),
 			// Font H2
 			array(
 				'type' => 'separator',
@@ -803,6 +871,9 @@ class TB_Box_Module extends Themify_Builder_Module {
 					)
 				)
 			),
+			// Heading 2 Margin
+			$this->get_heading_margin_multi_field( 'h2', 'top' ),
+			$this->get_heading_margin_multi_field( 'h2', 'bottom' ),
 			// Font H3
 			array(
 				'type' => 'separator',
@@ -875,6 +946,9 @@ class TB_Box_Module extends Themify_Builder_Module {
 					)
 				)
 			),
+			// Heading 3 Margin
+			$this->get_heading_margin_multi_field( 'h3', 'top' ),
+			$this->get_heading_margin_multi_field( 'h3', 'bottom' ),
 			// Font H4
 			array(
 				'type' => 'separator',
@@ -947,6 +1021,9 @@ class TB_Box_Module extends Themify_Builder_Module {
 					)
 				)
 			),
+			// Heading 4 Margin
+			$this->get_heading_margin_multi_field( 'h4', 'top' ),
+			$this->get_heading_margin_multi_field( 'h4', 'bottom' ),
 			// Font H5
 			array(
 				'type' => 'separator',
@@ -1019,6 +1096,9 @@ class TB_Box_Module extends Themify_Builder_Module {
 					)
 				)
 			),
+			// Heading 5 Margin
+			$this->get_heading_margin_multi_field( 'h5', 'top' ),
+			$this->get_heading_margin_multi_field( 'h5', 'bottom' ),
 			// Font H6
 			array(
 				'type' => 'separator',
@@ -1091,6 +1171,9 @@ class TB_Box_Module extends Themify_Builder_Module {
 					)
 				)
 			),
+			// Heading 6 Margin
+			$this->get_heading_margin_multi_field( 'h6', 'top' ),
+			$this->get_heading_margin_multi_field( 'h6', 'bottom' ),
 		);
 
 		return array(
@@ -1110,6 +1193,20 @@ class TB_Box_Module extends Themify_Builder_Module {
 			),
 		);
 
+	}
+
+	protected function _visual_template() { 
+		$module_args = $this->get_module_args(); ?>
+		<div class="module module-<?php echo esc_attr( $this->slug ); ?>">
+			<# if ( data.mod_title_box ) { #>
+			<?php echo $module_args['before_title']; ?>{{{ data.mod_title_box }}}<?php echo $module_args['after_title']; ?>
+			<# } #>
+			
+			<div class="ui module-<?php echo esc_attr( $this->slug ); ?>-content {{ data.color_box }} {{ data.add_css_box }} {{ data.background_repeat }} <# ! _.isUndefined( data.appearance_box ) ? print( data.appearance_box.split('|').join(' ') ) : ''; #>">
+				{{{ data.content_box }}}
+			</div>
+		</div>
+	<?php
 	}
 }
 

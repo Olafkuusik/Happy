@@ -18,18 +18,67 @@ class TB_Text_Module extends Themify_Builder_Module {
 		return $return;
 	}
 
+	private function get_heading_margin_multi_field( $h_level = 'h1', $margin_side = 'top' ) {
+		$h_level = strtolower( $h_level );
+		$margin_side = strtolower( $margin_side );
+
+		switch ($margin_side) {
+			case 'bottom':
+				$translated_description = __('bottom', 'themify'); break;
+			case 'left':
+				$translated_description = __('left', 'themify'); break;
+			case 'right':
+				$translated_description = __('right', 'themify'); break;
+			case 'top':
+				$translated_description = __('top', 'themify'); break;
+			default:
+				$translated_description = $margin_side;
+		}
+
+		return array(
+			'id' => 'multi_' . $h_level . '_margin_' . $margin_side,
+			'type' => 'multi',
+			'label' => ('top'===$margin_side ? __('Margin', 'themify') : ''),
+			'fields' => array(
+				array(
+					'id' => $h_level . '_margin_' . $margin_side,
+					'type' => 'text',
+					'class' => 'style_margin style_field xsmall',
+					'prop' => 'margin-' . $margin_side,
+					'selector' => '.module-text ' . $h_level,
+				),
+				array(
+					'id' => $h_level . '_margin_' . $margin_side . '_unit',
+					'type' => 'select',
+					'description' => $translated_description,
+					'meta' => array(
+						array('value' => 'px', 'name' => __('px', 'themify')),
+						array('value' => 'em', 'name' => __('em', 'themify')),
+						array('value' => '%', 'name' => __('%', 'themify'))
+					)
+				),
+			)
+		);
+	}
+
 	public function get_options() {
 		$options = array(
 			array(
 				'id' => 'mod_title_text',
 				'type' => 'text',
 				'label' => __('Module Title', 'themify'),
-				'class' => 'large'
+				'class' => 'large',
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			array(
 				'id' => 'content_text',
 				'type' => 'wp_editor',
-				'class' => 'fullwidth'
+				'class' => 'fullwidth',
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			),
 			// Additional CSS
 			array(
@@ -41,10 +90,20 @@ class TB_Text_Module extends Themify_Builder_Module {
 				'type' => 'text',
 				'label' => __('Additional CSS Class', 'themify'),
 				'class' => 'large exclude-from-reset-field',
-				'help' => sprintf( '<br/><small>%s</small>', __( 'Add additional CSS class(es) for custom styling', 'themify' ) )
+				'help' => sprintf( '<br/><small>%s</small>', __( 'Add additional CSS class(es) for custom styling', 'themify' ) ),
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			)
 		);
 		return $options;
+	}
+
+	public function get_default_settings() {
+		$settings = array(
+			'content_text' => esc_html__( 'Text content', 'themify' )
+		);
+		return $settings;
 	}
 
 	public function get_animation() {
@@ -122,7 +181,7 @@ class TB_Text_Module extends Themify_Builder_Module {
 					array('value' => 'repeat', 'name' => __('Repeat All', 'themify')),
 					array('value' => 'repeat-x', 'name' => __('Repeat Horizontally', 'themify')),
 					array('value' => 'repeat-y', 'name' => __('Repeat Vertically', 'themify')),
-					array('value' => 'repeat-none', 'name' => __('Do not repeat', 'themify')),
+					array('value' => 'no-repeat', 'name' => __('Do not repeat', 'themify')),
 					array('value' => 'fullcover', 'name' => __('Fullcover', 'themify'))
 				),
 				'prop' => 'background-repeat',
@@ -699,6 +758,9 @@ class TB_Text_Module extends Themify_Builder_Module {
 					)
 				)
 			),
+			// Heading 1 Margin
+			$this->get_heading_margin_multi_field( 'h1', 'top' ),
+			$this->get_heading_margin_multi_field( 'h1', 'bottom' ),
 			// Font H2
 			array(
 				'type' => 'separator',
@@ -771,6 +833,9 @@ class TB_Text_Module extends Themify_Builder_Module {
 					)
 				)
 			),
+			// Heading 2 Margin
+			$this->get_heading_margin_multi_field( 'h2', 'top' ),
+			$this->get_heading_margin_multi_field( 'h2', 'bottom' ),
 			// Font H3
 			array(
 				'type' => 'separator',
@@ -843,6 +908,9 @@ class TB_Text_Module extends Themify_Builder_Module {
 					)
 				)
 			),
+			// Heading 3 Margin
+			$this->get_heading_margin_multi_field( 'h3', 'top' ),
+			$this->get_heading_margin_multi_field( 'h3', 'bottom' ),
 			// Font H4
 			array(
 				'type' => 'separator',
@@ -915,6 +983,9 @@ class TB_Text_Module extends Themify_Builder_Module {
 					)
 				)
 			),
+			// Heading 3 Margin
+			$this->get_heading_margin_multi_field( 'h4', 'top' ),
+			$this->get_heading_margin_multi_field( 'h4', 'bottom' ),
 			// Font H5
 			array(
 				'type' => 'separator',
@@ -987,6 +1058,9 @@ class TB_Text_Module extends Themify_Builder_Module {
 					)
 				)
 			),
+			// Heading 5 Margin
+			$this->get_heading_margin_multi_field( 'h5', 'top' ),
+			$this->get_heading_margin_multi_field( 'h5', 'bottom' ),
 			// Font H6
 			array(
 				'type' => 'separator',
@@ -1059,6 +1133,9 @@ class TB_Text_Module extends Themify_Builder_Module {
 					)
 				)
 			),
+			// Heading 6 Margin
+			$this->get_heading_margin_multi_field( 'h6', 'top' ),
+			$this->get_heading_margin_multi_field( 'h6', 'bottom' ),
 		);
 
 		return array(
@@ -1078,6 +1155,18 @@ class TB_Text_Module extends Themify_Builder_Module {
 			),
 		);
 
+	}
+
+	protected function _visual_template() {
+		$module_args = $this->get_module_args(); ?>
+		<div class="module module-<?php echo esc_attr( $this->slug ); ?> {{ data.add_css_text }}">
+			<# if ( data.mod_title_text ) { #>
+			<?php echo $module_args['before_title']; ?>{{{ data.mod_title_text }}}<?php echo $module_args['after_title']; ?>
+			<# } #>
+
+			{{{ data.content_text }}}
+		</div>
+	<?php
 	}
 }
 

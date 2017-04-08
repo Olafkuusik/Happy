@@ -130,7 +130,7 @@ tinymce.PluginManager.add('themifyMenu', function( editor, url ) {
 	editor.addButton( 'btnthemifyMenu', {
 		type: 'menubutton',
 		text: '',
-		icon: 'themify',
+		image: themifyEditor.editor.icon,
 		tooltip: themifyEditor.editor.menuTooltip,
 		menu: items
 	} );

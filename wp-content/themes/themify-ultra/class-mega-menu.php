@@ -31,7 +31,13 @@ if( ! class_exists('Themify_Mega_Menu_Walker') ) {
 			}
 
 			$menu_widget = Themify_Widgets_Menu::get_instance()->get_widget_menu_class( $item );
-			$output .= '<li class="themify-widget-menu">' . Themify_Widgets_Menu::get_instance()->render_widget( $menu_widget, Themify_Widgets_Menu::get_instance()->get_widget_options( $item->ID ) ) . '';
+			$output .= '<li class="themify-widget-menu">' . Themify_Widgets_Menu::get_instance()->render_widget(
+				$menu_widget,
+				Themify_Widgets_Menu::get_instance()->get_widget_options( $item->ID ),
+				array(
+					'widget_id' => $item->ID // widget_id is required, some widgets use it
+				)
+			) . '';
 
 			if( $dropdown_wrapper ) {
 				$output .= '</ul>';
@@ -245,35 +251,9 @@ if ( ! function_exists( 'themify_theme_main_menu' ) ) {
 	 *
 	 * @since 1.0.0
 	 */
-	function themify_theme_main_menu() {
-		$args = array(
-			'theme_location' => 'main-nav',
-			'fallback_cb'    => 'themify_default_main_nav',
-			'container'      => '',
-			'menu_id'        => 'main-nav',
-			'menu_class'     => 'clearfix main-nav',
-			'echo' => false
-		);
-		// Get entry ID reliably
-		$queried_object = get_queried_object();
-		$entry_id = isset( $queried_object->ID ) ? $queried_object->ID : 0;
+	function themify_theme_main_menu( $args = array() ) {
 
-		// Compile menu arguments
-		$args = wp_parse_args( $args, array(
-			'theme_location' => 'main-nav',
-			'fallback_cb' => 'themify_default_main_nav',
-			'container'   => '',
-			'menu_id'     => 'main-nav',
-			'menu_class'  => 'main-nav',
-			'echo' => false
-		));
-
-		// See if the page has a menu assigned
-		$custom_menu = get_post_meta( $entry_id, 'custom_menu', true );
-		if ( ! empty( $custom_menu ) ) {
-			$args['menu'] = $custom_menu;
-		}
-
+		$args['echo'] = false;
 		$menu_type = 'main';
 
 		if( themify_theme_maybe_do_mega_menu() ) {
@@ -281,7 +261,7 @@ if ( ! function_exists( 'themify_theme_main_menu' ) ) {
 			$menu_type = 'mega';
 		}
 
-		echo apply_filters( 'themify_' . $menu_type . '_menu_html', wp_nav_menu( $args ), $args );
+		echo apply_filters( 'themify_' . $menu_type . '_menu_html', themify_menu_nav( $args ), $args );
 	}
 }
 

@@ -95,6 +95,24 @@ $themify_theme_config['panel']['settings']['tab']['portfolio_layouts'] = array(
 	)
 );
 
+
+if( class_exists( 'WooCommerce' ) ) {
+	$themify_theme_config['panel']['settings']['tab']['shop_settings'] = array(
+		'title' => __('Shop Settings', 'themify'),
+		'id' => 'shop_settings',
+		'custom-module' => array(
+			array(
+				'title' => __('Product Archive', 'themify'),
+				'function' => 'shop_layout'
+			),
+			array(
+				'title' => __('Single Product Page', 'themify'),
+				'function' => 'single_product'
+			)
+		)
+	);
+}
+
 $themify_theme_config['panel']['settings']['tab']['theme_settings'] = array(
 	'title' => __('Theme Settings', 'themify'),
 	'id' => 'theme_settings',
@@ -141,23 +159,6 @@ $themify_theme_config['panel']['settings']['tab']['theme_settings'] = array(
 		)
 	)
 );
-
-if( class_exists( 'WooCommerce' ) ) {
-	$themify_theme_config['panel']['settings']['tab']['shop_settings'] = array(
-		'title' => __('Shop Settings', 'themify'),
-		'id' => 'shop_settings',
-		'custom-module' => array(
-			array(
-				'title' => __('Product Archive', 'themify'),
-				'function' => 'shop_layout'
-			),
-			array(
-				'title' => __('Single Product Page', 'themify'),
-				'function' => 'single_product'
-			)
-		)
-	);
-}
 
 $themify_theme_config['panel']['settings']['tab']['image_script'] = array(
 	'title' => __('Image Script', 'themify'),

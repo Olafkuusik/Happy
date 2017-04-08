@@ -29,6 +29,11 @@ HEADER MINBAR
 	padding-left: 0;
 }
 
+/* builder row */
+.full_width .themify_builder_row.fullwidth .row_inner {
+	 max-width: 100%;
+}
+
 /* header minbar headerwrap */
 .header-minbar #pagewrap #headerwrap {
 	float: left;
@@ -127,8 +132,9 @@ HEADER MINBAR
 	transition: left .2s ease-in-out;
 }
 body.slide-cart-visible.mobile_menu_active.sidemenu-right,
-body.slide-cart-visible {
+body.slide-cart-visible.sidemenu-right {
 	left: 319px;
+	overflow-x: hidden;
 }
 .iphone.sidemenu-active {
 	position: absolute;
@@ -329,6 +335,8 @@ body.slide-cart-visible {
 #main-nav .page_item_has_children > a .sub-arrow {
 	display: none;
 }
+#headerwrap #main-nav .has-mega-column > .children,
+#headerwrap #main-nav .has-mega-column > .children > li > ul,
 #headerwrap #main-nav .has-mega-column > .sub-menu,
 #headerwrap #main-nav .has-mega-sub-menu .mega-sub-menu,
 #headerwrap #main-nav .has-mega-column > .sub-menu > li > ul,
@@ -339,6 +347,10 @@ body.slide-cart-visible {
 	transform: none;
 	padding: 0;
 }
+.header-minbar #headerwrap #main-nav .has-sub-menu > .children > li > ul.children,
+.header-minbar #headerwrap #main-nav .has-mega-column > .children > li > ul.children,
+.header-minbar #headerwrap #main-nav > li > div.children,
+.header-minbar #headerwrap #main-nav > li > ul.children,
 .header-minbar #headerwrap #main-nav .has-sub-menu > .sub-menu > li > ul.sub-menu,
 .header-minbar #headerwrap #main-nav .has-mega-column > .sub-menu > li > ul.sub-menu,
 .header-minbar #headerwrap #main-nav > li > div.sub-menu,
@@ -349,9 +361,14 @@ body.slide-cart-visible {
 	-webkit-transition: max-height 0.5s ease-in-out;
 	-moz-transition: max-height 0.5s ease-in-out;
 	transition: max-height 0.5s ease-in-out;
-	padding: 0;
+	padding-top: 0;
+	padding-bottom: 0;
 	margin: 0;
 }
+.header-minbar #headerwrap #main-nav .has-sub-menu > .children > li > .toggle-on + ul.children,
+.header-minbar #headerwrap #main-nav .has-mega-column > .children > li > .toggle-on + ul.children,
+.header-minbar #headerwrap #main-nav > li > .toggle-on + div.children,
+.header-minbar #headerwrap #main-nav > li > .toggle-on + ul.children,
 .header-minbar #headerwrap #main-nav .has-sub-menu > .sub-menu > li > .toggle-on + ul.sub-menu,
 .header-minbar #headerwrap #main-nav .has-mega-column > .sub-menu > li > .toggle-on + ul.sub-menu,
 .header-minbar #headerwrap #main-nav > li > .toggle-on + div.sub-menu,
@@ -413,6 +430,9 @@ body.slide-cart-visible {
 #headerwrap .social-widget .widget {
 	margin: 0;
 }
+#headerwrap .header-widget .first .widget {
+	margin-top: 3em;
+}
 
 /* header minbar menu icon */
 #headerwrap .header-icons {
@@ -420,19 +440,53 @@ body.slide-cart-visible {
 	display: block;
 	text-decoration: none;
 	top: 30px;
-	left: 16px;
+	left: 19px;
 	font-size: 1.4em;
 	width: 50px;
 	z-index: 9999;
 	-webkit-transition: left .2s ease-in-out;
 	-moz-transition: left .2s ease-in-out;
 	transition: left .2s ease-in-out;
+	-webkit-transform: none;
+	-moz-transform: none;
+	transform: none;
 }
 .admin-bar#headerwrap #menu-icon {
 	top: 52px;
 }
+#menu-icon {
+    width: 30px;
+    height: 20px;
+    margin-bottom: 12px;
+}
+.mobile-menu-visible #menu-icon {
+	border: none;
+	height: 30px;
+	width: 30px;
+	overflow: hidden;
+}
+.mobile-menu-visible #menu-icon:hover {
+	-webkit-transform: rotateZ(90deg);
+	-moz-transform: rotateZ(90deg);
+	transform: rotateZ(90deg);
+}
+.mobile-menu-visible #menu-icon:before,
+.mobile-menu-visible #menu-icon:after {
+	top: 50%;
+}
+.mobile-menu-visible #menu-icon:before {
+	-webkit-transform: rotateZ(-45deg);
+	-moz-transform: rotateZ(-45deg);
+	transform: rotateZ(-45deg);
+}
+.mobile-menu-visible #menu-icon:after {
+	-webkit-transform: rotateZ(45deg);
+	-moz-transform: rotateZ(45deg);
+	transform: rotateZ(45deg);
+}
 
 /* mobile menu active */
+.header-minbar.mobile-menu-visible,
 .mobile_menu_active.header-minbar.mobile-menu-visible {
 	overflow-x: hidden;
 }
@@ -499,6 +553,14 @@ body.slide-cart-visible {
 }
 
 @media screen and (max-width: 680px) {
+	#menu-icon {
+		width: 20px;
+		height: 14px;
+	}
+	.mobile-menu-visible #menu-icon {
+		height: 20px;
+		width: 20px;
+	}
 	#body {
 		padding-left: 4%;
 	}
@@ -509,8 +571,9 @@ body.slide-cart-visible {
 	.header-minbar.sidemenu-left {
 		left: 250px;
 	}
+
 	.header-minbar.no-fixed-header #pagewrap #headerwrap {
-		left: -205px;
+		left: -204px;
 		width: 250px;
 	}
 	.header-minbar.no-fixed-header.slide-cart-visible #pagewrap #headerwrap,
@@ -559,5 +622,12 @@ body.slide-cart-visible {
 	}
 	.sidemenu {
 		width: 251px;
+	}
+}
+
+@media only screen and (min-width: 1201px) {
+	/* builder row */
+	.full_width .themify_builder_row .row_inner {
+		 max-width: 96%;
 	}
 }

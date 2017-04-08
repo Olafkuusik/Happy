@@ -27,7 +27,7 @@ if (TFCache::start_cache('divider', self::$post_id, array('ID' => $module_ID))):
         $mod_settings['stroke_w_divider'] = 'border-width: ' . $mod_settings['stroke_w_divider'] . 'px;';
 
     if (isset($mod_settings['color_divider']))
-        $mod_settings['color_divider'] = 'border-color: ' . $this->get_rgba_color($mod_settings['color_divider']) . ';';
+        $mod_settings['color_divider'] = 'border-color: ' . $this->stylesheet->get_rgba_color($mod_settings['color_divider']) . ';';
 
     if (isset($mod_settings['top_margin_divider']))
         $mod_settings['top_margin_divider'] = 'margin-top: ' . $mod_settings['top_margin_divider'] . 'px;';

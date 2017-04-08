@@ -81,13 +81,12 @@ class ThemifyBuilderDuplicatePage {
 	 * @return int
 	 */
 	public function duplicate( $post, $status = '', $parent_id = '' ) {
-		$prefix = '';
-		$suffix = '';
-
-		// We don't want to clone revisions
-		if ( $post->post_type == 'revision' ) return;
-
-		if ( $post->post_type != 'attachment' ) {
+                // We don't want to clone revisions
+		if ( $post->post_type === 'revision' ) return;
+                
+		$prefix = $suffix = '';
+                
+		if ( $post->post_type !== 'attachment' ) {
 			$prefix = '';
 			$suffix = ' Copy';
 		}
@@ -111,7 +110,7 @@ class ThemifyBuilderDuplicatePage {
 		$new_post_id = wp_insert_post( $new_post );
 
 		// apply hook to duplicate action
-		if ( $post->post_type == 'page' || ( function_exists( 'is_post_type_hierarchical' ) && is_post_type_hierarchical( $post->post_type ) ) )
+		if ( $post->post_type === 'page' || ( function_exists( 'is_post_type_hierarchical' ) && is_post_type_hierarchical( $post->post_type ) ) )
 			/**
 			 * Fires action after wp_insert_post done.
 			 *
@@ -126,7 +125,7 @@ class ThemifyBuilderDuplicatePage {
 		add_post_meta( $new_post_id, '_themify_builder_dp_original', $post->ID );
 
 		// If the copy is published or scheduled, we have to set a proper slug.
-		if ( $new_post_status == 'publish' || $new_post_status == 'future' ) {
+		if ( $new_post_status === 'publish' || $new_post_status === 'future' ) {
 			$post_name = wp_unique_post_slug( $post->post_name, $new_post_id, $new_post_status, $post->post_type, $new_post_parent );
 
 			$new_post = array();
@@ -138,7 +137,7 @@ class ThemifyBuilderDuplicatePage {
 		}
 
 		// set new url
-		if( $post->post_type == 'page' ) {
+		if( $post->post_type === 'page' ) {
 			$this->new_url = get_page_link( $new_post_id );
 		} else{
 			$this->new_url = get_permalink( $new_post_id );
@@ -165,7 +164,7 @@ class ThemifyBuilderDuplicatePage {
 		$meta_keys = $post_meta_keys;
 
 		foreach ( $meta_keys as $meta_key ) {
-			if( $meta_key == '_themify_builder_settings_json' ) {
+			if( $meta_key === '_themify_builder_settings_json' ) {
 				global $ThemifyBuilder, $ThemifyBuilder_Data_Manager;
 				$builder_data = $ThemifyBuilder->get_builder_data( $post->ID ); // get builder data from original post
 				$ThemifyBuilder_Data_Manager->save_data( $builder_data, $new_id ); // save the data for the new post
@@ -197,7 +196,8 @@ class ThemifyBuilderDuplicatePage {
 			foreach ( $taxonomies as $taxonomy ) {
 				$post_terms = wp_get_object_terms( $post->ID, $taxonomy, array( 'orderby' => 'term_order' ) );
 				$terms = array();
-				for ( $i=0; $i < count( $post_terms ); $i++ ) {
+                                $terms_count = count( $post_terms );
+				for ( $i=0; $i < $terms_count; $i++ ) {
 					$terms[] = $post_terms[ $i ]->slug;
 				}
 				wp_set_object_terms( $new_id, $terms, $taxonomy );
@@ -218,7 +218,7 @@ class ThemifyBuilderDuplicatePage {
 		$children = get_posts( array( 'post_type' => 'any', 'numberposts' => -1, 'post_status' => 'any', 'post_parent' => $post->ID ) );
 		// clone old attachments
 		foreach ( $children as $child ) {
-			if ( $child->post_type == 'attachment' || $child->post_type==$post->post_type) continue;
+			if ( $child->post_type === 'attachment' || $child->post_type==$post->post_type) continue;
 			$this->duplicate( $child, '', $new_id );
 		}
 	}

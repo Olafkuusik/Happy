@@ -15,15 +15,7 @@
 		api.Instances.Builder[0] = new api.Views.Builder({ el: '#themify_builder_row_wrapper', collection: data });
 		api.Instances.Builder[0].render();
 
-		var modulePanel = new api.Views.ModulePanel({ el: '.themify_builder_module_panel' }),
-			navTool = new api.Views.Nav( {el: '.themify_builder_backend_options_menu' }),
-			editorNav = new api.Views.EditorNavComponent({ el: '.themify_builder_undo_tools'});
-
-		// Save Builder
-		$('#themify_builder_main_save').on('click', function( event ){
-			event.preventDefault();
-			api.Utils.saveBuilder(true)
-		});
+		this.toolbar = new api.Views.Toolbar({ el: '#tb_toolbar'});
 
 		/* hook save to publish button */
 		$('input#publish,input#save-post').on('click', function (e) {
@@ -45,7 +37,7 @@
 
 		// switch frontend
 		$('#themify_builder_switch_frontend').on('click', this.switchFrontEnd);
-		$('<a href="#" id="themify_builder_switch_frontend_button" class="button themify_builder_switch_frontend">' + themifyBuilder.switchToFrontendLabel + '</a>').on('click', this.switchFrontEnd).appendTo( '#postdivrich #wp-content-media-buttons' );
+		$('<a href="#" id="themify_builder_switch_frontend_button" class="button themify_builder_switch_frontend">' + themifyBuilder.i18n.switchToFrontendLabel + '</a>').on('click', this.switchFrontEnd).appendTo( '#postdivrich #wp-content-media-buttons' );
 
 		// Switch to front builder after create post/page
 		if( window.sessionStorage.getItem( 'frontendURL' ) ) {
@@ -73,7 +65,7 @@
 				api.createPostBuilderButton( targetLink );
 			});
 		} else {
-			this.createPostBuilderButton( targetLink );
+			api.createPostBuilderButton( targetLink );
 		}
 	};
 
@@ -124,7 +116,9 @@
 	// Run on WINDOW load
 	$(window).load(function(){
 
-		var $panel = $('#page-builder .themify_builder_module_panel'),
+		var $panel = $('#tb_toolbar'),
+			$module_tmp_helper = $('#themify_builder_module_tmp'),
+			$scroll_anchor = $('#tb_scroll_anchor'),
 			$top = 0,
 			$scrollTimer = null,
 			$panel_top = 0,
@@ -135,7 +129,7 @@
 				themify_sticky_pos();
 			}
 			else {
-				$('#themify-meta-box-tabs a').one('click', function () {
+				$('.themify-meta-box-tabs a').one('click', function () {
 					if ($(this).attr('id') == 'page-buildert') {
 						themify_sticky_pos();
 					}
@@ -145,9 +139,9 @@
 
 		function themify_sticky_pos() {
 			$panel.width($panel.width());
-			$top = $panel.offset().top;
+			$top = $scroll_anchor.offset().top;
 			$panel_top = Math.round($('#page-builder').offset().top);
-			$('#themify_builder_module_tmp').height($panel.outerHeight(true));
+			$module_tmp_helper.height($panel.outerHeight(true));
 			$(window).scroll(function () {
 				if ($scrollTimer) {
 					clearTimeout($scrollTimer);
@@ -155,9 +149,9 @@
 				$scrollTimer = setTimeout(handleScroll, 15);
 
 			}).resize(function () {
-				$top = $panel.offset().top;
+				$top = $scroll_anchor.offset().top;
 				$panel.width($('#page-builder .themify_builder_admin').width()).css('top', $wpadminbar.outerHeight(true));
-				$('#themify_builder_module_tmp').height($panel.outerHeight(true));
+				$module_tmp_helper.height($panel.outerHeight(true));
 			});
 		}
 
@@ -166,12 +160,11 @@
 			var $bottom = $panel_top + $('#page-builder').height(),
 				$scroll = $(this).scrollTop();
 			if ($scroll > $top && $scroll < $bottom) {
-				$panel.addClass('themify_builder_module_panel_fixed').css('top', $wpadminbarHeight);
-				$('#themify_builder_module_tmp').css('display', 'block');
-
+				$panel.addClass('tb_toolbar_fixed').css('top', $wpadminbarHeight);
+				$module_tmp_helper.css('display', 'block');
 			} else {
-				$panel.removeClass('themify_builder_module_panel_fixed').css('top', 0);
-				$('#themify_builder_module_tmp').css('display', 'none');
+				$panel.removeClass('tb_toolbar_fixed').css('top', 0);
+				$module_tmp_helper.css('display', 'none');
 			}
 		}
 

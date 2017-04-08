@@ -17,6 +17,10 @@ body:not(.fixed-header-on) #pagewrap #headerwrap {
 #header {
 	padding: 2em 0 1em;
 }
+.pagewidth,
+.full_width .themify_builder_row .row_inner {
+	max-width: 96%;
+}
 
 /* boxed layout cart wrap */
 .slide-cart #main-nav-wrap {
@@ -37,7 +41,7 @@ body:not(.fixed-header-on) #pagewrap #headerwrap {
 }
 
 /* mobile menu active */
-.mobile_menu_active.boxed-layout #pagewrap {
+.mobile_menu_active #pagewrap {
 	max-width: 95%;
 }
 
@@ -47,10 +51,4 @@ body:not(.fixed-header-on) #pagewrap #headerwrap {
 }
 .mobile_menu_active .cart-wrap {
 	top: 37px;
-}
-.mobile_menu_active.slide-cart #headerwrap #menu-icon {
-	right: 50px;
-}
-.mobile_menu_active.slide-cart #headerwrap.fixed-header #menu-icon {
-	right: 75px;
 }

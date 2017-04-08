@@ -1,6 +1,7 @@
 /* THEME COLOR BURGUNDY
 ================================================ */
 /* general bg & color */
+#slide-cart,
 .header-minbar .sidemenu,
 .header-leftpane #headerwrap, 
 .header-rightpane #headerwrap,
@@ -58,20 +59,10 @@
 	color: inherit;
 }
 
-/* transparent header */
-.transparent-header #headerwrap a {
-	color: #fff; /* require for transparent-header */
-}
-
 /* fixed header */
 .transparent-header #headerwrap.fixed-header,
 #headerwrap.fixed-header {
 	background-color: rgba(185,24,82,0.9);
-}
-
-/* header widgets pull down */
-.pull-down:before {
-	border-color: #b91852;
 }
 
 /* full section scrolling loader */
@@ -304,6 +295,7 @@ button:hover,
 	background-color: #b91852;
 	color: #ebb9cb;
 }
+#slide-cart a:hover,
 .mobile_menu_active #headerwrap a:hover,
 .mobile_menu_active #headerwrap #main-nav a:hover,
 .mobile_menu_active #headerwrap #main-nav ul a:hover {

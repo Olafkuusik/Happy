@@ -117,7 +117,7 @@ button.mfp-close, button.mfp-arrow {
 	z-index: 1046;
 	-webkit-box-shadow: none;
 	box-shadow: none;
-        touch-action: manipulation; 
+	touch-action: manipulation; 
 }
 button::-moz-focus-inner {
         padding: 0;
@@ -482,6 +482,5 @@ img.mfp-img {
 .iphone .mfp-iframe-scaler iframe {
 	width: 1400px !important;
 	max-width: 100% !important;
-	*width: 100% !important;
 	-webkit-overflow-scrolling: touch;
 }

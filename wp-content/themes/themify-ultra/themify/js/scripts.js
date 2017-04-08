@@ -1078,10 +1078,10 @@
 			$( '#skins .skin-preview[data-skin="' + $(this).data( 'skin' ) + '"]' ).trigger( 'click' );
 		} );
 
-		$( 'body' ).on( 'click', '.skin-demo-import', function(e){
+		$( 'body' ).on( 'click', '.skin-demo-import, .proceed-import', function(e){
 			e.preventDefault();
 			var $this = $( this ),
-				$preview = $this.closest( '.skin-demo-content' );
+				$preview = $this.closest( '.skin-preview' ).find( '.skin-demo-content' );
 			var do_import = function(){
 				$.ajax({
 					url: ajaxurl,
@@ -1102,7 +1102,9 @@
 					}
 				} );
 			}
-			if( $this.closest( '.skin-preview' ).find( '.required-addons' ).length ) {
+			if( ! $this.hasClass( 'proceed-import' ) // for the Proceed Import button, do the import without checking for required addons
+				&& $this.closest( '.skin-preview' ).find( '.required-addons' ).length
+			) {
 				$this.closest( '.skin-preview' ).find( '.required-addons' ).fadeIn()
 					.find( '.skin-demo-import-proceed' ).off().on( 'click', do_import )
 					// patch up the issue of links not working inside the modal box
@@ -1256,7 +1258,7 @@
 		}
 
 		// New general show/hide elements toggle.
-		themify_init_show_if( $('#themify') );
+		themify_init_show_if( $('#themify, .toplevel_page_themify-builder #wpbody-content') );
 
 		// Clear cache builder
 		$('.js-clear-builder-cache').on('click', function( event ){

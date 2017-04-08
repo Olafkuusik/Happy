@@ -18,40 +18,10 @@ class TB_Tab_Module extends Themify_Builder_Module {
 				'id' => 'mod_title_tab',
 				'type' => 'text',
 				'label' => __('Module Title', 'themify'),
-				'class' => 'large'
-			),
-			array(
-				'id' => 'layout_tab',
-				'type' => 'layout',
-				'label' => __('Tab Layout', 'themify'),
-				'options' => array(
-					array('img' => 'tab-frame.png', 'value' => 'tab-frame', 'label' => __('Tab Frame', 'themify')),
-					array('img' => 'tab-window.png', 'value' => 'panel', 'label' => __('Tab Window', 'themify')),
-					array('img' => 'tab-vertical.png', 'value' => 'vertical', 'label' => __('Tab Vertical', 'themify')),
-					array('img' => 'tab-top.png', 'value' => 'minimal', 'label' => __('Tab Top', 'themify'))
+				'class' => 'large',
+				'render_callback' => array(
+					'binding' => 'live'
 				)
-			),
-			array(
-				'id' => 'style_tab',
-				'type' => 'select',
-				'label' => __('Tab Icon', 'themify'),
-				'options' => array(
-					'default' => __('Icon beside the title', 'themify'),
-					'icon-top' => __('Icon above the title', 'themify'),
-					'icon-only' => __('Just icons', 'themify'),
-				)
-			),
-			array(
-				'id' => 'color_tab',
-				'type' => 'layout',
-				'label' => __('Tab Color', 'themify'),
-				'options' => Themify_Builder_model::get_colors()
-			),
-			array(
-				'id' => 'tab_appearance_tab',
-				'type' => 'checkbox',
-				'label' => __('Tab Appearance', 'themify'),
-				'options' => Themify_Builder_model::get_appearance()
 			),
 			array(
 				'id' => 'tab_content_tab',
@@ -66,7 +36,11 @@ class TB_Tab_Module extends Themify_Builder_Module {
 								'id' => 'title_tab',
 								'type' => 'text',
 								'label' => __('Tab Title', 'themify'),
-								'class' => 'fullwidth'
+								'class' => 'fullwidth',
+								'render_callback' => array(
+									'repeater' => 'tab_content_tab',
+									'binding' => 'live'
+								)
 							),
 							array(
 								'id' => 'icon_tab',
@@ -74,6 +48,11 @@ class TB_Tab_Module extends Themify_Builder_Module {
 								'label' => __('Icon', 'themify'),
 								'iconpicker' => true,
 								'class' => 'large',
+								'render_callback' => array(
+									'repeater' => 'tab_content_tab',
+									'binding' => 'live',
+									'control_type' => 'textonchange'
+								)
 							),
 						)
 					),
@@ -82,8 +61,64 @@ class TB_Tab_Module extends Themify_Builder_Module {
 						'type' => 'wp_editor',
 						'label' => false,
 						'class' => 'fullwidth',
-						'rows' => 6
+						'rows' => 6,
+						'render_callback' => array(
+							'repeater' => 'tab_content_tab',
+							'binding' => 'live'
+						)
 					)
+				),
+				'render_callback' => array(
+					'binding' => 'live'
+				)
+			),
+			array(
+				'type' => 'separator',
+				'meta' => array( 'html' => '<hr/>')
+			),
+			array(
+				'id' => 'layout_tab',
+				'type' => 'layout',
+				'label' => __('Tab Layout', 'themify'),
+				'options' => array(
+					array('img' => 'tab-frame.png', 'value' => 'tab-frame', 'label' => __('Tab Frame', 'themify')),
+					array('img' => 'tab-window.png', 'value' => 'panel', 'label' => __('Tab Window', 'themify')),
+					array('img' => 'tab-vertical.png', 'value' => 'vertical', 'label' => __('Tab Vertical', 'themify')),
+					array('img' => 'tab-top.png', 'value' => 'minimal', 'label' => __('Tab Top', 'themify'))
+				),
+				'render_callback' => array(
+					'binding' => 'live'
+				)
+			),
+			array(
+				'id' => 'style_tab',
+				'type' => 'select',
+				'label' => __('Tab Icon', 'themify'),
+				'options' => array(
+					'default' => __('Icon beside the title', 'themify'),
+					'icon-top' => __('Icon above the title', 'themify'),
+					'icon-only' => __('Just icons', 'themify'),
+				),
+				'render_callback' => array(
+					'binding' => 'live'
+				)
+			),
+			array(
+				'id' => 'color_tab',
+				'type' => 'layout',
+				'label' => __('Tab Color', 'themify'),
+				'options' => Themify_Builder_model::get_colors(),
+				'render_callback' => array(
+					'binding' => 'live'
+				)
+			),
+			array(
+				'id' => 'tab_appearance_tab',
+				'type' => 'checkbox',
+				'label' => __('Tab Appearance', 'themify'),
+				'options' => Themify_Builder_model::get_appearance(),
+				'render_callback' => array(
+					'binding' => 'live'
 				)
 			),
 			// Additional CSS
@@ -96,10 +131,23 @@ class TB_Tab_Module extends Themify_Builder_Module {
 				'type' => 'text',
 				'label' => __('Additional CSS Class', 'themify'),
 				'class' => 'large exclude-from-reset-field',
-				'help' => sprintf( '<br/><small>%s</small>', __('Add additional CSS class(es) for custom styling', 'themify') )
+				'help' => sprintf( '<br/><small>%s</small>', __('Add additional CSS class(es) for custom styling', 'themify') ),
+				'render_callback' => array(
+					'binding' => 'live'
+				)
 			)
 		);
 		return $options;
+	}
+
+	public function get_default_settings() {
+		$settings = array(
+			'tab_content_tab' => array(
+				array( 'title_tab' => esc_html__( 'Tab Title', 'themify' ), 'text_tab' => esc_html__( 'Tab content', 'themify' ) )
+			),
+			'layout_tab' => 'minimal'
+		);
+		return $settings;
 	}
 
 	public function get_animation() {
@@ -1369,6 +1417,47 @@ class TB_Tab_Module extends Themify_Builder_Module {
 			),
 		);
 
+	}
+
+	protected function _visual_template() {
+		$module_args = $this->get_module_args(); ?>
+		<div class="module module-<?php echo esc_attr( $this->slug ); ?> ui tab-style-{{ data.style_tab }} {{ data.layout_tab }} {{ data.color_tab }} {{ data.css_tab }} <# ! _.isUndefined( data.tab_appearance_tab ) ? print( data.tab_appearance_tab.split('|').join(' ') ) : ''; #>">
+			<# if ( data.mod_title_tab ) { #>
+			<?php echo $module_args['before_title']; ?>{{{ data.mod_title_tab }}}<?php echo $module_args['after_title']; ?>
+			<# }
+
+			if ( data.tab_content_tab ) {
+				var counter = 0; #>
+				<div class="builder-tabs-wrap">
+				<ul class="tab-nav">
+					<#
+					_.each( data.tab_content_tab, function( item ) { #>
+						<li class="<# counter === 0 ? print('current') : ''; #>" <# counter === 0 ? print('aria-expanded="true"') : print('aria-expanded="false"'); #>>
+							<a href="#tab-{{ data.cid }}-{{ counter }}">
+								<# if ( item.icon_tab ) { #>
+								<i class="fa {{ item.icon_tab }}"></i>
+								<# } #>
+								<span>{{ item.title_tab }}</span>
+							</a>
+						</li>
+					<#
+						counter++;
+					} ); #>
+				</ul>
+
+				<# counter = 0; #>
+					<#
+					_.each( data.tab_content_tab, function( item ) { #>
+						<div id="#tab-{{ data.cid }}-{{ counter }}" class="tab-content" <# counter === 0 ? print('aria-hidden="false"') : print('aria-hidden="true"'); #>>
+							{{{ item.text_tab }}}
+						</div>
+					<#
+					counter++;
+					} ); #>
+				</div>
+			<# } #>
+		</div>
+	<?php
 	}
 }
 

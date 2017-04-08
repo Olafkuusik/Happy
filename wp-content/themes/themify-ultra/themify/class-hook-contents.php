@@ -68,12 +68,21 @@ class Themify_Hooks {
 		if ( ! empty($logic)) {
 			$visible = false; // if any condition is set for a hook, hide it on all pages of the site except for the chosen ones.
 
-			if ( ( is_front_page() && isset($logic['general']['home']) ) || ( is_page() && isset( $logic['general']['page'] ) && ! is_front_page() ) || ( is_single() && isset($logic['general']['single']) ) || ( is_search() && isset($logic['general']['search']) ) || ( is_author() && isset($logic['general']['author']) ) || ( is_category() && isset($logic['general']['category']) ) || ( is_tag() && isset($logic['general']['tag']) ) || ( is_singular() && isset($logic['general'][$query_object->post_type]) && $query_object->post_type != 'page' && $query_object->post_type != 'post' ) || ( is_tax() && isset($logic['general'][$query_object->taxonomy]) )
+			if (
+				( is_front_page() && isset($logic['general']['home']) )
+				|| ( is_page() && isset( $logic['general']['page'] ) && ! is_front_page() )
+				|| ( is_single() && isset($logic['general']['single']) )
+				|| ( is_search() && isset($logic['general']['search']) )
+				|| ( is_author() && isset($logic['general']['author']) )
+				|| ( is_category() && isset($logic['general']['category']) )
+				|| ( is_tag() && isset($logic['general']['tag']) )
+				|| ( is_singular() && isset($logic['general'][$query_object->post_type]) && $query_object->post_type != 'page' && $query_object->post_type != 'post' )
+				|| ( is_tax() && isset($logic['general'][$query_object->taxonomy]) )
 			) {
 				$visible = true;
 			} else { // let's dig deeper into more specific visibility rules
 				if ( ! empty( $logic['tax'] ) ) {
-					if ( is_single() ) {
+					if ( is_singular() ) {
 						if ( isset( $logic['tax']['category_single'] ) && ! empty( $logic['tax']['category_single'] ) ) {
 							$cat = get_the_category();
 							if ( ! empty( $cat ) ) {
@@ -280,6 +289,10 @@ class Themify_Hooks {
 
 	function ajax_add_button() {
 		check_ajax_referer( 'ajax-nonce', 'nonce' );
+		if( ! current_user_can( 'manage_options' ) ) {
+			die;
+		}
+
 		if ( isset( $_POST['field_id'] ) ) {
 			echo $this->item_template( $_POST['field_id'] );
 		}
@@ -340,6 +353,10 @@ class Themify_Hooks {
 
 	function ajax_get_visibility_options() {
 		check_ajax_referer( 'ajax-nonce', 'nonce' );
+		if( ! current_user_can( 'manage_options' ) ) {
+			die;
+		}
+
 		$selected = array();
 		if ( isset( $_POST['selected'] ) ) {
 			parse_str( $_POST['selected'], $selected );

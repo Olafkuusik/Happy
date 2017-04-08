@@ -1,15 +1,9 @@
 <?php
-/*
-Plugin Name:  Themify Icon Picker
-Version:      1.0.0
-Author:       Themify
-Author URI:   http://themify.me/
-Description:   
-Text Domain:  themify
-Domain Path:  /languages
-License:      GNU General Public License v2.0
-License URI:  http://www.gnu.org/licenses/gpl-2.0.html
-*/
+/**
+ * Themify Icon Picker
+ *
+ * An extendible tool that simplifies picking icons in icon fonts
+ */
 
 if( ! class_exists( 'Themify_Icon_Picker' ) ) :
 /**
@@ -38,6 +32,7 @@ class Themify_Icon_Picker {
 		include trailingslashit( dirname( __FILE__ ) ) . 'includes/class-icon-font-themify.php';
 		add_action( 'init', array( $this, 'init' ) );
 		add_action( 'wp_ajax_tf_icon_picker', array( $this, 'tf_icon_picker' ) );
+		add_action( 'wp_ajax_tf_get_icon', array( $this, 'tf_ajax_get_icon' ) );
 	}
 
 	public function init() {
@@ -73,10 +68,27 @@ class Themify_Icon_Picker {
 		return $this->types;
 	}
 
+	/**
+	 * Render the icon picker interface
+	 *
+	 * @since 1.0
+	 */
 	public function tf_icon_picker() {
 		$icon_fonts = $this->get_types();
 		if( ! empty( $icon_fonts ) ) {
 			include trailingslashit( dirname( __FILE__ ) ) . 'views/template.php';
+		}
+		die;
+	}
+
+	/**
+	 * Hooked to "tf_get_icon" Ajax call, returns the icon CSS classname for $_POST['tf_icon']
+	 *
+	 * @since 1.0
+	 */
+	public function tf_ajax_get_icon() {
+		if( isset( $_GET['tf_icon'] ) ) {
+			echo htmlspecialchars( themify_get_icon( $_GET['tf_icon'] ) );
 		}
 		die;
 	}
@@ -158,6 +170,35 @@ class Themify_Icon_Picker_Font {
 	 */
 	function get_icons() {
 		return array();
+	}
+
+	function picker_template() { ?>
+		<div class="tf-font-group" data-group="<?php echo $this->get_id(); ?>">
+
+			<ul class="themify-lightbox-icon">
+				<?php foreach( $this->get_icons() as $category ) : ?>
+					<li data-id="<?php echo $this->get_id() . '-' . $category['key']; ?>">
+						<span><?php echo $category['label']; ?></span>
+					</li>
+				<?php endforeach; ?>
+			</ul>
+
+			<?php foreach( $this->get_icons() as $category ) : ?>
+				<section id="<?php echo $this->get_id() . '-' . $category['key']; ?>">
+					<h2 class="page-header"><?php echo $category['label']; ?></h2>
+					<div class="row">
+						<?php foreach( $category['icons'] as $icon_key => $icon_label ) : ?>
+							<a href="#" data-icon="<?php echo $icon_key; ?>">
+								<i class="<?php echo $this->get_classname( $icon_key ); ?>" aria-hidden="true"></i>
+								<?php echo $icon_label; ?>
+							</a>
+						<?php endforeach; ?>
+					</div>
+				</section><!-- #<?php echo $this->get_id() . '-' . $category['key']; ?> -->
+			<?php endforeach; ?>
+
+		</div><!-- .tf-font-group -->
+	<?php
 	}
 }
 endif;

@@ -14,11 +14,21 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
+/**
+ * Theme and Themify Framework Path and URI
+ * @since 1.2.2
+ */
+defined( 'THEME_DIR' ) || define( 'THEME_DIR', get_template_directory() );
+defined( 'THEME_URI' ) || define( 'THEME_URI', get_template_directory_uri() );
+defined( 'THEMIFY_DIR' ) || define( 'THEMIFY_DIR', THEME_DIR . '/themify' );
+defined( 'THEMIFY_URI' ) || define( 'THEMIFY_URI', THEME_URI . '/themify' );
+defined( 'THEMIFYMIN' ) || define( 'THEMIFYMIN', defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ? '' : '.min' );
+
 function themify_config_init() {
 
 	/* 	Global Vars
  	***************************************************************************/
-	global $themify_config, $pagenow, $ThemifyConfig, $themify_gfonts, $content_width;
+	global $pagenow, $ThemifyConfig, $content_width;
 
 	if ( ! isset( $content_width ) ) {
 		$content_width = 1165;
@@ -34,15 +44,7 @@ function themify_config_init() {
 
 	/* 	Theme Config
  	***************************************************************************/
-	define( 'THEMIFY_VERSION', '2.9.8' ); 
-
-	/*	Load Config from theme-config.php or custom-config.php
- 	***************************************************************************/
-	$themify_config = $ThemifyConfig->get_config();
-
-	/* 	Google Fonts
- 	***************************************************************************/
-	$themify_gfonts = themify_get_google_font_lists();
+	define( 'THEMIFY_VERSION', '3.1.2' );
 
 	/* 	Run after update
  	***************************************************************************/
@@ -86,6 +88,9 @@ require_once( THEME_DIR . '/themify/themify-icon-picker/themify-icon-picker.php'
 Themify_Icon_Picker::get_instance( THEMIFY_URI . '/themify-icon-picker' );
 Themify_Icon_Picker::get_instance()->register( 'Themify_Icon_Picker_FontAwesome' );
 Themify_Icon_Picker::get_instance()->register( 'Themify_Icon_Picker_Themify' );
+include( THEMIFY_DIR . '/themify-fontello.php' );
+
+require_once THEMIFY_DIR . '/img.php';
 
 /**
  * Load Filesystem Class
@@ -141,12 +146,6 @@ if( is_admin() )
 add_action( 'wp_enqueue_scripts', 'themify_enqueue_framework_assets', 12 );
 
 /**
- * Themify - Insert settings page link in WP Admin Bar
- * @since 1.1.2
- */
-add_action( 'wp_before_admin_bar_render', 'themify_admin_bar' );
-
-/**
  * Sets the WP Featured Image size selected for Query Category pages
  */
 add_action( 'template_redirect', 'themify_feature_size_page' );
@@ -159,12 +158,14 @@ add_action( 'admin_notices', 'themify_prompt_message' );
 /**
  * Load Google fonts library
  */
-add_action( 'wp_enqueue_scripts', 'themify_enqueue_gfonts' );
+add_filter( 'themify_google_fonts', 'themify_enqueue_gfonts' );
 
 /**
  * Add "js" classname to html element when JavaScript is enabled
  */
 add_action( 'wp_head', 'themify_html_js_class', 0 );
+
+add_action( 'wp_enqueue_scripts', 'themify_enqueue_common_css', 7 );
 
 /**
  * Allows to query by category slug or id
@@ -278,22 +279,6 @@ function themify_after_user_is_authenticated() {
 			require_once THEMIFY_DIR . '/themify-updater.php';
 		}
 	}
-}
-
-/**
- * Add Themify Settings link to admin bar
- * @since 1.1.2
- */
-function themify_admin_bar() {
-	global $wp_admin_bar;
-	if ( !is_super_admin() || !is_admin_bar_showing() )
-		return;
-	$wp_admin_bar->add_menu( array(
-		'id' => 'themify-settings',
-		'parent' => 'appearance',
-		'title' => __( 'Themify Settings', 'themify' ),
-		'href' => admin_url( 'admin.php?page=themify' )
-	));
 }
 
 /**
@@ -422,3 +407,11 @@ function themify_adjust_page_settings_for_layouts( $args ) {
 }
 add_action( 'themify_builder_layout_loaded', 'themify_adjust_page_settings_for_layouts' );
 add_action( 'themify_builder_layout_appended', 'themify_adjust_page_settings_for_layouts' );
+
+/**
+ * Load themeforest-functions.php file if available
+ * Additional functions for the theme from ThemeForest store.
+ */
+if( file_exists( trailingslashit( get_template_directory() ) . 'themeforest-functions.php' ) ) {
+	include( trailingslashit( get_template_directory() ) . 'themeforest-functions.php' );
+}

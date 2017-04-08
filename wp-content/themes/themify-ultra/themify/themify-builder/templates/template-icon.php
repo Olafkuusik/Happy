@@ -62,9 +62,6 @@ if (TFCache::start_cache('icon', self::$post_id, array('ID' => $module_ID))):
                         , $content['lightbox_width'] . $lightbox_units[$content['lightbox_size_unit_width']]
                         , $content['lightbox_height'] . $lightbox_units[$content['lightbox_size_unit_height']] ) : false;
                 
-                if( !empty( $content['link'] ) && $this->is_img_link($content['link']) && $content['link_options'] === 'lightbox' ) {
-                    $content['link'] = themify_get_lightbox_iframe_link( $content['link'] );
-                }
                 ?>
                 <div class="module-icon-item">
                     <?php if($content['link']):?>

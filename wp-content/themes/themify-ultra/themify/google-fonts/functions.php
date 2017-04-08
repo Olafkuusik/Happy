@@ -11,7 +11,13 @@ function themify_get_google_font_lists() {
 		return array();
 	}
 
-	return themify_grab_remote_google_fonts();
+	/* cache */
+	static $fonts = null;
+	if( null == $fonts ) {
+		$fonts = themify_grab_remote_google_fonts();
+	}
+
+	return $fonts;
 }
 
 /**
@@ -42,7 +48,7 @@ function themify_get_google_fonts_file() {
  */
 function themify_grab_remote_google_fonts() {
 	$fonts_file_path = themify_get_google_fonts_file();
-	$subsets = apply_filters( 'themify_google_fonts_subsets', array( 'latin' ) );
+	$subsets = themify_get_font_subsets();
 	$subsets_count = count( $subsets );
 
 	$fonts = array();
@@ -79,13 +85,22 @@ function themify_grab_remote_google_fonts() {
 }
 
 /**
+ * Returns a list of font subsets enabled
+ *
+ * @return array
+ */
+function themify_get_font_subsets() {
+	return apply_filters( 'themify_google_fonts_subsets', array( 'latin' ) );
+}
+
+/**
  * Check if given value is google fonts or web safe fonts
  * @param string $value
  * @return boolean
  */
 function themify_is_google_fonts( $value ) {
-	global $themify_gfonts;
 	$found = false;
+	$themify_gfonts = themify_get_google_font_lists();
 	if ( sizeof( $themify_gfonts ) > 0 ) {
 		foreach ( $themify_gfonts as $font ) {
 			if ( $found ) break;
@@ -101,8 +116,8 @@ function themify_is_google_fonts( $value ) {
  * @return string
  */
 function themify_get_gfont_variant( $family ) {
-	global $themify_gfonts;
 	$variant = 400;
+	$themify_gfonts = themify_get_google_font_lists();
 	if ( isset( $themify_gfonts ) && is_array( $themify_gfonts ) ) {
 		foreach ($themify_gfonts as $v) {
 			if ( $v['family'] == $family ) {
@@ -157,7 +172,7 @@ function themify_get_web_safe_font_list( $only_names = false ) {
 		"Arial, Helvetica, sans-serif",
 		"Verdana, Geneva, sans-serif",
 		"Georgia, 'Times New Roman', Times, serif",
-		"'Times New Roman\', Times, serif",
+		"'Times New Roman', Times, serif",
 		"Tahoma, Geneva, sans-serif",
 		"'Trebuchet MS', Arial, Helvetica, sans-serif",
 		"Palatino, 'Palatino Linotype', 'Book Antiqua', serif",
@@ -182,5 +197,29 @@ function themify_get_web_safe_font_list( $only_names = false ) {
 
 	return apply_filters( 'themify_get_web_safe_font_list', $web_safe_fonts );
 }
+
+/**
+ * Enqueue Google fonts (if any) on the page
+ *
+ * @uses themify_google_fonts filter
+ */
+function themify_enqueue_google_fonts() {
+	/* do not enqueue if google fonts are disabled */
+	if( defined( 'THEMIFY_GOOGLE_FONTS' ) && THEMIFY_GOOGLE_FONTS != true ) {
+		return;
+	}
+
+	$fonts = apply_filters( 'themify_google_fonts', array() );
+	if( ! empty( $fonts ) ) {
+		$path = ( is_ssl() ? 'https' : 'http' ) . '://fonts.googleapis.com/css?family=' . join( '|', $fonts );
+		if( $subsets = themify_get_font_subsets() ) {
+			$subsets = join( ',', $subsets );
+			$subsets = str_replace( ' ', '', $subsets );
+			$path .= '&subset=' . $subsets;
+		}
+		wp_enqueue_style( 'themify-google-fonts', $path );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'themify_enqueue_google_fonts', 30 );
 
 endif;

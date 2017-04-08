@@ -11,7 +11,21 @@
 	}
 	function changeImage( items ){
 		var bgImage = items.filter(':first').attr('data-bg');
-		$('#headerwrap').backstretch(bgImage);
+		if('object-fit' in document.body.style===false) { 
+			$('#headerwrap').backstretch(bgImage,{
+				fade:themifyVars.speed
+			});
+		}
+		else{			
+			$('#headerwrap').append('<img src="'+bgImage+'" class="headerwrap-bg-deletable">');
+			$('.headerwrap-bg-deletable').animate({
+					opacity:1
+				},themifyVars.speed,function(){
+					$(this).remove();
+					$('#headerwrap').find('.headerwrap-bg').attr('src',bgImage);
+				});
+		}
+		
 	}
 	// Toggle Content and go fullscreen
 	var toggleContent = function(event){
@@ -97,10 +111,19 @@
 		// Slider
 		/////////////////////////////////////////////
 	    if($('#gallery-controller').length > 0){
-	        Themify.LoadAsync(themify_vars.url+'/js/carousel.js',ThemifyGallerySlider, null, null, function(){
+			
+		if('object-fit' in document.body.style===false) {  
+		   Themify.LoadAsync(themify_vars.url + '/js/backstretch.js',null,null, null, function(){
+	        	return ('undefined' !== typeof $.fn.backstretch);
+			});
+		}
+		
+	    Themify.LoadAsync(themify_vars.url+'/js/carousel.js',ThemifyGallerySlider, null, null, function(){
 	        	return ('undefined' !== typeof $.fn.carouFredSel);
 	        });
 	    }
+		
+		
 		function ThemifyGallerySlider(){
                     
 			var itemIndex = ($('#gallery-controller li').length > 5)? '0': '1';
@@ -217,11 +240,19 @@
 			$(themifyImages).each(function() {
 				$("<img/>").attr('src', this);
 			});
-
-			// Call backstretch for the first time
-			$('#headerwrap').backstretch(themifyImages[0], {
-				fade : themifyVars.speed
-			});
+			
+			// Call backstretch for the first time			
+			if('object-fit' in document.body.style===false) {
+					$('#headerwrap').backstretch(themifyImages[0], {
+					fade : themifyVars.speed
+				});
+			}
+			else{
+				$('#headerwrap').append('<img src="'+themifyImages[0]+'" class="headerwrap-bg">');
+				$('.headerwrap-bg').animate({
+					opacity:1
+				});
+			}
 
 			// Header Background Color
 			var $headerColor = $('#headerwrap[data-bgcolor]');

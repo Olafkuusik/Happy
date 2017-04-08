@@ -371,7 +371,7 @@ class WXR_Parser_XML {
 			case 'wp:tag':
 			case 'wp:term':
 				$n = substr( $tag, 3 );
-				array_push( $this->$n, $this->data );
+                                $this->$n[] = $this->data;
 				$this->data = false;
 				break;
 			case 'wp:author':

@@ -246,6 +246,18 @@ class TB_Service_Menu_Module extends Themify_Builder_Module {
 		return $options;
 	}
 
+	public function get_default_settings() {
+		$settings = array(
+			'title_service_menu' => esc_html__( 'Menu title', 'themify' ),
+			'description_service_menu' => esc_html__( 'Description', 'themify' ),
+			'price_service_menu' => '$200',
+			'style_service_menu' => 'image-left',
+			'image_service_menu' => 'https://themify.me/demo/themes/wp-content/uploads/addon-samples/menu-pizza.png',
+			'width_service_menu' => 100
+		);
+		return $settings;
+	}
+
 	public function get_animation() {
 		$animation = array(
 			array(

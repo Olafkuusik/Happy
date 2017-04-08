@@ -243,7 +243,7 @@
 			$(this.options.context).find('a[href*="#"]').not('a[href="#"]').not('a.ab-item').on('click', function (e) {
 				// Build class to scroll to
 				var href = $(this).prop('hash'),
-						classToScroll = href.replace(/#/, self.options.prefix);
+					classToScroll = href.replace(/#/, self.options.prefix);
 
 				// If the section exists in this page
 				if ( cleanup_url( window.location.href ) == cleanup_url( $( this ).prop( 'href' ) ) && $( classToScroll ).length > 0 ) {
@@ -280,7 +280,8 @@
 				if (self.isHash(window.location.hash)) {
 					// If there's a hash, scroll to it
 					var hash = window.location.hash,
-							$linkHash = $(self.options.context).find('a[href*="' + hash + '"]');
+						current_url = cleanup_url( window.location.href ),
+						$linkHash = $(self.options.context).find('a[href="' + hash + '"], a[href="' + current_url + hash + '"], a[href="' + current_url + '/' + hash + '"]');
 					if ($linkHash.length > 0) {
 						$linkHash.each(function () {
 							var $link = $(this);

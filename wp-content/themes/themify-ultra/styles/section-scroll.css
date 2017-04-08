@@ -82,9 +82,7 @@ SECTION SCROLL
 
 /* vertical middle builder content */
 .themify_builder_row {
-	display: table;
-	width: 100%;
-	height: 100vh;
+	min-height: 100vh;
 }
 #themify_builder_lightbox_container .themify_builder_row {
 	height: auto;
@@ -175,16 +173,6 @@ html, body {
 	position: relative;
 	-webkit-transition: all 0.3s ease-out; /* Safari<=6 Android<=4.3 */
 	transition: all 0.3s ease-out;
-}
-.fp-section.fp-table, .fp-slide.fp-table {
-	display: table;
-	width: 100%;
-}
-.fp-tableCell {
-	display: table-cell;
-	vertical-align: middle;
-	width: 100%;
-	height: 100%;
 }
 .fp-slidesContainer {
 	float: left;
@@ -382,5 +370,15 @@ body:not(.header-overlay).mobile-menu-visible.sidemenu-right.full-section-scroll
 @media screen and (max-width: 680px) {
 	.header-minbar.full-section-scrolling.mobile_menu_active #footerwrap {
 		margin-left: 0;
+	}
+	.full-section-scrolling .themify_builder_row.fp-table .row_inner .col-full.tb-column {
+		min-height: 100vh;
+		display:-webkit-flex;
+		display:-webkit-box;
+		display:-moz-flex;
+		display:-moz-box;
+		display:-ms-flexbox;
+		display: flex;
+		width: 100%;
 	}
 }

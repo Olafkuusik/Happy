@@ -62,13 +62,17 @@ class TB_Post_Module extends Themify_Builder_Module {
 					array('img' => 'grid4.png', 'value' => 'grid4', 'label' => __('Grid 4', 'themify')),
 					array('img' => 'list-thumb-image.png', 'value' => 'list-thumb-image', 'label' => __('List Thumb Image', 'themify')),
 					array('img' => 'grid2-thumb.png', 'value' => 'grid2-thumb', 'label' => __('Grid 2 Thumb', 'themify'))
+				),
+				'render_callback' => array(
+					'binding' => 'live',
+					'selector' => '> .builder-posts-wrap'
 				)
 			),
 			array(
 				'id' => 'post_type_post',
 				'type' => 'select',
 				'label' => __('Post Type', 'themify'),
-				'options' => $ThemifyBuilder->get_public_post_types(),
+				'options' => $ThemifyBuilder->get_public_post_types()
 			),
 			array(
 				'id' => 'type_query_post',
@@ -76,7 +80,7 @@ class TB_Post_Module extends Themify_Builder_Module {
 				'label' => __('Query by', 'themify'),
 				'options' => $taxonomies,
 				'default' => 'category',
-				'option_js' => true,
+				'option_js' => true
 			),
 			array(
 				'type' => 'group',
@@ -268,6 +272,15 @@ class TB_Post_Module extends Themify_Builder_Module {
 			)
 		);
 		return $options;
+	}
+
+	public function get_default_settings() {
+		$settings = array(
+			'layout_post' => 'grid4',
+			'post_per_page_post' => 4,
+			'display_post' => 'excerpt'
+		);
+		return $settings;
 	}
 
 	public function get_animation() {

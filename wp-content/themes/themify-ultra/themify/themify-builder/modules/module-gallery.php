@@ -56,7 +56,10 @@ class TB_Gallery_Module extends Themify_Builder_Module {
 				'type' => 'textarea',
 				'class' => 'tf-thumbs-preview tf-hide tf-shortcode-input',
 				'label' => __('Insert Gallery Shortcode', 'themify'),
-				'help' => sprintf('<a href="#" class="builder_button tf-gallery-btn">%s</a>', __('Insert Gallery', 'themify'))
+				'help' => sprintf('<a href="#" class="builder_button tf-gallery-btn">%s</a>', __('Insert Gallery', 'themify')),
+				'render_callback' => array(
+					'control_type' => 'textonchange'
+				)
 			),
 			array(
 				'id' => 'gallery_pagination',
@@ -141,7 +144,6 @@ class TB_Gallery_Module extends Themify_Builder_Module {
 				'type' => 'select',
 				'label' =>__('Columns', 'themify'),
 				'options' => $columns,
-				'default' => 4,
 				'wrap_with_class' => 'tf-group-element tf-group-element-grid'
 			),
 			array(
@@ -194,6 +196,13 @@ class TB_Gallery_Module extends Themify_Builder_Module {
 			)
 		);
 		return $options;
+	}
+
+	public function get_default_settings() {
+		$settings = array(
+			'gallery_columns' => 4
+		);
+		return $settings;
 	}
 
 	public function get_animation() {

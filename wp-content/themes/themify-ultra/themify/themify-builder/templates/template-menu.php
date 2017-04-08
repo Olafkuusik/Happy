@@ -16,7 +16,10 @@ if (TFCache::start_cache('menu', self::$post_id, array('ID' => $module_ID))):
         'color_menu' => '',
         'according_style_menu' => '',
         'css_menu' => '',
-        'animation_effect' => ''
+        'animation_effect' => '',
+        'menu_breakpoint' => '',
+        'menu_slide_direction' => '',
+        'allow_menu_breakpoint' => ''
     );
 
     if (isset($mod_settings['according_style_menu']))
@@ -30,10 +33,20 @@ if (TFCache::start_cache('menu', self::$post_id, array('ID' => $module_ID))):
         'module', 'module-' . $mod_name, $module_ID, $css_menu, $animation_effect
                     ), $mod_name, $module_ID, $fields_args)
     );
-    $container_props = apply_filters( 'themify_builder_module_container_props', array(
+
+    $mobile_menu_data = array();
+
+    if( ! empty( $allow_menu_breakpoint ) ) {
+        $mobile_menu_data = array(
+            'data-menu-breakpoint' => $menu_breakpoint,
+            'data-menu-direction' => $menu_slide_direction
+        );
+    }
+
+    $container_props = apply_filters( 'themify_builder_module_container_props', array_merge( array(
         'id' => $module_ID,
         'class' => $container_class
-    ), $fields_args, $mod_name, $module_ID );
+    ), $mobile_menu_data ), $fields_args, $mod_name, $module_ID );
     ?>
 
     <!-- module menu -->

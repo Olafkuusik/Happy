@@ -189,7 +189,7 @@ body.fixed-header.page-loaded #headerwrap {
 /* Remove sub arrow mobile */
 #main-nav .menu-item-has-children > a .sub-arrow,
 #main-nav .page_item_has_children > a .sub-arrow {
-	display: none;
+	display: none !important;
 }
 
 /* sub-menu child arrow */
@@ -215,6 +215,10 @@ body.fixed-header.page-loaded #headerwrap {
 }
 
 /* sub-menu dropdown animation */
+.header-slide-out #headerwrap #main-nav .has-sub-menu > .children > li > ul.children,
+.header-slide-out #headerwrap #main-nav .has-mega-column > .children > li > ul.children,
+.header-slide-out #headerwrap #main-nav > li > div.children,
+.header-slide-out #headerwrap #main-nav > li > ul.children,
 .header-slide-out #headerwrap #main-nav .has-sub-menu > .sub-menu > li > ul.sub-menu,
 .header-slide-out #headerwrap #main-nav .has-mega-column > .sub-menu > li > ul.sub-menu,
 .header-slide-out #headerwrap #main-nav > li > div.sub-menu,
@@ -228,6 +232,10 @@ body.fixed-header.page-loaded #headerwrap {
 	margin: 0;
 	padding: 0 0 0 1em;
 }
+.header-slide-out #headerwrap #main-nav .has-sub-menu > .children > li > .toggle-on + ul.children,
+.header-slide-out #headerwrap #main-nav .has-mega-column > .children > li > .toggle-on + ul.children,
+.header-slide-out #headerwrap #main-nav > li > .toggle-on + div.children,
+.header-slide-out #headerwrap #main-nav > li > .toggle-on + ul.children,
 .header-slide-out #headerwrap #main-nav .has-sub-menu > .sub-menu > li > .toggle-on + ul.sub-menu,
 .header-slide-out #headerwrap #main-nav .has-mega-column > .sub-menu > li > .toggle-on + ul.sub-menu,
 .header-slide-out #headerwrap #main-nav > li > .toggle-on + div.sub-menu,

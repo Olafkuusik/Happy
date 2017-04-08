@@ -159,6 +159,9 @@ h5 {
 .module-fancy-heading .sub-head:before {
 	display: none;
 }
+.module-fancy-heading .fancy-heading .sub-head:before {
+	border-top: none;
+}
 
 /************************************************************************************
 HEADER
@@ -178,8 +181,6 @@ HEADER
 	font-family: 'Source Sans Pro', sans-serif;
 	font-weight: 900;
 	letter-spacing: -0.02em;
-}
-.header-horizontal #site-logo {
 	font-size: 2.5em;
 	margin: .5em 0 0;
 }
@@ -190,9 +191,9 @@ HEADER
 	font-weight: 600;
 	font-size: 0.9em;
 }
-#headerwrap #main-nav a:hover,
-#headerwrap #main-nav .current_page_item > a,
-#headerwrap #main-nav .current-menu-item > a {
+#main-nav a:hover,
+#main-nav .current_page_item > a,
+#main-nav .current-menu-item > a {
 	color: #dfa300;
 }
 .header-horizontal #main-nav > li {
@@ -231,12 +232,12 @@ HEADER
 
 /* FIXED HEADER
 ================================================ */
-.header-horizontal #headerwrap.fixed-header #header {
+body:not(.mobile_menu_active).header-horizontal #headerwrap.fixed-header #header {
 	padding-top: 0;
 	padding-bottom: 0;
 }
 .header-horizontal #headerwrap.fixed-header #header #site-logo {
-	margin-top: .2em;
+	margin-top: .1em;
 	transition: margin 0.3s linear;
 }
 .header-horizontal #headerwrap.fixed-header #main-nav > li > a {
@@ -353,18 +354,25 @@ FOOTER
 	width: auto;
 	max-width: none;
 	position: relative;
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex; /* Safari */
+	display: flex;
+	-webkit-flex-flow: column wrap;
+	flex-flow: column wrap;
 }
 
 /* BACK TOP
 ================================================ */
 .footer-block #footerwrap .back-top {
-	position: absolute;
-	top: auto;
-	bottom: 3em;
-	left: 50%;
-	transform: translateX(-50%);
-	padding: 0;
-	margin-bottom: 0;
+	-webkit-order: 3;
+	order: 3;
+	margin-bottom: -32px;
+}
+.footer-block .section-col + .footer-text {
+	-webkit-order: 4;
+	order: 4;
 }
 .footer-block #footerwrap .back-top .arrow-up a {
 	border-radius: 100%;
@@ -428,7 +436,6 @@ FOOTER
 .footer-block .footer-widgets-wrap,
 .footer-block .section-col + .footer-text .footer-text-inner {
 	width: 1160px;
-	max-width: 100%;
 	margin: auto;
 	clear: both;
 }
@@ -556,36 +563,39 @@ BUILDER
 }
 
 /************************************************************************************
+MOBILE MENU ACTIVE
+*************************************************************************************/
+.mobile_menu_active.footer-block .main-col,
+.mobile_menu_active.footer-block .footer-widgets-wrap,
+.mobile_menu_active.footer-block .section-col + .footer-text .footer-text-inner {
+	max-width: 96%;
+	width: auto;
+}
+.mobile_menu_active.header-horizontal #headerwrap #main-nav > li > a {
+	box-shadow: none;
+}
+.mobile_menu_active.header-horizontal #headerwrap.fixed-header #main-nav .highlight-link > a,
+.mobile_menu_active.header-horizontal #headerwrap.fixed-header #main-nav > li > a {
+	padding: 0.6em 0;
+}
+.mobile_menu_active.transparent-header #headerwrap #main-nav a,
+.mobile_menu_active.transparent-header #headerwrap.fixed-header #main-nav > li > a {
+	color: inherit;
+}
+.mobile_menu_active #headerwrap #main-nav .current_page_item > a,
+.mobile_menu_active #headerwrap #main-nav .current-menu-item > a,
+.mobile_menu_active.transparent-header #headerwrap #main-nav li a:hover {
+	color: #dfa300;
+}
+.mobile_menu_active.header-horizontal #headerwrap #main-nav .highlight-link a:hover,
+.mobile_menu_active.header-horizontal #main-nav .highlight-link.current_page_item > a,
+.mobile_menu_active.header-horizontal #main-nav .highlight-link.current-menu-item > a {
+	background: none;
+}
+
+/************************************************************************************
 MEDIA QUERIES
 *************************************************************************************/
-@media screen and (max-width: 1200px) {
-	.footer-block .main-col,
-	.footer-block .footer-widgets-wrap,
-	.footer-block .footer-text-inner {
-		max-width: 96%;
-	}
-	.header-horizontal #headerwrap #main-nav > li > a {
-		box-shadow: none;
-	}
-	.header-horizontal #headerwrap.fixed-header #main-nav .highlight-link > a,
-	.header-horizontal #headerwrap.fixed-header #main-nav > li > a {
-		padding: 0.6em 0;
-	}
-	.transparent-header #headerwrap #main-nav a,
-	.transparent-header #headerwrap.fixed-header #main-nav > li > a {
-		color: inherit;
-	}
-	#headerwrap #main-nav .current_page_item > a,
-	#headerwrap #main-nav .current-menu-item > a,
-	.transparent-header #headerwrap #main-nav li a:hover {
-		color: #dfa300;
-	}
-	.header-horizontal #headerwrap #main-nav .highlight-link a:hover,
-	.header-horizontal #main-nav .highlight-link.current_page_item > a,
-	.header-horizontal #main-nav .highlight-link.current-menu-item > a {
-		background: none;
-	}
-}
 @media screen and (max-width: 760px) {
 	/* HEADING */
 	.page-title,
@@ -617,12 +627,9 @@ MEDIA QUERIES
 	}
 	
 	/* FOOTER */
-	.footer-block #footer .back-top {
-		bottom: 6.5em;
-	}
-	.footer-block .main-col,
-	.footer-block .footer-widgets-wrap,
-	.footer-block .footer-text-inner {
+	.mobile_menu_active.footer-block .main-col,
+	.mobile_menu_active.footer-block .footer-widgets-wrap,
+	.mobile_menu_active.footer-block .section-col + .footer-text .footer-text-inner {
 		max-width: 90%;
 	}
 	.footer-block .footer-text .one,
@@ -631,8 +638,12 @@ MEDIA QUERIES
 		text-align: inherit;
 	}
 }
-
 @media screen and (max-width: 680px) {
+	.header-horizontal #headerwrap.fixed-header #header #site-logo,
+	.header-horizontal #site-logo {
+		margin-top: 0;
+		font-size: 2em;
+	}
 	/* grid2-thumb layout */
 	.loops-wrapper.grid2-thumb .post-image {
 		float: none;

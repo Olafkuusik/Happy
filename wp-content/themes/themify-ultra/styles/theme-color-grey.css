@@ -1,6 +1,7 @@
 /* THEME COLOR GREY
 ================================================ */
 /* general bg & color */
+#slide-cart,
 .header-minbar .sidemenu,
 .header-leftpane #headerwrap, 
 .header-rightpane #headerwrap,
@@ -58,20 +59,10 @@
 	color: inherit;
 }
 
-/* transparent header */
-.transparent-header #headerwrap a {
-	color: #fff; /* require for transparent-header */
-}
-
 /* fixed header */
 .transparent-header #headerwrap.fixed-header,
 #headerwrap.fixed-header {
 	background-color: rgba(187,187,187,0.9);
-}
-
-/* header widgets pull down */
-.pull-down:before {
-	border-color: #bbb;
 }
 
 /* full section scrolling loader */
@@ -85,9 +76,6 @@
 }
 .header-stripe #header #site-logo a {
 	color: inherit;
-}
-.header-stripe #header .pull-down:before {
-	border-bottom-color: #bbb;
 }
 .header-stripe #headerwrap a {
 	color: #808080;
@@ -304,6 +292,7 @@ button:hover,
 .mobile_menu_active .sidemenu {
 	background-color: #bbb;
 }
+#slide-cart a:hover,
 .mobile_menu_active #headerwrap a:hover,
 .mobile_menu_active #headerwrap #main-nav a:hover,
 .mobile_menu_active #headerwrap #main-nav ul a:hover {

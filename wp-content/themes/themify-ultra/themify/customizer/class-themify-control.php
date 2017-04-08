@@ -223,12 +223,12 @@ class Themify_Control extends WP_Customize_Control {
 				<div class="custom-select themify_combobox font-family-select <?php if (!$args['show_size']) echo 'font-family-select-no-size' ?>">
 					<?php if (empty(self::$webfonts)): ?>
 						<?php
-						global $themify_gfonts;
 						$f = themify_get_web_safe_font_list();
 						unset($f[0], $f[1]);
 						foreach ($f as $v) {
 							self::$webfonts[$v['value']] = array('name' => $v['name'], 'value' => $v['value']);
 						}
+						$themify_gfonts = themify_get_google_font_lists();
 						if (!empty($themify_gfonts)) {
 
 							foreach ($themify_gfonts as $v) {

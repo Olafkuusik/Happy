@@ -58,7 +58,18 @@ class Themify_TinyMCE {
 	 * @since 2.7.6
 	 */
 	function get_shortcodes() {
-		return apply_filters( 'themify_shortcodes', include( dirname( __FILE__ ) . '/shortcodes.php' ) );
+		$shortcodes = apply_filters( 'themify_shortcodes', include( dirname( __FILE__ ) . '/shortcodes.php' ) );
+
+		/* sort list of shortcodes by their priority key */
+		uasort( $shortcodes, array( $this, 'sort_by_priority_key' ) );
+
+		/* sort the fields array in each shortcode */
+		foreach( $shortcodes as $key => $def ) {
+			if( isset( $shortcodes[$key]['fields'] ) && ! empty( $shortcodes[$key]['fields'] ) )
+				usort( $shortcodes[$key]['fields'], array( $this, 'sort_by_priority_key' ) );
+		}
+
+		return $shortcodes;
 	}
 
 	/**
@@ -73,6 +84,7 @@ class Themify_TinyMCE {
 			'editor' => array(
 				'menuTooltip' => __('Shortcodes', 'themify'),
 				'menuName' => __('Shortcodes', 'themify'),
+				'icon' => THEMIFY_TINYMCE_URI . 'icon.png',
 			)
 		));
 	}
@@ -100,13 +112,6 @@ class Themify_TinyMCE {
 						foreach( $shortcode['fields'] as $field ) {
 							if( isset( $field['ignore'] ) ) {
 								continue;
-							} else if( isset( $field['append'] ) ) {
-								// combine the value of other fields with this one
-								$separator = isset( $field['separator'] ) ? $field['separator'] : ' ';
-								echo '<# if ( data.' . $field['name'] . ' = [ ';
-								foreach( $field['append'] as $_name )
-									echo 'data.' . $_name . ', ';
-								echo 'data.' . $field['name'] . '].filter( Boolean ).join( "'. $separator .'" ) ) { #> '. $field['name'] .'="{{data.' . $field['name'] . '}}"<# } #>';
 							} else {
 								echo '<# if ( data.' . $field['name'] . ' ) { #> ' . $field['name'] . '="{{data.' . $field['name'] . '}}"<# } #>';
 							}
@@ -114,13 +119,27 @@ class Themify_TinyMCE {
 					}
 					echo ']';
 					if( isset( $shortcode['closing_tag'] ) && $shortcode['closing_tag'] == true ) {
-						echo '{{{data.selectedContent}}}';
+						echo isset( $shortcode['wrap_with'] ) ? $shortcode['wrap_with'] : '{{{data.selectedContent}}}';
 						echo '[/' . $key . ']';
 					}
 				}
 				echo '</script>';
 			}
 		}
+	}
+
+	/**
+	 * Callback for usort and uasort, sorts the array by the 'priority' key
+	 * Default priority for all keys is 10
+	 *
+	 * @return int
+	 */
+	function sort_by_priority_key( $item1, $item2 ) {
+		$i1p = isset( $item1['priority'] ) ? $item1['priority'] : 10;
+		$i2p = isset( $item2['priority'] ) ? $item2['priority'] : 10;
+		if( $i1p == $i2p ) return 0;
+
+		return $i1p < $i2p ? -1 : 1;
 	}
 }
 

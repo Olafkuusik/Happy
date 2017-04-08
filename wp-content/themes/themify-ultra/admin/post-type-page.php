@@ -175,10 +175,24 @@ function themify_theme_query_post_meta_box($args = array()) {
 					'title' => __( 'Grid 2', 'themify' )
 				),
 				array(
-					'value' => 'slider',
-					'img'   => 'images/layout-icons/slider-default.png',
-					'title' => __( 'Slider', 'themify' )
+					'value' => 'list-large-image',
+					'img'   => 'images/layout-icons/list-large-image.png',
+					'title' => __( 'List Large Image', 'themify' )
 				),
+				array(
+					'value' => 'list-thumb-image',
+					'img'   => 'images/layout-icons/list-thumb-image.png',
+					'title' => __( 'List Thumb Image', 'themify' )
+				),
+				array(
+					'value' => 'grid2-thumb',
+					'img'   => 'images/layout-icons/grid2-thumb.png',
+					'title' => __( 'Grid 2 Thumb', 'themify' )
+				),
+                                array(  'value' => 'auto_tiles', 
+                                        'img' => 'images/layout-icons/auto-tiles.png', 
+                                        'title' => __('Auto Tiles', 'themify')
+                                    )
 			),
 			'default' => 'list-post',
 		),
@@ -201,6 +215,10 @@ function themify_theme_query_post_meta_box($args = array()) {
 				array(
 					'value' => 'polaroid',
 					'name' => __( 'Polaroid', 'themify' ),
+				),
+				array(
+					'value' => 'boxed',
+					'name' => __( 'Boxed', 'themify' ),
 				)
 			)
 		),
@@ -281,12 +299,32 @@ function themify_theme_query_post_meta_box($args = array()) {
 			'description'	=> '',
 			'type'		=> 'dropdown',
 			'meta'		=> array(
-				array('name' => __('Full Content', 'themify'),'value'=>'content','selected'=>true),
-				array('name' => __('Excerpt', 'themify'),'value'=>'excerpt'),
-				array('name' => __('None', 'themify'),'value'=>'none')
+				array( 'name' => __('Full Content', 'themify'), 'value' => 'content' ),
+				array( 'name' => __('Excerpt', 'themify'), 'value' => 'excerpt', 'selected' => true ),
+				array( 'name' => __('None', 'themify'), 'value' => 'none' )
 			),
-			'default' => 'content'
+			'default' => 'excerpt',
 		),
+		// Post filter 
+		array(
+			'name' => 'post_filter',
+			'type' => 'dropdown',
+			'title' => __('Post Filter', 'themify'),
+			'meta' =>array(
+				array(
+				'value' => '',
+				'name' => '',
+				),
+				array(
+				'value' => 'yes',
+				'name' => 'Yes',
+				),
+				array(
+				'value' => 'no',
+				'name' => 'No',
+				),
+			)
+			),
 		// Featured Image Size
 		array(
 			'name'	=>	'feature_size_page',
@@ -460,12 +498,16 @@ function themify_theme_query_portfolio_meta_box($args = array()){
 					'img'   => 'images/layout-icons/slider-default.png',
 					'title' => __( 'Slider', 'themify' )
 				),
+                                array(  'value' => 'auto_tiles', 
+                                        'img' => 'images/layout-icons/auto-tiles.png', 
+                                        'title' => __('Auto Tiles', 'themify')
+                                    )
 			),
 			'default' => 'list-post',
 		),
 		// Post Content Layout
 		array(
-			'name' 		=> 'portfolio_post_content_layout',
+			'name' 		=> 'portfolio_content_layout',
 			'title'		=> __( 'Post Content Layout', 'themify' ),
 			'description'	=> '',
 			'type'		=> 'dropdown',
@@ -482,7 +524,12 @@ function themify_theme_query_portfolio_meta_box($args = array()){
 				array(
 					'value' => 'polaroid',
 					'name' => __( 'Polaroid', 'themify' ),
-				)
+				),
+				array(
+					'value' => 'boxed',
+					'name' => __( 'Boxed', 'themify' ),
+				),
+				
 			)
 		),
 		// Post Masonry
@@ -563,11 +610,11 @@ function themify_theme_query_portfolio_meta_box($args = array()){
 			'description'	=> '',
 			'type'		=> 'dropdown',
 			'meta'		=> array(
-				array('name' => __('Full Content', 'themify'),'value'=>'content','selected'=>true),
-				array('name' => __('Excerpt', 'themify'),'value'=>'excerpt'),
-				array('name' => __('None', 'themify'),'value'=>'none')
+				array( 'name' => __('Full Content', 'themify'), 'value' => 'content' ),
+				array( 'name' => __('Excerpt', 'themify'), 'value' => 'excerpt', 'selected' => true ),
+				array( 'name' => __('None', 'themify'), 'value' => 'none' )
 			),
-			'default' => 'content',
+			'default' => 'excerpt',
 		),
 		// Featured Image Size
 		array(
@@ -717,6 +764,7 @@ function themify_theme_page_theme_design_meta_box( $args = array() ) {
 			'description' => '',
 			'type'        => 'color',
 			'meta'        => array( 'default' => null ),
+			'format'      => 'rgba',
 		),
 		// Background image
 		array(
@@ -802,6 +850,7 @@ function themify_theme_page_theme_design_meta_box( $args = array() ) {
 			'meta'        => array( 'default' => null ),
 			'after'		  => __( 'Accent Font Color', 'themify' ),
 			'toggle'	=> 'color-custom-toggle',
+			'format'      => 'rgba',
 		),
 		array(
 			'name'        => 'scheme_link',
@@ -811,6 +860,7 @@ function themify_theme_page_theme_design_meta_box( $args = array() ) {
 			'meta'        => array( 'default' => null ),
 			'after'		  => __( 'Accent Link Color', 'themify' ),
 			'toggle'	=> 'color-custom-toggle',
+			'format'      => 'rgba',
 		),
 		array(
 			'name'        => 'scheme_background',
@@ -820,6 +870,7 @@ function themify_theme_page_theme_design_meta_box( $args = array() ) {
 			'meta'        => array( 'default' => null ),
 			'after'		  => __( 'Accent Background Color', 'themify' ),
 			'toggle'	=> 'color-custom-toggle',
+			'format'      => 'rgba',
 		),
 
 		// Typography Mode, Presets or Custom
@@ -874,6 +925,7 @@ function themify_theme_page_theme_design_meta_box( $args = array() ) {
 			'meta'        => array( 'default' => null ),
 			'after'		  => __( 'Body Font Color', 'themify' ),
 			'toggle'	  => 'typography-custom-toggle',
+			'format'      => 'rgba',
 		),
 		// Body wrap link color
 		array(
@@ -884,6 +936,7 @@ function themify_theme_page_theme_design_meta_box( $args = array() ) {
 			'meta'        => array( 'default' => null ),
 			'after'		  => __( 'Body Link Color', 'themify' ),
 			'toggle'	  => 'typography-custom-toggle',
+			'format'      => 'rgba',
 		),
 		// Heading font
 		array(
@@ -905,6 +958,7 @@ function themify_theme_page_theme_design_meta_box( $args = array() ) {
 			'meta'        => array( 'default' => null ),
 			'after'		  => __( 'Heading Font Color', 'themify' ),
 			'toggle'	  => 'typography-custom-toggle',
+			'format'      => 'rgba',
 		),
 
 		// Header Separator
@@ -1181,6 +1235,7 @@ function themify_theme_page_theme_design_meta_box( $args = array() ) {
 			'meta'        => array( 'default' => null ),
 			'toggle'      => array( 'solid-toggle', 'slider-toggle', 'video-toggle' ),
 			'class'     => 'hide-if none',
+			'format'      => 'rgba',
 		),
 		// Background image
 		array(
@@ -1290,6 +1345,14 @@ function themify_theme_page_theme_design_meta_box( $args = array() ) {
 			'toggle'	=> 'slider-toggle',
 			'default' => 'yes',
 		),
+		// Hide Slider Controlls
+		array(
+			'name'        => 'header_hide_controlls',
+			'title'       => __( 'Hide Slider Controlls', 'themify' ),
+			'description' => '',
+			'type'        => 'checkbox',
+			'toggle'	=> 'slider-toggle'
+		),
 		// Header wrap text color
 		array(
 			'name'        => 'headerwrap_text_color',
@@ -1298,6 +1361,7 @@ function themify_theme_page_theme_design_meta_box( $args = array() ) {
 			'type'        => 'color',
 			'meta'        => array( 'default' => null ),
 			'class'     => 'hide-if none',
+			'format'      => 'rgba',
 		),
 		// Header wrap link color
 		array(
@@ -1307,6 +1371,7 @@ function themify_theme_page_theme_design_meta_box( $args = array() ) {
 			'type'        => 'color',
 			'meta'        => array( 'default' => null ),
 			'class'     => 'hide-if none',
+			'format'      => 'rgba',
 		),
 		// Footer Separator
 		array(
@@ -1472,11 +1537,11 @@ function themify_theme_page_theme_design_meta_box( $args = array() ) {
 			'description' => sprintf( __( 'Image filters can be set site-wide at <a href="%s" target="_blank">Themify > Settings > Theme Settings</a>', 'themify' ), admin_url( 'admin.php?page=themify#setting-theme_settings' ) ),
 			'type'        => 'radio',
 			'meta'        => array(
-				#array( 'value' => 'initial', 'name' => __( 'Theme Default', 'themify' )),
-				array( 'value' => 'all', 'name' => __( 'All Images', 'themify' ), 'selected' => true  ),
+				array( 'value' => 'initial', 'name' => __( 'Theme Default', 'themify' )),
+				array( 'value' => 'all', 'name' => __( 'All Images', 'themify' ) ),
 				array( 'value' => 'featured-only', 'name' => __( 'Featured Images Only', 'themify' ), )
 			),
-			'default' => 'all',
+			'default' => 'initial',
 		),
 
 	);

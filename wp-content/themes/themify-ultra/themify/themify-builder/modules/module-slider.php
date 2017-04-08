@@ -301,19 +301,30 @@ class TB_Slider_Module extends Themify_Builder_Module {
 						'id' => 'img_url_slider',
 						'type' => 'image',
 						'label' => __('Image URL', 'themify'),
-						'class' => 'xlarge'
+						'class' => 'xlarge',
+						'render_callback' => array(
+							'repeater' => 'img_content_slider',
+							'control_type' => 'textonchange'
+						)
 					),
 					array(
 						'id' => 'img_title_slider',
 						'type' => 'text',
 						'label' => __('Image Title', 'themify'),
-						'class' => 'fullwidth'
+						'class' => 'fullwidth',
+						'render_callback' => array(
+							'repeater' => 'img_content_slider'
+						)
 					),
 					array(
 						'id' => 'img_link_slider',
 						'type' => 'text',
 						'label' => __('Image Link', 'themify'),
-						'class' => 'fullwidth'
+						'class' => 'fullwidth',
+						'render_callback' => array(
+							'repeater' => 'img_content_slider',
+							'control_type' => 'textonchange'
+						)
 					),
 					array(
 						'id' => 'img_link_params',
@@ -324,16 +335,26 @@ class TB_Slider_Module extends Themify_Builder_Module {
 							'lightbox' => __( 'Open link in lightbox', 'themify' ),
 							'newtab' => __( 'Open link in new tab', 'themify' )
 						),
+						'render_callback' => array(
+							'repeater' => 'img_content_slider'
+						)
 					),
 					array(
 						'id' => 'img_caption_slider',
 						'type' => 'textarea',
 						'label' => __('Image Caption', 'themify'),
 						'class' => 'fullwidth',
-						'rows' => 6
+						'rows' => 6,
+						'render_callback' => array(
+							'repeater' => 'img_content_slider',
+							'control_type' => 'text'
+						)
 					)
 				),
-				'wrap_with_class' => 'tf-group-element tf-group-element-image'
+				'wrap_with_class' => 'tf-group-element tf-group-element-image',
+				'render_callback' => array(
+					'control_type' => 'repeater'
+				)
 			),
 
 			///////////////////////////////////////////
@@ -351,35 +372,56 @@ class TB_Slider_Module extends Themify_Builder_Module {
 						'help' => array(
 							'new_line' => true,
 							'text' => __('YouTube, Vimeo, etc', 'themify')
+						),
+						'render_callback' => array(
+							'repeater' => 'video_content_slider',
+							'control_type' => 'textonchange'
 						)
 					),
 					array(
 						'id' => 'video_title_slider',
 						'type' => 'text',
 						'label' => __('Video Title', 'themify'),
-						'class' => 'fullwidth'
+						'class' => 'fullwidth',
+						'render_callback' => array(
+							'repeater' => 'video_content_slider'
+						)
 					),
 					array(
 						'id' => 'video_title_link_slider',
 						'type' => 'text',
 						'label' => __('Video Title Link', 'themify'),
-						'class' => 'fullwidth'
+						'class' => 'fullwidth',
+						'render_callback' => array(
+							'repeater' => 'video_content_slider',
+							'control_type' => 'textonchange'
+						)
 					),
 					array(
 						'id' => 'video_caption_slider',
 						'type' => 'textarea',
 						'label' => __('Video Caption', 'themify'),
 						'class' => 'fullwidth',
-						'rows' => 6
+						'rows' => 6,
+						'render_callback' => array(
+							'repeater' => 'video_content_slider',
+							'control_type' => 'text'
+						)
 					),
 					array(
 						'id' => 'video_width_slider',
 						'type' => 'text',
 						'label' => __('Video Width', 'themify'),
-						'class' => 'xsmall'
+						'class' => 'xsmall',
+						'render_callback' => array(
+							'repeater' => 'video_content_slider'
+						)
 					)
 				),
-				'wrap_with_class' => 'tf-group-element tf-group-element-video'
+				'wrap_with_class' => 'tf-group-element tf-group-element-video',
+				'render_callback' => array(
+					'control_type' => 'repeater'
+				)
 			),
 
 			///////////////////////////////////////////
@@ -394,10 +436,16 @@ class TB_Slider_Module extends Themify_Builder_Module {
 						'type' => 'wp_editor',
 						'label' => false,
 						'class' => 'fullwidth builder-field',
-						'rows' => 6
+						'rows' => 6,
+						'render_callback' => array(
+							'repeater' => 'text_content_slider'
+						)
 					)
 				),
-				'wrap_with_class' => 'tf-group-element tf-group-element-text'
+				'wrap_with_class' => 'tf-group-element tf-group-element-text',
+				'render_callback' => array(
+					'control_type' => 'repeater'
+				)
 			),
 
 			array(
@@ -410,6 +458,10 @@ class TB_Slider_Module extends Themify_Builder_Module {
 					array('img' => 'slider-image-top.png', 'value' => 'slider-overlay', 'label' => __('Slider Overlay', 'themify')),
 					array('img' => 'slider-caption-overlay.png', 'value' => 'slider-caption-overlay', 'label' => __('Slider Caption Overlay', 'themify')),
 					array('img' => 'slider-agency.png', 'value' => 'slider-agency', 'label' => __('Agency', 'themify'))
+				),
+				'render_callback' => array(
+					'binding' => 'live',
+					'selector' => '' // apply to the container module
 				)
 			),
 			array(
@@ -576,6 +628,17 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			)
 		) );
 		return $options;
+	}
+
+	public function get_default_settings() {
+		$settings = array(
+			'posts_per_page_slider' => 4,
+			'display_slider' => 'none',
+			'img_w_slider' => 360,
+			'img_h_slider' => 200,
+			'visible_opt_slider' => 3
+		);
+		return $settings;
 	}
 
 	public function get_animation() {

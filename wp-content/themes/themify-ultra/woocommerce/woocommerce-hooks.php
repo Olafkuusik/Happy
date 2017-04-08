@@ -62,7 +62,6 @@ add_filter('woocommerce_get_price_html', 'themify_no_price');
 add_filter('loop_shop_per_page', 'themify_products_per_page');
 // Alter or remove success message after adding to cart with ajax.
 add_filter( 'wc_add_to_cart_message', 'themify_theme_wc_add_to_cart_message' );
-add_filter( 'woocommerce_notice_types', 'themify_theme_wc_add_to_cart_message' );
 
 /**
  * Fragments

@@ -139,6 +139,35 @@ class TB_Feature_Module extends Themify_Builder_Module {
 				)
 			),
 			array(
+				'id' => 'overlap_image_feature',
+				'type' => 'image',
+				'label' => __('Overlap Image', 'themify'),
+				'class' => 'xlarge',
+				'binding' => array(
+					'empty' => array( 'hide' => array( 'overlap_image_size' ) ),
+					'not_empty' => array( 'show' => array( 'overlap_image_size' ) ),
+				)
+			),
+			array(
+				'id' => 'overlap_image_size',
+				'type' => 'multi',
+				'label' => '&nbsp;',
+				'fields' => array(
+					array(
+						'id' => 'overlap_image_width',
+						'type' => 'text',
+						'label' => __( 'Width', 'themify' ),
+						'value' => ''
+					),
+					array(
+						'id' => 'overlap_image_height',
+						'type' => 'text',
+						'label' => __( 'Height', 'themify' ),
+						'value' => ''
+					),
+				),
+			),
+			array(
 				'id' => 'link_options',
 				'type' => 'radio',
 				'label' => __('Open Link In', 'themify'),
@@ -219,6 +248,20 @@ class TB_Feature_Module extends Themify_Builder_Module {
 		return $options;
 	}
 
+	public function get_default_settings() {
+		$settings = array(
+			'title_feature' => esc_html__( 'Feature title', 'themify' ),
+			'content_feature' => esc_html__( 'Feature content', 'themify' ),
+			'circle_percentage_feature' => '100',
+			'circle_stroke_feature' => '1',
+			'icon_feature' => 'fa-home',
+			'layout_feature' => 'icon-top',
+			'circle_size_feature' => 'small',
+			'circle_color_feature' => 'de5d5d'
+		);
+		return $settings;
+	}
+
 	public function get_animation() {
 		$animation = array(
 			array(
@@ -293,7 +336,7 @@ class TB_Feature_Module extends Themify_Builder_Module {
 					array('value' => 'repeat', 'name' => __('Repeat All', 'themify')),
 					array('value' => 'repeat-x', 'name' => __('Repeat Horizontally', 'themify')),
 					array('value' => 'repeat-y', 'name' => __('Repeat Vertically', 'themify')),
-					array('value' => 'repeat-none', 'name' => __('Do not repeat', 'themify')),
+					array('value' => 'no-repeat', 'name' => __('Do not repeat', 'themify')),
 					array('value' => 'fullcover', 'name' => __('Fullcover', 'themify'))
 				),
 				'prop' => 'background-repeat',

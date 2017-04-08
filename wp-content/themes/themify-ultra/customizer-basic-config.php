@@ -332,12 +332,25 @@ function themify_theme_customizer_definition( $args ) {
 			'prop' => 'background',
 		),
 
+		'sticky_header_imageselect' => array(
+			'control' => array(
+				'type'    => 'Themify_Image_Control',
+				'label'   => __( 'Sticky Header Logo', 'themify' ),
+				'image_options' => array(
+					'show_size_fields' => true,
+					'image_label' => ''
+				)
+			),
+			'selector' => '.fixed-header #headerwrap #site-logo a',
+			'prop' => 'logo',
+		),
+
 		'sticky_header_font' => array(
 			'control' => array(
 				'type'    => 'Themify_Font_Control',
 				'label'   => __( 'Header Font', 'themify' ),
 			),
-			'selector' => '.fixed-header #header, .fixed-header #site-description',
+			'selector' => '#headerwrap.fixed-header #header, #headerwrap.fixed-header #site-description',
 			'prop' => 'font',
 		),
 
@@ -347,7 +360,7 @@ function themify_theme_customizer_definition( $args ) {
 				'label'   => __( 'Header Font Color', 'themify' ),
 				'show_label' => false,
 			),
-		'selector' => '.fixed-header #header',
+		'selector' => '#headerwrap.fixed-header #header',
 			'prop' => 'color',
 		),
 
@@ -356,7 +369,7 @@ function themify_theme_customizer_definition( $args ) {
 				'type'    => 'Themify_Text_Decoration_Control',
 				'label'   => __( 'Header Link', 'themify' ),
 			),
-			'selector' => '.fixed-header #header a',
+			'selector' => '#headerwrap.fixed-header #header a',
 			'prop' => 'font',
 		),
 
@@ -366,7 +379,7 @@ function themify_theme_customizer_definition( $args ) {
 				'label'   => __( 'Header Link Color', 'themify' ),
 				'show_label' => false,
 			),
-			'selector' => '.fixed-header #header a',
+			'selector' => '#headerwrap.fixed-header #header a',
 			'prop' => 'color',
 		),
 
@@ -376,7 +389,7 @@ function themify_theme_customizer_definition( $args ) {
 				'type'    => 'Themify_Text_Decoration_Control',
 				'label'   => __( 'Header Link Hover', 'themify' ),
 			),
-			'selector' => '.fixed-header #header a:hover',
+			'selector' => '#headerwrap.fixed-header #header a:hover',
 			'prop' => 'font',
 		),
 
@@ -385,7 +398,7 @@ function themify_theme_customizer_definition( $args ) {
 			'control' => array(
 				'type'    => 'Themify_Color_Control',
 			),
-			'selector' => '.fixed-header #header a:hover',
+			'selector' => '#headerwrap.fixed-header #header a:hover',
 			'prop' => 'color',
 		),
 
@@ -424,13 +437,6 @@ function themify_theme_customizer_definition( $args ) {
 		// Accordion Start ---------------------------
 		'start_nav_acc' => $themify_customizer->accordion_start( __( 'Main Navigation', 'themify' ) ),
 
-		'main_nav' => array(
-			'control' => array(
-				'type'    => 'nav_menu',
-				'label'   => __( 'Main Navigation Menu', 'themify' ),
-				'location' => 'main-nav',
-			),
-		),
 
 		'main_nav_link_font' => array(
 			'control' => array(
@@ -959,14 +965,7 @@ function themify_theme_customizer_definition( $args ) {
 			'selector' => '#footer a:hover',
 			'prop' => 'font',
 		),
-				
-		'footer_nav' => array(
-			'control' => array(
-				'type'    => 'nav_menu',
-				'label'   => __( 'Footer Navigation Menu', 'themify' ),
-				'location' => '#footer-nav',
-			),
-		),
+		
 
 		// Footer Widget Font #footer .footer-widgets
 
@@ -1026,15 +1025,6 @@ function themify_theme_customizer_definition( $args ) {
 		'end_customcss_acc' => $themify_customizer->accordion_end(),
 		// Accordion End   ---------------------------
 
-		// This element doesn't have a live preview and it's not styling.
-		'clear' => array(
-			'control' => array(
-				'type'    => 'Themify_Clear_Control',
-				'label'   => __( 'Reset All Customization', 'themify' ),
-			),
-			'selector' => 'clear',
-			'prop' => 'clear',
-		)
 	);
 	return $args;
 }
