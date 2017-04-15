@@ -1173,6 +1173,11 @@ class Themify_Twitter extends WP_Widget {
 		/* remove twitter.com from Twitter ID */
 		$username = preg_replace( '/^(https?:\/\/)?twitter.com\//', '', $username );
 
+		/* ensure themify_shortcode_twitter is available */
+		if( ! function_exists( 'themify_shortcode_twitter' ) ) {
+			require_once THEMIFY_DIR . '/themify-shortcodes.php';
+		}
+
 		echo themify_shortcode_twitter(array(
 			'username' => $username,
 			'show_count' => $show_count,

@@ -3,7 +3,7 @@
 /*
   Plugin Name:  Builder Contact
   Plugin URI:   http://themify.me/addons/contact
-  Version:      1.1.3
+  Version:      1.1.4
   Author:       Themify
   Description:  Simple contact form. It requires to use with the latest version of any Themify theme or the Themify Builder plugin.
   Text Domain:  builder-contact
@@ -15,10 +15,10 @@ defined('ABSPATH') or die('-1');
 class Builder_Contact {
 
 	private static $instance = null;
-	var $url;
-	var $dir;
-	var $version;
-	var $_admin_instance;
+	public $url;
+	private $dir;
+	private $version;
+	private $_admin_instance;
 
 	/**
 	 * Creates or returns an instance of this class.
@@ -33,14 +33,13 @@ class Builder_Contact {
 		add_action('plugins_loaded', array($this, 'constants'), 1);
 		add_action('plugins_loaded', array($this, 'i18n'), 5);
 		add_action('plugins_loaded', array($this, 'admin'), 10);
-		add_action('wp_enqueue_scripts', array($this, 'enqueue'), 15);
 		add_action('themify_builder_setup_modules', array($this, 'register_module'));
 		add_action('themify_builder_admin_enqueue', array($this, 'admin_enqueue'), 15);
 		add_action('init', array($this, 'updater'));
-		if (is_admin()) {
-			add_action('wp_ajax_builder_contact_send', array($this, 'contact_send'));
-			add_action('wp_ajax_nopriv_builder_contact_send', array($this, 'contact_send'));
-		}
+                add_filter('themify_builder_addons_assets',array($this,'assets'),10,1);
+                add_action('wp_ajax_builder_contact_send', array($this, 'contact_send'));
+                add_action('wp_ajax_nopriv_builder_contact_send', array($this, 'contact_send'));
+		
 	}
 
 	public function constants() {
@@ -54,15 +53,6 @@ class Builder_Contact {
 		load_plugin_textdomain('builder-contact', false, '/languages');
 	}
 
-	public function enqueue() {
-		wp_enqueue_style('builder-contact', $this->url . 'assets/style.css', null, $this->version);
-		wp_register_script('recaptcha', 'https://www.google.com/recaptcha/api.js', array(), '', true);
-		wp_register_script('builder-contact', $this->url . 'assets/scripts.js', array('jquery'), $this->version, true);
-		wp_localize_script('builder-contact', 'BuilderContact', array(
-			'admin_url' => admin_url('admin-ajax.php'),
-		));
-		wp_enqueue_script('builder-contact');
-	}
 
 	public function admin_enqueue() {
 		wp_enqueue_script('builder-contact');
@@ -164,6 +154,19 @@ class Builder_Contact {
 			return $default;
 		}
 	}
+        
+        public function assets($assets){
+            $assets['builder_contact']=array(
+                                'selector'=>'.module-contact',
+                                'css'=>$this->url.'assets/style.css',
+                                'js'=>$this->url.'assets/scripts.js',
+                                'ver'=>$this->version,
+                                'external'=>Themify_Builder_Model::localize_js('BuilderContact',array(
+                                                    'admin_url' => admin_url('admin-ajax.php')
+                                            ))
+                            );
+            return $assets;
+        }
 
 	public function updater() {
 		if (class_exists('Themify_Builder_Updater')) {

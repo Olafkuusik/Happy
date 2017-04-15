@@ -1028,10 +1028,10 @@ final class Themify_Builder_Model {
             $content = convert_smilies($content);
             $content = convert_chars($content);
             $content = $wp_embed->run_shortcode($content);
-            $content = do_shortcode(shortcode_unautop($content));
+            $content = shortcode_unautop($content);
             $content = preg_replace($pattern, $to, $content);
-            $content = $wp_embed->autoembed($content);
             $content = htmlspecialchars_decode($content);
+            $content = $wp_embed->autoembed($content);
             return $content;
         }
 }

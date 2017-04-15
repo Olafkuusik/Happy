@@ -750,3 +750,39 @@ function themify_validate_login(){
 
 //Executes themify_updater function using wp_ajax_ action hook
 add_action('wp_ajax_themify_validate_login', 'themify_validate_login');
+
+/**
+ * Returns allowed tags for updater notice markup
+ *
+ * @since 2.1.8
+ *
+ * @return mixed|void
+ */
+function themify_updater_notice_allowed_tags() {
+	/**
+	 * Filters allowed tags.
+	 *
+	 * @since 2.1.8
+	 *
+	 * @param array
+	 */
+	return apply_filters( 'themify_updater_notice_allowed_tags', array(
+		'div' => array(
+			'id'    => true,
+			'class' => true,
+		),
+		'p'   => array( 'class' => true, ),
+		'a'   => array(
+			'href'           => true,
+			'title'          => true,
+			'class'          => true,
+			'target'         => true,
+			'data-changelog' => true,
+		),
+		'select' => array( 'id' => true, ),
+		'option' => array(
+			'selected' => true,
+			'value'    => true,
+		),
+	) );
+}

@@ -44,6 +44,9 @@
 		width: 100%;
 		box-sizing: border-box;
 	}
+	.module-contact.contact-style2 .builder-contact-field input[type="checkbox"] {
+		width: auto;
+	}
 	.module-contact.contact-style2 .builder-contact-field-message {
 		clear: both;
 	}

@@ -546,7 +546,8 @@ var ThemifyLiveStyling;
 			this.listenTo(this.model, 'custom:restoredata', this.restoreData);
 			this.listenTo(this.model, 'custom:restorehtml', this.restoreHtml);
 			this.listenTo(this.model, 'custom:preview:live', this.previewLive);
-			this.listenTo(this.model, 'custom:preview:live', _.debounce( this.previewLiveCallback, 300 ));
+			this.listenTo(this.model, 'custom:preview:sc', _.debounce(this.previewShortcode, 400));
+			this.listenTo(this.model, 'custom:preview:live', _.debounce( this.previewLiveCallback, 500 ));
 			this.listenTo(this.model, 'custom:preview:reload', this.previewReload);
 			this.listenTo(this, 'custom:preview:init', this.previewInit);
 		},
@@ -567,7 +568,17 @@ var ThemifyLiveStyling;
 				this._jqueryXhr.abort();
 			}
 
-			var tmpl = this.templateVisual(data);
+			if ( this._shortcodeXhr && 4 !== this._shortcodeXhr ) {
+				this._shortcodeXhr.abort();
+			}
+
+			var tmpl = this.templateVisual(data),
+				sc_render = api.Utils.shortcodeToHTML(tmpl);
+
+			if ( ! _.isEmpty( sc_render.tags ) ) {
+				tmpl = sc_render.content;
+			}
+
 			if ( this.$('.module').length>0) {
 				this.$('.module').replaceWith( tmpl );
 			} else {
@@ -575,6 +586,10 @@ var ThemifyLiveStyling;
 			}
 			this.$el.children('style').remove(); // temporary fix unwanted inline style
 			api.liveStylingInstance.$liveStyledElmt = this.$('.module');
+
+			if ( ! _.isEmpty( sc_render.tags ) ) {
+				api.activeModel.trigger('custom:preview:sc', sc_render.tags);
+			}
 		},
 		previewLiveCallback: function() {
 			console.log('previewLiveCallback');
@@ -591,6 +606,10 @@ var ThemifyLiveStyling;
 
 			if ( this._jqueryXhr && 4 !== this._jqueryXhr ) {
 				this._jqueryXhr.abort();
+			}
+
+			if ( this._shortcodeXhr && 4 !== this._shortcodeXhr ) {
+				this._shortcodeXhr.abort();
 			}
 			
 			this._jqueryXhr = $.ajax({
@@ -636,6 +655,38 @@ var ThemifyLiveStyling;
 			});
 
 			return this;
+		},
+
+		previewShortcode: function( tags ) {
+			var that = this;
+
+			if ( this._shortcodeXhr && 4 !== this._shortcodeXhr ) {
+				this._shortcodeXhr.abort();
+			}
+			
+			this._shortcodeXhr = $.ajax({
+				type: "POST",
+				url: themifyBuilder.ajaxurl,
+				dataType: 'json',
+				data: {
+					action: 'tfb_render_element_shortcode',
+					shortcode_data: JSON.stringify(tags),
+					tfb_load_nonce: themifyBuilder.tfb_load_nonce
+				},
+				success: function(data) {
+					if ( data.success ) {
+						_.each( data.data, function( shortcode ) {
+							$('[data-rendered-sc="'+ shortcode.key +'"]').replaceWith( shortcode.rendered_html );
+
+							api.Utils.loadContentJs(that.$el);
+							api.Frontend.responsiveFrame.doSync();
+							
+							// Hook
+							$('body').trigger('builder_load_module_partial', that.$el);
+						});
+					}
+				}
+			});
 		},
 
 		modHover: function(e) {
@@ -907,7 +958,7 @@ var ThemifyLiveStyling;
 	$('body').on('builderscriptsloaded.themify', function(e) {
 		api.initFrontend();
 		api.toggleFrontEdit(e);
-		$('.toggle_tf_builder a:first').on('click', api.toggleFrontEdit.bind(api));
+		$('.toggle_tf_builder a:first, a.js-turn-on-builder').on('click', api.toggleFrontEdit.bind(api));
 	})
 	.on('builderiframeloaded.themify', function(e) {
 		api.Frontend.responsiveFrame.init();
@@ -1122,6 +1173,11 @@ var ThemifyLiveStyling;
 							$val = '0';
 						}
 						$val += 'px';
+					} else if( $( this ).hasClass( 'style_field_px' ) ) {
+						$val += 'px';
+						if( $( this ).closest('.themify_builder_field').find( 'select' ).length ) {
+							$( this ).closest( '.themify_builder_field' ).find( 'select' ).trigger( 'change' );
+						}
 					}
 					$prop[ $data.prop ] = $val;
 					self.setLiveStyle($prop, $data.selector);
@@ -1745,7 +1801,7 @@ var ThemifyLiveStyling;
 							return false;
 						}
 					}
-					else if($(this).is('select') && $(this).find('[value="dashed"]').length>0){
+					else if(! $(this).hasClass( 'style_field_select' ) && $(this).is('select') && $(this).find('[value="dashed"]').length>0){
 						if(($val!=='none' && !parseInt($(this).closest('.themify_builder_input').find('.style_border').val())) || $(this).closest('.themify_builder_field').nextAll('.themify_builder_field').last().find('.style_apply_all_border').is(':checked')){
 							return false;
 						}

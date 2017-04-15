@@ -1,18 +1,4 @@
-jQuery(function ($) {
-
-    $('body').on('submit', '.builder-contact', function () {
-        var form = $(this);
-
-        if (form.hasClass('sending')) {
-            return false;
-        }
-        form.addClass('sending');
-        form.find('.contact-message').fadeOut();
-
-        send_form(form);
-
-        return false;
-    });
+(function ($) {
 
     function send_form(form) {
         var data = {
@@ -42,11 +28,39 @@ jQuery(function ($) {
                     } else {
                         $('body').trigger('builder_contact_message_failed', [form, data.themify_message]);
                     }
-                    if (grecaptcha) {
+                    if ( typeof grecaptcha === 'object' ) {
                         grecaptcha.reset();
                     }
                 }
             }
         });
     }
-});
+    $(document).ready(function(){
+        if($('form.builder-contact').length>0){
+            function callback(){
+                $('body').on('submit', '.builder-contact', function (e) {
+                    e.preventDefault();
+                    if ($(this).hasClass('sending')) {
+                        return false;
+                    }
+                    $(this).addClass('sending').find('.contact-message').fadeOut();
+                    send_form($(this));
+                });
+            }
+            if($('.builder-contact-field-captcha').length>0){
+                if(typeof grecaptcha==='undefined'){
+                    Themify.LoadAsync('//www.google.com/recaptcha/api.js',callback,'',true,function(){
+                        return typeof grecaptcha!=='undefined';
+                    });
+                }
+                else{
+                    callback();
+                }
+            }
+            else{
+                callback();
+            }
+           
+       }
+    });
+}(jQuery));

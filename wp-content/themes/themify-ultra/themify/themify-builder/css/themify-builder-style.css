@@ -2887,16 +2887,16 @@ BUTTONS MODULE
 }
 
 /* button styles */
-.module-buttons.rounded a {
+.module-buttons .module-buttons-item.rounded a {
 	border-radius: 5px;
 }
-.module-buttons.squared a {
+.module-buttons .module-buttons-item.squared a {
 	border-radius: 0;
 }
-.module-buttons.circle a {
+.module-buttons .module-buttons-item.circle a {
 	border-radius: 50em;
 }
-.module-buttons.outline a{
+.module-buttons .module-buttons-item.outline a{
 	border-style: solid;
 	border-width: 1px;
 	background: none;
@@ -2905,111 +2905,111 @@ BUTTONS MODULE
 	color: #fff;
 	border-color: #fff;
 }
-.module-buttons.outline a:hover{
+.module-buttons .module-buttons-item.outline a:hover{
 	background: #fff;
 	color:#000;
 }
-.module-buttons.outline a.black{
+.module-buttons .module-buttons-item.outline a.black{
 	color:#000;
 	border-color:#000;
 }
-.module-buttons.outline a.black:hover{
+.module-buttons .module-buttons-item.outline a.black:hover{
 	color:#fff;
 	background-color:#000;
 }
-.module-buttons.outline a.gray{
+.module-buttons .module-buttons-item.outline a.gray{
 	color:#666;
 	border-color:#666;
 }
-.module-buttons.outline a.gray:hover{
+.module-buttons .module-buttons-item.outline a.gray:hover{
 	color:#fff;
 	background-color:#666;
 }
-.module-buttons.outline a.blue{
+.module-buttons .module-buttons-item.outline a.blue{
 	color:#3e65b2;
 	border-color:#3e65b2;
 }
-.module-buttons.outline a.blue:hover{
+.module-buttons .module-buttons-item.outline a.blue:hover{
 	color:#fff;
 	background-color:#3e65b2;
 }
-.module-buttons.outline a.light-blue{
+.module-buttons .module-buttons-item.outline a.light-blue{
 	color:#6694d6;
 	border-color:#6694d6;
 }
-.module-buttons.outline a.light-blue:hover{
+.module-buttons .module-buttons-item.outline a.light-blue:hover{
 	color:#fff;
 	background-color:#6694d6;
 }
-.module-buttons.outline a.green{
+.module-buttons .module-buttons-item.outline a.green{
 	color: #76ab3b;
 	border-color: #76ab3b;
 }
-.module-buttons.outline a.green:hover{
+.module-buttons .module-buttons-item.outline a.green:hover{
 	color:#fff;
 	background-color:#76ab3b;
 }
-.module-buttons.outline a.light-green{
+.module-buttons .module-buttons-item.outline a.light-green{
 	color: #ebf8d6;
 	border-color: #ebf8d6;
 }
-.module-buttons.outline a.light-green:hover{
+.module-buttons .module-buttons-item.outline a.light-green:hover{
 	color: #000;
 	background-color: #ebf8d6;
 }
-.module-buttons.outline a.purple{
+.module-buttons .module-buttons-item.outline a.purple{
 	color:#584eb2;
 	border-color:#584eb2;
 }
-.module-buttons.outline a.purple:hover{
+.module-buttons .module-buttons-item.outline a.purple:hover{
 	color:#fff;
 	background-color:#584eb2;
 }
-.module-buttons.outline a.light-purple{
+.module-buttons .module-buttons-item.outline a.light-purple{
 	color:#7f76cc;
 	border-color:#7f76cc;
 }
-.module-buttons.outline a.light-purple:hover{
+.module-buttons .module-buttons-item.outline a.light-purple:hover{
 	color:#fff;
 	background-color:#7f76cc;
 }
-.module-buttons.outline a.brown{
+.module-buttons .module-buttons-item.outline a.brown{
 	color:#622d07;
 	border-color:#622d07;
 }
-.module-buttons.outline a.brown:hover{
+.module-buttons .module-buttons-item.outline a.brown:hover{
 	color:#fff;
 	background-color:#622d07;
 }
-.module-buttons.outline a.orange{
+.module-buttons .module-buttons-item.outline a.orange{
 	color:#bc6e00;
 	border-color:#bc6e00;
 }
-.module-buttons.outline a.orange:hover{
+.module-buttons .module-buttons-item.outline a.orange:hover{
 	color:#fff;
 	background-color:#bc6e00;
 }
-.module-buttons.outline a.yellow{
+.module-buttons .module-buttons-item.outline a.yellow{
 	color:#dcb232;
 	border-color:#dcb232;
 }
-.module-buttons.outline a.yellow:hover{
+.module-buttons .module-buttons-item.outline a.yellow:hover{
 	color:#fff;
 	background-color:#dcb232;
 }
-.module-buttons.outline a.red{
+.module-buttons .module-buttons-item.outline a.red{
 	color:#9d1d14;
 	border-color:#9d1d14;
 }
-.module-buttons.outline a.red:hover{
+.module-buttons .module-buttons-item.outline a.red:hover{
 	color:#fff;
 	background-color:#9d1d14;
 }
-.module-buttons.outline a.pink{
+.module-buttons .module-buttons-item.outline a.pink{
 	color:#b27e9d;
 	border-color:#b27e9d;
 }
-.module-buttons.outline a.pink:hover{
+.module-buttons .module-buttons-item.outline a.pink:hover{
 	color:#fff;
 	background-color:#b27e9d;
 }
@@ -3852,18 +3852,16 @@ Row Video
 
 .themify_ytb_wrapper iframe,
 .big-video-wrap iframe[src*="youtube.com"] {
-	max-width: initial;
+	max-width: 100%;
 }
 
 .themify_builder .themify_ytb_wrapper,
 .themify_builder .big-video-vid,
 .themify_builder .big-video-image {
 	position: absolute;
-	z-index: -2;
 }
 .themify_builder_row[data-fullwidthvideo] .tb-column {
 	position: relative;
-	z-index: 2;
 }
 .themify_builder .vjs-big-play-button,
 .themify_builder .vjs-control-bar,

@@ -7,6 +7,7 @@ if (current_user_can('manage_options')) {
 	remove_action('admin_init', array('WP_Customize', 'admin_init'));
 }
 
+if( ! class_exists( 'Themify_Customizer' ) ) :
 /**
  * Themify customizer controls and settings.
  */
@@ -174,33 +175,33 @@ class Themify_Customizer {
 		}
 
 		// Font Icon CSS
-		wp_enqueue_style('themify-icons', THEMIFY_URI . '/themify-icons/themify-icons.css', array(), THEMIFY_VERSION);
+		wp_enqueue_style('themify-icons', themify_enque(THEMIFY_URI . '/themify-icons/themify-icons.css'), array(), THEMIFY_VERSION);
 
 		// Minicolors CSS
-		wp_enqueue_style('themify-colorpicker', THEMIFY_METABOX_URI . 'css/jquery.minicolors.css', array(), THEMIFY_VERSION);
+		wp_enqueue_style('themify-colorpicker', themify_enque(THEMIFY_METABOX_URI . 'css/jquery.minicolors.css'), array(), THEMIFY_VERSION);
 
 		// Enqueue media scripts
 		wp_enqueue_media();
 
 		// Controls CSS
-		wp_enqueue_style('themify-customize-control', THEMIFY_CUSTOMIZER_URI . '/css/themify.customize-control.css', array(), THEMIFY_VERSION);
+		wp_enqueue_style('themify-customize-control', themify_enque(THEMIFY_CUSTOMIZER_URI . '/css/themify.customize-control.css'), array(), THEMIFY_VERSION);
 
 		// Minicolors JS
-		wp_enqueue_script('themify-colorpicker-js', THEMIFY_METABOX_URI . 'js/jquery.minicolors.js', array('jquery'), THEMIFY_VERSION);
+		wp_enqueue_script('themify-colorpicker-js', themify_enque(THEMIFY_METABOX_URI . 'js/jquery.minicolors.js'), array('jquery'), THEMIFY_VERSION);
 
 		// Plupload
 		wp_enqueue_script( 'plupload-all' );
 		wp_enqueue_script( 'themify-plupload' );
-		//wp_enqueue_script('themify-plupload-js', THEMIFY_METABOX_URI . 'js/plupload.js', array('jquery'), THEMIFY_VERSION);
+		//wp_enqueue_script('themify-plupload-js', themify_enque(THEMIFY_METABOX_URI . 'js/plupload.js'), array('jquery'), THEMIFY_VERSION);
 
 
 		//Combobox JS
-		wp_enqueue_style('themify-combobox', THEMIFY_CUSTOMIZER_URI . '/css/jquery.scombobox.min.css', array(), THEMIFY_VERSION);
+		wp_enqueue_style('themify-combobox', themify_enque(THEMIFY_CUSTOMIZER_URI . '/css/jquery.scombobox.css'), array(), THEMIFY_VERSION);
 		wp_enqueue_script('themify-combobox', THEMIFY_CUSTOMIZER_URI . '/js/jquery.scombobox.min.js', array('jquery'), THEMIFY_VERSION, true);
 
 
 		// Controls JS
-		wp_enqueue_script('themify-customize-control', THEMIFY_CUSTOMIZER_URI . '/js/themify.customize-control.js', array('jquery', 'customize-controls', 'underscore', 'backbone'), THEMIFY_VERSION, true);
+		wp_enqueue_script('themify-customize-control', themify_enque(THEMIFY_CUSTOMIZER_URI . '/js/themify.customize-control.js'), array('jquery', 'customize-controls', 'underscore', 'backbone'), THEMIFY_VERSION, true);
 		$controls = array(
 			'nonce' => wp_create_nonce('ajax-nonce'),
 			'clearMessage' => __('This will reset all styling and customization. Do you want to proceed?', 'themify'),
@@ -227,7 +228,7 @@ class Themify_Customizer {
 	 */
 	function live_preview_scripts() {
 		// Live preview JS
-		wp_enqueue_script('themify-customize-preview', THEMIFY_CUSTOMIZER_URI . '/js/themify.customize-preview.js', array('jquery', 'customize-preview', 'underscore', 'backbone'), THEMIFY_VERSION, true);
+		wp_enqueue_script('themify-customize-preview', themify_enque(THEMIFY_CUSTOMIZER_URI . '/js/themify.customize-preview.js'), array('jquery', 'customize-preview', 'underscore', 'backbone'), THEMIFY_VERSION, true);
 		$controls = array(
 			'nonce' => wp_create_nonce('ajax-nonce'),
 			'ajaxurl' => admin_url('admin-ajax.php'),
@@ -649,26 +650,23 @@ class Themify_Customizer {
 	 * @since 2.2.5
 	 */
 	function enqueue_stylesheet() {
-		if (apply_filters('themify_customizer_enqueue_stylesheet', true)) {
+		wp_enqueue_style( 'themify-customize', themify_https_esc($this->get_stylesheet('byurl')), array(), $this->get_stylesheet_version() );
+		add_filter( 'style_loader_tag', array( $this, 'style_loader_tag' ), 10, 4 );
+		add_filter( 'themify_google_fonts', array( $this, 'enqueue_fonts' ) );
+	}
+
+	function style_loader_tag( $tag, $handle, $href, $media ) {
+		if( $handle == 'themify-customize' ) {
 			global $wp_customize;
-			if (( $wp_customize instanceof WP_Customize_Manager ) && $wp_customize->is_preview()) {
-				add_action( 'wp_head', array( $this, 'output_css' ) );
-			} else {
-				// If enqueue fails, maybe the file doesn't exist...
-				if (!$this->test_and_enqueue()) {
-					// so try to generate stylesheet...
-					$this->write_stylesheet(false);
-					// and check again
-					if (!$this->test_and_enqueue()) {
-						// No luck. Let's do it inline.
-						add_action( 'wp_head', array( $this, 'output_css' ) );
-					}
-				}
+			if ( ! apply_filters( 'themify_customizer_enqueue_stylesheet', true ) // customize stylesheet is disabled
+				|| ( ( $wp_customize instanceof WP_Customize_Manager ) && $wp_customize->is_preview() ) // inside Customize screen
+				|| ! $this->test_stylesheet() // failed to create the stylesheet
+			) {
+				$tag = $this->get_css();
 			}
-			add_filter( 'themify_google_fonts', array( $this, 'enqueue_fonts' ) );
-		} else {
-			add_action( 'wp_head', array( $this, 'output_css' ) );
 		}
+
+		return $tag;
 	}
 
 	/**
@@ -678,11 +676,18 @@ class Themify_Customizer {
 	 * 
 	 * @return bool True if enqueue was successful, false otherwise.
 	 */
-	function test_and_enqueue() {
-		if ($this->is_readable_and_not_empty($this->get_stylesheet())) {
-			wp_enqueue_style('themify-customize', themify_https_esc($this->get_stylesheet('byurl')), array(), $this->get_stylesheet_version());
+	function test_stylesheet() {
+		if ( $this->is_readable_and_not_empty( $this->get_stylesheet() ) ) {
 			return true;
 		}
+		// so try to generate stylesheet...
+		$this->write_stylesheet( false );
+
+		// retest
+		if ( $this->is_readable_and_not_empty( $this->get_stylesheet() ) ) {
+			return true;
+		}
+
 		return false;
 	}
 
@@ -700,16 +705,19 @@ class Themify_Customizer {
 	 * 
 	 * @since 2.2.5
 	 */
-	function output_css() {
+	function get_css() {
+		$output = '';
 		$css = $this->generate_css();
 		$css .= $this->generate_responsive_css();
 		$custom_css = $this->custom_css();
 		if (!empty($css)) {
-			echo "<!--Themify Customize Styling-->\n<style id=\"themify-customize\" type=\"text/css\">\n$css\n</style>\n<!--/Themify Customize Styling-->";
+			$output .= "<!--Themify Customize Styling-->\n<style id=\"themify-customize\" type=\"text/css\">\n$css\n</style>\n<!--/Themify Customize Styling-->";
 		}
 		if (!empty($custom_css)) {
-			echo "<!--Themify Custom CSS-->\n<style id=\"themify-customize-customcss\" type=\"text/css\">\n$custom_css\n</style>\n<!--/Themify Custom CSS-->";
+			$output .= "<!--Themify Custom CSS-->\n<style id=\"themify-customize-customcss\" type=\"text/css\">\n$custom_css\n</style>\n<!--/Themify Custom CSS-->";
 		}
+
+		return $output;
 	}
 
 	/**
@@ -962,6 +970,12 @@ class Themify_Customizer {
 		if (!$fonts_only) {
 			if (!empty($css)) {
 				foreach ($css as $selector => $properties) {
+					if( $selector === 'body' 
+						&& strpos( $properties, 'background-attachment: fixed' ) != false ) {
+						preg_match_all( "/background.+?;/", $properties, $bg_before );
+						$bg_before = ! empty( $bg_before ) ? implode( "\n\t", $bg_before[0] ) : '';
+						$out .= ".iphone:before {\n\tcontent: '';\n\t$bg_before \n}\n";
+					}
 					$out .= '' != $properties ? "$selector {\t$properties \n}\n" : '';
 				}
 				if (!empty($out)) {
@@ -1454,5 +1468,5 @@ class Themify_Customizer {
 	}
 
 }
-
+endif;
 $GLOBALS['themify_customizer'] = new Themify_Customizer;

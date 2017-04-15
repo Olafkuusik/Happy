@@ -972,88 +972,27 @@ function themify_mobile_menu_script() {
 add_action( 'themify_body_start', 'themify_mobile_menu_script' );
 
 /**
- * Prevent framework.css stylesheet from loading in the page, the stylesheet is loaded in main.js
- *
- * @return html
- */
-function themify_framework_stylesheet_style_tag( $tag, $handle, $href, $media ) {
-	if( 'themify-framework' == $handle ) {
-		$tag = '<meta name="themify-framework-css" content="" id="themify-framework-css">' . "\n";
-	}
-
-	return $tag;
-}
-add_filter( 'style_loader_tag', 'themify_framework_stylesheet_style_tag', 10, 4 );
-
-/**
  * Change order and orderby parameters in the index loop, per options in Themify > Settings > Default Layouts
  *
  * @since 3.1.2
  */
 function themify_archive_post_order( $query ) {
-	if ( ( is_home() || is_archive() ) && $query->is_main_query() ) {
-		global $themify;
-		$query->set( 'order', $themify->order );
-		$query->set( 'orderby', $themify->orderby );
+	if ( ( is_home() || is_archive() ) && $query->is_main_query() && !is_admin()) {
+		if(!themify_is_woocommerce_active() || (themify_is_woocommerce_active() && !is_shop() && !is_product_category())){
+                    global $themify;
+                    $query->set( 'order', $themify->order );
+                    $query->set( 'orderby', $themify->orderby );
+		}
 	}
 
 	return $query;
 }
 add_filter( 'pre_get_posts', 'themify_archive_post_order' );
 
-if ( ! function_exists( 'themify_shortcode_list' ) ) {
-	/**
-	 * Return list of Themify shortcodes.
-	 *
-	 * @since 1.9.4
-	 *
-	 * @return array Collection of shortcodes as keys and callbacks as values.
-	 */
-	function themify_shortcode_list() {
-		return array(
-			'is_logged_in' => 'themify_shortcode',
-			'is_guest'     => 'themify_shortcode',
-			'button'       => 'themify_shortcode',
-			'quote'        => 'themify_shortcode',
-			'col'          => 'themify_shortcode',
-			'sub_col'      => 'themify_shortcode',
-			'img'          => 'themify_shortcode',
-			'hr'           => 'themify_shortcode',
-			'map'          => 'themify_shortcode',
-			'list_posts'   => 'themify_shortcode_list_posts',
-			'flickr'       => 'themify_shortcode_flickr',
-			'twitter'      => 'themify_shortcode_twitter',
-			'box'          => 'themify_shortcode_box',
-			'post_slider'  => 'themify_shortcode_post_slider',
-			'slider'       => 'themify_shortcode_slider',
-			'slide'        => 'themify_shortcode_slide',
-			'author_box'   => 'themify_shortcode_author_box',
-			'icon'         => 'themify_shortcode_icon',
-		);
-	}
-}
-
 /**
  * Enqueues JS, CSS and writes inline scripts
  */
-add_action( 'wp_enqueue_scripts', 'themify_shortcodes_js_css', 8 );
-
-/**
- * Add Themify Shortcodes, an unprefixed version and a prefixed version.
- */
-foreach( themify_shortcode_list() as $themify_sc => $themify_sc_callback) {
-	add_shortcode( $themify_sc, $themify_sc_callback );
-	add_shortcode( 'themify_' . $themify_sc, $themify_sc_callback );
-}
-// Backwards compatibility
-add_shortcode( 'themify_video', 'wp_video_shortcode' );
-
-add_shortcode( 'themify_list', 'themify_shortcode_icon_list' );
-
-/**
- * Fix empty auto paragraph in shortcodes
- */
-add_filter( 'the_content', 'themify_fix_shortcode_empty_paragraph' );
+add_action( 'wp_enqueue_scripts', 'themify_load_main_script', 8 );
 
 /**
  * Enable shortcodes in footer text areas
@@ -1074,23 +1013,17 @@ add_filter('widget_text', 'do_shortcode');
 add_filter('widget_text', 'shortcode_unautop');
 
 /**
- * Flush twitter transient data
- */
-add_action( 'save_post', 'themify_twitter_flush_transient' );
-
-/**
- * Enqueue JavaScript and stylesheets required by shortcodes
+ * Load assets required by Themify framework
+ *
  * @since 1.1.2
- */	
-function themify_shortcodes_js_css() {
+ */
+function themify_load_main_script() {
 	global $themify_twitter_instance;
 	$themify_twitter_instance = 0;
 
-	wp_enqueue_style( 'themify-framework', THEMIFY_URI . '/css/themify.framework.css' );
-
 	//Enqueue main js that will load others needed js
 	if ( ! wp_script_is( 'themify-main-script' ) ) {
-		wp_register_script( 'themify-main-script', THEMIFY_URI.'/js/main.js', array('jquery'), THEMIFY_VERSION, true );
+		wp_register_script( 'themify-main-script', themify_enque(THEMIFY_URI.'/js/main.js'), array('jquery'), THEMIFY_VERSION, true );
 		wp_localize_script( 'themify-main-script', 'themify_vars', apply_filters( 'themify_main_script_vars', array(
 			'version' => THEMIFY_VERSION,
 			'url' => THEMIFY_URI,
@@ -1100,7 +1033,7 @@ function themify_shortcodes_js_css() {
 	}
 
 	// Register carousel script
-	wp_register_script('themify-carousel-js', THEMIFY_URI . "/js/carousel.js", '', THEMIFY_VERSION, true);
+	wp_register_script('themify-carousel-js', themify_enque(THEMIFY_URI . "/js/carousel.js"), '', THEMIFY_VERSION, true);
 }
 
 /**

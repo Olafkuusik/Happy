@@ -60,10 +60,10 @@ class Themify_Builder_Preview {
 	 * @access public
 	 */
 	public function enqueue_assets() {
-		wp_enqueue_style( 'builder-styles', THEMIFY_BUILDER_URI . '/css/themify-builder-style.css',array(), THEMIFY_VERSION );
-		wp_enqueue_style('themify-builder-admin-ui', THEMIFY_BUILDER_URI . '/css/themify-builder-admin-ui.css', array(), THEMIFY_VERSION);
+		wp_enqueue_style( 'builder-styles', themify_enque(THEMIFY_BUILDER_URI . '/css/themify-builder-style.css'),array(), THEMIFY_VERSION );
+		wp_enqueue_style('themify-builder-admin-ui', themify_enque(THEMIFY_BUILDER_URI . '/css/themify-builder-admin-ui.css'), array(), THEMIFY_VERSION);
 		if (is_rtl()) {
-			wp_enqueue_style('themify-builder-admin-ui-rtl', THEMIFY_BUILDER_URI . '/css/themify-builder-admin-ui-rtl.css', array('themify-builder-admin-ui'), THEMIFY_VERSION);
+			wp_enqueue_style('themify-builder-admin-ui-rtl', themify_enque(THEMIFY_BUILDER_URI . '/css/themify-builder-admin-ui-rtl.css'), array('themify-builder-admin-ui'), THEMIFY_VERSION);
 		}
 		wp_enqueue_style('google-fonts-builder', themify_https_esc('http://fonts.googleapis.com/css') . '?family=Open+Sans:400,300,600|Montserrat');
 	}

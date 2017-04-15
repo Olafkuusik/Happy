@@ -194,6 +194,23 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 						)
 					),
 					array(
+						'id'=>'button_single_style',
+						'type' => 'radio',
+						'label' => __( 'Button Style', 'themify' ),
+						'options' => array(
+							'default'=> __( 'Default', 'themify' ),
+							'circle'=> __( 'Circle', 'themify' ),
+							'rounded'=>__( 'Rounded', 'themify' ),
+							'squared'=> __( 'Squared', 'themify' ),
+							'outline'=>__('Outlined', 'themify')
+						),
+						'default' => 'default',
+						'render_callback' => array(
+							'repeater' => 'content_button',
+							'binding' => 'live'
+						)
+					),
+					array(
 						'id' => 'icon_container',
 						'type' => 'multi',
 						'label' => __('Icon', 'themify'),
@@ -1237,10 +1254,12 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 	protected function _visual_template() { ?>
 		<div class="module module-<?php echo esc_attr( $this->slug ); ?> {{ data.css_button }}">
 			<# if ( data.content_button ) { #>
-				<div class="module-<?php echo esc_attr( $this->slug ); ?> {{ data.buttons_size }} {{ data.buttons_style }}">
+				<div class="module-<?php echo esc_attr( $this->slug ); ?> {{ data.buttons_size }}">
 					<# _.each( data.content_button, function( item ) { #>
+						<# var buttonStyle = item.button_single_style && item.button_single_style !== 'default'
+							? item.button_single_style : data.buttons_style; #>
 						
-						<div class="module-buttons-item">
+						<div class="module-buttons-item {{ buttonStyle }}">
 							<# if ( item.link ) { #>
 							<a class="ui builder_button {{ item.button_color_bg }}" href="{{ item.link }}">
 							<# } #>

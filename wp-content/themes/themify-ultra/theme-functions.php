@@ -84,7 +84,7 @@ function themify_theme_enqueue_scripts(){
 	wp_enqueue_style( 'themify-media-queries', THEME_URI . '/media-queries.css', array(), $theme_version);
 
 	if( themify_is_using_custom_setting( 'font_design' ) || themify_is_using_custom_setting( 'color_design' ) ) {
-		if( $GLOBALS['themify_customizer']->test_and_enqueue() ) {
+		if( $GLOBALS['themify_customizer']->test_stylesheet() ) {
 			$design_preset_dependency[] = 'themify-customize';
 		}
 	}
@@ -922,6 +922,10 @@ if ( ! function_exists( 'themify_theme_custom_post_css' ) ) {
 						elseif ( $prop == 'background-repeat' && 'fullcover' == themify_get( $key ) ) {
 							if ( isset( $val['dependson'] ) ) {
 								if ( $val['dependson']['prop'] == 'background-image' && ( themify_check( $val['dependson']['key'] ) && 'default' != themify_get( $val['dependson']['key'] ) ) ) {
+									if( $selector === '.skin-styles' ) {
+										$css['.iphone:before'] = $css[$selector];
+										$css['.iphone:before']['background-size'] = 'background-size: cover; content: ""';
+									}
 									$css[$selector]['background-size'] = 'background-size: cover; background-attachment:fixed;';
 								}
 							} else {
@@ -941,7 +945,12 @@ if ( ! function_exists( 'themify_theme_custom_post_css' ) ) {
 					}
 				}
 				if ( ! empty( $css[$selector] ) ) {
-					$style .= "$selector {\n\t" . implode( ";\n\t", $css[$selector] ) . "\n}\n";
+					global $is_iphone;
+					if( !empty( $css['.iphone:before'] ) && $selector === '.skin-styles' && $is_iphone ) {
+						$style .= ".iphone:before {\n\t" . implode( ";\n\t", $css[ '.iphone:before' ] ) . "\n}\n";
+					} else {
+						$style .= "$selector {\n\t" . implode( ";\n\t", $css[$selector] ) . "\n}\n";
+					}
 				}
 			}
 
@@ -2903,7 +2912,7 @@ function themify_theme_query_portfolio_classes($class){
 		if ( $temp_class = themify_theme_get( $prefix.'content_layout' ) ) {
 			$class[] = $temp_class;
 		}
-		if ( 'no-gutter' == themify_theme_get( $prefix.'gutter' ) ) {
+		if ( 'no-gutter' == themify_theme_get( $prefix.'post_gutter' ) ) {
 			$class[] = 'no-gutter';
 		}
 	}

@@ -31,11 +31,10 @@ if ( ! function_exists( 'themify_do_img' ) ) {
 			// URL has been passed to the function
 			$img_url = esc_url( $image );
 
-			$upload_dir = wp_upload_dir();
-			$base_url = $upload_dir['baseurl'];
-
 			// Check if the image is an attachment. If it's external return url, width and height.
-			if ( substr( $img_url, -strlen( $base_url ) ) === $base_url ) {
+			$upload_dir = wp_upload_dir();
+			$base_url = themify_remove_protocol_from_url( $upload_dir['baseurl'] );
+			if( ! preg_match( '/' . str_replace( '/', '\/', $base_url ) . '/', $img_url ) ) {
 				return array(
 					'url' => $img_url,
 					'width' => $width,
@@ -223,9 +222,20 @@ function themify_img_resize_dimensions( $default, $orig_w, $orig_h, $dest_w, $de
  */
 function themify_get_attachment_id_from_url( $url = '', $base_url = '' ) {
 	// If this is the URL of an auto-generated thumbnail, get the URL of the original image
-	$url = preg_replace( '/-\d+x\d+(?=\.(jpg|jpeg|png|gif)$)/i', '', str_replace( $base_url . '/', '', $url ) );
+	$url = themify_remove_protocol_from_url( $url );
+	$url = str_replace( trailingslashit( $base_url ), '', $url );
+	$url = preg_replace( '/-\d+x\d+(?=\.(jpg|jpeg|png|gif)$)/i', '', $url );
 
 	// Finally, run a custom database query to get the attachment ID from the modified attachment URL
 	global $wpdb;
 	return $wpdb->get_var( $wpdb->prepare( "SELECT wposts.ID FROM $wpdb->posts wposts, $wpdb->postmeta wpostmeta WHERE wposts.ID = wpostmeta.post_id AND wpostmeta.meta_key = '_wp_attached_file' AND wpostmeta.meta_value = '%s' AND wposts.post_type = 'attachment'", $url ) );
+}
+
+/**
+ * Removes protocol and www from URL and returns it
+ *
+ * @return string
+ */
+function themify_remove_protocol_from_url( $url ) {
+	return preg_replace( '/https?:\/\/(www\.)?/', '', $url );
 }

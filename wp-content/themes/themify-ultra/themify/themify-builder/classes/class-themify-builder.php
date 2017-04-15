@@ -135,7 +135,8 @@ class Themify_Builder {
 
 		// Filtered post types
 		add_filter('themify_post_types', array($this, 'extend_post_types'));
-                add_filter('themify_builder_module_content', array('Themify_Builder_Model','format_text'));
+		add_filter('themify_builder_module_content', array('Themify_Builder_Model','format_text'));
+		add_filter('themify_builder_module_content', 'do_shortcode', 12 );
 		/**
 		 * WordPress 4.4 Responsive Images support */
 		global $wp_version;
@@ -234,6 +235,7 @@ class Themify_Builder {
 			add_action('wp_ajax_tfb_render_column', array($this, 'render_column_ajaxify'), 10);
 			add_action('wp_ajax_tfb_render_subrow', array($this, 'render_sub_row_ajaxify'), 10);
 			add_action('wp_ajax_tfb_render_element', array($this, 'render_element_ajaxify'), 10);
+			add_action('wp_ajax_tfb_render_element_shortcode', array($this, 'render_element_shortcode_ajaxify'), 10);
 		}
 
 		add_filter('themify_builder_is_frontend_editor', array($this, 'post_type_editor_support_check'));
@@ -362,8 +364,8 @@ class Themify_Builder {
 	 */
 	public function async_load_builder_js() {
 
-		wp_enqueue_style('themify-builder-loader', THEMIFY_BUILDER_URI . '/css/themify.builder.loader.css');
-		wp_enqueue_script('themify-builder-loader', THEMIFY_BUILDER_URI . '/js/themify.builder.loader.js', array('jquery'));
+		wp_enqueue_style('themify-builder-loader', themify_enque(THEMIFY_BUILDER_URI . '/css/themify.builder.loader.css'));
+		wp_enqueue_script('themify-builder-loader', themify_enque(THEMIFY_BUILDER_URI . '/js/themify.builder.loader.js'), array('jquery'));
 		wp_localize_script('themify-builder-loader', 'tbLoaderVars', array(
 			'ajaxurl' => admin_url('admin-ajax.php', 'relative'),
 			'assets' => array(
@@ -612,13 +614,11 @@ class Themify_Builder {
 	 */
 	function setup_default_directories() {
 		$this->register_directory('templates', THEMIFY_BUILDER_TEMPLATES_DIR, 1);
-				$this->register_directory('templates', THEMIFY_BUILDER_TEMPLATES_DIR.'/premium/', 1);
 		$this->register_directory('templates', get_template_directory() . '/themify-builder/', 5);
 		if (is_child_theme()) {
 			$this->register_directory('templates', get_stylesheet_directory() . '/themify-builder/', 9);
 		}
 		$this->register_directory('modules', THEMIFY_BUILDER_MODULES_DIR, 1);
-				$this->register_directory('modules', THEMIFY_BUILDER_MODULES_DIR.'/premium/', 1);
 		$this->register_directory('modules', get_template_directory() . '/themify-builder-modules/', 5);
 	}
 
@@ -864,11 +864,11 @@ class Themify_Builder {
 
 			add_action('admin_footer', array(&$this, 'load_javascript_template_admin'), 10);
 
-			wp_enqueue_style('themify-builder-loader', THEMIFY_BUILDER_URI . '/css/themify.builder.loader.css');
-			wp_enqueue_style('themify-builder-admin-ui', THEMIFY_BUILDER_URI . '/css/themify-builder-admin-ui.css', array(), THEMIFY_VERSION);
-			wp_enqueue_style('themify-builder-style', THEMIFY_BUILDER_URI . '/css/themify-builder-style.css');
+			wp_enqueue_style('themify-builder-loader', themify_enque(THEMIFY_BUILDER_URI . '/css/themify.builder.loader.css'));
+			wp_enqueue_style('themify-builder-admin-ui', themify_enque(THEMIFY_BUILDER_URI . '/css/themify-builder-admin-ui.css'), array(), THEMIFY_VERSION);
+			wp_enqueue_style('themify-builder-style', themify_enque(THEMIFY_BUILDER_URI . '/css/themify-builder-style.css'));
 			if (is_rtl()) {
-				wp_enqueue_style('themify-builder-admin-ui-rtl', THEMIFY_BUILDER_URI . '/css/themify-builder-admin-ui-rtl.css', array('themify-builder-admin-ui'), THEMIFY_VERSION);
+				wp_enqueue_style('themify-builder-admin-ui-rtl', themify_enque(THEMIFY_BUILDER_URI . '/css/themify-builder-admin-ui-rtl.css'), array('themify-builder-admin-ui'), THEMIFY_VERSION);
 			}
 
 			// Enqueue builder admin scripts
@@ -892,18 +892,18 @@ class Themify_Builder {
 			foreach ($enqueue_scripts as $script) {
 				switch ($script) {
 					case 'themify-combobox':
-						wp_enqueue_style($script . '-css', THEMIFY_BUILDER_URI . '/css/themify.combobox.css', array(), THEMIFY_VERSION);
+						wp_enqueue_style($script . '-css', themify_enque(THEMIFY_BUILDER_URI . '/css/themify.combobox.css'), array(), THEMIFY_VERSION);
 						wp_enqueue_script($script, THEMIFY_BUILDER_URI . '/js/themify.combobox.min.js', array('jquery'));
 						break;
 					case 'themify-builder-google-webfont':
 						wp_enqueue_script($script, themify_https_esc('http://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js'));
 						break;
 					case 'themify-builder-undo-manager-js':
-						wp_enqueue_script($script, THEMIFY_BUILDER_URI . '/js/undomanager.js', array('jquery'));
+						wp_enqueue_script($script, themify_enque(THEMIFY_BUILDER_URI . '/js/undomanager.js'), array('jquery'));
 						break;
 					case 'themify-builder-common-js':
-						wp_register_script('themify-builder-simple-bar-js', THEMIFY_BUILDER_URI . "/js/simplebar.js", array('jquery'), '2.0.3', true);
-						wp_register_script('themify-builder-common-js', THEMIFY_BUILDER_URI . "/js/themify.builder.common.js", array('jquery','themify-builder-simple-bar-js'), THEMIFY_VERSION, true);
+						wp_register_script('themify-builder-simple-bar-js', themify_enque(THEMIFY_BUILDER_URI . "/js/simplebar.js"), array('jquery'), '2.0.3', true);
+						wp_register_script('themify-builder-common-js', themify_enque(THEMIFY_BUILDER_URI . "/js/themify.builder.common.js"), array('jquery','themify-builder-simple-bar-js'), THEMIFY_VERSION, true);
 						wp_enqueue_script('themify-builder-common-js');
 
 						wp_localize_script('themify-builder-common-js', 'themifyBuilderCommon', apply_filters('themify_builder_common_vars', array(
@@ -916,12 +916,12 @@ class Themify_Builder {
 						break;
 
 					case 'themify-builder-app-js':
-						wp_register_script('themify-builder-app-js', THEMIFY_BUILDER_URI . "/js/themify-builder-app.js", array('jquery'), THEMIFY_VERSION, true);
+						wp_register_script('themify-builder-app-js', themify_enque(THEMIFY_BUILDER_URI . "/js/themify-builder-app.js"), array('jquery'), THEMIFY_VERSION, true);
 						wp_enqueue_script('themify-builder-app-js');
 						break;
 
 					case 'themify-builder-admin-js':
-						wp_register_script('themify-builder-admin-js', THEMIFY_BUILDER_URI . "/js/themify.builder.admin.js", array('jquery', 'themify-builder-common-js'), THEMIFY_VERSION, true);
+						wp_register_script('themify-builder-admin-js', themify_enque(THEMIFY_BUILDER_URI . "/js/themify.builder.admin.js"), array('jquery', 'themify-builder-common-js'), THEMIFY_VERSION, true);
 						wp_enqueue_script('themify-builder-admin-js');
 
 						wp_localize_script('themify-builder-admin-js', 'TBuilderAdmin_Settings', apply_filters('themify_builder_ajax_admin_vars', array(
@@ -933,8 +933,8 @@ class Themify_Builder {
 
 					case 'themify-builder-backend-js':
 						wp_enqueue_script( 'jquery-knob', THEMIFY_BUILDER_URI . '/js/jquery.knob.min.js', array( 'jquery' ), null, true );
-						wp_enqueue_script( 'themifyGradient', THEMIFY_BUILDER_URI . '/js/premium/themifyGradient.js', array( 'jquery', 'themify-colorpicker' ), null, true );
-						wp_register_script('themify-builder-backend-js', THEMIFY_BUILDER_URI . "/js/themify-builder-backend.js", array('jquery'), THEMIFY_VERSION, true);
+						wp_enqueue_script( 'themifyGradient', themify_enque(THEMIFY_BUILDER_URI . '/js/premium/themifyGradient.js'), array( 'jquery', 'themify-colorpicker' ), null, true );
+						wp_register_script('themify-builder-backend-js', themify_enque(THEMIFY_BUILDER_URI . "/js/themify-builder-backend.js"), array('jquery'), THEMIFY_VERSION, true);
 						wp_enqueue_script('themify-builder-backend-js');
 						$gutterClass = Themify_Builder_Model::get_grid_settings('gutter_class');
 						wp_localize_script('themify-builder-backend-js', 'themifyBuilder', apply_filters('themify_builder_ajax_admin_vars', array(
@@ -1026,11 +1026,11 @@ class Themify_Builder {
 	 */
 	function register_frontend_js_css() {
 
-		wp_enqueue_style( 'builder-styles', THEMIFY_BUILDER_URI . '/css/themify-builder-style.css',array(), THEMIFY_VERSION );
+		wp_enqueue_style( 'builder-styles', themify_enque(THEMIFY_BUILDER_URI . '/css/themify-builder-style.css'),array(), THEMIFY_VERSION );
 		add_filter( 'style_loader_tag', array( $this, 'builder_stylesheet_style_tag' ), 10, 4 );
 
 		////Enqueue main js that will load others needed js
-		wp_register_script('themify-main-script', THEMIFY_URI . '/js/main.js', array('jquery'), THEMIFY_VERSION, true);
+		wp_register_script('themify-main-script', themify_enque(THEMIFY_URI . '/js/main.js'), array('jquery'), THEMIFY_VERSION, true);
 		wp_localize_script('themify-main-script', 'themify_vars', apply_filters( 'themify_main_script_vars', array(
 			'version' => THEMIFY_VERSION,
 			'url' => THEMIFY_URI,
@@ -1101,12 +1101,12 @@ class Themify_Builder {
 	function load_frontend_interface() {
 		// load only when editing and login
 		if (Themify_Builder_Model::is_frontend_editor_page()) {
-			wp_enqueue_style('themify-builder-admin-ui', THEMIFY_BUILDER_URI . '/css/themify-builder-admin-ui.css', array(), THEMIFY_VERSION);
+			wp_enqueue_style('themify-builder-admin-ui', themify_enque(THEMIFY_BUILDER_URI . '/css/themify-builder-admin-ui.css'), array(), THEMIFY_VERSION);
 			if (is_rtl()) {
-				wp_enqueue_style('themify-builder-admin-ui-rtl', THEMIFY_BUILDER_URI . '/css/themify-builder-admin-ui-rtl.css', array('themify-builder-admin-ui'), THEMIFY_VERSION);
+				wp_enqueue_style('themify-builder-admin-ui-rtl', themify_enque(THEMIFY_BUILDER_URI . '/css/themify-builder-admin-ui-rtl.css'), array('themify-builder-admin-ui'), THEMIFY_VERSION);
 			}
 			wp_enqueue_style('google-fonts-builder', themify_https_esc('http://fonts.googleapis.com/css') . '?family=Open+Sans:400,300,600|Montserrat');
-			wp_enqueue_style('themify-colorpicker', THEMIFY_METABOX_URI . 'css/jquery.minicolors.css'); // from themify framework
+			wp_enqueue_style('themify-colorpicker', themify_enque(THEMIFY_METABOX_URI . 'css/jquery.minicolors.css')); // from themify framework
 			// Icon picker
 			Themify_Icon_Picker::get_instance()->enqueue();
 
@@ -1155,7 +1155,7 @@ class Themify_Builder {
 
 			// is mobile version
 			if ($this->isMobile()) {
-				wp_register_script('themify-builder-mobile-ui-js', THEMIFY_BUILDER_URI . "/js/jquery.ui.touch-punch.js", array('jquery'), THEMIFY_VERSION, true);
+				wp_register_script('themify-builder-mobile-ui-js', themify_enque(THEMIFY_BUILDER_URI . "/js/jquery.ui.touch-punch.js"), array('jquery'), THEMIFY_VERSION, true);
 				wp_enqueue_script('jquery-ui-mouse');
 				wp_enqueue_script('themify-builder-mobile-ui-js');
 			}
@@ -1163,7 +1163,7 @@ class Themify_Builder {
 			foreach ($enqueue_scripts as $script) {
 				switch ($script) {
 					case 'themify-combobox':
-						wp_enqueue_style($script . '-css', THEMIFY_BUILDER_URI . '/css/themify.combobox.css', array(), THEMIFY_VERSION);
+						wp_enqueue_style($script . '-css', themify_enque(THEMIFY_BUILDER_URI . '/css/themify.combobox.css'), array(), THEMIFY_VERSION);
 						wp_enqueue_script($script, THEMIFY_BUILDER_URI . '/js/themify.combobox.min.js', array('jquery'));
 						break;
 					case 'admin-widgets':
@@ -1171,7 +1171,7 @@ class Themify_Builder {
 						break;
 
 					case 'themify-colorpicker':
-						wp_enqueue_script($script, THEMIFY_METABOX_URI . 'js/jquery.minicolors.js', array('jquery')); // grab from themify framework
+						wp_enqueue_script($script, themify_enque(THEMIFY_METABOX_URI . 'js/jquery.minicolors.js'), array('jquery')); // grab from themify framework
 						break;
 
 					case 'themify-builder-google-webfont':
@@ -1179,13 +1179,13 @@ class Themify_Builder {
 						break;
 
 					case 'themify-builder-undo-manager-js':
-						wp_enqueue_script($script, THEMIFY_BUILDER_URI . '/js/undomanager.js', array('jquery'));
+						wp_enqueue_script($script, themify_enque(THEMIFY_BUILDER_URI . '/js/undomanager.js'), array('jquery'));
 						break;
 
 					case 'themify-builder-common-js':
 						// front ui js
-						wp_register_script('themify-builder-simple-bar-js', THEMIFY_BUILDER_URI . "/js/simplebar.js", array('jquery'), '2.0.3', true);
-						wp_register_script($script, THEMIFY_BUILDER_URI . "/js/themify.builder.common.js", array('jquery', 'themify-builder-simple-bar-js'), THEMIFY_VERSION, true);
+						wp_register_script('themify-builder-simple-bar-js', themify_enque(THEMIFY_BUILDER_URI . "/js/simplebar.js"), array('jquery'), '2.0.3', true);
+						wp_register_script($script, themify_enque(THEMIFY_BUILDER_URI . "/js/themify.builder.common.js"), array('jquery', 'themify-builder-simple-bar-js'), THEMIFY_VERSION, true);
 						wp_enqueue_script($script);
 
 						wp_localize_script('themify-builder-common-js', 'themifyBuilderCommon', apply_filters('themify_builder_common_vars', array(
@@ -1198,19 +1198,20 @@ class Themify_Builder {
 						break;
 
 					case 'themify-builder-app-js':
-						wp_register_script('themify-builder-app-js', THEMIFY_BUILDER_URI . "/js/themify-builder-app.js", array('jquery'), THEMIFY_VERSION, true);
+						wp_register_script('themify-builder-app-js', themify_enque(THEMIFY_BUILDER_URI . "/js/themify-builder-app.js"), array('jquery'), THEMIFY_VERSION, true);
 						wp_enqueue_script('themify-builder-app-js');
 						break;
 
 					case 'themify-builder-front-ui-js':
 						// front ui js
 						wp_enqueue_script( 'jquery-knob', THEMIFY_BUILDER_URI . '/js/jquery.knob.min.js', array( 'jquery' ), null, true );
-						wp_enqueue_script( 'themifyGradient', THEMIFY_BUILDER_URI . '/js/premium/themifyGradient.js', array( 'jquery', 'themify-colorpicker' ), null, true );
-						wp_register_script($script, THEMIFY_BUILDER_URI . "/js/themify-builder-visual.js", array('jquery', 'jquery-ui-tabs', 'themify-builder-common-js'), THEMIFY_VERSION, true);
+						wp_enqueue_script( 'themifyGradient', themify_enque(THEMIFY_BUILDER_URI . '/js/premium/themifyGradient.js'), array( 'jquery', 'themify-colorpicker' ), null, true );
+						wp_register_script($script, themify_enque(THEMIFY_BUILDER_URI . "/js/themify-builder-visual.js"), array('jquery', 'jquery-ui-tabs', 'themify-builder-common-js'), THEMIFY_VERSION, true);
 						wp_enqueue_script($script);
 
 						$gutterClass = Themify_Builder_Model::get_grid_settings('gutter_class');
 						$columnAlignmentClass = Themify_Builder_Model::get_grid_settings('column_alignment_class');
+						global $shortcode_tags;
 						wp_localize_script($script, 'themifyBuilder', apply_filters('themify_builder_ajax_front_vars', array(
 							'ajaxurl'                 => admin_url('admin-ajax.php'),
 							'isTouch'                 => themify_is_touch() ? 'true' : 'false',
@@ -1232,6 +1233,7 @@ class Themify_Builder {
 							'breakpoints'             => themify_get_breakpoints(),
 							'element_style_rules'     => Themify_Builder_Model::get_elements_style_rules(),
 							'modules'                 => Themify_Builder_Model::get_modules_localize_settings(),
+							'available_shortcodes'  => implode( '|', array_keys( $shortcode_tags ) ),
 							'i18n'                    => array(
 								'confirmRestoreRev'         => esc_html__('Save the current state as a revision before replacing?', 'themify'),
 								'dialog_import_page_post'   => esc_html__( 'Would you like to replace or append the builder?', 'themify' ),
@@ -1602,6 +1604,21 @@ class Themify_Builder {
 		die();
 	}
 
+	public function render_element_shortcode_ajaxify() {
+		check_ajax_referer('tfb_load_nonce', 'tfb_load_nonce');
+		
+		$response = array();
+		$shortcode_data = json_decode(stripslashes_deep($_POST['shortcode_data']), true);
+		
+		if ( is_array( $shortcode_data ) ) {
+			foreach( $shortcode_data as $shortcode ) {
+				$response[] = array( 'key' => $shortcode['key'], 'rendered_html' => do_shortcode( $shortcode['sc_render'] ) );
+			}
+		}
+
+		wp_send_json_success( $response );
+	}
+
 	/**
 	 * Load row partial when update live content
 	 */
@@ -1825,7 +1842,7 @@ class Themify_Builder {
 		if(! $builder_loaded && !Themify_Builder_Model::is_front_builder_activate() && strpos($builder_output,'themify_builder_row')!==false) { // check if builder has any content
 			$builder_loaded = true;
 						wp_dequeue_style('builder-styles');
-						$link_tag = "<link id='builder-styles' rel='stylesheet' href='". THEMIFY_BUILDER_URI . '/css/themify-builder-style.css?ver='.THEMIFY_VERSION. "' type='text/css' />";
+						$link_tag = "<link id='builder-styles' rel='stylesheet' href='". themify_enque(THEMIFY_BUILDER_URI . '/css/themify-builder-style.css').'?ver='.THEMIFY_VERSION. "' type='text/css' />";
 						return '<script type="text/javascript">
 							if( document.getElementById( "builder-styles-css" ) ) document.getElementById( "builder-styles-css" ).insertAdjacentHTML( "beforebegin", "' . $link_tag . '" );
 							</script>';
@@ -3665,6 +3682,72 @@ class Themify_Builder {
 	// Fix for old add-ons with live preview FW
 	public function get_rgba_color( $color ) {
 		return $this->stylesheet->get_rgba_color( $color );
+	}
+
+	/**
+	 * Render row styling.
+	 *
+	 * render row styling css.
+	 *
+	 * @deprecated 3.1.2 Use Themify_Builder_Stylesheet->render_row_styling()
+	 * @see Themify_Builder_Stylesheet->render_row_styling()
+	 *
+	 * @param string $builder_id Builder ID.
+	 * @param array $row Row data.
+	 */
+	public function render_row_styling( $builder_id, $row ) {
+		$this->stylesheet->render_row_styling( $builder_id, $row );
+	}
+
+	/**
+	 * Render Sub row styling.
+	 *
+	 * render sub-row styling css.
+	 *
+	 * @deprecated 3.1.2 Use Themify_Builder_Stylesheet->render_sub_row_styling()
+	 * @see Themify_Builder_Stylesheet->render_sub_row_styling()
+	 *
+	 * @param string $builder_id Builder ID.
+	 * @param array $row Row data.
+	 * @param array $column column data.
+	 * @param array $subrow subrow data.
+	 */
+	public function render_sub_row_styling( $builder_id, $row, $column, $subrow ) {
+		$this->stylesheet->render_sub_row_styling( $builder_id, $row, $column, $subrow );
+	}
+
+	/**
+	 * Render column styling.
+	 *
+	 * render column styling css.
+	 *
+	 * @deprecated 3.1.2 Use Themify_Builder_Stylesheet->render_column_styling()
+	 * @see Themify_Builder_Stylesheet->render_column_styling()
+	 *
+	 * @param string $builder_id Builder ID.
+	 * @param array $row Row data.
+	 * @param array $column Column data.
+	 */
+	public function render_column_styling( $builder_id, $row, $column ) {
+		$this->stylesheet->render_column_styling( $builder_id, $row, $column );
+	}
+
+	/**
+	 * Render sub column styling.
+	 *
+	 * render sub column styling css.
+	 *
+	 * @deprecated 3.1.2 Use Themify_Builder_Stylesheet->render_sub_column_styling()
+	 * @see Themify_Builder_Stylesheet->render_sub_column_styling()
+	 *
+	 * @param string $builder_id Builder ID.
+	 * @param array $rows Row data.
+	 * @param array $cols Column data.
+	 * @param array $modules Modules data.
+	 * @param array $sub_column Sub-column data.
+	 */
+	public function render_sub_column_styling( $builder_id, $rows, $cols, $modules, $sub_column ) {
+		$this->stylesheet->render_sub_column_styling( $builder_id, $rows, $cols, $modules, $sub_column );
 	}
 }
 endif;

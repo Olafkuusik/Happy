@@ -333,16 +333,16 @@ class Themify_Metabox {
 	function admin_enqueue_scripts( $page = '' ) {
 		global $typenow;
 
-		wp_enqueue_style( 'themify-datetimepicker-css', THEMIFY_METABOX_URI . 'css/jquery-ui-timepicker.css', array() );
-		wp_register_style( 'themify-colorpicker', THEMIFY_METABOX_URI . 'css/jquery.minicolors.css', array() );
-		wp_register_style( 'themify-metabox', THEMIFY_METABOX_URI . 'css/styles.css', array( 'themify-colorpicker' ) );
+		wp_enqueue_style( 'themify-datetimepicker-css', themify_enque(THEMIFY_METABOX_URI . 'css/jquery-ui-timepicker.css'), array() );
+		wp_register_style( 'themify-colorpicker', themify_enque(THEMIFY_METABOX_URI . 'css/jquery.minicolors.css'), array() );
+		wp_register_style( 'themify-metabox', themify_enque(THEMIFY_METABOX_URI . 'css/styles.css'), array( 'themify-colorpicker' ) );
 
-		wp_register_script( 'meta-box-tabs', THEMIFY_METABOX_URI . 'js/meta-box-tabs.js', array( 'jquery' ), '1.0', true );
-		wp_register_script( 'media-library-browse', THEMIFY_METABOX_URI . 'js/media-lib-browse.js', array( 'jquery'), '1.0', true );
-		wp_register_script( 'themify-colorpicker', THEMIFY_METABOX_URI . 'js/jquery.minicolors.js', array( 'jquery' ), null, true );
-		wp_enqueue_script( 'themify-datetimepicker-js', THEMIFY_METABOX_URI . 'js/jquery-ui-timepicker.js', array( 'jquery', 'jquery-ui-datepicker'/*, 'jquery-ui-slider'*/ ), false, true );
-		wp_register_script( 'themify-metabox', THEMIFY_METABOX_URI . 'js/scripts.js', array( 'jquery', 'meta-box-tabs', 'media-library-browse', 'jquery-ui-tabs', 'themify-colorpicker', 'themify-datetimepicker-js' ), '1.0', true );
-		wp_register_script( 'themify-plupload', THEMIFY_METABOX_URI . 'js/plupload.js', array( 'jquery', 'themify-metabox' ) );
+		wp_register_script( 'meta-box-tabs', themify_enque(THEMIFY_METABOX_URI . 'js/meta-box-tabs.js'), array( 'jquery' ), '1.0', true );
+		wp_register_script( 'media-library-browse', themify_enque(THEMIFY_METABOX_URI . 'js/media-lib-browse.js'), array( 'jquery'), '1.0', true );
+		wp_register_script( 'themify-colorpicker', themify_enque(THEMIFY_METABOX_URI . 'js/jquery.minicolors.js'), array( 'jquery' ), null, true );
+		wp_enqueue_script( 'themify-datetimepicker-js', themify_enque(THEMIFY_METABOX_URI . 'js/jquery-ui-timepicker.js'), array( 'jquery', 'jquery-ui-datepicker'/*, 'jquery-ui-slider'*/ ), false, true );
+		wp_register_script( 'themify-metabox', themify_enque(THEMIFY_METABOX_URI . 'js/scripts.js'), array( 'jquery', 'meta-box-tabs', 'media-library-browse', 'jquery-ui-tabs', 'themify-colorpicker', 'themify-datetimepicker-js' ), '1.0', true );
+		wp_register_script( 'themify-plupload', themify_enque(THEMIFY_METABOX_URI . 'js/plupload.js'), array( 'jquery', 'themify-metabox' ) );
 
 		// Inject variable for Plupload
 		$global_plupload_init = array(

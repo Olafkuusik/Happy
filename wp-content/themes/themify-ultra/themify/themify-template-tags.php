@@ -721,3 +721,81 @@ function themify_loop_is_singular( $type = 'post' ) {
 	return 'single' == $context;
 }
 endif;
+
+if( ! function_exists( 'themify_open_link' ) ) :
+/**
+ * Create the opening <a> tag, links to the permalink by default
+ *
+ * @return string
+ */
+function themify_open_link( $args = array() ) {
+	$defaults = array (
+		'no_permalink' => false, // if there is no lightbox link, don't return a link
+		'class' => '', // additional classes to attach to link
+		'echo' => false,
+		'link' => '',
+		'lightbox' => false,
+	);
+	$args = wp_parse_args( $args, $defaults );
+	extract( $args, EXTR_SKIP );
+	$attr = array(
+		'class' => $class
+	);
+
+	if( empty( $link ) ) {
+		if ( themify_get('external_link') != '') {
+			$link = esc_url(themify_get('external_link'));
+		} elseif ( themify_get('lightbox_link') != '') {
+			$link = esc_url(themify_get('lightbox_link'));
+			$lightbox = true;
+		} elseif(themify_check('link_url')) {
+			$link = themify_get('link_url');
+		} elseif($args['no_permalink']) {
+			$link = '';
+		} else {
+			$link = get_permalink();
+			if(current_theme_supports('themify-post-in-lightbox')){
+				if( !is_single() && '' != themify_get('setting-open_inline') ){
+					$link = add_query_arg( array( 'post_in_lightbox' => 1 ), get_permalink() );
+					$lightbox = true;
+				}
+				if( themify_is_query_page() ){
+					if( 'no' == themify_get('post_in_lightbox') ){
+						$link = get_permalink();
+					} else {
+						$link = add_query_arg( array( 'post_in_lightbox' => 1 ), get_permalink() );
+						$lightbox = true;
+					}
+				}
+			}
+		}
+	}
+	$attr['href'] = $link;
+	if( $lightbox ) {
+		$attr['class'] .= ' themify_lightbox';
+	}
+
+	$link = sprintf( '<a%s>', themify_get_element_attributes( $attr ) );
+
+	if( $echo )
+		echo $link;
+
+	return $link;
+}
+endif;
+
+if( ! function_exists( 'themify_get_categories_as_classes' ) ) :
+/**
+ * Returns a CSS-formatted string of categories assigned to current post
+ *
+ * @return string
+ */
+function themify_get_categories_as_classes( $post_id ) {
+	$categories = wp_get_post_categories( $post_id );
+	$class = '';
+	foreach( $categories as $cat )
+		$class .= ' cat-' . $cat;
+
+	return $class;
+}
+endif;

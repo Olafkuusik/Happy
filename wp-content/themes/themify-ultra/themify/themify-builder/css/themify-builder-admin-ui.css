@@ -1998,7 +1998,6 @@ BUILDER COLUMN
 	position: absolute;
 	height: 25px;
 	top: 0;
-	z-index: 500;
 	background: rgba(158, 165, 167, 0.8);
 	border: none;
 	line-height: 100%;

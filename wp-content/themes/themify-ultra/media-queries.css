@@ -573,7 +573,7 @@ body:not(.header-overlay):not(.header-minbar):not(.header-leftpane):not(.header-
 	.full_width .commentwrap	{
 		max-width: 90%;
 	}
-	body #content {
+	#content {
 		width: 100%;
 		max-width: 100%;
 		float: none;
@@ -582,7 +582,7 @@ body:not(.header-overlay):not(.header-minbar):not(.header-leftpane):not(.header-
 	}
 
 	/* sidebar */
-	body #sidebar {
+	#sidebar {
 		width: 100%;
 		max-width: 100%;
 		float: none;

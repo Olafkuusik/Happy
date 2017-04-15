@@ -1,4 +1,4 @@
-.themify_builder_module_panel .module-type-countdown:before {
+.themify_builder_module.module-type-countdown:before {
 	content: "\e6c6";
 }
 

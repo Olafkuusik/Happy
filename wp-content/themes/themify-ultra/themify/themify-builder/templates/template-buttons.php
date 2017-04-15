@@ -27,7 +27,7 @@ if (TFCache::start_cache('buttons', self::$post_id, array('ID' => $module_ID))):
         'module', 'module-' . $mod_name, $module_ID, $css_button, $animation_effect
                     ), $mod_name, $module_ID, $fields_args)
     );
-    $ui_class = implode(' ', array('module-' . $mod_name,$buttons_size,$buttons_style));
+    $ui_class = implode(' ', array('module-' . $mod_name,$buttons_size));
     
     $container_props = apply_filters( 'themify_builder_module_container_props', array(
         'id' => $module_ID,
@@ -86,8 +86,11 @@ if (TFCache::start_cache('buttons', self::$post_id, array('ID' => $module_ID))):
                 if( !empty( $content['button_color_bg'] ) ) {
                     $link_css_clsss[] = $content['button_color_bg'];
                 }
+
+                $button_style = !empty( $content['button_single_style'] ) && $content['button_single_style'] !== 'default'
+                    ? $content['button_single_style'] : $buttons_style;
                 ?>
-                <div class="module-buttons-item">
+                <div class="module-buttons-item <?php echo $button_style; ?>">
                     <?php if($content['link']):?>
                         <?php printf( '<a class="%s" %s href="%s">'
                             , implode( ' ', $link_css_clsss )

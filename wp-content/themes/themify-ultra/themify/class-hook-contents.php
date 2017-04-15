@@ -117,6 +117,9 @@ class Themify_Hooks {
 						}
 					}
 				}
+				if( themify_is_shop() && ( $shop_page_slug = get_post_field( 'post_name', get_option( 'woocommerce_shop_page_id' ) ) ) && isset( $logic['post_type']['page'][ $shop_page_slug ] ) ) {
+					$visible = true;
+				}
 			}
 		}
 
@@ -509,7 +512,7 @@ class Themify_Hooks {
 			show_admin_bar( false );
 
 			/* enqueue url fix script */
-			wp_enqueue_script('hook-locations-urlfix', THEMIFY_URI . '/js/hook-locations-urlfix.js', array( 'jquery' ), false, false);
+			wp_enqueue_script('hook-locations-urlfix', themify_enque(THEMIFY_URI . '/js/hook-locations-urlfix.js'), array( 'jquery' ), false, false);
 
 			foreach ( $this->get_locations( true ) as $location => $label ) {
 				add_action( $location, array( $this, 'print_hook_label' ) );

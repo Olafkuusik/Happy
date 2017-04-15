@@ -8,6 +8,7 @@
 (function( $, d ){
 
 	function do_stopwatch() {
+            function callback(){
 		$( '.builder-countdown-holder' ).each(function(){
 			var thiz = $( this );
 			if( thiz.data( 'target-date' ) == '' ) return;
@@ -26,10 +27,39 @@
 				}
 			} );
 		});
+            }
+            if($( '.builder-countdown-holder' ).length>0){
+                Themify.LoadAsync(builderCountDown.url+'core.min.js',function(){
+                    
+                    Themify.LoadAsync(builderCountDown.url+'datepicker.min.js',function(){
+                        
+                        Themify.LoadAsync(builderCountDown.url+'widget.min.js',function(){
+                        
+                            Themify.LoadAsync(builderCountDown.url+'mouse.min.js',function(){
+                                
+                                Themify.LoadAsync(builderCountDown.url+'slider.min.js',callback,builderCountDown.ver,false,function(){
+                                    return typeof $.ui.slider!=='undefined';
+                                });
+                                
+                            },builderCountDown.ver,false,function(){
+                                return typeof $.ui.mouse!=='undefined';
+                            });
+                            
+                        },builderCountDown.ver,false,function(){
+                            return typeof $.widget!=='undefined';
+                        });
+                        
+                    },builderCountDown.ver,false,function(){
+                        return typeof $.ui.datepicker!=='undefined';
+                    });
+                    
+                },builderCountDown.ver,false,function(){
+                    return typeof $.ui!=='undefined';
+                });
+            }
 	}
         $(document).ready(do_stopwatch);
 	$( d ).on( 'ready', do_stopwatch );
-	$( 'body' ).on( 'builder_load_module_partial', do_stopwatch );
-	$( 'body' ).on( 'builder_toggle_frontend', do_stopwatch );
+	$( 'body' ).on( 'builder_load_module_partial builder_toggle_frontend', do_stopwatch );
 
 })( jQuery, document );

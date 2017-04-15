@@ -10,25 +10,6 @@ window.themifybuilderapp = window.themifybuilderapp || {};
         oldMouseStart.apply(this, [event, overrideHandle, noActivation]);
     };
 
-	// Serialize Object Function
-	if ('undefined' === typeof $.fn.themifySerializeObject) {
-		$.fn.themifySerializeObject = function () {
-			var o = {};
-			var a = this.serializeArray();
-			$.each(a, function () {
-				if (o[this.name] !== undefined) {
-					if (!o[this.name].push) {
-						o[this.name] = [o[this.name]];
-					}
-					o[this.name].push(this.value || '');
-				} else {
-					o[this.name] = this.value || '';
-				}
-			});
-			return o;
-		};
-	}
-
 	var api = themifybuilderapp = {
 		activeModel: null,
 		Models: {},
@@ -40,6 +21,25 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 		Instances: {Builder: {}},
 		cache: {repeaterElements: {}}
 	};
+
+	// Serialize Object Function
+	if ('undefined' === typeof $.fn.themifySerializeObject) {
+		$.fn.themifySerializeObject = function () {
+			var o = {};
+			var a = this.serializeArray();
+			$.each(a, function () {
+				if (o[this.name] !== undefined && this.value && ! _.contains(api.Forms.excludeDefaultValues, this.value) ) {
+					if (!o[this.name].push) {
+						o[this.name] = [o[this.name]];
+					}
+					o[this.name].push(this.value);
+				} else if ( this.value && ! _.contains(api.Forms.excludeDefaultValues, this.value) ) {
+					o[this.name] = this.value;
+				}
+			});
+			return o;
+		};
+	}
 
 	api.editing = false;
 	api.activeBreakPoint = 'desktop';
@@ -2518,6 +2518,7 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 	};
 
 	api.Forms = {
+		excludeDefaultValues: ['default', 'px', 'solid', 'show'], // exclude these value to be saved in the options.
 		Validators: {},
 		bindEvents: function () {
 			var $body = $('body');
@@ -2568,8 +2569,8 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 				return;
 
 			var temp_appended_data = {},
-					entire_appended_data = api.activeModel.get('mod_settings'),
-					$container = $('.current_selected_module').closest('[data-postid]');
+				entire_appended_data = api.activeModel.get('mod_settings'),
+				$container = $('.current_selected_module').closest('[data-postid]');
 
 			$('#tfb_module_settings .tfb_lb_option').each(function () {
 				var option_value, option_class,
@@ -2588,7 +2589,7 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 					$(this).find('.tf-checkbox:checked').each(function (i) {
 						cselected.push($(this).val());
 					});
-					option_value = cselected.length > 0 ? cselected.join('|') : '|';
+					option_value = cselected.length > 0 ? cselected.join('|') : null;
 				}
 				else if ($(this).hasClass('themify-layout-icon')) {
 					option_value = $(this).find('.selected').length > 0 ? $(this).find('.selected').attr('id') : $(this).children().first().attr('id');
@@ -2611,8 +2612,7 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 				else if ($(this).is('select, input, textarea')) {
 					option_value = $(this).val();
 				}
-
-				if (option_value) {
+				if (option_value && ! _.contains(api.Forms.excludeDefaultValues, option_value) ) {
 					temp_appended_data[this_option_id] = option_value;
 				}
 			});
@@ -2937,7 +2937,6 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 			});
 
 			$(template).appendTo(parent).show();
-
 			if (e.which) {
 				$('#tfb_module_settings').find('.tfb_lb_wp_editor.tfb_lb_option_child.newEditor').each(function (i) {
 					api.Views.init_control('wp_editor', {el: $(this)});
@@ -4732,7 +4731,7 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 					else if ($(this).hasClass('tfb_lb_wp_editor')) {
 						var text_id = $(this).attr('id');
 						this_option_id_child = $(this).attr('name');
-						if (typeof tinyMCE !== 'undefined') {
+						if ( typeof tinyMCE !== 'undefined' && ! _.isNull( tinyMCE.get(text_id) ) ) {
 							option_value_child = tinyMCE.get(text_id).hidden === false ? tinyMCE.get(text_id).getContent() : switchEditors.wpautop(tinymce.DOM.get(text_id).value);
 						} else {
 							option_value_child = $(this).val();
@@ -4764,6 +4763,20 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 			var breakpoints = _.isArray( themifyBuilder.breakpoints[ device ] ) ? themifyBuilder.breakpoints[ device ] : themifyBuilder.breakpoints[ device ].toString().split('-');
 			return breakpoints[ breakpoints.length - 1 ];
 		},
+		shortcodeToHTML: function( content ) {
+			var tags = [],
+				index = 1;
+
+			_.each( themifyBuilder.available_shortcodes.split('|'), function( sc, i ){
+				content = wp.shortcode.replace( sc, content, function( shortcode ){
+					tags.push({ key: index, sc_render: shortcode.string() });
+					var return_content = '<span data-rendered-sc="'+ index +'">[loading shortcode...]</span>';
+					index++;
+					return return_content;
+				});
+			});
+			return { tags: tags, content: content };
+		}
 	};
 
 	_.extend(api.Views.BaseElement.prototype, api.Mixins.Common);
@@ -4886,6 +4899,7 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 
 	// Register core controls
 	api.Views.register_control('wp_editor', {
+		mceEditor: null,
 		initialize: function () {
 			this.render();
 		},
@@ -4894,7 +4908,7 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 					this_option_id = this.$el.attr('id');
 			api.Utils.initQuickTags(this_option_id);
 			if (typeof tinyMCE !== 'undefined') {
-				var ed = api.Utils.initNewEditor(this_option_id),
+				var ed = _.isNull( this.mceEditor ) ? api.Utils.initNewEditor(this_option_id) : this.mceEditor,
 						getClass = $.grep(this.el.className.split(" "), function (v, i) {
 							return v.indexOf('data_control_repeater_') === 0;
 						}).join(),
@@ -4910,6 +4924,13 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 				}
 			}
 			return this;
+		},
+		reBind: function() {
+			this.mceEditor = tinyMCE.get( this.$el.attr('id') );
+			this.render();
+		},
+		resetEditor: function() {
+			this.mceEditor = null;
 		}
 	});
 
@@ -5348,19 +5369,17 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 				start: _.debounce(function (e, ui) {
 					if (typeof tinyMCE !== 'undefined') {
 						that.$el.find('.tfb_lb_wp_editor.tfb_lb_option_child').each(function () {
-							var id = $(this).attr('id'),
-									content = tinymce.get(id).getContent();
-							$(this).data('content', content);
+							var id = $(this).attr('id');
 							tinyMCE.execCommand('mceRemoveEditor', false, id);
 						});
 					}
-				}, 300),
+				}, 400),
 				stop: _.debounce(function (e, ui) {
 					if (typeof tinyMCE !== 'undefined') {
 						that.$el.find('.tfb_lb_wp_editor.tfb_lb_option_child').each(function () {
 							var id = $(this).attr('id');
-							tinyMCE.execCommand('mceAddEditor', false, id);
-							tinymce.get(id).setContent($(this).data('content'));
+							tinyMCE.execCommand('mceAddEditor', true, id);
+							api.Views.ControlRegistry.lookup(id).reBind(); // re-bind event
 						});
 					}
 
@@ -5371,7 +5390,7 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 
 					that.preview_element(this_option_id, null, that.$el);
 					that.$el.find('.themify_builder_ui_state_highlight').remove();
-				}, 300),
+				}, 400),
 				sort: function (e, ui) {
 					that.$el.find('.themify_builder_ui_state_highlight').height(30);
 				},

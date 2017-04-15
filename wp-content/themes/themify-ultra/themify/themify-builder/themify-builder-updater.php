@@ -195,7 +195,7 @@ log</a> for details.</p>', 'themify'),
 	}
 
 	public function enqueue() {
-		wp_enqueue_script( 'themify-builder-plugin-upgrade', THEMIFY_BUILDER_URI . '/js/themify.builder.upgrader.js', array('jquery'), false, true );
+		wp_enqueue_script( 'themify-builder-plugin-upgrade', themify_enque(THEMIFY_BUILDER_URI . '/js/themify.builder.upgrader.js'), array('jquery'), false, true );
 	}
 
 	/**
@@ -255,6 +255,22 @@ log</a> for details.</p>', 'themify'),
 				break;
 			}
 		}
+
+		/**
+		 * Developer Club and Standard Club have access to 11 bonus addons
+		 */
+		if ( isset( $_POST['update_type'] ) && 'addon' === $_POST['update_type'] ) {
+			foreach ( $subs as $key => $value ) {
+				if(
+					( stripos( $value['title'], 'Standard Club' ) !== false || stripos( $value['title'], 'Developer Club' ) !== false )
+					&& isset( $_POST['nicename_short'] ) && in_array( $_POST['nicename_short'], array( 'Slider Pro', 'Pricing Table', 'Maps Pro', 'Typewriter', 'Image Pro', 'Timeline', 'WooCommmerce', 'Contact', 'Counter', 'Progress Bar', 'Countdown' ) )
+				) {
+					$sub_match = 'true';
+					break;
+				}
+			}
+		}
+
 		$sub_match = apply_filters( 'themify_builder_validate_login', $sub_match, $subs );
 		echo $sub_match;
 		die();

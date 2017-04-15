@@ -60,6 +60,7 @@
 }
 #customize-theme-controls #sub-accordion-section-themify_options {
 	padding: 0;
+	overflow: visible;
 }
 #sub-accordion-section-themify_options a {
 	text-decoration: none;

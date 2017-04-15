@@ -121,19 +121,19 @@ function themify_enqueue_scripts($page){
 	$pages = apply_filters( 'themify_top_pages', array( 'post.php', 'post-new.php', 'toplevel_page_themify', 'nav-menus.php' ) );
 	$pagenows = apply_filters( 'themify_pagenow', array( 'themify' ) );
 
-	wp_register_style( 'themify-promote-themes',  THEMIFY_URI . '/css/themify-promote-themes.css', array(), THEMIFY_VERSION );
-	wp_register_style( 'themify-ui',  THEMIFY_URI . '/css/themify-ui.css', array(), THEMIFY_VERSION );
-	wp_register_style( 'themify-ui-rtl',  THEMIFY_URI . '/css/themify-ui-rtl.css', array(), THEMIFY_VERSION );
-	wp_register_style( 'themify-colorpicker', THEMIFY_URI . '/css/jquery.minicolors.css', array(), THEMIFY_VERSION );
-	wp_register_script( 'validate', THEMIFY_URI . '/js/jquery.validate.pack.js', array('jquery'), THEMIFY_VERSION );
-	wp_register_script( 'themify-colorpicker', THEMIFY_URI . '/js/jquery.minicolors.js', array('jquery'), THEMIFY_VERSION );
-	wp_register_script( 'themify-scripts', THEMIFY_URI . '/js/scripts.js', array('jquery'), THEMIFY_VERSION );
-	wp_register_script( 'themify-plupload', THEMIFY_URI . '/js/plupload.js', array('jquery', 'themify-scripts'), THEMIFY_VERSION);
-	wp_register_style ( 'magnific', THEMIFY_URI . '/css/lightbox.css', array(), THEMIFY_VERSION );
-	wp_register_script( 'magnific', THEMIFY_URI . '/js/lightbox.js', array('jquery'), THEMIFY_VERSION, true );
+	wp_register_style( 'themify-promote-themes',  themify_enque(THEMIFY_URI . '/css/themify-promote-themes.css'), array(), THEMIFY_VERSION );
+	wp_register_style( 'themify-ui',  themify_enque(THEMIFY_URI . '/css/themify-ui.css'), array(), THEMIFY_VERSION );
+	wp_register_style( 'themify-ui-rtl',  themify_enque(THEMIFY_URI . '/css/themify-ui-rtl.css'), array(), THEMIFY_VERSION );
+	wp_register_style( 'themify-colorpicker', themify_enque(THEMIFY_URI . '/css/jquery.minicolors.css'), array(), THEMIFY_VERSION );
+	wp_register_script( 'validate', themify_enque(THEMIFY_URI . '/js/jquery.validate.pack.js'), array('jquery'), THEMIFY_VERSION );
+	wp_register_script( 'themify-colorpicker', themify_enque(THEMIFY_URI . '/js/jquery.minicolors.js'), array('jquery'), THEMIFY_VERSION );
+	wp_register_script( 'themify-scripts', themify_enque(THEMIFY_URI . '/js/scripts.js'), array('jquery'), THEMIFY_VERSION );
+	wp_register_script( 'themify-plupload', themify_enque(THEMIFY_URI . '/js/plupload.js'), array('jquery', 'themify-scripts'), THEMIFY_VERSION);
+	wp_register_style ( 'magnific', themify_enque(THEMIFY_URI . '/css/lightbox.css'), array(), THEMIFY_VERSION );
+	wp_register_script( 'magnific', themify_enque(THEMIFY_URI . '/js/lightbox.js'), array('jquery'), THEMIFY_VERSION, true );
         if(themify_is_themify_theme()){
-            wp_register_style ( 'themify-admin-widgets-css', THEMIFY_URI . '/css/themify-admin-widgets.css', array(), THEMIFY_VERSION );
-            wp_register_script( 'themify-admin-widgets-js', THEMIFY_URI . '/js/themify-admin-widgets.js', array('jquery'), THEMIFY_VERSION, true );
+            wp_register_style ( 'themify-admin-widgets-css', themify_enque(THEMIFY_URI . '/css/themify-admin-widgets.css'), array(), THEMIFY_VERSION );
+            wp_register_script( 'themify-admin-widgets-js', themify_enque(THEMIFY_URI . '/js/themify-admin-widgets.js'), array('jquery'), THEMIFY_VERSION, true );
         }
 	// Custom Write Panel
 	if( ($page == 'post.php' || $page == 'post-new.php') && in_array($typenow, $types) ){
@@ -143,7 +143,7 @@ function themify_enqueue_scripts($page){
 
 	// Register icon assets for later enqueueing.
 	wp_register_style( 'themify-font-icons-css', THEMIFY_URI . '/fontawesome/css/font-awesome.min.css', array(), THEMIFY_VERSION );
-	wp_register_style( 'themify-icons', THEMIFY_URI . '/themify-icons/themify-icons.css', array(), THEMIFY_VERSION );
+	wp_register_style( 'themify-icons', themify_enque(THEMIFY_URI . '/themify-icons/themify-icons.css'), array(), THEMIFY_VERSION );
 	wp_register_style( 'google-fonts-admin', themify_https_esc('http://fonts.googleapis.com/css'). '?family=Open+Sans:400,300,600|Montserrat');
 
 	// Settings Panel
@@ -269,14 +269,14 @@ function themify_enqueue_framework_assets() {
 
 	// MediaElement
 	wp_deregister_style( 'mediaelement' );
-	wp_register_style( 'mediaelement', THEMIFY_URI . '/css/themify-mediaelement.min.css' );
+	wp_register_style( 'mediaelement', THEMIFY_URI . '/css/themify-mediaelement.min.css');
 
 	wp_deregister_style( 'wp-mediaelement' );
 	wp_register_style( 'wp-mediaelement', THEMIFY_URI . '/css/themify-wp-mediaelement.min.css', array( 'mediaelement' ) );
 
 
 	wp_deregister_script( 'mediaelement' );
-	wp_register_script( 'mediaelement', THEMIFY_URI . '/js/themify-mediaelement-and-player.min.js', array( 'jquery' ), false, true );
+	wp_register_script( 'mediaelement', themify_enque(THEMIFY_URI . '/js/themify-mediaelement-and-player.min.js'), array( 'jquery' ), false, true );
 
 	wp_deregister_script( 'wp-mediaelement' );
 	wp_register_script( 'wp-mediaelement', THEMIFY_URI . '/js/themify-wp-mediaelement.min.js', array( 'mediaelement' ), false, true );
@@ -437,7 +437,7 @@ function themify_get_image( $args ) {
 	 * List of parameters
 	 * @var array
 	 */
-	$args = wp_parse_args( $args, array(
+	$args = themify_parse_args( $args, array(
 		'id' 		 => '',
 		'src'		 => '',
 		'class' 	 => '',
@@ -455,7 +455,7 @@ function themify_get_image( $args ) {
 		'image_size' => '',
 		'image_meta' => false,
 		'f_image'=>      false
-	) );
+	), 'get_image' );
 
 	/**
 	 * Post ID for single, query or archive views.
@@ -1264,8 +1264,8 @@ if(!function_exists('themify_lightbox_vars_init')){
 		// else if user selected fullscreen gallery
 		} elseif('photoswipe' == $gallery_lightbox){
 			// Include fullscreen gallery style and script
-			wp_enqueue_style(  'photoswipe', THEMIFY_URI . '/css/photoswipe.css', array(), THEMIFY_VERSION );
-			wp_enqueue_script( 'photoswipe', THEMIFY_URI . '/js/photoswipe.js', array('jquery'), THEMIFY_VERSION, true );
+			wp_enqueue_style(  'photoswipe', themify_enque(THEMIFY_URI . '/css/photoswipe.css'), array(), THEMIFY_VERSION );
+			wp_enqueue_script( 'photoswipe', themify_enque(THEMIFY_URI . '/js/photoswipe.js'), array('jquery'), THEMIFY_VERSION, true );
 
 			// Parameter to handle fullscreen gallery
 			$overlay_args = array_merge($overlay_args, array(
@@ -1883,106 +1883,6 @@ function themify_ternary_states( $args = array(), $all = array() ) {
 }
 
 /**
- * Returns allowed tags for widget params before_widget and after_widget
- *
- * @since 2.1.8
- *
- * @return mixed|void
- */
-function themify_before_after_widget_allowed_tags() {
-	/**
-	 * Filters allowed tags.
-	 *
-	 * @since 2.1.8
-	 *
-	 * @param array
-	 */
-		static $allowed_tags = NULL;
-		if(is_null($allowed_tags)){
-			$allowed_tags =apply_filters( 'themify_before_after_widget_allowed_tags', array(
-								'div'     => array(
-										'id'    => true,
-										'class' => true,
-								),
-								'section' => array(
-										'id'    => true,
-										'class' => true,
-								),
-						));
-		}
-	return $allowed_tags;
-}
-
-/**
- * Returns allowed tags for widget params before_title and after_title
- *
- * @since 2.1.8
- *
- * @return mixed|void
- */
-function themify_before_after_widget_title_allowed_tags() {  
-	/**
-	 * Filters allowed tags.
-	 *
-	 * @since 2.1.8
-	 *
-	 * @param array
-	 */
-	
-		static $allowed_tags = NULL;
-		if(is_null($allowed_tags)){
-			$allowed_tags = apply_filters( 'themify_before_after_widget_title_allowed_tags', array(
-					'h3'     => array(
-							'class' => true,
-					),
-					'h4' => array(
-							'class' => true,
-					),
-					'strong' => array(
-							'class' => true,
-					),
-			));
-		}
-	return $allowed_tags;
-}
-
-/**
- * Returns allowed tags for updater notice markup
- *
- * @since 2.1.8
- *
- * @return mixed|void
- */
-function themify_updater_notice_allowed_tags() {
-	/**
-	 * Filters allowed tags.
-	 *
-	 * @since 2.1.8
-	 *
-	 * @param array
-	 */
-	return apply_filters( 'themify_updater_notice_allowed_tags', array(
-		'div' => array(
-			'id'    => true,
-			'class' => true,
-		),
-		'p'   => array( 'class' => true, ),
-		'a'   => array(
-			'href'           => true,
-			'title'          => true,
-			'class'          => true,
-			'target'         => true,
-			'data-changelog' => true,
-		),
-		'select' => array( 'id' => true, ),
-		'option' => array(
-			'selected' => true,
-			'value'    => true,
-		),
-	) );
-}
-
-/**
  * Safely add "fa-" prefix to the icon name
  *
  * @since 2.2.0
@@ -2238,7 +2138,7 @@ function themify_aria_hidden( $condition, $echo = true ) {
  * Load common.css file, required for pre-load CSS codes
  */
 function themify_enqueue_common_css() {
-	wp_enqueue_style( 'themify-common', THEMIFY_URI . '/css/themify.common.css' );
+	wp_enqueue_style( 'themify-common', themify_enque(THEMIFY_URI . '/css/themify.common.css') );
 }
 
 
@@ -2419,10 +2319,15 @@ function themify_maybe_unserialize( $original ) {
  *
  * @return bool
  */
-function themify_get_flag( $name ) {
-	$flags = explode( '|', get_option( 'themify_flags' ) );
+function themify_get_flag( $name, $default = false ) {
+	$flags = get_option( 'themify_flags', array() );
 
-	return in_array( $name, $flags, true );
+	$value = $default;
+	if ( isset( $flags[ $name ] ) ) {
+		$value = $flags[ $name ];
+	}
+
+	return apply_filters( "themify_flag_{$name}", $value );
 }
 
 /**
@@ -2430,10 +2335,10 @@ function themify_get_flag( $name ) {
  *
  * @return null
  */
-function themify_set_flag( $name ) {
-	$flags = explode( '|', get_option( 'themify_flags' ) );
-	$flags[] = $name;
-	update_option( 'themify_flags', array_unique( join( '|', $flags ) ) );
+function themify_set_flag( $name, $value = 1 ) {
+	$flags = get_option( 'themify_flags', array() );
+	$flags[ $name ] = $value;
+	update_option( 'themify_flags', $flags );
 }
 
 /**
@@ -2442,20 +2347,22 @@ function themify_set_flag( $name ) {
  * @return null
  */
 function themify_unset_flag( $name ) {
-	$flags = explode( '|', get_option( 'themify_flags' ) );
-	$key = array_search( $name, $flags );
-	if( false !== $key ) {
-		unset( $flags[ $key ] );
-	}
-	update_option( 'themify_flags', array_unique( join( '|', $flags ) ) );
+	$flags = get_option( 'themify_flags', array() );
+	unset( $flags[ $name ] );
+	update_option( 'themify_flags', $flags );
 }
 
-/**
- * Check if "any" flag has been set
- *
- * @return bool
- */
-function themify_has_any_flags() {
-	$flags = get_option( 'themify_flags' );
-	return ! empty( $flags );
+function themify_enque($url){
+    $f = pathinfo($url);
+    static $site_url = false;
+    if($site_url===false){
+        $site_url = get_site_url();
+    }
+    $absolute = trim(str_replace($site_url, '', $f['dirname']),'/');
+    $name = $f['filename'].'.min.'.$f['extension'];
+    if(is_file(ABSPATH.$absolute.'/'.$name)){
+       // $url = trim($f['dirname'],'/').'/'.$name;
+    }
+    return $url;
+    
 }

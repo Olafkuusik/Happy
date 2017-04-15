@@ -294,7 +294,7 @@ class Themify_Builder_Plugin_Compat {
 		global $version, $pagenow, $current_screen;
 
 		if (in_array($hook, array('post-new.php', 'post.php')) && in_array(get_post_type(), themify_post_types()) && Themify_Builder_Model::hasAccess()) {
-			wp_enqueue_script( 'themify-builder-plugin-compat', THEMIFY_BUILDER_URI .'/js/themify.builder.plugin.compat.js', array('jquery'), $version, true );
+			wp_enqueue_script( 'themify-builder-plugin-compat', themify_enque(THEMIFY_BUILDER_URI .'/js/themify.builder.plugin.compat.js'), array('jquery'), $version, true );
 			wp_localize_script( 'themify-builder-plugin-compat', 'TBuilderPluginCompat', apply_filters( 'themify_builder_plugin_compat_vars', array(
 				'wpseo_active' => $this->is_yoast_seo_active(),
 				'wpseo_builder_content_text' => __( 'Themify Builder: ', 'themify')

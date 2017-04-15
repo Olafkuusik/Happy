@@ -1027,6 +1027,7 @@
                     $tfb_dialog_form.find('.tfb_lb_wp_editor').each( function(){
                         var $id = $(this).prop('id');
                         switchEditors.go($id, 'tmce');
+                        themifybuilderapp.Views.ControlRegistry.lookup($id).resetEditor();
                     });
                 }
 

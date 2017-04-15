@@ -113,7 +113,7 @@ var tbLoaderVars, themifyBuilder;
 										}
 
 										// Remove click event
-									//	$('body').off('click.tbloader');
+										$('body').off('click.tbloader');
 
 										// Initialize Builder
 										// Event replaces $(document).ready() and $(window).load()

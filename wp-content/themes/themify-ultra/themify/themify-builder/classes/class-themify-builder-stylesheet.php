@@ -90,8 +90,8 @@ class Themify_Builder_Stylesheet {
 			foreach ($rules as $value) {
 				$css[$value['selector']] = isset($css[$value['selector']]) ? $css[$value['selector']] : '';
 
-				if ( in_array( $value['prop'], array( 'background-color', 'color', 'border-top-color', 'border-bottom-color', 'border-left-color', 'border-right-color' ) ) ) {
-					if( in_array($value['prop'], array( 'border-top-color', 'border-bottom-color', 'border-left-color', 'border-right-color' ) ) ){
+				if ( in_array( $value['prop'], array( 'background-color', 'color', 'border-top-color', 'border-bottom-color', 'border-left-color', 'border-right-color', 'column-rule-color' ) ) ) {
+					if( in_array($value['prop'], array( 'border-top-color', 'border-bottom-color', 'border-left-color', 'border-right-color', 'column-rule-color' ) ) ){
 						$temp_id = str_replace( '_color','', $value['id'] );
 						if ( empty( $css_rules[$temp_id.'_width']['value'] ) || empty( $css_rules[$temp_id.'_style']['value'] ) || $css_rules[$temp_id.'_style']['value']==='none' ) {
 							continue;
@@ -111,8 +111,8 @@ class Themify_Builder_Stylesheet {
 						$themify->builder_google_fonts .= str_replace(' ', '+', $value['value'] . '|');
 					}
 					$css[$value['selector']][ $value['prop'] ] = $value['value'];
-				} elseif (in_array($value['prop'], array('font-size', 'line-height', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width'))) {
-					if(in_array($value['prop'], array('border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width'))){
+				} elseif (in_array($value['prop'], array('font-size', 'line-height', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width', 'column-rule-width', 'column-gap'))) {
+					if(in_array($value['prop'], array('border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width', 'column-rule-width'))){
 						$temp_id = str_replace( '_width', '', $value['id'] );
 						if(empty($css_rules[$temp_id.'_style']['value']) || empty($value['value']) ||  $css_rules[$temp_id.'_style']['value']==='none'){
 							continue;
@@ -120,8 +120,8 @@ class Themify_Builder_Stylesheet {
 					}
 					$unit = isset($settings[$value['id'] . '_unit']) ? $settings[$value['id'] . '_unit'] : 'px';
 					$css[$value['selector']][ $value['prop'] ] = sprintf('%s%s', $value['value'], $unit);
-				} elseif (in_array($value['prop'], array('text-decoration', 'text-align', 'background-repeat', 'background-position', 'border-top-style', 'border-right-style', 'border-bottom-style', 'border-left-style'))) {
-					if(in_array($value['prop'], array('border-top-style', 'border-right-style', 'border-bottom-style', 'border-left-style'))){
+				} elseif (in_array($value['prop'], array('text-decoration', 'text-align', 'background-repeat', 'background-position', 'border-top-style', 'border-right-style', 'border-bottom-style', 'border-left-style', 'column-rule-style'))) {
+					if(in_array($value['prop'], array('border-top-style', 'border-right-style', 'border-bottom-style', 'border-left-style', 'column-rule-style'))){
 						$temp_id = str_replace( '_style', '', $value['id'] );
 						if(empty($css_rules[$temp_id.'_width']['value']) && $value['value']!=='none'){
 							continue;
@@ -132,6 +132,8 @@ class Themify_Builder_Stylesheet {
 					$css[$value['selector']][ $value['prop'] ] = sprintf('url("%s")', themify_https_esc($value['value']));
 				} elseif( $value['prop'] === 'background-image' && $value['type'] === 'gradient' && isset( $settings[$value['id'] . '-css'] ) ) {
 					$css[$value['selector']][ $value['prop'] ] = $this->get_gradient_value( $settings[$value['id'] . '-css'] ); // note: the property is defined in the "*-css" field
+				} elseif( $value['prop'] === 'column-count' ) {
+					$css[$value['selector']][ $value['prop'] ] .= $value['value'];
 				}
 			}
 
@@ -420,8 +422,8 @@ class Themify_Builder_Stylesheet {
 			foreach ($rules as $value) {
 				$css[$value['selector']] = isset($css[$value['selector']]) ? $css[$value['selector']] : '';
 
-				if ( in_array( $value['prop'], array( 'background-color', 'color', 'border-top-color', 'border-bottom-color', 'border-left-color', 'border-right-color' ) ) ) {
-					if( in_array($value['prop'], array( 'border-top-color', 'border-bottom-color', 'border-left-color', 'border-right-color' ) ) ){
+				if ( in_array( $value['prop'], array( 'background-color', 'color', 'border-top-color', 'border-bottom-color', 'border-left-color', 'border-right-color', 'column-rule-color' ) ) ) {
+					if( in_array($value['prop'], array( 'border-top-color', 'border-bottom-color', 'border-left-color', 'border-right-color', 'column-rule-color' ) ) ){
 						$temp_id = str_replace( '_color','', $value['id'] );
 						if ( empty( $css_rules[$temp_id.'_width']['value'] ) || empty( $css_rules[$temp_id.'_style']['value'] ) || $css_rules[$temp_id.'_style']['value']==='none' ) {
 							continue;
@@ -441,8 +443,8 @@ class Themify_Builder_Stylesheet {
 						$themify->builder_google_fonts .= str_replace(' ', '+', $value['value'] . '|');
 					}
 					$css[$value['selector']] .= sprintf('font-family: %s; ', $value['value']);
-				} elseif (in_array($value['prop'], array('font-size', 'line-height', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width'))) {
-					if(in_array($value['prop'], array('border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width'))){
+				} elseif (in_array($value['prop'], array('font-size', 'line-height', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width', 'column-rule-width', 'column-gap'))) {
+					if(in_array($value['prop'], array('border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width', 'column-rule-width'))){
 						$temp_id = str_replace( '_width', '', $value['id'] );
 						if(empty($css_rules[$temp_id.'_style']['value']) || empty($value['value']) ||  $css_rules[$temp_id.'_style']['value']==='none'){
 							continue;
@@ -450,8 +452,8 @@ class Themify_Builder_Stylesheet {
 					}
 					$unit = isset($settings[$value['id'] . '_unit']) ? $settings[$value['id'] . '_unit'] : 'px';
 					$css[$value['selector']] .= sprintf('%s: %s%s; ', $value['prop'], $value['value'], $unit);
-				} elseif (in_array($value['prop'], array('text-decoration', 'text-align', 'background-repeat', 'background-position', 'border-top-style', 'border-right-style', 'border-bottom-style', 'border-left-style'))) {
-					if(in_array($value['prop'], array('border-top-style', 'border-right-style', 'border-bottom-style', 'border-left-style'))){
+				} elseif (in_array($value['prop'], array('text-decoration', 'text-align', 'background-repeat', 'background-position', 'border-top-style', 'border-right-style', 'border-bottom-style', 'border-left-style', 'column-rule-style'))) {
+					if(in_array($value['prop'], array('border-top-style', 'border-right-style', 'border-bottom-style', 'border-left-style', 'column-rule-style'))){
 						$temp_id = str_replace( '_style', '', $value['id'] );
 						if(empty($css_rules[$temp_id.'_width']['value']) && $value['value']!=='none'){
 							continue;
@@ -462,6 +464,8 @@ class Themify_Builder_Stylesheet {
 					$css[$value['selector']] .= sprintf('%s: url("%s"); ', $value['prop'], themify_https_esc($value['value']));
 				} elseif( $value['prop'] === 'background-image' && $value['type'] === 'gradient' && isset( $settings[$value['id'] . '-css'] ) ) {
 					$css[$value['selector']] .= $settings[$value['id'] . '-css']; // note: the property is defined in the "*-css" field
+				} elseif( $value['prop'] === 'column-count' ) {
+					$css[$value['selector']] .= sprintf('%s: %s; ', $value['prop'], $value['value']);
 				}
 			}
 

@@ -254,7 +254,7 @@ function themify_parse_shortcode_query_atts( $atts, $shortcode = '', $defaults =
 		'order' => $order,
 		'orderby' => $orderby,
 		'suppress_filters' => false,
-		'post__not_in' => ! is_home() ? array( get_the_id() ) : array(),
+		'post__not_in' => is_singular() ? array( get_the_id() ) : array(),
 	);
 
 	if ( '0' !== $category ) {

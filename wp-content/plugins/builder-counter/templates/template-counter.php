@@ -75,10 +75,10 @@ $container_props = apply_filters( 'themify_builder_module_container_props', arra
 	<?php do_action( 'themify_builder_before_template_content_render' ); ?>
 
 	<?php if( '' != $circle_percentage_counter ) : ?>
-		<div class="counter-chart" data-percent="<?php echo esc_attr( $circle_percentage_counter ); ?>" data-color="<?php echo $this->get_rgba_color( $circle_color_counter ); ?>" data-trackcolor="<?php echo $chart_vars['trackColor']; ?>" data-linecap="<?php echo $chart_vars['lineCap']; ?>" data-scalelength="<?php echo $chart_vars['scaleLength']; ?>" data-rotate="<?php echo $chart_vars['rotate']; ?>" data-size="<?php echo $chart_vars['size']; ?>" data-linewidth="<?php echo $circle_stroke_counter; ?>" data-animate="<?php echo $chart_vars['animate']; ?>">
+		<div class="counter-chart" data-percent="<?php echo esc_attr( $circle_percentage_counter ); ?>" data-color="<?php echo $this->stylesheet->get_rgba_color( $circle_color_counter ); ?>" data-trackcolor="<?php echo $chart_vars['trackColor']; ?>" data-linecap="<?php echo $chart_vars['lineCap']; ?>" data-scalelength="<?php echo $chart_vars['scaleLength']; ?>" data-rotate="<?php echo $chart_vars['rotate']; ?>" data-size="<?php echo $chart_vars['size']; ?>" data-linewidth="<?php echo $circle_stroke_counter; ?>" data-animate="<?php echo $chart_vars['animate']; ?>">
 	<?php endif; ?>
 
-	<?php if( '' != $circle_background_counter ) : ?><div class="module-counter-background" style="background: <?php echo $this->get_rgba_color( $circle_background_counter ); ?>"></div><?php endif; ?>
+	<?php if( '' != $circle_background_counter ) : ?><div class="module-counter-background" style="background: <?php echo $this->stylesheet->get_rgba_color( $circle_background_counter ); ?>"></div><?php endif; ?>
 
 	<div class="number">
 		<span class="bc-timer" id="<?php echo $module_ID; ?>-bc-timer" data-from="0" data-to="<?php echo $number; ?>" data-suffix="<?php echo $suffix; ?>" data-prefix="<?php echo $prefix; ?>" data-decimals="<?php echo $decimals; ?>" data-grouping="<?php echo $number_grouping; ?>"></span>

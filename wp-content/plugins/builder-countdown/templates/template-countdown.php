@@ -50,7 +50,7 @@ $container_props = apply_filters( 'themify_builder_module_container_props', arra
 <div <?php echo $this->get_element_attributes( $container_props ); ?>>
 
 	<?php if( '' != $counter_background_color ) : ?>
-		<style>#<?php echo $module_ID; ?> .ui { background-color: <?php echo $this->get_rgba_color( $counter_background_color ); ?>; }</style>
+		<style>#<?php echo $module_ID; ?> .ui { background-color: <?php echo $this->stylesheet->get_rgba_color( $counter_background_color ); ?>; }</style>
 	<?php endif; ?>
 
 	<?php do_action( 'themify_builder_before_template_content_render' ); ?>

@@ -33,9 +33,6 @@ $fields_args = wp_parse_args( $mod_settings, $fields_default );
 extract( $fields_args, EXTR_SKIP );
 $animation_effect = $this->parse_animation_effect( $animation_effect, $fields_args );
 
-if( 'yes' == $field_captcha_active ) {
-	wp_enqueue_script( 'recaptcha' );
-}
 
 $container_class = implode(' ', 
 	apply_filters( 'themify_builder_module_classes', array(

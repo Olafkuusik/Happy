@@ -1345,6 +1345,65 @@ class TB_Slider_Module extends Themify_Builder_Module {
 					)
 				)
 			),
+			// Multi columns
+			array(
+				'id' => 'separator_multi_columns',
+				'type' => 'separator',
+				'meta' => array('html'=>'<hr><h4>' . __( 'Multi-columns', 'themify' ) . '</h4>'),
+			),
+			array(
+				'id' => 'column_count',
+				'type' => 'select',
+				'label' =>__('Column Count', 'themify'),
+				'meta' => array(
+					array( 'value' => 1, 'name' => 1 ),
+					array( 'value' => 2, 'name' => 2 ),
+					array( 'value' => 3, 'name' => 3 ),
+					array( 'value' => 4, 'name' => 4 ),
+					array( 'value' => 5, 'name' => 5 ),
+					array( 'value' => 6, 'name' => 6 ),
+				),
+				'prop' => 'column-count',
+				'selector' => ' .slide-content'
+			),
+			array(
+				'id' => 'column_gap',
+				'type' => 'text',
+				'label' => __('Column Gap', 'themify'),
+				'class' => 'style_field_px xsmall',
+				'prop' => 'column-gap',
+				'selector' => ' .slide-content'
+			),
+			array(
+				'id' => 'column_divider',
+				'type' => 'multi',
+				'label' => __('Column Divider', 'themify'),
+				'fields' => array(
+					array(
+						'id' => 'column_divider_color',
+						'type' => 'color',
+						'class' => 'small',
+						'prop' => 'column-rule-color',
+						'selector' => ' .slide-content',
+					),
+					array(
+						'id' => 'column_divider_width',
+						'type' => 'text',
+						'description' => 'px',
+						'class' => 'style_field_px xsmall',
+						'prop' => 'column-rule-width',
+						'selector' => ' .slide-content',
+					),
+					array(
+						'id' => 'column_divider_style',
+						'type' => 'select',
+						'meta' => Themify_Builder_model::get_border_styles(),
+						'class' => 'style_field_select',
+						'prop' => 'column-rule-style',
+						'selector' => ' .slide-content',
+					)
+				)
+			)
 		);
 
 		return array(

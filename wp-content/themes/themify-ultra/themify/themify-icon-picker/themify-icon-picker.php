@@ -99,8 +99,8 @@ class Themify_Icon_Picker {
 	 * Must be called manually wherever you need the icon picker.
 	 */
 	public function enqueue() {
-		wp_enqueue_style( 'tf-icon-picker', $this->url . 'assets/styles.css' );
-		wp_enqueue_script( 'tf-icon-picker', $this->url . 'assets/themify.font-icons-select.js', array( 'jquery' ), null, true );
+		wp_enqueue_style( 'tf-icon-picker', themify_enque($this->url . 'assets/styles.css' ));
+		wp_enqueue_script( 'tf-icon-picker', themify_enque($this->url . 'assets/themify.font-icons-select.js'), array( 'jquery' ), null, true );
 		do_action( 'themify_icon_picker_enqueue' );
 	}
 }

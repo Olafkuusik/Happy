@@ -47,7 +47,7 @@ class Themify_TinyMCE {
 	 */
 	function add_plugin( $mce_external_plugins ) {
 		global $wp_version;
-		$mce_external_plugins['themifyMenu'] = THEMIFY_TINYMCE_URI . 'plugin.js';
+		$mce_external_plugins['themifyMenu'] = themify_enque(THEMIFY_TINYMCE_URI . 'plugin.js');
 
 		return $mce_external_plugins;
 	}
