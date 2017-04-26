@@ -104,12 +104,6 @@ class ThemifyBuilder_Data_Manager {
 		/* remove the old data format */
 		delete_post_meta( $post_id, $ThemifyBuilder->meta_key );
 		Themify_Builder::remove_cache($post_id);
-
-		if (!empty($builder_data)) {
-                        // Write Stylesheet
-                        $ThemifyBuilder->stylesheet->write_stylesheet(array('id' => $post_id, 'data' => $builder_data));
-                }
-		
 		/**
 		 * Fires After Builder Saved.
 		 * 
@@ -187,7 +181,6 @@ class ThemifyBuilder_Data_Manager {
 		 * Ticket: #5336
 		 */
 		$builder_data = map_deep( $builder_data, array( $this, 'unescape_home_url' ) );
-
 		return $builder_data;
 	}
 

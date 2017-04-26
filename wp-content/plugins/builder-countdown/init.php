@@ -2,7 +2,7 @@
 /*
 Plugin Name:  Builder Countdown
 Plugin URI:   http://themify.me/addons/countdown
-Version:      1.1.0
+Version:      1.1.1
 Author:       Themify
 Description:  It requires to use with the latest version of any Themify theme or the Themify Builder plugin.
 Text Domain:  builder-countdown
@@ -14,9 +14,9 @@ defined( 'ABSPATH' ) or die( '-1' );
 class Builder_Countdown {
 
 	private static $instance = null;
-	private $url;
-	private $dir;
-	private $version;
+	var $url;
+	var $dir;
+	var $version;
 
 	/**
 	 * Creates or returns an instance of this class.
@@ -32,7 +32,6 @@ class Builder_Countdown {
 		add_action( 'plugins_loaded', array( $this, 'i18n' ), 5 );
 		add_action( 'themify_builder_setup_modules', array( $this, 'register_module' ) );
 		add_action( 'themify_builder_admin_enqueue', array( $this, 'admin_enqueue' ), 15 );
-                add_filter('themify_builder_addons_assets',array($this,'assets'),10,1);
 		add_action( 'init', array( $this, 'updater' ) );
 	}
 
@@ -68,21 +67,6 @@ class Builder_Countdown {
 		$ThemifyBuilder->register_directory( 'templates', $this->dir . 'templates' );
 		$ThemifyBuilder->register_directory( 'modules', $this->dir . 'modules' );
 	}
-        
-        public function assets($assets){
-            global $wp_scripts;
-            $assets['builder-countdown']=array(
-                                        'selector'=>'.module-countdown',
-                                        'css'=>$this->url.'assets/style.css',
-                                        'js'=>$this->url.'assets/script.js',
-                                        'ver'=>$this->version,
-                                        'external'=>Themify_Builder_Model::localize_js('builderCountDown', array(
-                                            'url' =>  includes_url('js/jquery/ui/'),
-                                            'ver'=>$wp_scripts->query('jquery-ui-core'),
-                                        ))
-                            );
-            return $assets;
-        }
 
 	public function updater() {
 		if( class_exists( 'Themify_Builder_Updater' ) ) {
@@ -98,6 +82,7 @@ class Builder_Countdown {
 			), $this->version, trim( $plugin_basename, '/' ) );
 		}
 	}
+
 	/**
 	 * Get a module ID and returns it's data
 	 */

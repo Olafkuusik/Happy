@@ -1415,7 +1415,8 @@ class Themify_Customizer {
 		$html = '<a href="' . esc_url($url) . '" title="' . esc_attr($site_name) . '">';
 		if (isset($this->settings[$location . '_image']) && $has_image_src && $is_image_mode) {
 			$html .= '<img src="' . esc_url(themify_https_esc($logo->src)) . '" alt="' . esc_attr($site_name) . '" title="' . esc_attr($site_name) . '" />';
-			$html .= '<span style="display: none;">' . esc_html($site_name) . '</span>';
+			$html .= is_customize_preview()
+				? '<span style="display: none;">' . esc_html($site_name) . '</span>' : '';
 		} else {
 			$html .= '<span>' . esc_html($site_name) . '</span>';
 		}
@@ -1437,7 +1438,8 @@ class Themify_Customizer {
 		$html = '';
 		if (isset($this->settings[$location]) && $has_image_src && $is_image_mode) {
 			$html .= '<img src="' . esc_url(themify_https_esc($desc->src)) . '" alt="' . esc_attr($site_desc) . '" title="' . esc_attr($site_desc) . '" />';
-			$html .= '<span style="display: none;">' . esc_html($site_desc) . '</span>';
+			$html .= is_customize_preview()
+				? '<span style="display: none;">' . esc_html($site_desc) . '</span>' : '';
 		} else {
 			$html .= '<span>' . esc_html($site_desc) . '</span>';
 		}

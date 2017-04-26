@@ -17,12 +17,9 @@ $fields_default = array(
 	'field_name_label' => __( 'Name', 'builder-contact' ),
 	'field_email_label' => __( 'Email', 'builder-contact' ),
 	'field_subject_label' => __( 'Subject', 'builder-contact' ),
-	'field_subject_active' => 'yes',
 	'default_subject' => '',
-	'field_captcha_active' => 'no',
 	'field_captcha_label' => __( 'Captcha', 'builder-contact' ),
 	'field_message_label' => __( 'Message', 'builder-contact' ),
-	'field_sendcopy_active' => 'no',
 	'field_sendcopy_label' => __( 'Send Copy', 'builder-contact' ),
 	'field_send_label' => __( 'Send', 'builder-contact' ),
 	'animation_effect' => '',
@@ -33,6 +30,9 @@ $fields_args = wp_parse_args( $mod_settings, $fields_default );
 extract( $fields_args, EXTR_SKIP );
 $animation_effect = $this->parse_animation_effect( $animation_effect, $fields_args );
 
+$field_subject_active = isset( $mod_settings['field_subject_active'] ) && 'yes' == $mod_settings['field_subject_active'];
+$field_sendcopy_active = isset( $mod_settings['field_sendcopy_active'] ) && 'yes' == $mod_settings['field_sendcopy_active'];
+$field_captcha_active = isset( $mod_settings['field_captcha_active'] ) && 'yes' == $mod_settings['field_captcha_active'];
 
 $container_class = implode(' ', 
 	apply_filters( 'themify_builder_module_classes', array(
@@ -78,7 +78,7 @@ $container_props = apply_filters( 'themify_builder_module_container_props', arra
 			</div>
 		</div>
 
-		<?php if( $field_subject_active == 'yes' ) : ?>
+		<?php if( $field_subject_active ) : ?>
 		<div class="builder-contact-field builder-contact-field-subject">
 			<label class="control-label" for="<?php echo $module_ID; ?>-contact-subject"><?php echo $field_subject_label; ?></label>
 			<div class="control-input">
@@ -94,7 +94,7 @@ $container_props = apply_filters( 'themify_builder_module_container_props', arra
 			</div>
 		</div>
 
-		<?php if( 'yes' == $field_sendcopy_active ) : ?>
+		<?php if( $field_sendcopy_active ) : ?>
 		<div class="builder-contact-field builder-contact-field-sendcopy">
 			<div class="control-label">
 				<div class="control-input checkbox">
@@ -106,7 +106,7 @@ $container_props = apply_filters( 'themify_builder_module_container_props', arra
 		</div>
 		<?php endif; ?>
 
-		<?php if( 'yes' == $field_captcha_active && Builder_Contact::get_instance()->get_option( 'recapthca_public_key' ) != '' && Builder_Contact::get_instance()->get_option( 'recapthca_private_key' ) != '' ) : ?>
+		<?php if( $field_captcha_active && Builder_Contact::get_instance()->get_option( 'recapthca_public_key' ) != '' && Builder_Contact::get_instance()->get_option( 'recapthca_private_key' ) != '' ) : ?>
 			<div class="builder-contact-field builder-contact-field-captcha">
 				<label class="control-label" for="<?php echo $module_ID; ?>-contact-captcha"><?php echo $field_captcha_label; ?> <span class="required">*</span></label>
 				<div class="control-input">

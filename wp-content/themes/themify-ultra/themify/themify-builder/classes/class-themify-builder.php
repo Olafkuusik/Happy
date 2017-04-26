@@ -576,16 +576,7 @@ class Themify_Builder {
 		<script type="text/javascript">
 			jQuery.extend(tbLoaderVars.assets.scripts, <?php echo json_encode($scripts); ?>);
 			jQuery.extend(tbLoaderVars.assets.styles, <?php echo json_encode($styles); ?>);
-		</script>
-				<style type="text/css" scoped="scoped">
-					<?php $breakpoints = themify_get_breakpoints();?>
-					@media screen and (max-width: <?php echo $breakpoints['tablet_landscape'][1]?>px) {
-						 <?php echo Themify_Builder_Model::get_column_responsive_style('tablet');?>
-					} 
-					@media screen and (max-width: <?php echo $breakpoints['mobile']?>px){
-						<?php echo Themify_Builder_Model::get_column_responsive_style('mobile');?>
-					}
-				</style><?php
+		</script><?php
 	}
 
 	public function builder_cpt_check() {
@@ -1729,20 +1720,29 @@ class Themify_Builder {
 		$ids = json_decode(stripslashes_deep($_POST['ids']), true);
 
 		if (is_array($ids) && !empty($ids)) {
+			global $wpdb;
 			foreach ($ids as $v) {
 				$post_id = isset($v['id']) ? $v['id'] : '';
 				$post_data =  !empty($v['data']) && is_array($v['data'])  > 0  ? $v['data'] : array();
-				if ('main' === $saveto) {
 
+				if ('main' === $saveto) {
 					$GLOBALS['ThemifyBuilder_Data_Manager']->save_data($post_data, $post_id);
 
 					// update the post modified date time, to indicate the post has been modified
-					wp_update_post( array(
-						'ID' => $post_id,
-						'post_modified' => current_time( 'mysql' ),
-						'post_modified_gmt' => current_time( 'mysql', 1 ),
-					) );
-
+					//we don't need to call save/updates hooks, it can break the builder save(e.g there are too many revisions)
+					$wpdb->update( 
+						$wpdb->posts, 
+						array( 
+							'post_modified' => current_time( 'mysql' ),
+							'post_modified_gmt' => current_time( 'mysql', 1 )	
+						), 
+						array( 'ID' => $post_id ), 
+						array( 
+							'%s',	
+							'%s'
+						), 
+						array( '%d' ) 
+					);
 					if (!empty($post_data)) {
 						// Write Stylesheet
 						$results = $this->stylesheet->write_stylesheet(array('id' => $post_id, 'data' => $post_data));
@@ -1839,16 +1839,38 @@ class Themify_Builder {
 	 */
 	public function get_builder_stylesheet( $builder_output ) {
 		static $builder_loaded = false;
+		$output = '';
 		if(! $builder_loaded && !Themify_Builder_Model::is_front_builder_activate() && strpos($builder_output,'themify_builder_row')!==false) { // check if builder has any content
 			$builder_loaded = true;
-						wp_dequeue_style('builder-styles');
-						$link_tag = "<link id='builder-styles' rel='stylesheet' href='". themify_enque(THEMIFY_BUILDER_URI . '/css/themify-builder-style.css').'?ver='.THEMIFY_VERSION. "' type='text/css' />";
-						return '<script type="text/javascript">
-							if( document.getElementById( "builder-styles-css" ) ) document.getElementById( "builder-styles-css" ).insertAdjacentHTML( "beforebegin", "' . $link_tag . '" );
-							</script>';
-						
+				wp_dequeue_style('builder-styles');
+				$link_tag = "<link id='builder-styles' rel='stylesheet' href='". themify_enque(THEMIFY_BUILDER_URI . '/css/themify-builder-style.css').'?ver='.THEMIFY_VERSION. "' type='text/css' />";
+				$output .= $this->get_responsive_breakpoint_script();
+				$output .= '<script type="text/javascript">
+					if( document.getElementById( "builder-styles-css" ) ) document.getElementById( "builder-styles-css" ).insertAdjacentHTML( "beforebegin", "' . $link_tag . '" );
+					</script>';
 		}
-		return '';
+		return $output;
+	}
+
+	function get_responsive_breakpoint_script() {
+		$breakpoints = themify_get_breakpoints();
+		?>
+<script>
+(function a( $el, el ){
+	function responsive_classes() {
+		if ( el.clientWidth > <?php echo $breakpoints['tablet_landscape'][1]; ?> ) {
+			$el.removeClass( 'tb_tablet tb_mobile' ).addClass( 'tb_desktop' );
+		} else if ( el.clientWidth < <?php echo $breakpoints['mobile']?> ) {
+			$el.removeClass( 'tb_desktop tb_tablet' ).addClass( 'tb_mobile' );
+		} else if ( el.clientWidth < <?php echo $breakpoints['tablet_landscape'][1]; ?> ) {
+			$el.removeClass( 'tb_desktop tb_mobile' ).addClass( 'tb_tablet' );
+		}
+	}
+	responsive_classes();
+	jQuery( window ).resize( responsive_classes );
+})( jQuery( 'body' ), document.body )
+</script>
+		<?php
 	}
 
 	/**
@@ -2314,6 +2336,7 @@ class Themify_Builder {
 		$mod['mod_settings'] = wp_parse_args($mod['mod_settings'], $module_args);
 
 		// render the module
+		$output .= Themify_Builder_Model::$modules[$mod['mod_name']]->do_assets();
 		$output .= Themify_Builder_Model::$modules[$mod['mod_name']]->render($mod_id, $builder_id, $mod['mod_settings']);
 
 		$style_id = '.themify_builder .' . $mod_id;
@@ -3000,8 +3023,13 @@ class Themify_Builder {
 								<?php if ($frontedit_active): ?>
 								</div> <!-- /themify_builder_row_content -->
 
-								<?php $row_data_styling = isset($row['styling']) ? json_encode($row['styling']) : json_encode(array()); ?>
-								<div class="row-data-styling" data-styling="<?php echo esc_attr($row_data_styling); ?>"></div>
+								<?php 
+                                                                    $row_data_styling = array();
+                                                                    if(isset($row['styling'])){
+                                                                            $row_data_styling = Themify_Builder_Model::remove_empty_fields($row['styling']);
+                                                                    }
+								?>
+								<div class="row-data-styling" data-styling="<?php esc_attr_e(json_encode($row_data_styling)); ?>"></div>
 							<?php endif; ?>
 
 							<?php do_action('themify_builder_row_end', $builder_id, $row); ?>
@@ -3085,7 +3113,7 @@ class Themify_Builder {
 		// Start Column Render ######
 		?>
 
-		<div <?php if(!empty($col['grid_width']) && ($frontedit_active || Themify_Builder_Model::is_frontend_editor_page())):?>style="width:<?php echo $col['grid_width']?>%"<?php endif;?> class="<?php  esc_attr_e($print_column_classes); ?>" <?php echo $video_data; ?>>
+		<div <?php if(!empty($col['grid_width']) && ($frontedit_active || Themify_Builder_Model::is_frontend_editor_page() || ! $this->stylesheet->is_enqueue_stylesheet() )):?>style="width:<?php echo $col['grid_width']?>%"<?php endif;?> class="<?php  esc_attr_e($print_column_classes); ?>" <?php echo $video_data; ?>>
 
 			<?php
 			if (isset($col['styling'])) {
@@ -3145,9 +3173,13 @@ class Themify_Builder {
 				<?php endif; ?>
 
 			</div><!-- /.tb-column-inner -->
-			<?php if ($frontedit_active): ?>
-			<?php $column_data_styling = isset($col['styling']) ? json_encode($col['styling']) : json_encode(array()); ?>
-			<div class="column-data-styling" data-styling="<?php echo esc_attr($column_data_styling); ?>"></div>
+			<?php if ($frontedit_active): 
+                            $column_data_styling = array();
+                            if(isset($col['styling'])){
+                                    $column_data_styling = Themify_Builder_Model::remove_empty_fields($col['styling']);
+                            }
+			?>
+                            <div class="column-data-styling" data-styling="<?php esc_attr_e(json_encode($column_data_styling)); ?>"></div>
 			<?php endif; ?>
 		</div>
 		<!-- /.tb-column -->
@@ -3319,8 +3351,11 @@ class Themify_Builder {
 		echo "</div>";
 		
 		if ($frontedit_active) {
-			$subrow_data_styling = isset($mod['styling']) ? json_encode($mod['styling']) : json_encode(array());
-			echo '<div class="subrow-data-styling" data-styling="'.esc_attr($subrow_data_styling).'"></div>';
+			$subrow_data_styling = array();
+			if(isset($mod['styling'])){
+				$subrow_data_styling = Themify_Builder_Model::remove_empty_fields($mod['styling']);
+			}
+			echo '<div class="subrow-data-styling" data-styling="'.esc_attr(json_encode($subrow_data_styling)).'"></div>';
 		}
 
 		echo '</div><!-- /themify_builder_sub_row -->';
@@ -3377,7 +3412,7 @@ class Themify_Builder {
 			$output = PHP_EOL; // add line break
 			ob_start();
 		}
-                $style = !empty($sub_col['grid_width']) && ($frontedit_active || Themify_Builder_Model::is_frontend_editor_page())?'style="width:'.$sub_col['grid_width'].'%;"':'';																								
+                $style = !empty($sub_col['grid_width']) && ($frontedit_active || Themify_Builder_Model::is_frontend_editor_page() || ! $this->stylesheet->is_enqueue_stylesheet() )?'style="width:'.$sub_col['grid_width'].'%;"':'';																								
 		echo sprintf('<div %s class="%s" %s>',$style, esc_attr($print_sub_col_classes), $video_data);
 		?>
 		<?php
@@ -3418,9 +3453,14 @@ class Themify_Builder {
 			?>
 
 			<?php if ($frontedit_active): ?>
-			</div>
-						<?php $sub_column_data_styling = isset($sub_col['styling']) ? json_encode($sub_col['styling']) : json_encode(array()); ?>
-			<div class="column-data-styling" data-styling="<?php echo esc_attr($sub_column_data_styling); ?>"></div>
+                            </div>
+			<?php 
+                            $sub_column_data_styling = array();
+                            if(isset($sub_col['styling'])){
+                                    $sub_column_data_styling = Themify_Builder_Model::remove_empty_fields($sub_col['styling']);
+                            }
+			?>
+                            <div class="column-data-styling" data-styling="<?php  esc_attr_e(json_encode($sub_column_data_styling)); ?>"></div>
 			<!-- /module_holder -->
 			<?php endif; ?>
 		</div>

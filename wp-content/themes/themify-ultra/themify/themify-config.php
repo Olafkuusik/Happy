@@ -49,7 +49,7 @@ function themify_config_init() {
 
 	/* 	Theme Config
  	***************************************************************************/
-	define( 'THEMIFY_VERSION', '3.1.4' );
+	define( 'THEMIFY_VERSION', '3.1.5' );
 
 	/* 	Run after update
  	***************************************************************************/
@@ -412,7 +412,11 @@ if( file_exists( trailingslashit( get_template_directory() ) . 'themeforest-func
  * These shortcodes are only loaded if the theme was installed before the 3.1.3 update,
  * to provide backward compatibility.
  */
-if( ! themify_get_flag( 'deprecate_shortcodes' ) ) {
+function themify_deprecated_shortcodes_init() {
+	if( themify_get_flag( 'deprecate_shortcodes' ) ) {
+		return;
+	}
+
 	require_once THEMIFY_DIR . '/themify-shortcodes.php';
 	require_once THEMIFY_DIR . '/tinymce/class-themify-tinymce.php';
 
@@ -493,3 +497,4 @@ if( ! themify_get_flag( 'deprecate_shortcodes' ) ) {
 
 	add_shortcode( 'themify_list', 'themify_shortcode_icon_list' );
 }
+add_action( 'after_setup_theme', 'themify_deprecated_shortcodes_init' );

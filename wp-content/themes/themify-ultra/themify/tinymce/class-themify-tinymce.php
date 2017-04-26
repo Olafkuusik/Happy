@@ -142,11 +142,4 @@ class Themify_TinyMCE {
 		return $i1p < $i2p ? -1 : 1;
 	}
 }
-
-/**
- * Initialize class to add button to WP Editor.
- */
-function themify_init_tinymce() {
-	new Themify_TinyMCE();
-}
-add_action( 'init', 'themify_init_tinymce' );
+new Themify_TinyMCE();

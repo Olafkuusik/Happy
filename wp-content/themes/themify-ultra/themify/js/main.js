@@ -91,7 +91,8 @@ var Themify, ThemifyGallery;
                             for(var i in tbLocalScript.addons){
                                 if(!isLoaded( i )  && $(tbLocalScript.addons[i].selector).length>0){
                                     if(tbLocalScript.addons[i].css){
-                                        self.LoadCss(tbLocalScript.addons[i].css, tbLocalScript.addons[i].ver );
+                                        if( ! $( 'link[href*="' + tbLocalScript.addons[i].css + '"]' ).length )
+											self.LoadCss(tbLocalScript.addons[i].css, tbLocalScript.addons[i].ver );
                                     }
                                     
                                     if(tbLocalScript.addons[i].js){

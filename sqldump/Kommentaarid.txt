@@ -1,7 +1,7 @@
-vene keele võimalus ka panna
+vene keele võimalus ka panna -> see hiljem ja 79 $
 kirjastiil ei meeldi
-"avaleht" ära võtta - selle asemel teenused
-põhjalikumalt kontaktid footerisse
+"avaleht" ära võtta - selle asemel teenused -> Teenuste button teha
+põhjalikumalt kontaktid footerisse - tehtud, tarvis värv paika panna
 Meist - tarvis tekst joondada mõlemast äärest (mitte left align vaid justified align)
 Your rating - maha
 kommentaarid toodetele - maha

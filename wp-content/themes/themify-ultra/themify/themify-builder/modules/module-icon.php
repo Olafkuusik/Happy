@@ -322,7 +322,7 @@ class TB_Icon_Module extends Themify_Builder_Module {
 				'label' => __('Font Color', 'themify'),
 				'class' => 'small',
 				'prop' => 'color',
-				'selector' => array('div.module-icon')
+				'selector' => array(' div.module-icon')
 			),
 			array(
 				'id' => 'multi_font_size',

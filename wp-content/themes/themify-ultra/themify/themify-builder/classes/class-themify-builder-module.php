@@ -80,6 +80,11 @@ abstract class Themify_Builder_Module {
 	public $_legacy_options = array();
 
 	/**
+	 * Flag if assets are loaded on frontend
+	 */
+	private $_assets_done = false;
+
+	/**
 	 * Constructor.
 	 * 
 	 * @access public
@@ -88,6 +93,22 @@ abstract class Themify_Builder_Module {
 	public function __construct( $params ) {
 		$this->name = $params['name'];
 		$this->slug = $params['slug'];
+
+		add_filter( 'themify_builder_addons_assets', array( $this, 'themify_builder_addons_assets' ), 10, 1 );
+	}
+
+	/**
+	 * Load the script files for the frontend
+	 *
+	 * @todo: move this to do_assets() method
+	 */
+	function themify_builder_addons_assets( $assets ) {
+		$_assets = $this->get_assets();
+		if ( ! empty( $_assets ) ) {
+			$assets[ $this->slug ] = $_assets;
+		}
+
+		return $assets;
 	}
 
 	/**
@@ -161,6 +182,46 @@ abstract class Themify_Builder_Module {
 			'builder_id' => $builder_id,
 			'mod_settings' => $settings
 		), '', '', false);
+	}
+
+	public function do_assets() {
+		$output = '';
+		if ( $this->_assets_done ) {
+			return $output;
+		}
+
+		$assets = $this->get_assets();
+		if ( ! empty( $assets['css'] ) ) {
+			foreach( (array) $assets['css'] as $stylesheet ) {
+				$ver = isset( $assets['ver'] ) ? '?ver=' . $assets['ver'] : '';
+				$link_tag = "<link id='{$this->slug}-css' rel='stylesheet' href='{$stylesheet}{$ver}' type='text/css' />";
+				$output .= '<script type="text/javascript">
+							if( ! jQuery( "#' . $this->slug . '-css" ).length ) jQuery( "body" ).append( "' . $link_tag . '" );
+							</script>';
+			}
+		}
+
+		$this->_assets_done = true;
+
+		return $output;
+	}
+
+	/**
+	 * Return a list of assets required for this module on frontend
+	 *
+	 * Format of the array should be:
+	 * array(
+	 *		'css' => array(),
+	 *		'js' => array(),
+	 *		'external' => array(),
+	 *		'selector' => '',
+	 *		'ver' => '',
+	 *	)
+	 *
+	 * @return array
+	 */
+	public function get_assets() {
+		return array();
 	}
 
 	/**

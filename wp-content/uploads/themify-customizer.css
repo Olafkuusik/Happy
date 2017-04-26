@@ -8,6 +8,9 @@
 #main-nav a {		font-weight:normal;
  
 }
+#footerwrap {	
+	background-color: #000000; 
+}
 #footer-logo {	display: none; 
 }
 #footer {	
@@ -15,6 +18,13 @@
 }
 #footer-nav a {	
 	color: #fafafa; 
+}
+.footer-widgets .widget {	
+	color: #ffffff;
+	margin-top: -15px; 
+}
+.footer-widgets .widget li {	
+	padding-top: -15%; 
 }
 @media screen and (max-width: 976px) { /* Themify Customize Styling */
 #site-logo, #site-logo a, .header-horizontal #site-logo, .header-minbar #site-logo, .header-leftpane #site-logo, .header-slide-out #site-logo, .boxed-compact #site-logo, .header-top-bar #site-logo img {		width: 450px; 

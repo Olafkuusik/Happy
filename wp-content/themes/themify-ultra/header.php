@@ -73,8 +73,8 @@
 								<!-- /searchform-wrap -->
 							<?php endif; // exclude search form ?>
 
-							<?php if ( $show_menu_navigation ) : ?>
-								<nav id="main-nav-wrap" itemscope="itemscope" itemtype="https://schema.org/SiteNavigationElement">
+							<nav id="main-nav-wrap" itemscope="itemscope" itemtype="https://schema.org/SiteNavigationElement">
+								<?php if ( $show_menu_navigation ) : ?>
 									<?php themify_menu_nav( array( 'walker' => new Themify_Mega_Menu_Walker ) ); ?>
 									<!-- /#main-nav -->
 									
@@ -93,9 +93,10 @@
 										</div>
 									<?php endif; ?>
 									
-								</nav>
-								<!-- /#main-nav-wrap -->
-							<?php endif; // exclude menu navigation ?>
+								<?php else: echo '<span id="main-nav"></span>'; ?>
+								<?php endif; // exclude menu navigation ?>
+							</nav>
+							<!-- /#main-nav-wrap -->
 							
 						</div>
 

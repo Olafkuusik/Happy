@@ -4498,3 +4498,8 @@ TILES LAYOUT
 	z-index: -1;
 	pointer-events: none;
 }
+
+span#main-nav {
+	display: inline-block;
+	height: 48px;
+}

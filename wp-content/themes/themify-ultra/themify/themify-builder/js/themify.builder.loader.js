@@ -11,12 +11,12 @@ var tbLoaderVars, themifyBuilder;
 
 	$(document).ready(function(){
 
-		var $tbContent = $('.themify_builder_content'),
-                    in_customizer = typeof wp !== 'undefined' && typeof wp.customize !== 'undefined',// check for wp.customize return boolean
-                    builderLoader = $('<div/>', {
-			id: 'themify_builder_alert',
-			class: 'themify-builder-alert busy'
-		});
+		var $tbContent = $('.themify_builder_content:not(.not_editable_builder)'),
+			in_customizer = typeof wp !== 'undefined' && typeof wp.customize !== 'undefined',// check for wp.customize return boolean
+			builderLoader = $('<div/>', {
+				id: 'themify_builder_alert',
+				class: 'themify-builder-alert busy'
+			});
 		if ( $tbContent.length > 0 && ! in_customizer ) {
 			$tbContent.after( '<a class="themify_builder_turn_on js-turn-on-builder" href="#"><span class="dashicons dashicons-edit"></span>' + tbLoaderVars.turnOnBuilder + '</a>' );
 		}

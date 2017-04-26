@@ -12,6 +12,19 @@ class TB_Contact_Module extends Themify_Builder_Module {
 		));
 	}
 
+	function get_assets() {
+		$instance = Builder_Contact::get_instance();
+		return array(
+			'selector' => '.module-contact',
+			'css' => $instance->url . 'assets/style.css',
+			'js' => $instance->url . 'assets/scripts.js',
+			'external' => Themify_Builder_Model::localize_js( 'BuilderContact', array(
+				'admin_url' => admin_url( 'admin-ajax.php' )
+			) ),
+			'ver' => $instance->version,
+		);
+	}
+
 	public function get_options() {
 		return array(
 			array(

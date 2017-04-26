@@ -3,8 +3,6 @@ BOXED CONTENT
 ================================================ */
 body {
 	background-color: #ddd;
-	background-size: cover;
-	background-attachment: fixed;
 }
 .pagewidth {
 	width: 100%;

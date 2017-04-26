@@ -3,7 +3,7 @@
 /*
   Plugin Name:  Builder Contact
   Plugin URI:   http://themify.me/addons/contact
-  Version:      1.1.4
+  Version:      1.1.5
   Author:       Themify
   Description:  Simple contact form. It requires to use with the latest version of any Themify theme or the Themify Builder plugin.
   Text Domain:  builder-contact
@@ -16,8 +16,8 @@ class Builder_Contact {
 
 	private static $instance = null;
 	public $url;
-	private $dir;
-	private $version;
+	public $dir;
+	public $version;
 	private $_admin_instance;
 
 	/**
@@ -36,7 +36,6 @@ class Builder_Contact {
 		add_action('themify_builder_setup_modules', array($this, 'register_module'));
 		add_action('themify_builder_admin_enqueue', array($this, 'admin_enqueue'), 15);
 		add_action('init', array($this, 'updater'));
-                add_filter('themify_builder_addons_assets',array($this,'assets'),10,1);
                 add_action('wp_ajax_builder_contact_send', array($this, 'contact_send'));
                 add_action('wp_ajax_nopriv_builder_contact_send', array($this, 'contact_send'));
 		
@@ -155,19 +154,6 @@ class Builder_Contact {
 		}
 	}
         
-        public function assets($assets){
-            $assets['builder_contact']=array(
-                                'selector'=>'.module-contact',
-                                'css'=>$this->url.'assets/style.css',
-                                'js'=>$this->url.'assets/scripts.js',
-                                'ver'=>$this->version,
-                                'external'=>Themify_Builder_Model::localize_js('BuilderContact',array(
-                                                    'admin_url' => admin_url('admin-ajax.php')
-                                            ))
-                            );
-            return $assets;
-        }
-
 	public function updater() {
 		if (class_exists('Themify_Builder_Updater')) {
 			if (!function_exists('get_plugin_data'))

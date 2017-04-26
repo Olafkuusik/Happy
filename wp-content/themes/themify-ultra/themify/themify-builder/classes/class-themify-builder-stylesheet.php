@@ -1,7 +1,6 @@
 <?php
 
 class Themify_Builder_Stylesheet {
-	private $devices = array();
 	private $builder;
 
 	/**
@@ -541,7 +540,7 @@ class Themify_Builder_Stylesheet {
 			$val = themify_get_breakpoints('tablet_landscape');
 			$val = array(is_array($val)?$val[1]:$val);
 		}
-		$row_style=Themify_Builder_Model::get_column_responsive_style($bp);
+		$row_style='';
 		$media_queries =  count($val) === 2?
 									 sprintf('@media only screen and (min-width : %spx) and (max-width : %spx) {', $val[0], $val[1])
 									 :sprintf('@media screen and (max-width: %spx) {', $val[0]);
@@ -820,7 +819,7 @@ class Themify_Builder_Stylesheet {
 	 * @since 2.2.5
 	 */
 	public function enqueue_stylesheet() {
-		if (apply_filters('themify_builder_enqueue_stylesheet', true)) {
+		if ($this->is_enqueue_stylesheet()) {
 			// If enqueue fails, maybe the file doesn't exist...
 			if (!$this->test_and_enqueue()) {
 				// Try to generate it right now.
@@ -993,7 +992,9 @@ class Themify_Builder_Stylesheet {
 					}
 					if(!empty($col['grid_width'])){
 						if($col_or_sub_col==='sub_column'){
-							$selector = '.'.$col_or_sub_col.$selector;
+							$selector = '.themify_builder_sub_row .'.$col_or_sub_col.$selector;
+						} else {
+							$selector = '.themify_builder_row' . $selector;
 						}
 						$css_to_save.=$selector.'{width:'.$col['grid_width'].'%;}';
 					}
@@ -1393,4 +1394,14 @@ class Themify_Builder_Stylesheet {
 		$opacity = isset($color[1]) ? $color[1] : '1';
 		return 'rgba(' . self::hex2rgb($color[0]) . ', ' . $opacity . ')';
 	}
+
+	/**
+	 * Check whether css style should be rendered in a stylesheet file.
+	 * 
+	 * @access public
+	 * @return boolean
+	 */
+	public function is_enqueue_stylesheet() {
+		return apply_filters('themify_builder_enqueue_stylesheet', true);
+        }
 }

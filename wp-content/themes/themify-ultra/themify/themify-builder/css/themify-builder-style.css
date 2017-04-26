@@ -2409,12 +2409,6 @@ SLIDER MODULE
 .module-slider.themify_builder_slider_vertical .carousel-next.disabled{
 	opacity: .3;
 }
-.module-slider .carousel-nav-wrap .carousel-prev:hover {
-	padding-left: 10px;
-}
-.module-slider .carousel-nav-wrap .carousel-next:hover {
-	padding-right: 10px;
-}
 .module-slider .carousel-nav-wrap .carousel-prev:before,
 .module-slider .carousel-nav-wrap .carousel-next:before {
         content: '';
@@ -4835,5 +4829,310 @@ body.themify_builder_active .themify_builder_row.fullheight .themify_builder_row
 }
 .themify_builder .themify_builder_row.fullheight .row_inner_wrapper .desktop-col-direction-rtl,
 .themify_builder .themify_builder_row .row_inner_wrapper .desktop-col-direction-rtl{
-        flex-direction:row-reverse;
+	flex-direction:row-reverse;
+}
+
+.tb_tablet .themify_builder.themify_builder_content .themify_builder_row .row_inner_wrapper .tablet-col-direction-ltr,
+.tb_tablet .themify_builder.themify_builder_content .themify_builder_row .row_inner_wrapper .tablet-col-direction-rtl{
+	display:-webkit-box;
+	display:-moz-box;
+	display:-ms-flexbox;
+	display:-moz-flex;
+	display:-webkit-flex;
+	display:flex;
+	-webkit-flex-flow:wrap;
+	-ms-flex-flow:wrap;
+	flex-flow:wrap;
+}
+.tb_tablet .themify_builder.themify_builder_content  .themify_builder_row .row_inner_wrapper .tablet-col-direction-ltr{
+	flex-flow: row wrap;
+}
+.tb_tablet .themify_builder.themify_builder_content  .themify_builder_row .row_inner_wrapper .tablet-col-direction-rtl{
+	flex-flow:row-reverse wrap-reverse;
+	width:100%;
+}
+.tb_tablet .themify_builder .tfb_grid_classes:not(.tablet-auto):not(.mobile-auto)>.module_column{
+	float:left;
+	margin-top:25px;
+	margin-left:3.2%;
+	clear:none;
+}
+.tb_tablet .themify_builder .tfb_grid_classes:not(.mobile-auto)>.module_column.first{
+	margin-left:0 !important;
+}
+.tb_tablet .themify_builder.themify_builder_content .themify_builder_row .tablet3-2-3-1.count-odd:not(.mobile-auto)>.module_column.last,
+.tb_tablet .themify_builder.themify_builder_content .themify_builder_row .tablet4-1-4-3.count-odd:not(.mobile-auto)>.module_column.last,
+.tb_tablet .themify_builder.themify_builder_content .themify_builder_row .tablet4-2.count-odd:not(.mobile-auto)>.module_column.last,
+.tb_tablet .themify_builder_content.themify_builder .themify_builder_row .tablet-full.tfb_grid_classes:not(.mobile-auto)>div.module_column{
+	width:100%;
+	margin:25px 0 0 0;
+}
+.tb_tablet .themify_builder .themify_builder_row .tablet-col-direction-ltr.tablet4-1-4-2-4-1:not(.mobile-auto)>.module_column:nth-of-type(3n+2),
+.tb_tablet .themify_builder .themify_builder_row .tablet-col-direction-rtl.tablet4-1-4-2-4-1:not(.mobile-auto)>.module_column:nth-last-of-type(3n+2),
+.tb_tablet .themify_builder .themify_builder_row .tablet4-1-4-1-4-2:not(.mobile-auto)>.module_column:nth-of-type(3n),
+.tb_tablet .themify_builder .tablet-col-direction-ltr.col-count-5.tablet-3col:not(.mobile-auto)>.module_column:nth-of-type(4n),
+.tb_tablet .themify_builder .tablet-col-direction-rtl.col-count-5.tablet-3col:not(.mobile-auto)>.module_column:nth-last-of-type(4n),
+.tb_tablet .themify_builder .col-count-5.tablet-3col:not(.mobile-auto)>.module_column.last,
+.tb_tablet .themify_builder .themify_builder_row .tablet4-2:not(.mobile-auto)>.module_column{
+	width:48.4%;
+} 
+.themify_builder.themify_builder_content .themify_builder_row .col-count-6:not(.mobile-auto)>div.module_column{
+	margin-left:3.2%;
+}
+.tb_tablet .themify_builder .themify_builder_row .tablet4-1-4-2-4-1:not(.mobile-auto)>.module_column,
+.tb_tablet .themify_builder .themify_builder_row .tablet4-1-4-1-4-2:not(.mobile-auto)>.module_column,
+.tb_tablet .themify_builder .themify_builder_row .tablet4-1-4-3:not(.mobile-auto)>.module_column:nth-of-type(odd),
+.tb_tablet .themify_builder .themify_builder_row .tablet4-1:not(.mobile-auto)>.module_column{
+	width:22.6%;
+}
+.tb_tablet .themify_builder .themify_builder_row .tablet5-1:not(.mobile-auto)>.module_column{
+	width:17.44%;
+}
+.tb_tablet .themify_builder .themify_builder_row .tablet6-1:not(.mobile-auto)>.module_column{
+	width:14%;
+}
+.tb_tablet .themify_builder .themify_builder_row .tablet3-1:not(.mobile-auto)>.module_column,
+.tb_tablet .themify_builder .themify_builder_row .tablet3-2-3-1:not(.mobile-auto)>.module_column{
+	width: 31.2%;
+	margin-top:25px;
+}
+.tb_tablet .themify_builder .themify_builder_row .tablet3-2-3-1:not(.mobile-auto)>.module_column:nth-of-type(odd){
+	width:65.6%;
+}
+.tb_tablet .themify_builder .themify_builder_row .tablet4-1-4-3:not(.mobile-auto)>.module_column:nth-of-type(even){
+	width:74.2%;
+}
+.tb_tablet .themify_builder.themify_builder_content .themify_builder_row .tablet-col-direction-ltr.count-even.tablet-3col:not(.mobile-auto)>.module_column:nth-of-type(3n+1),
+.tb_tablet .themify_builder.themify_builder_content .themify_builder_row .tablet-col-direction-rtl.count-even.tablet-3col:not(.mobile-auto)>.module_column:nth-last-of-type(3n+1),
+.tb_tablet .themify_builder.themify_builder_content .themify_builder_row .tablet-col-direction-ltr.tablet-2col:not(.mobile-auto)>.module_column:nth-of-type(odd),
+.tb_tablet .themify_builder.themify_builder_content .themify_builder_row .tablet-col-direction-rtl.tablet-2col:not(.mobile-auto)>.module_column:nth-last-of-type(odd),
+.tb_tablet .themify_builder.themify_builder_content .themify_builder_row .tablet-col-direction-ltr.count-odd.tablet-3col:not(.mobile-auto)>.module_column:nth-of-type(3n+1),
+.tb_tablet .themify_builder.themify_builder_content .themify_builder_row .tablet-col-direction-rtl.count-odd.tablet-3col:not(.mobile-auto)>.module_column:nth-last-of-type(3n+1){
+	margin-left:0;
+}
+ /*  GUTTER NARROW */
+.tb_tablet .themify_builder .themify_builder_row .gutter-narrow:not(.tablet-full):not(.mobile-auto)>div.module_column{
+	margin-left:1.6%;
+}
+.tb_tablet .themify_builder .themify_builder_row .gutter-narrow.tablet4-1-4-2-4-1:not(.mobile-auto)>.module_column,
+.tb_tablet .themify_builder .themify_builder_row .gutter-narrow.tablet4-1-4-1-4-2:not(.mobile-auto)>.module_column,
+.tb_tablet .themify_builder .themify_builder_row .gutter-narrow.tablet4-1-4-3:not(.mobile-auto)>.module_column:nth-of-type(odd),
+.tb_tablet .themify_builder .themify_builder_row .gutter-narrow.tablet4-1:not(.mobile-auto)>.module_column{
+	width:23.8%;
+}
+.tb_tablet .themify_builder .themify_builder_row .gutter-narrow.tablet-col-direction-ltr.tablet4-1-4-2-4-1:not(.mobile-auto)>.module_column:nth-of-type(3n+2),
+.tb_tablet .themify_builder .themify_builder_row .gutter-narrow.tablet-col-direction-rtl.tablet4-1-4-2-4-1:not(.mobile-auto)>.module_column:nth-last-of-type(3n+2),
+.tb_tablet .themify_builder .themify_builder_row .gutter-narrow.tablet4-1-4-1-4-2:not(.mobile-auto)>.module_column:nth-of-type(3n),
+.tb_tablet .themify_builder .themify_builder_row .gutter-narrow.tablet4-2:not(.mobile-auto)>.module_column,
+.tb_tablet .themify_builder .gutter-narrow.tablet-col-direction-ltr.col-count-5.tablet-3col:not(.mobile-auto)>.module_column:nth-of-type(4n),
+.tb_tablet .themify_builder .gutter-narrow.tablet-col-direction-rtl.col-count-5.tablet-3col:not(.mobile-auto)>.module_column:nth-last-of-type(4n),
+.tb_tablet .themify_builder .gutter-narrow.col-count-5.tablet-3col:not(.mobile-auto)>.module_column.last{
+	width:49.2%;
+}
+.tb_tablet .themify_builder .themify_builder_row .gutter-narrow.tablet3-2-3-1:not(.mobile-auto)>.module_column:nth-of-type(odd){
+	width:66.05%;
+}
+.tb_tablet .themify_builder .themify_builder_row .gutter-narrow.tablet4-1-4-3:not(.mobile-auto)>.module_column:nth-of-type(even){
+	width:74.539%;
+}
+.tb_tablet .themify_builder .themify_builder_row .gutter-narrow.tablet3-1:not(.mobile-auto)>.module_column,
+.tb_tablet .themify_builder .themify_builder_row .gutter-narrow.tablet3-2-3-1:not(.mobile-auto)>.module_column{
+	width:32.266%;
+}
+.tb_tablet .themify_builder .themify_builder_row .gutter-narrow.tablet5-1:not(.mobile-auto)>.module_column{
+	width:18.72%;
+}
+.tb_tablet .themify_builder .themify_builder_row .gutter-narrow.tablet6-1:not(.mobile-auto)>.module_column{
+	width:15.33%;
+}
+
+/* GUTTER NONE */
+.tb_tablet .themify_builder .themify_builder_row .gutter-none:not(.tablet-auto):not(.mobile-auto)>div.module_column,
+.tb_tablet .themify_builder .themify_builder_row .gutter-none.col-count-6:not(.mobile-auto)>div.module_column{
+	margin-left:0;
+}
+.tb_tablet .themify_builder .themify_builder_row .gutter-none.tablet4-1-4-2-4-1:not(.mobile-auto)>.module_column,
+.tb_tablet .themify_builder .themify_builder_row .gutter-none.tablet4-1-4-1-4-2:not(.mobile-auto)>.module_column,
+.tb_tablet .themify_builder .themify_builder_row .gutter-none.tablet4-1-4-3:not(.mobile-auto)>.module_column:nth-of-type(odd),
+.tb_tablet .themify_builder .themify_builder_row .gutter-none.tablet4-1:not(.mobile-auto)>.module_column{
+	width:25%;
+}
+.tb_tablet .themify_builder .themify_builder_row .gutter-none.tablet-col-direction-ltr.tablet4-1-4-2-4-1:not(.mobile-auto)>.module_column:nth-of-type(3n+2),
+.tb_tablet .themify_builder .themify_builder_row .gutter-none.tablet-col-direction-rtl.tablet4-1-4-2-4-1:not(.mobile-auto)>.module_column:nth-last-of-type(3n+2),
+.tb_tablet .themify_builder .themify_builder_row .gutter-none.tablet4-2:not(.mobile-auto)>.module_column,
+.tb_tablet .themify_builder .themify_builder_row .gutter-none.tablet4-1-4-1-4-2:not(.mobile-auto)>.module_column:nth-of-type(3n),
+.tb_tablet .themify_builder .gutter-none.tablet-col-direction-ltr.col-count-5.tablet-3col:not(.mobile-auto)>.module_column:nth-of-type(4n),
+.tb_tablet .themify_builder .gutter-none.tablet-col-direction-rtl.col-count-5.tablet-3col:not(.mobile-auto)>.module_column:nth-last-of-type(4n),
+.tb_tablet .themify_builder .gutter-none.col-count-5.tablet-3col:not(.mobile-auto)>.module_column.last{
+	width:50%;
+}
+.tb_tablet .themify_builder .themify_builder_row .gutter-none.tablet3-2-3-1:not(.mobile-auto)>.module_column:nth-of-type(odd){
+	width:66.666%;
+}
+.tb_tablet .themify_builder .themify_builder_row .gutter-none.tablet4-1-4-3:not(.mobile-auto)>.module_column:nth-of-type(even){
+	width:75%;
+}
+.tb_tablet .themify_builder .themify_builder_row .gutter-none.tablet3-1:not(.mobile-auto)>.module_column,
+.tb_tablet .themify_builder .themify_builder_row .gutter-none.tablet3-2-3-1:not(.mobile-auto)>.module_column{
+	width:33.333%;
+}
+.tb_tablet .themify_builder .themify_builder_row .gutter-none.tablet5-1:not(.mobile-auto)>.module_column{
+	width:20%;
+}
+.tb_tablet .themify_builder .themify_builder_row .gutter-none.tablet6-1:not(.mobile-auto)>.module_column{
+	width:16.666%;
+}
+
+.tb_mobile .themify_builder_content.themify_builder .themify_builder_row .row_inner_wrapper .mobile-col-direction-ltr,
+.tb_mobile .themify_builder_content.themify_builder .themify_builder_row .row_inner_wrapper .mobile-col-direction-rtl{
+	display:-webkit-flexbox;
+	display:-ms-flexbox;
+	display:-webkit-flex;
+	display:flex;
+	width:100%;
+}
+.tb_mobile.themify_builder_active .themify_builder_content.themify_builder .themify_builder_row .row_inner_wrapper .mobile-col-direction-ltr,
+.tb_mobile.themify_builder_active .themify_builder_content.themify_builder .themify_builder_row .row_inner_wrapper .mobile-col-direction-rtl{
+	display:-webkit-inline-flexbox;
+	display:-ms-inline-flexbox;
+	display:-webkit-inline-flex;
+	display:inline-flex;
+	width:100%;
+}
+.tb_mobile .themify_builder_content.themify_builder .themify_builder_row .row_inner_wrapper .mobile-col-direction-rtl{
+	flex-flow:row-reverse wrap-reverse;
+}
+.tb_mobile .themify_builder_content.themify_builder .themify_builder_row .row_inner_wrapper .mobile-col-direction-ltr{
+	flex-flow:row wrap;
+}
+.tb_mobile .themify_builder .themify_builder_row .tfb_grid_classes:not(.mobile-auto)>.module_column:not(.first){
+	margin-left:3.2% !important;
+	float:left;
+	margin-top:25px;
+	clear:none;
+}
+.tb_mobile .themify_builder.themify_builder_content .themify_builder_row .mobile3-2-3-1.count-odd>.module_column.last,
+.tb_mobile .themify_builder.themify_builder_content .themify_builder_row .mobile4-1-4-3.count-odd>.module_column.last,
+.tb_mobile .themify_builder.themify_builder_content .themify_builder_row .mobile4-2.count-odd>.module_column.last,
+.tb_mobile .themify_builder_content.themify_builder .themify_builder_row .mobile-full.tfb_grid_classes>div.module_column{
+	width:100% !important;
+	margin:25px 0 0 0 !important;
+}
+.tb_mobile .themify_builder .themify_builder_row .mobile-col-direction-ltr.mobile4-1-4-2-4-1>.module_column:nth-of-type(3n+2),
+.tb_mobile .themify_builder .themify_builder_row .mobile-col-direction-rtl.mobile4-1-4-2-4-1>.module_column:nth-last-of-type(3n+2),
+.tb_mobile .themify_builder .themify_builder_row .mobile4-1-4-1-4-2>.module_column:nth-of-type(3n),
+.tb_mobile .themify_builder .mobile-col-direction-ltr.col-count-5.mobile-3col>.module_column:nth-of-type(4n),
+.tb_mobile .themify_builder .mobile-col-direction-rtl.col-count-5.mobile-3col>.module_column:nth-last-of-type(4n),
+.tb_mobile .themify_builder .col-count-5.mobile-3col>.module_column.last,
+.tb_mobile .themify_builder .themify_builder_row .mobile4-2>.module_column{
+	width:48.4% !important;
+} 
+.tb_mobile .themify_builder .themify_builder_row .mobile4-1-4-2-4-1>.module_column,
+.tb_mobile .themify_builder .themify_builder_row .mobile4-1-4-1-4-2>.module_column,
+.tb_mobile .themify_builder .themify_builder_row .mobile4-1-4-3>.module_column:nth-of-type(odd),
+.tb_mobile .themify_builder .themify_builder_row .mobile4-1>.module_column{
+	width:22.6% !important;
+}
+.tb_mobile .themify_builder .themify_builder_row .mobile5-1>.module_column{
+	width:17.44% !important;
+}
+.tb_mobile .themify_builder .themify_builder_row .mobile6-1>.module_column{
+	width:14%   !important;
+}
+.tb_mobile .themify_builder .themify_builder_row .mobile3-1>.module_column,
+.tb_mobile .themify_builder .themify_builder_row .mobile3-2-3-1>.module_column{
+	width:31.2% !important;
+	margin-top:25px;
+}
+.tb_mobile .themify_builder .themify_builder_row .mobile3-2-3-1>.module_column:nth-of-type(odd){
+	width:65.6% !important;
+}
+.tb_mobile .themify_builder .themify_builder_row .mobile4-1-4-3>.module_column:nth-of-type(even){
+	width:74.2% !important;
+}
+.tb_mobile .themify_builder .themify_builder_row .mobile5-1>.module_column{
+	width:17.44% !important;
+}
+.tb_mobile .themify_builder .themify_builder_row .mobile6-1>.module_column{
+	width:14% !important;
+}
+.tb_mobile .themify_builder.themify_builder_content .themify_builder_row .mobile-col-direction-ltr.count-even.mobile-3col>.module_column:nth-of-type(3n+1),
+.tb_mobile .themify_builder.themify_builder_content .themify_builder_row .mobile-col-direction-rtl.count-even.mobile-3col>.module_column:nth-last-of-type(3n+1),
+.tb_mobile .themify_builder.themify_builder_content .themify_builder_row .mobile-col-direction-ltr.mobile-2col>.module_column:nth-of-type(odd),
+.tb_mobile .themify_builder.themify_builder_content .themify_builder_row .mobile-col-direction-rtl.mobile-2col>.module_column:nth-last-of-type(odd),
+.tb_mobile .themify_builder.themify_builder_content .themify_builder_row .mobile-col-direction-ltr.count-odd.mobile-3col>.module_column:nth-of-type(3n+1),
+.tb_mobile .themify_builder.themify_builder_content .themify_builder_row .mobile-col-direction-rtl.count-odd.mobile-3col>.module_column:nth-last-of-type(3n+1){
+	margin-left:0 !important;
+}
+
+/*  GUTTER NARROW */
+.tb_mobile .themify_builder .themify_builder_row .gutter-narrow:not(.mobile-full)>div.module_column:not(.first){
+	margin-left:1.6% !important;
+}
+.tb_mobile .themify_builder .themify_builder_row .gutter-narrow.mobile4-1-4-2-4-1>.module_column,
+.tb_mobile .themify_builder .themify_builder_row .gutter-narrow.mobile4-1-4-1-4-2>.module_column,
+.tb_mobile .themify_builder .themify_builder_row .gutter-narrow.mobile4-1-4-3>.module_column:nth-of-type(odd),
+.tb_mobile .themify_builder .themify_builder_row .gutter-narrow.mobile4-1>.module_column{
+	width:23.8% !important;
+}
+.tb_mobile .themify_builder .themify_builder_row .gutter-narrow.mobile-col-direction-ltr.mobile4-1-4-2-4-1>.module_column:nth-of-type(3n+2),
+.tb_mobile .themify_builder .themify_builder_row .gutter-narrow.mobile-col-direction-rtl.mobile4-1-4-2-4-1>.module_column:nth-last-of-type(3n+2),
+.tb_mobile .themify_builder .themify_builder_row .gutter-narrow.mobile4-1-4-1-4-2>.module_column:nth-of-type(3n),
+.tb_mobile .themify_builder .themify_builder_row .gutter-narrow.mobile4-2>.module_column,
+.tb_mobile .themify_builder .gutter-narrow.mobile-col-direction-ltr.col-count-5.mobile-3col>.module_column:nth-of-type(4n),
+.tb_mobile .themify_builder .gutter-narrow.mobile-col-direction-rtl.col-count-5.mobile-3col>.module_column:nth-last-of-type(4n),
+.tb_mobile .themify_builder .gutter-narrow.col-count-5.mobile-3col>.module_column.last{
+	width:49.2% !important;
+}
+.tb_mobile .themify_builder .themify_builder_row .gutter-narrow.mobile3-2-3-1>.module_column:nth-of-type(odd){
+	width:66.05% !important;
+}
+.tb_mobile .themify_builder .themify_builder_row .gutter-narrow.mobile4-1-4-3>.module_column:nth-of-type(even){
+	width:74.539% !important;
+}
+.tb_mobile .themify_builder .themify_builder_row .gutter-narrow.mobile3-1>.module_column,
+.tb_mobile .themify_builder .themify_builder_row .gutter-narrow.mobile3-2-3-1>.module_column{
+	width:32.266% !important;
+}
+.tb_mobile .themify_builder .themify_builder_row .gutter-narrow.mobile5-1>.module_column{
+	width:18.72% !important;
+}
+.tb_mobile .themify_builder .themify_builder_row .gutter-narrow.mobile6-1>.module_column{
+	width:15.33% !important;
+}
+
+/* GUTTER NONE */
+.tb_mobile .themify_builder.themify_builder_content .themify_builder_row .gutter-none:not(.mobile-auto)>div.module_column{
+	margin-left:0 !important;
+}
+.tb_mobile .themify_builder .themify_builder_row .gutter-none.mobile4-1-4-2-4-1>.module_column,
+.tb_mobile .themify_builder .themify_builder_row .gutter-none.mobile4-1-4-1-4-2>.module_column,
+.tb_mobile .themify_builder .themify_builder_row .gutter-none.mobile4-1-4-3>.module_column:nth-of-type(odd),
+.tb_mobile .themify_builder .themify_builder_row .gutter-none.mobile4-1>.module_column{
+	width:25% !important;
+}
+.tb_mobile .themify_builder .themify_builder_row .gutter-none.mobile-col-direction-ltr.mobile4-1-4-2-4-1>.module_column:nth-of-type(3n+2),
+.tb_mobile .themify_builder .themify_builder_row .gutter-none.mobile-col-direction-rtl.mobile4-1-4-2-4-1>.module_column:nth-last-of-type(3n+2),
+.tb_mobile .themify_builder .themify_builder_row .gutter-none.mobile4-2>.module_column,
+.tb_mobile .themify_builder .themify_builder_row .gutter-none.mobile4-1-4-1-4-2>.module_column:nth-of-type(3n),
+.tb_mobile .themify_builder .gutter-none.mobile-col-direction-ltr.col-count-5.mobile-3col>.module_column:nth-of-type(4n),
+.tb_mobile .themify_builder .gutter-none.mobile-col-direction-rtl.col-count-5.mobile-3col>.module_column:nth-last-of-type(4n),
+.tb_mobile .themify_builder .gutter-none.col-count-5.mobile-3col>.module_column.last {
+	width:50% !important;
+}
+.tb_mobile .themify_builder .themify_builder_row .gutter-none.mobile3-2-3-1>.module_column:nth-of-type(odd){
+	width:66.666% !important;
+}
+.tb_mobile .themify_builder .themify_builder_row .gutter-none.mobile4-1-4-3>.module_column:nth-of-type(even){
+	width:75% !important;
+}
+.tb_mobile .themify_builder .themify_builder_row .gutter-none.mobile3-1>.module_column,
+.tb_mobile .themify_builder .themify_builder_row .gutter-none.mobile3-2-3-1>.module_column{
+	width:33.333% !important;
+}
+.tb_mobile .themify_builder .themify_builder_row .gutter-none.mobile5-1>.module_column{
+	width:20% !important;
+}
+.tb_mobile .themify_builder .themify_builder_row .gutter-none.mobile6-1>.module_column{
+	width:16.666% !important;
 }

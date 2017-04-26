@@ -382,3 +382,11 @@ body:not(.header-overlay).mobile-menu-visible.sidemenu-right.full-section-scroll
 		width: 100%;
 	}
 }
+
+body.full-section-scrolling .themify_builder_row.fullheight .row_inner .tb-column .themify_module_holder,
+body.full-section-scrolling .themify_builder_row.fullheight .row_inner > .tb-column.col-full,
+body.full-section-scrolling .themify_builder_row.fullheight .row_inner > .tb-column,
+body.full-section-scrolling .themify_builder .themify_builder_row.fullheight .row_inner > .themify_builder_row_content,
+body.full-section-scrolling .themify_builder .themify_builder_row.fullheight .row_inner_wrapper > .row_inner {
+	min-height: initial;
+}

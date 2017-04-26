@@ -12,6 +12,16 @@ class TB_Counter_Module extends Themify_Builder_Module {
 		));
 	}
 
+	function get_assets() {
+		$instance = Builder_Counter::get_instance();
+		return array(
+			'selector'=>'.module-counter',
+			'css'=>$instance->url.'assets/style.css',
+			'js'=>$instance->url.'assets/scripts.js',
+			'ver'=>$instance->version
+		);
+	}
+
 	public function get_options() {
 		return array(
 			array(

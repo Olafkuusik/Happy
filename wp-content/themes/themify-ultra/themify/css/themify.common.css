@@ -228,7 +228,7 @@ a.themify_lightbox,
 .themify_lightbox_loaded a.themify_lightbox,
 .themify_lightbox_loaded .module-gallery a,
 .themify_lightbox_loaded .gallery-icon{
-    cursor: auto;
+    cursor: pointer;
 }
 
 /* iframe */

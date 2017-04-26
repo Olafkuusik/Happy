@@ -424,4 +424,4 @@ class Themify_Metabox {
 	}
 }
 endif;
-add_action( 'init', 'Themify_Metabox::get_instance', 5 );
+add_action( 'init', 'Themify_Metabox::get_instance', 10 );

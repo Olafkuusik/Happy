@@ -12,6 +12,22 @@ class TB_Countdown_Module extends Themify_Builder_Module {
 		));
 	}
 
+	function get_assets() {
+		global $wp_scripts;
+
+		$instance = Builder_Countdown::get_instance();
+		return array(
+			'selector'=>'.module-countdown',
+			'css'=>$instance->url.'assets/style.css',
+			'js'=>$instance->url.'assets/script.js',
+			'ver'=>$instance->version,
+			'external'=>Themify_Builder_Model::localize_js('builderCountDown', array(
+				'url' =>  includes_url('js/jquery/ui/'),
+				'ver'=>$wp_scripts->query('jquery-ui-core'),
+			))
+		);
+	}
+
 	public function get_options() {
 		return array(
 			array(

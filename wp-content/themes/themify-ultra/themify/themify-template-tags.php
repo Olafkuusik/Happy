@@ -31,7 +31,8 @@ function themify_logo_image( $location = 'site_logo', $cssid = 'site-logo' ) {
 		$site_name = get_bloginfo( 'name' );
 		if ( 'image' == $type ) {
 			$html .= themify_get_image( 'ignore=true&src=' . themify_get( 'setting-' . $location . '_image_value' ) . '&w=' . themify_get( 'setting-' . $location . '_width' ) . '&h=' . themify_get( 'setting-' . $location . '_height' ) . '&alt=' . urlencode( get_bloginfo( 'name' ) ) );
-			$html .= isset( $themify_customizer ) ? '<span style="display: none;">' . esc_html( $site_name ) . '</span>' : '';
+			$html .= is_customize_preview() 
+				? '<span style="display: none;">' . esc_html( $site_name ) . '</span>' : '';
 		} else {
 			$html .= isset( $themify_customizer ) ? '<span>' . esc_html( $site_name ) . '</span>' : esc_html( $site_name );
 		}

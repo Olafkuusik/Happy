@@ -28,12 +28,12 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 			var o = {};
 			var a = this.serializeArray();
 			$.each(a, function () {
-				if (o[this.name] !== undefined && this.value && ! _.contains(api.Forms.excludeDefaultValues, this.value) ) {
+				if (o[this.name] !== undefined && this.value) {
 					if (!o[this.name].push) {
 						o[this.name] = [o[this.name]];
 					}
 					o[this.name].push(this.value);
-				} else if ( this.value && ! _.contains(api.Forms.excludeDefaultValues, this.value) ) {
+				} else if ( this.value ) {
 					o[this.name] = this.value;
 				}
 			});
@@ -1032,9 +1032,14 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 
 					if (_.isNull(value))
 						return true;
-
+					if(_.isObject( value.mod_settings )){
+						value.mod_settings = api.Utils.removeEmptyFields(value.mod_settings);
+					}
+					else if(_.isObject( value.styling )){
+						value.styling = api.Utils.removeEmptyFields(value.styling);
+					}
 					var moduleView = value && _.isUndefined(value.cols) ? api.Views.init_module(value, this.type) : api.Views.init_subrow(value, this.type);
-
+					
 					container.appendChild(moduleView.view.render().el);
 				}, this);
 				this.$el.find('.themify_module_holder').append(container);
@@ -1117,6 +1122,9 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 				var container = document.createDocumentFragment();
 				_.each(this.model.get('cols'), function (value, key) {
 					value.component_name = 'sub-column';
+					if(_.isObject( value.styling )){
+						value.styling = api.Utils.removeEmptyFields(value.styling);
+					}
 					var columnView = api.Views.init_column(value, this.type);
 
 					container.appendChild(columnView.view.render().el);
@@ -1299,6 +1307,9 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 				var container = document.createDocumentFragment();
 				_.each(this.model.get('cols'), function (value, key) {
 					value.component_name = 'column';
+					if(_.isObject( value.styling )){
+						value.styling = api.Utils.removeEmptyFields(value.styling);
+					}
 					var columnView = api.Views.init_column(value, this.type);
 
 					container.appendChild(columnView.view.render().el);
@@ -1327,19 +1338,19 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 					
 
 				if (!col_tablet) {
-										col_tablet = 'tablet-auto';
+					col_tablet = 'tablet-auto';
 				}
 				if (!col_mobile) {
-									col_mobile = 'mobile-auto';
+					col_mobile = 'mobile-auto';
 				}
 				if (!directions['desktop']) {
-									directions['desktop'] = 'ltr';
+					directions['desktop'] = 'ltr';
 				}
 				if (!directions['tablet']) {
-									directions['tablet'] = 'ltr';
+					directions['tablet'] = 'ltr';
 				}
 				if (!directions['mobile']) {
-									directions['mobile'] = 'ltr';
+					directions['mobile'] = 'ltr';
 				}
 				var $el = this.$el;
 				$.each(directions,function(i,d){
@@ -1784,9 +1795,16 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 		render: function () {
 			var container = document.createDocumentFragment();
 			this.collection.each(function (row) {
+				if(_.isObject( row.attributes ) && _.isObject( row.attributes.styling  )){
+					row.attributes.styling = api.Utils.removeEmptyFields(row.attributes.styling);
+				}
+				
 				var rowView = api.Views.init_row(row, this.type);
+				
 				container.appendChild(rowView.view.render().el);
+				
 			}, this);
+			
 			this.el.appendChild(container);
 			this.addElementClasses();
 			api.Utils.columnDrag(null, false);
@@ -2518,7 +2536,6 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 	};
 
 	api.Forms = {
-		excludeDefaultValues: ['default', 'px', 'solid', 'show'], // exclude these value to be saved in the options.
 		Validators: {},
 		bindEvents: function () {
 			var $body = $('body');
@@ -2569,8 +2586,8 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 				return;
 
 			var temp_appended_data = {},
-				entire_appended_data = api.activeModel.get('mod_settings'),
-				$container = $('.current_selected_module').closest('[data-postid]');
+					entire_appended_data = api.activeModel.get('mod_settings'),
+					$container = $('.current_selected_module').closest('[data-postid]');
 
 			$('#tfb_module_settings .tfb_lb_option').each(function () {
 				var option_value, option_class,
@@ -2612,7 +2629,7 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 				else if ($(this).is('select, input, textarea')) {
 					option_value = $(this).val();
 				}
-				if (option_value && ! _.contains(api.Forms.excludeDefaultValues, option_value) ) {
+				if (option_value) {
 					temp_appended_data[this_option_id] = option_value;
 				}
 			});
@@ -2648,7 +2665,7 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 			}
 
 			api.activeModel.set({mod_settings: {}}, {silent: true}); // Fix bug backbone change doesn't triggered
-			api.activeModel.set({mod_settings: temp_appended_data});
+			api.activeModel.set({mod_settings: api.Utils.removeEmptyFields(temp_appended_data)});
 			api.activeModel.trigger('custom:element:updatestate');
 
 			ThemifyBuilderCommon.Lightbox.close();
@@ -2711,7 +2728,7 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 			}
 
 			api.activeModel.set( {styling: {}}, { silent: true } ); // fix backbone model doesn't trigger change
-			api.activeModel.set('styling', temp_appended_data);
+			api.activeModel.set('styling', api.Utils.removeEmptyFields(temp_appended_data));
 
 			ThemifyBuilderCommon.Lightbox.close();
 
@@ -2756,7 +2773,7 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 			}
 
 			api.activeModel.set( {styling: {}}, { silent: true } ); // fix backbone model doesn't trigger change
-			api.activeModel.set('styling', temp_appended_data);
+			api.activeModel.set('styling', api.Utils.removeEmptyFields(temp_appended_data));
 
 			ThemifyBuilderCommon.Lightbox.close();
 
@@ -2799,8 +2816,7 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 					}
 				});
 			}
-
-			api.activeModel.set('styling', temp_appended_data);
+			api.activeModel.set('styling', api.Utils.removeEmptyFields(temp_appended_data));
 
 			ThemifyBuilderCommon.Lightbox.close();
 
@@ -3941,6 +3957,51 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 				}
 			}
 		},
+		removeEmptyFields:function(data){
+			for(var i in data){
+				if (!data[i] || data[i]==='solid' || data[i]==='px' || data[i]==='default' || data[i]==='|' || (data[i]==='show' && i.indexOf('visibility_')!==-1)) {
+				  delete data[i];
+				}
+			}
+		
+			if((typeof data['background_image-type']!=='undefined' && data['background_image-type']!=='gradient') || (typeof data['background_type']!=='undefined' && data['background_type']!=='gradient')){
+				var gradient = ['background_image-type_gradient',
+								'background_gradient-gradient-type',
+								'background_image-gradient-angle',
+								'background_image-gradient-type',
+								'background_image-gradient',
+								'background_gradient-gradient-angle',
+								'background_gradient-gradient',
+								'background_gradient-css',
+								'background_image-css'
+								];
+				for(var i=0;i<gradient.length;++i){
+					if(typeof data[gradient[i]]!=='undefined'){
+						delete data[gradient[i]];
+					}
+				}
+			}
+			if(typeof data['background_type']!=='undefined'){
+				var covers = ['','_hover'];
+				for(var j=0;j<covers.length;++j){
+					
+					if((typeof data['cover_color'+covers[j]+'-type'] && data['cover_color'+covers[j]+'-type']!=='gradient')){
+						var gradient = [
+										'cover_gradient'+covers[j]+'-gradient-type',
+										'cover_gradient'+covers[j]+'-gradient-angle',
+										'cover_gradient'+covers[j]+'-gradient',
+										'cover_gradient'+covers[j]+'-css'
+									];
+						for(var i=0;i<gradient.length;++i){
+							if(typeof data[gradient[i]]!=='undefined'){
+								delete data[gradient[i]];
+							}
+						}
+					}
+				}
+			}
+			return data;
+		},
 		hideResponsiveCols: function (grid_items, col) {
 			if (col) {
 								col = parseInt(col);
@@ -4003,10 +4064,11 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 				cols[c] = {
 					'column_order': c,
 					'grid_class': grid_class,
-					'grid_width': $(this).prop('style').width ? parseFloat($(this).prop('style').width) : false,
 					'modules': modules
 				};
-
+				if( $(this).prop('style').width){
+					cols[c]['grid_width'] =  parseFloat($(this).prop('style').width);
+				}
 				// get column styling
 				if ($(this).children('.column-data-styling').length > 0) {
 					var $data_styling = $.parseJSON($(this).children('.column-data-styling').attr('data-styling'));
@@ -4017,16 +4079,29 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 
 			option_data = {
 				row_order: index,
-				gutter: $base.data('gutter'),
-				column_alignment: $base.data('column-alignment'),
-				desktop_dir: $base.data('desktop_dir'),
-				tablet_dir: $base.data('tablet_dir'),
-				mobile_dir: $base.data('mobile_dir'),
-				col_mobile: $.trim($base.data('mobile')),
-				col_tablet: $.trim($base.data('tablet')),
 				cols: cols
 			};
-
+			if($base.data('gutter')!=='gutter-default'){
+				option_data['gutter'] = $base.data('gutter');
+			}
+			if($base.data('column-alignment')!=='col_align_top'){
+				option_data['column_alignment'] = $base.data('column-alignment');
+			}
+			if($base.data('desktop_dir')!=='ltr'){
+				option_data['desktop_dir'] = $base.data('desktop_dir');
+			}
+			if($base.data('tablet_dir')!=='ltr'){
+				option_data['tablet_dir'] = $base.data('tablet_dir');
+			}
+			if($base.data('mobile_dir')!=='ltr'){
+				option_data['mobile_dir'] = $base.data('mobile_dir');
+			}
+			if($.trim($base.data('tablet'))!=='tablet-auto'){
+				option_data['col_tablet'] =$.trim($base.data('tablet'));
+			}
+			if($.trim($base.data('mobile'))!=='mobile-auto'){
+				option_data['col_mobile'] =$.trim($base.data('mobile'));
+			}
 			// get row styling
 			if ($base.find('.row-data-styling').length > 0) {
 				var $data_styling = $.parseJSON($base.find('.row-data-styling').attr('data-styling'));
@@ -4038,8 +4113,7 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 		_getSubRowSettings: function ($subRow, subRowOrder) {
 			var self = this,
 					option_data = {},
-					sub_cols = {},
-					$sub_row_content = $subRow.find('.themify_builder_sub_row_content');
+					sub_cols = {};
 			$subRow.find('.themify_builder_col').each(function (sub_col) {
 				var sub_grid_class = self.filterClass($(this).attr('class')),
 						sub_modules = {};
@@ -4053,10 +4127,11 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 				sub_cols[ sub_col ] = {
 					column_order: sub_col,
 					grid_class: sub_grid_class,
-					grid_width: $(this).prop('style').width ? parseFloat($(this).prop('style').width) : false,
 					modules: sub_modules
 				};
-
+				if( $(this).prop('style').width){
+					sub_cols[sub_col]['grid_width'] =  parseFloat($(this).prop('style').width);
+				}
 				// get sub-column styling
 				if ($(this).children('.column-data-styling').length > 0) {
 					var $data_styling = $.parseJSON($(this).children('.column-data-styling').attr('data-styling'));
@@ -4066,15 +4141,29 @@ window.themifybuilderapp = window.themifybuilderapp || {};
 			});
 			option_data = {
 				row_order: subRowOrder,
-				gutter: $subRow.data('gutter'),
-				column_alignment: $subRow.data('column-alignment'),
-				desktop_dir: $subRow.data('desktop_dir'),
-				tablet_dir: $subRow.data('tablet_dir'),
-				mobile_dir: $subRow.data('mobile_dir'),
-				col_mobile: $.trim($subRow.data('mobile')),
-				col_tablet: $.trim($subRow.data('tablet')),
 				cols: sub_cols
 			};
+			if($subRow.data('gutter')!=='gutter-default'){
+				option_data['gutter'] = $subRow.data('gutter');
+			}
+			if($subRow.data('column-alignment')!=='col_align_top'){
+				option_data['column_alignment'] = $subRow.data('column-alignment');
+			}
+			if($subRow.data('desktop_dir')!=='ltr'){
+				option_data['desktop_dir'] = $subRow.data('desktop_dir');
+			}
+			if($subRow.data('tablet_dir')!=='ltr'){
+				option_data['tablet_dir'] = $subRow.data('tablet_dir');
+			}
+			if($subRow.data('mobile_dir')!=='ltr'){
+				option_data['mobile_dir'] = $subRow.data('mobile_dir');
+			}
+			if($.trim($subRow.data('tablet'))!=='tablet-auto'){
+				option_data['col_tablet'] =$.trim($subRow.data('tablet'));
+			}
+			if($.trim($subRow.data('mobile'))!=='mobile-auto'){
+				option_data['col_mobile'] =$.trim($subRow.data('mobile'));
+			}
 			// get sub-row styling
 			if ($subRow.find('.subrow-data-styling').length > 0) {
 				var $data_styling = $.parseJSON($subRow.find('.subrow-data-styling').attr('data-styling'));

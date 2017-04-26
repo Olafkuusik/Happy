@@ -635,22 +635,45 @@ function themify_get_member_password_cached() {
  * Encrypt cookie
  */
 function encrypt_cookie( $value, $key ) {
-	$iv_size = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB );
-	$iv = mcrypt_create_iv( $iv_size, MCRYPT_RAND );
+	$cookie = '';
 	$h_key = hash( 'sha256', $key, TRUE );
-	$value = mcrypt_encrypt( MCRYPT_RIJNDAEL_256, $h_key, $value, MCRYPT_MODE_ECB, $iv );
-	return rawurlencode( $value );
+
+	if( version_compare( phpversion(), '7.1', '>' ) && extension_loaded( 'openssl' ) ) {
+		$nonceSize = openssl_cipher_iv_length( 'aes-256-ctr' );
+		$nonce = openssl_random_pseudo_bytes( $nonceSize );
+		$ciphertext = openssl_encrypt( $value, 'aes-256-ctr', $h_key, OPENSSL_RAW_DATA, $nonce );
+		$cookie = $nonce . $ciphertext;
+
+	} else {
+		$iv_size = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB );
+		$iv = mcrypt_create_iv( $iv_size, MCRYPT_RAND );
+		$cookie = mcrypt_encrypt( MCRYPT_RIJNDAEL_256, $h_key, $value, MCRYPT_MODE_ECB, $iv );
+	}
+	
+	return rawurlencode( $cookie );
 }
 
 /**
  * Decrypt cookie
  */
 function decrypt_cookie( $value, $key ) {
-	$iv_size = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB );
-	$iv = mcrypt_create_iv( $iv_size, MCRYPT_RAND );
-	$h_key = hash( 'sha256', $key, TRUE );
+	$cookie = '';
 	$value = rawurldecode( $value );
-	return trim( mcrypt_decrypt( MCRYPT_RIJNDAEL_256, $h_key, $value, MCRYPT_MODE_ECB, $iv ) );
+	$h_key = hash( 'sha256', $key, TRUE );
+
+	if( version_compare( phpversion(), '7.1', '>' ) && extension_loaded( 'openssl' ) ) {
+		$nonceSize = openssl_cipher_iv_length( 'aes-256-ctr' );
+		$nonce = mb_substr( $value, 0, $nonceSize, '8bit' );
+		$ciphertext = mb_substr( $value, $nonceSize, null, '8bit' );
+		$cookie = trim( openssl_decrypt( $ciphertext, 'aes-256-ctr', $h_key, OPENSSL_RAW_DATA, $nonce ) );
+
+	} else {
+		$iv_size = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB );
+		$iv = mcrypt_create_iv( $iv_size, MCRYPT_RAND );
+		$cookie = trim( mcrypt_decrypt( MCRYPT_RIJNDAEL_256, $h_key, $value, MCRYPT_MODE_ECB, $iv ) );
+	}
+
+	return $cookie;
 }
 
 /**

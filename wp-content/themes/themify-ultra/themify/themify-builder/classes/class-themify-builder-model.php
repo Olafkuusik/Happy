@@ -486,325 +486,7 @@ final class Themify_Builder_Model {
             }
             return $return[$setting];
 	}
-        
-         /**
-	 * Get Responsive Column Styles
-	 * 
-	 * @since 2.6.6
-	 * @return string
-	 */
-	public static function get_column_responsive_style($type) {
-	    $rules = array(
-                    'tablet'=>' 
-                        .themify_builder.themify_builder_content .themify_builder_row .row_inner_wrapper .tablet-col-direction-ltr,
-                        .themify_builder.themify_builder_content .themify_builder_row .row_inner_wrapper .tablet-col-direction-rtl{
-                            display:-webkit-box;
-                            display:-moz-box;
-                            display:-ms-flexbox;
-                            display:-moz-flex;
-                            display:-webkit-flex;
-                            display:flex;
-                            -webkit-flex-flow:wrap;
-                            -ms-flex-flow:wrap;
-                            flex-flow:wrap;
-                        }
-                        .themify_builder.themify_builder_content  .themify_builder_row .row_inner_wrapper .tablet-col-direction-ltr{
-                            flex-flow: row wrap;
-                        }
-                        .themify_builder.themify_builder_content  .themify_builder_row .row_inner_wrapper .tablet-col-direction-rtl{
-                            flex-flow:row-reverse wrap-reverse;
-                            width:100%;
-                        }
-                        .themify_builder .tfb_grid_classes:not(.tablet-auto):not(.mobile-auto)>.module_column{
-                            float:left;
-                            margin-top:25px;
-                            margin-left:3.2%;
-                            clear:none;
-                        }
-                        .themify_builder .tfb_grid_classes:not(.mobile-auto)>.module_column.first{
-                            margin-left:0 !important;
-                        }
-                        .themify_builder.themify_builder_content .themify_builder_row .tablet3-2-3-1.count-odd:not(.mobile-auto)>.module_column.last,
-                        .themify_builder.themify_builder_content .themify_builder_row .tablet4-1-4-3.count-odd:not(.mobile-auto)>.module_column.last,
-                        .themify_builder.themify_builder_content .themify_builder_row .tablet4-2.count-odd:not(.mobile-auto)>.module_column.last,
-                        .themify_builder_content.themify_builder .themify_builder_row .tablet-full.tfb_grid_classes:not(.mobile-auto)>div.module_column{
-                            width:100%;
-                            margin:25px 0 0 0;
-                        }
-                        .themify_builder .themify_builder_row .tablet-col-direction-ltr.tablet4-1-4-2-4-1:not(.mobile-auto)>.module_column:nth-of-type(3n+2),
-                        .themify_builder .themify_builder_row .tablet-col-direction-rtl.tablet4-1-4-2-4-1:not(.mobile-auto)>.module_column:nth-last-of-type(3n+2),
-                        .themify_builder .themify_builder_row .tablet4-1-4-1-4-2:not(.mobile-auto)>.module_column:nth-of-type(3n),
-                        .themify_builder .tablet-col-direction-ltr.col-count-5.tablet-3col:not(.mobile-auto)>.module_column:nth-of-type(4n),
-                        .themify_builder .tablet-col-direction-rtl.col-count-5.tablet-3col:not(.mobile-auto)>.module_column:nth-last-of-type(4n),
-                        .themify_builder .col-count-5.tablet-3col:not(.mobile-auto)>.module_column.last,
-                        .themify_builder .themify_builder_row .tablet4-2:not(.mobile-auto)>.module_column{
-                            width:48.4%;
-                        } 
-                        .themify_builder.themify_builder_content .themify_builder_row .col-count-6:not(.mobile-auto)>div.module_column{
-                             margin-left:3.2%;
-                        }
-                        .themify_builder .themify_builder_row .tablet4-1-4-2-4-1:not(.mobile-auto)>.module_column,
-                        .themify_builder .themify_builder_row .tablet4-1-4-1-4-2:not(.mobile-auto)>.module_column,
-                        .themify_builder .themify_builder_row .tablet4-1-4-3:not(.mobile-auto)>.module_column:nth-of-type(odd),
-                        .themify_builder .themify_builder_row .tablet4-1:not(.mobile-auto)>.module_column{
-                            width:22.6%;
-                        }
-                        .themify_builder .themify_builder_row .tablet5-1:not(.mobile-auto)>.module_column{
-                            width:17.44%;
-                        }
-                        .themify_builder .themify_builder_row .tablet6-1:not(.mobile-auto)>.module_column{
-                            width:14%;
-                        }
-                        .themify_builder .themify_builder_row .tablet3-1:not(.mobile-auto)>.module_column,
-                        .themify_builder .themify_builder_row .tablet3-2-3-1:not(.mobile-auto)>.module_column{
-                            width: 31.2%;
-                            margin-top:25px;
-                        }
-                        .themify_builder .themify_builder_row .tablet3-2-3-1:not(.mobile-auto)>.module_column:nth-of-type(odd){
-                            width:65.6%;
-                        }
-                        .themify_builder .themify_builder_row .tablet4-1-4-3:not(.mobile-auto)>.module_column:nth-of-type(even){
-                            width:74.2%;
-                        }
-                        .themify_builder.themify_builder_content .themify_builder_row .tablet-col-direction-ltr.count-even.tablet-3col:not(.mobile-auto)>.module_column:nth-of-type(3n+1),
-                        .themify_builder.themify_builder_content .themify_builder_row .tablet-col-direction-rtl.count-even.tablet-3col:not(.mobile-auto)>.module_column:nth-last-of-type(3n+1),
-                        .themify_builder.themify_builder_content .themify_builder_row .tablet-col-direction-ltr.tablet-2col:not(.mobile-auto)>.module_column:nth-of-type(odd),
-                        .themify_builder.themify_builder_content .themify_builder_row .tablet-col-direction-rtl.tablet-2col:not(.mobile-auto)>.module_column:nth-last-of-type(odd),
-                        .themify_builder.themify_builder_content .themify_builder_row .tablet-col-direction-ltr.count-odd.tablet-3col:not(.mobile-auto)>.module_column:nth-of-type(3n+1),
-                        .themify_builder.themify_builder_content .themify_builder_row .tablet-col-direction-rtl.count-odd.tablet-3col:not(.mobile-auto)>.module_column:nth-last-of-type(3n+1){
-                             margin-left:0;
-                        }
-                         /*  GUTTER NARROW */
-                        .themify_builder .themify_builder_row .gutter-narrow:not(.tablet-full):not(.mobile-auto)>div.module_column{
-                            margin-left:1.6%;
-                        }
-                        .themify_builder .themify_builder_row .gutter-narrow.tablet4-1-4-2-4-1:not(.mobile-auto)>.module_column,
-                        .themify_builder .themify_builder_row .gutter-narrow.tablet4-1-4-1-4-2:not(.mobile-auto)>.module_column,
-                        .themify_builder .themify_builder_row .gutter-narrow.tablet4-1-4-3:not(.mobile-auto)>.module_column:nth-of-type(odd),
-                        .themify_builder .themify_builder_row .gutter-narrow.tablet4-1:not(.mobile-auto)>.module_column{
-                            width:23.8%;
-                        }
-                        .themify_builder .themify_builder_row .gutter-narrow.tablet-col-direction-ltr.tablet4-1-4-2-4-1:not(.mobile-auto)>.module_column:nth-of-type(3n+2),
-                        .themify_builder .themify_builder_row .gutter-narrow.tablet-col-direction-rtl.tablet4-1-4-2-4-1:not(.mobile-auto)>.module_column:nth-last-of-type(3n+2),
-                        .themify_builder .themify_builder_row .gutter-narrow.tablet4-1-4-1-4-2:not(.mobile-auto)>.module_column:nth-of-type(3n),
-                        .themify_builder .themify_builder_row .gutter-narrow.tablet4-2:not(.mobile-auto)>.module_column,
-                        .themify_builder .gutter-narrow.tablet-col-direction-ltr.col-count-5.tablet-3col:not(.mobile-auto)>.module_column:nth-of-type(4n),
-                        .themify_builder .gutter-narrow.tablet-col-direction-rtl.col-count-5.tablet-3col:not(.mobile-auto)>.module_column:nth-last-of-type(4n),
-                        .themify_builder .gutter-narrow.col-count-5.tablet-3col:not(.mobile-auto)>.module_column.last{
-                            width:49.2%;
-                        }
-                        .themify_builder .themify_builder_row .gutter-narrow.tablet3-2-3-1:not(.mobile-auto)>.module_column:nth-of-type(odd){
-                            width:66.05%;
-                        }
-                        .themify_builder .themify_builder_row .gutter-narrow.tablet4-1-4-3:not(.mobile-auto)>.module_column:nth-of-type(even){
-                            width:74.539%;
-                        }
-                        .themify_builder .themify_builder_row .gutter-narrow.tablet3-1:not(.mobile-auto)>.module_column,
-                        .themify_builder .themify_builder_row .gutter-narrow.tablet3-2-3-1:not(.mobile-auto)>.module_column{
-                            width:32.266%;
-                        }
-                        .themify_builder .themify_builder_row .gutter-narrow.tablet5-1:not(.mobile-auto)>.module_column{
-                            width:18.72%;
-                        }
-                        .themify_builder .themify_builder_row .gutter-narrow.tablet6-1:not(.mobile-auto)>.module_column{
-                            width:15.33%;
-                        }
-                        
-                        /* GUTTER NONE */
-						.themify_builder .themify_builder_row .gutter-none:not(.tablet-auto):not(.mobile-auto)>div.module_column,
-                        .themify_builder .themify_builder_row .gutter-none.col-count-6:not(.mobile-auto)>div.module_column{
-                            margin-left:0;
-                        }
-                        .themify_builder .themify_builder_row .gutter-none.tablet4-1-4-2-4-1:not(.mobile-auto)>.module_column,
-                        .themify_builder .themify_builder_row .gutter-none.tablet4-1-4-1-4-2:not(.mobile-auto)>.module_column,
-                        .themify_builder .themify_builder_row .gutter-none.tablet4-1-4-3:not(.mobile-auto)>.module_column:nth-of-type(odd),
-                        .themify_builder .themify_builder_row .gutter-none.tablet4-1:not(.mobile-auto)>.module_column{
-                            width:25%;
-                        }
-                        .themify_builder .themify_builder_row .gutter-none.tablet-col-direction-ltr.tablet4-1-4-2-4-1:not(.mobile-auto)>.module_column:nth-of-type(3n+2),
-                        .themify_builder .themify_builder_row .gutter-none.tablet-col-direction-rtl.tablet4-1-4-2-4-1:not(.mobile-auto)>.module_column:nth-last-of-type(3n+2),
-                        .themify_builder .themify_builder_row .gutter-none.tablet4-2:not(.mobile-auto)>.module_column,
-                        .themify_builder .themify_builder_row .gutter-none.tablet4-1-4-1-4-2:not(.mobile-auto)>.module_column:nth-of-type(3n),
-                        .themify_builder .gutter-none.tablet-col-direction-ltr.col-count-5.tablet-3col:not(.mobile-auto)>.module_column:nth-of-type(4n),
-                        .themify_builder .gutter-none.tablet-col-direction-rtl.col-count-5.tablet-3col:not(.mobile-auto)>.module_column:nth-last-of-type(4n),
-                        .themify_builder .gutter-none.col-count-5.tablet-3col:not(.mobile-auto)>.module_column.last{
-                            width:50%;
-                        }
-                        .themify_builder .themify_builder_row .gutter-none.tablet3-2-3-1:not(.mobile-auto)>.module_column:nth-of-type(odd){
-                            width:66.666%;
-                        }
-                        .themify_builder .themify_builder_row .gutter-none.tablet4-1-4-3:not(.mobile-auto)>.module_column:nth-of-type(even){
-                            width:75%;
-                        }
-                        .themify_builder .themify_builder_row .gutter-none.tablet3-1:not(.mobile-auto)>.module_column,
-                        .themify_builder .themify_builder_row .gutter-none.tablet3-2-3-1:not(.mobile-auto)>.module_column{
-                            width:33.333%;
-                        }
-                        .themify_builder .themify_builder_row .gutter-none.tablet5-1:not(.mobile-auto)>.module_column{
-                            width:20%;
-                        }
-                        .themify_builder .themify_builder_row .gutter-none.tablet6-1:not(.mobile-auto)>.module_column{
-                            width:16.666%;
-                        }
-                        ',
-                    'mobile'=>'
-                        .themify_builder_content.themify_builder .themify_builder_row .row_inner_wrapper .mobile-col-direction-ltr,
-                        .themify_builder_content.themify_builder .themify_builder_row .row_inner_wrapper .mobile-col-direction-rtl{
-                            display:-webkit-flexbox;
-                            display:-ms-flexbox;
-                            display:-webkit-flex;
-                            display:flex;
-                            width:100%;
-                        }
-                        .themify_builder_active .themify_builder_content.themify_builder .themify_builder_row .row_inner_wrapper .mobile-col-direction-ltr,
-                        .themify_builder_active .themify_builder_content.themify_builder .themify_builder_row .row_inner_wrapper .mobile-col-direction-rtl{
-                            display:-webkit-inline-flexbox;
-                            display:-ms-inline-flexbox;
-                            display:-webkit-inline-flex;
-                            display:inline-flex;
-                            width:100%;
-                        }
-                        .themify_builder_content.themify_builder .themify_builder_row .row_inner_wrapper .mobile-col-direction-rtl{
-                            flex-flow:row-reverse wrap-reverse;
-                        }
-                        .themify_builder_content.themify_builder .themify_builder_row .row_inner_wrapper .mobile-col-direction-ltr{
-                            flex-flow:row wrap;
-                        }
-                        .themify_builder .themify_builder_row .tfb_grid_classes:not(.mobile-auto)>.module_column:not(.first){
-                            margin-left:3.2% !important;
-                            float:left;
-                            margin-top:25px;
-                            clear:none;
-                        }
-                        .themify_builder.themify_builder_content .themify_builder_row .mobile3-2-3-1.count-odd>.module_column.last,
-                        .themify_builder.themify_builder_content .themify_builder_row .mobile4-1-4-3.count-odd>.module_column.last,
-                        .themify_builder.themify_builder_content .themify_builder_row .mobile4-2.count-odd>.module_column.last,
-                        .themify_builder_content.themify_builder .themify_builder_row .mobile-full.tfb_grid_classes>div.module_column{
-                            width:100% !important;
-                            margin:25px 0 0 0 !important;
-                        }
-                        .themify_builder .themify_builder_row .mobile-col-direction-ltr.mobile4-1-4-2-4-1>.module_column:nth-of-type(3n+2),
-                        .themify_builder .themify_builder_row .mobile-col-direction-rtl.mobile4-1-4-2-4-1>.module_column:nth-last-of-type(3n+2),
-                        .themify_builder .themify_builder_row .mobile4-1-4-1-4-2>.module_column:nth-of-type(3n),
-                        .themify_builder .mobile-col-direction-ltr.col-count-5.mobile-3col>.module_column:nth-of-type(4n),
-                        .themify_builder .mobile-col-direction-rtl.col-count-5.mobile-3col>.module_column:nth-last-of-type(4n),
-                        .themify_builder .col-count-5.mobile-3col>.module_column.last,
-                        .themify_builder .themify_builder_row .mobile4-2>.module_column{
-                            width:48.4% !important;
-                        } 
-                        .themify_builder .themify_builder_row .mobile4-1-4-2-4-1>.module_column,
-                        .themify_builder .themify_builder_row .mobile4-1-4-1-4-2>.module_column,
-                        .themify_builder .themify_builder_row .mobile4-1-4-3>.module_column:nth-of-type(odd),
-                        .themify_builder .themify_builder_row .mobile4-1>.module_column{
-                            width:22.6% !important;
-                        }
-                        .themify_builder .themify_builder_row .mobile5-1>.module_column{
-                            width:17.44% !important;
-                        }
-                        .themify_builder .themify_builder_row .mobile6-1>.module_column{
-                            width:14%   !important;
-                        }
-                        .themify_builder .themify_builder_row .mobile3-1>.module_column,
-                        .themify_builder .themify_builder_row .mobile3-2-3-1>.module_column{
-                            width:31.2% !important;
-                            margin-top:25px;
-                        }
-                        .themify_builder .themify_builder_row .mobile3-2-3-1>.module_column:nth-of-type(odd){
-                            width:65.6% !important;
-                        }
-                        .themify_builder .themify_builder_row .mobile4-1-4-3>.module_column:nth-of-type(even){
-                            width:74.2% !important;
-                        }
-                        .themify_builder .themify_builder_row .mobile5-1>.module_column{
-                            width:17.44% !important;
-                        }
-                        .themify_builder .themify_builder_row .mobile6-1>.module_column{
-                            width:14% !important;
-                        }
-                        .themify_builder.themify_builder_content .themify_builder_row .mobile-col-direction-ltr.count-even.mobile-3col>.module_column:nth-of-type(3n+1),
-                        .themify_builder.themify_builder_content .themify_builder_row .mobile-col-direction-rtl.count-even.mobile-3col>.module_column:nth-last-of-type(3n+1),
-                        .themify_builder.themify_builder_content .themify_builder_row .mobile-col-direction-ltr.mobile-2col>.module_column:nth-of-type(odd),
-                        .themify_builder.themify_builder_content .themify_builder_row .mobile-col-direction-rtl.mobile-2col>.module_column:nth-last-of-type(odd),
-                        .themify_builder.themify_builder_content .themify_builder_row .mobile-col-direction-ltr.count-odd.mobile-3col>.module_column:nth-of-type(3n+1),
-                        .themify_builder.themify_builder_content .themify_builder_row .mobile-col-direction-rtl.count-odd.mobile-3col>.module_column:nth-last-of-type(3n+1){
-                             margin-left:0 !important;
-                        }
-                        
-                        /*  GUTTER NARROW */
-                        .themify_builder .themify_builder_row .gutter-narrow:not(.mobile-full)>div.module_column:not(.first){
-                            margin-left:1.6% !important;
-                        }
-                        .themify_builder .themify_builder_row .gutter-narrow.mobile4-1-4-2-4-1>.module_column,
-                        .themify_builder .themify_builder_row .gutter-narrow.mobile4-1-4-1-4-2>.module_column,
-                        .themify_builder .themify_builder_row .gutter-narrow.mobile4-1-4-3>.module_column:nth-of-type(odd),
-                        .themify_builder .themify_builder_row .gutter-narrow.mobile4-1>.module_column{
-                            width:23.8% !important;
-                        }
-                        .themify_builder .themify_builder_row .gutter-narrow.mobile-col-direction-ltr.mobile4-1-4-2-4-1>.module_column:nth-of-type(3n+2),
-                        .themify_builder .themify_builder_row .gutter-narrow.mobile-col-direction-rtl.mobile4-1-4-2-4-1>.module_column:nth-last-of-type(3n+2),
-                        .themify_builder .themify_builder_row .gutter-narrow.mobile4-1-4-1-4-2>.module_column:nth-of-type(3n),
-                        .themify_builder .themify_builder_row .gutter-narrow.mobile4-2>.module_column,
-                        .themify_builder .gutter-narrow.mobile-col-direction-ltr.col-count-5.mobile-3col>.module_column:nth-of-type(4n),
-                        .themify_builder .gutter-narrow.mobile-col-direction-rtl.col-count-5.mobile-3col>.module_column:nth-last-of-type(4n),
-                        .themify_builder .gutter-narrow.col-count-5.mobile-3col>.module_column.last{
-                            width:49.2% !important;
-                        }
-                        .themify_builder .themify_builder_row .gutter-narrow.mobile3-2-3-1>.module_column:nth-of-type(odd){
-                            width:66.05% !important;
-                        }
-                        .themify_builder .themify_builder_row .gutter-narrow.mobile4-1-4-3>.module_column:nth-of-type(even){
-                            width:74.539% !important;
-                        }
-                        .themify_builder .themify_builder_row .gutter-narrow.mobile3-1>.module_column,
-                        .themify_builder .themify_builder_row .gutter-narrow.mobile3-2-3-1>.module_column{
-                            width:32.266% !important;
-                        }
-                        .themify_builder .themify_builder_row .gutter-narrow.mobile5-1>.module_column{
-                            width:18.72% !important;
-                        }
-                        .themify_builder .themify_builder_row .gutter-narrow.mobile6-1>.module_column{
-                            width:15.33% !important;
-                        }
-                        
-                        /* GUTTER NONE */
-                        .themify_builder.themify_builder_content .themify_builder_row .gutter-none:not(.mobile-auto)>div.module_column{
-                            margin-left:0 !important;
-                        }
-                        .themify_builder .themify_builder_row .gutter-none.mobile4-1-4-2-4-1>.module_column,
-                        .themify_builder .themify_builder_row .gutter-none.mobile4-1-4-1-4-2>.module_column,
-                        .themify_builder .themify_builder_row .gutter-none.mobile4-1-4-3>.module_column:nth-of-type(odd),
-                        .themify_builder .themify_builder_row .gutter-none.mobile4-1>.module_column{
-                            width:25% !important;
-                        }
-                        .themify_builder .themify_builder_row .gutter-none.mobile-col-direction-ltr.mobile4-1-4-2-4-1>.module_column:nth-of-type(3n+2),
-                        .themify_builder .themify_builder_row .gutter-none.mobile-col-direction-rtl.mobile4-1-4-2-4-1>.module_column:nth-last-of-type(3n+2),
-                        .themify_builder .themify_builder_row .gutter-none.mobile4-2>.module_column,
-                        .themify_builder .themify_builder_row .gutter-none.mobile4-1-4-1-4-2>.module_column:nth-of-type(3n),
-                        .themify_builder .gutter-none.mobile-col-direction-ltr.col-count-5.mobile-3col>.module_column:nth-of-type(4n),
-                        .themify_builder .gutter-none.mobile-col-direction-rtl.col-count-5.mobile-3col>.module_column:nth-last-of-type(4n),
-                        .themify_builder .gutter-none.col-count-5.mobile-3col>.module_column.last{
-                            width:50% !important;
-                        }
-                        .themify_builder .themify_builder_row .gutter-none.mobile3-2-3-1>.module_column:nth-of-type(odd){
-                            width:66.666% !important;
-                        }
-                        .themify_builder .themify_builder_row .gutter-none.mobile4-1-4-3>.module_column:nth-of-type(even){
-                            width:75% !important;
-                        }
-                        .themify_builder .themify_builder_row .gutter-none.mobile3-1>.module_column,
-                        .themify_builder .themify_builder_row .gutter-none.mobile3-2-3-1>.module_column{
-                            width:33.333% !important;
-                        }
-                        .themify_builder .themify_builder_row .gutter-none.mobile5-1>.module_column{
-                            width:20% !important;
-                        }
-                        .themify_builder .themify_builder_row .gutter-none.mobile6-1>.module_column{
-                            width:16.666% !important;
-                        }
-                        '
-                    );
-            return $rules[$type];
-	}
+
 	/**
 	 * Returns list of colors and thumbnails
 	 *
@@ -1019,6 +701,50 @@ final class Themify_Builder_Model {
 		}
 		return $l10n?"var $object_name = " . wp_json_encode( $l10n ) . ';':'';
 	}
+        
+        
+        public static function remove_empty_fields(array $data){
+		foreach($data as $k=>$v){
+			if ($v==='' || $v==='solid' || $v==='px' || $v==='default' || $v==='|' || ($v==='show' && strpos($k,'visibility_')===0)) {
+			  unset($data[$k]);
+			}
+		}
+		if((isset($data['background_image-type']) && $data['background_image-type']!=='gradient') || (isset($data['background_type']) && $data['background_type']!=='gradient')){
+			$gradient = array(
+							'background_image-type_gradient',
+							'background_gradient-gradient-type',
+							'background_image-gradient-angle',
+							'background_image-gradient-type',
+							'background_image-gradient',
+							'background_gradient-gradient-angle',
+							'background_gradient-gradient',
+							'background_gradient-css',
+							'background_image-css'
+						);
+			foreach($gradient as $v){
+				unset($data[$v]);
+			}
+		}
+		if(isset($data['background_type'])){
+			$covers = array('','_hover');
+			foreach($covers as $v){
+				
+				if((isset($data['cover_color'.$v.'-type']) && $data['cover_color'.$v.'-type']!=='gradient')){
+					$gradient = array(
+                                                        'cover_gradient'.$v.'-gradient-type',
+                                                        'cover_gradient'.$v.'-gradient-angle',
+                                                        'cover_gradient'.$v.'-gradient',
+                                                        'cover_gradient'.$v.'-css'
+                                                        );
+					foreach($gradient as $v){
+						unset($data[$v]);
+					}
+				}
+			}
+		}
+		return $data;
+	}
+        
         
         public static function format_text($content){
             global $wp_embed;

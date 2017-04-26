@@ -2612,7 +2612,9 @@ function themify_woocommerce_params($params){
  */
 function themify_available_variations() {
 	global $product;
-	if(isset($product->product_type) && 'variable' == $product->product_type){
+	if( ( isset( $product->product_type ) && 'variable' == $product->product_type )
+		|| ( method_exists( $product, 'is_type' ) && $product->is_type( 'variable' ) )
+	) {
 		$product_vars = $product->get_available_variations();
 		themify_json_esc_array($product_vars);
 	} else {
@@ -2797,51 +2799,88 @@ function themify_builder_module_settings_options($options,$module)
 
 add_filter('themify_builder_module_display', 'themify_builder_args', 10, 4);
 function themify_builder_args($show, $mod, $builder_id, $identifier) {
-global $themify;
-$themify->post_filter = false;
-$themify->builder_args = array();
-if (!empty($mod['mod_name']) && ($mod['mod_name'] === 'post' || $mod['mod_name'] === 'portfolio')) {
-       
-        $slug = $mod['mod_name'];
-        $is_portfolio = $slug === 'portfolio';
-        $layout = $mod['mod_settings']['layout_'.$slug];
-        $masonry = $gutter = $content_layout = false;
-        
-        $content_layout = !empty($mod['mod_settings'][$slug.'_content_layout']) && $mod['mod_settings'][$slug.'_content_layout']!=='no' && !in_array($layout,array('list-large-image','list-thumb-image','grid2-thumb'))?$mod['mod_settings'][$slug.'_content_layout']:false;
-        if($content_layout==='default'){
-            $content_layout = themify_get('setting-'.$slug.'_content_layout');
-        }
-	$gutter = !empty($mod['mod_settings'][$slug.'_gutter']) && !in_array($layout,array('list-post','list-large-image','list-thumb-image','grid2-thumb','slider','fullwidth'))?$mod['mod_settings'][$slug.'_gutter']:false;
-        if($gutter==='default'){
-            $gutter = themify_get('setting-'.$slug.'_gutter');
-        }
-        
-	$masonry=( !empty($mod['mod_settings']['disable_masonry']) && $mod['mod_settings']['disable_masonry']!=='no' && !in_array($layout,array('list-post','fullwidth','auto_tiles','list-large-image','list-thumb-image','grid2-thumb','slider'))) ? 'masonry' : false;
-	if($masonry && $mod['mod_settings']['disable_masonry']==='default'){
-            $masonry = $is_portfolio?themify_get('setting-portfolio_disable_masonry'):themify_get('setting-disable_masonry');
-            $masonry = $masonry==='yes'?'masonry':false;
-        }
-        if($content_layout){
-            $themify->builder_args['content_layout'] = $content_layout;
-        }
-        if($gutter){
-            $themify->builder_args['gutter'] = $gutter;
-        }
-       
-        if($masonry){
-            $themify->builder_args['masonry'] = $masonry;
-        }
-        if(!empty($themify->builder_args)){
-            add_filter('themify_builder_module_loops_wrapper', 'themify_add_builder_classes', 10, 1);
-        }
-	if($slug === 'post'){
-            $themify->post_filter=($mod['mod_settings']['type_query_post']=='category' &&!empty($mod['mod_settings']['post_filter']) &&  $mod['mod_settings']['post_filter']=='yes') ?$mod['mod_settings']['post_filter']:false;	
-            if($themify->post_filter){
-                add_action('themify_builder_before_template_content_render','themify_builder_post_module_filter');
-            }
+	global $themify;
+	$themify->post_filter = ! empty( $themify->post_filter ) ? $themify->post_filter : false;
+	$themify->builder_args = array();
+
+	if( ! empty( $mod['mod_name'] ) && ( $mod['mod_name'] === 'post' || $mod['mod_name'] === 'portfolio' ) ) {
+		$slug = $mod['mod_name'];
+		$is_portfolio = $slug === 'portfolio';
+		$layout = $mod['mod_settings']['layout_' . $slug];
+		$masonry = $gutter = $content_layout = false;
+		$content_layout = !empty($mod['mod_settings'][$slug . '_content_layout']) 
+			&& $mod['mod_settings'][$slug.'_content_layout'] !== 'no'
+			&& ! in_array( $layout, array('list-large-image', 'list-thumb-image','grid2-thumb') ) 
+				? $mod['mod_settings'][$slug . '_content_layout'] : false;
+
+		if( $content_layout === 'default' ) {
+			$content_layout = themify_get( 'setting-' . $slug . '_content_layout' );
+		}
+
+		$gutter = ! empty( $mod['mod_settings'][$slug . '_gutter'] )
+			&& ! in_array( $layout
+				, array(
+					'list-post',
+					'list-large-image',
+					'list-thumb-image',
+					'grid2-thumb',
+					'slider',
+					'fullwidth'
+				) ) ? $mod['mod_settings'][$slug . '_gutter'] : false;
+
+		if( $gutter === 'default' ) {
+			$gutter = themify_get( 'setting-' . $slug . '_gutter' );
+		}
+
+		$masonry = ( ! empty( $mod['mod_settings']['disable_masonry'] ) 
+			&& $mod['mod_settings']['disable_masonry'] !== 'no'
+			&& ! in_array( $layout
+				, array(
+					'list-post',
+					'fullwidth',
+					'auto_tiles',
+					'list-large-image',
+					'list-thumb-image',
+					'grid2-thumb',
+					'slider'
+				) ) ) ? 'masonry' : false;
+
+		if( $masonry && $mod['mod_settings']['disable_masonry'] === 'default' ) {
+			$masonry = $is_portfolio
+				? themify_get( 'setting-portfolio_disable_masonry' )
+				: themify_get( 'setting-disable_masonry' );
+			$masonry = $masonry === 'yes' ? 'masonry' : false;
+		}
+
+		if( $content_layout ) {
+			$themify->builder_args['content_layout'] = $content_layout;
+		}
+
+		if( $gutter ) {
+			$themify->builder_args['gutter'] = $gutter;
+		}
+		
+		if( $masonry ) {
+			$themify->builder_args['masonry'] = $masonry;
+		}
+
+		if( ! empty( $themify->builder_args ) ) {
+			add_filter( 'themify_builder_module_loops_wrapper', 'themify_add_builder_classes', 10, 1 );
+		}
+		
+		if( $slug === 'post' ) {
+			$themify->post_filter = ( $mod['mod_settings']['type_query_post']=='category'
+				&& ! empty( $mod['mod_settings']['post_filter'] ) 
+				&& $mod['mod_settings']['post_filter'] == 'yes' ) 
+					? $mod['mod_settings']['post_filter'] : false;
+
+			if( $themify->post_filter ) {
+				add_action( 'themify_builder_before_template_content_render', 'themify_builder_post_module_filter' );
+			}
+		}
 	}
-}
-return $show;
+
+	return $show;
 }
 
 /**
@@ -2867,7 +2906,7 @@ function themify_builder_post_module_filter(){
 add_action('themify_content_before','themify_theme_meta_boxes_query_posts_filter');
 function themify_theme_meta_boxes_query_posts_filter(){
 	global $themify;
-	if($themify->query_post_type=='post'){
+	if( $themify->query_post_type == 'post' ) {
 		$themify->post_filter=themify_get( 'post_filter' );
 	}
 
