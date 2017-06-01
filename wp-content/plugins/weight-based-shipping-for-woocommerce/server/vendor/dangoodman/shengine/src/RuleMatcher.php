@@ -32,7 +32,7 @@ class RuleMatcher implements \WbsVendors\Dgm\Shengine\Interfaces\IMatcher
             return null;
         }
 
-        return \WbsVendors\Dgm\Shengine\Model\Package::fromOther($matchingPackages, $package->getDestination(), $package->getCustomer());
+        return \WbsVendors\Dgm\Shengine\Model\Package::fromOther($matchingPackages, $package->getDestination(), $package->getCustomer(), $package->getCoupons());
     }
 
     public function isCapturingMatcher()

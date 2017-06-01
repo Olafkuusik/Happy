@@ -3,7 +3,6 @@
  * @package    Themify_Builder
  * @subpackage Themify_Builder/classes
  */
-
 class Themify_Builder_Include {
 
 	/**
@@ -179,8 +178,8 @@ class Themify_Builder_Include {
 		if ( isset( $fields_args['custom_parallax_scroll_reverse'] ) && '' != str_replace( '|', '', $fields_args['custom_parallax_scroll_reverse'] ) ) 
 			$props['data-parallax-element-reverse'] = 1;
 
-		if ( isset( $fields_args['custom_parallax_scroll_reverse'] ) && '' != str_replace( '|', '', $fields_args['custom_parallax_scroll_reverse'] ) ) 
-			$props['data-parallax-element-reverse'] = 1;
+		if ( isset( $fields_args['custom_parallax_scroll_fade'] ) && '' != str_replace( '|', '', $fields_args['custom_parallax_scroll_fade'] ) ) 
+			$props[ 'data-prallax-fade' ] = 1;
 
 		if ( isset( $fields_args['custom_parallax_scroll_zindex'] ) && '' != $fields_args['custom_parallax_scroll_zindex'] ) {
 			$props['style'] = isset( $props['style'] ) ? $props['style'] . 'z-index:'. $fields_args['custom_parallax_scroll_zindex'].';' : 'z-index:'.$fields_args['custom_parallax_scroll_zindex'].';';
@@ -200,13 +199,12 @@ class Themify_Builder_Include {
 	 */
 	private function do_color_overlay($styling) {
                 $type = ! isset( $styling['cover_color-type'] ) ||  $styling['cover_color-type'] == 'color'?'color':'gradient';
-                $hover_type = ! isset( $styling['cover_color_hover-type'] ) ||  $styling['cover_color_hover-type'] == 'hover_color'?'color':'gradient';
-                $is_empty = $type==='color'?empty($styling['cover_color']):empty($styling['cover_gradient-css']);
-                $is_empty = $is_empty && ($hover_type==='color'?empty($styling['cover_color_hover']):empty($styling['cover_gradient_hover-css']));
+                $hover_type = ! isset( $styling['cover_color_hover-type'] ) ||  $styling['cover_color_hover-type'] === 'hover_color'?'color':'gradient';
+                $is_empty = $type==='color'?empty($styling['cover_color']):empty($styling['cover_gradient-gradient']);
+                $is_empty = $is_empty && ($hover_type==='color'?empty($styling['cover_color_hover']):empty($styling['cover_gradient_hover-gradient']));
 		if($is_empty){
                     return false;
                 }
-			 
 		$atts = array('data-type'=>'color','data-hover-type'=>'color');
 		if($type==='color'){
 			if(!empty($styling['cover_color'])){
@@ -215,7 +213,7 @@ class Themify_Builder_Include {
 						$atts['data-color'] = $rgba;
 			}
 							
-		} elseif(!empty($styling['cover_gradient-css'])) {
+		} elseif(!empty($styling['cover_gradient-gradient'])) {
 			// using gradient
 			$atts['data-type']='gradient';
 		}
@@ -224,7 +222,7 @@ class Themify_Builder_Include {
 				$atts['data-hover-color'] = $this->builder->stylesheet->get_rgba_color($styling['cover_color_hover']);
 			}
 		}
-		elseif(!empty($styling['cover_gradient_hover-css'])){
+		elseif(!empty($styling['cover_gradient_hover-gradient'])){
 			$atts['data-hover-type']='gradient';
 		}   
 		if(isset( $styling['cover_color-type'] )){
@@ -364,7 +362,8 @@ class Themify_Builder_Include {
 							array('value' => 'slider', 'name' => __('Slider', 'themify'),'disable'=>!$is_premium),
 					),
 					'option_js' => true,
-					'wrap_with_class' => 'responsive-na'.(!$is_premium?' themify_builder_lite hide_opacity':'')
+					'wrap_with_class' => 'responsive-na'.(!$is_premium?' themify_builder_lite hide_opacity':''),
+					'default' => 'image',
 			),
 			// Background Slider
 			array(
@@ -383,13 +382,14 @@ class Themify_Builder_Include {
 					'default' => '',
 					'meta' => $image_size,
 					'wrap_with_class' => 'tf-group-element tf-group-element-slider responsive-na',
+					'default' => 'thumbnail',
 			),
 			// Background Slider Mode
 			array(
 					'id' => 'background_slider_mode',
 					'label' => __('Background Slider Mode', 'themify'),
 					'type' => 'select',
-					'default' => '',
+					'default' => 'best-fit',
 					'meta' => array(
 							array('value' => 'best-fit', 'name' => __('Best Fit', 'themify')),
 							array('value' => 'fullcover', 'name' => __('Fullcover', 'themify')),
@@ -441,7 +441,7 @@ class Themify_Builder_Include {
 					'id' => 'background_repeat',
 					'label' =>'',
 					'type' => 'select',
-					'default' => '',
+					'default' => 'repeat',
 					'description'=>__('Background Mode', 'themify'),
 					'meta' => array(
 							array('value' => 'repeat', 'name' => __('Repeat All', 'themify')),
@@ -473,7 +473,7 @@ class Themify_Builder_Include {
 					'id' => 'background_position',
 					'label' => '',
 					'type' => 'select',
-					'default' => '',
+					'default' => 'left-top',
 					'description'=>__('Background Position', 'themify'),
 					'meta' => array(
 							array('value' => 'left-top', 'name' => __('Left Top', 'themify')),
@@ -661,7 +661,7 @@ class Themify_Builder_Include {
 				'id' => 'background_slider_size',
 				'label' => __('Image Size', 'themify'),
 				'type' => 'select',
-				'default' => '',
+				'default' => 'thumbnail',
 				'meta' => $image_size,
 				'wrap_with_class' => 'tf-group-element tf-group-element-slider responsive-na',
 			),
@@ -670,7 +670,7 @@ class Themify_Builder_Include {
 				'id' => 'background_slider_mode',
 				'label' => __('Background Slider Mode', 'themify'),
 				'type' => 'select',
-				'default' => '',
+				'default' => 'best-fit',
 				'meta' => array(
 						array('value' => 'best-fit', 'name' => __('Best Fit', 'themify')),
 						array('value' => 'fullcover', 'name' => __('Fullcover', 'themify')),
@@ -721,7 +721,7 @@ class Themify_Builder_Include {
 				'id' => 'background_repeat',
 				'label' => '',
 				'type' => 'select',
-				'default' => '',
+				'default' => 'repeat',
 				'description'=>__('Background Mode', 'themify'),
 				'meta' => array(
 						array('value' => 'repeat', 'name' => __('Repeat All', 'themify')),
@@ -751,7 +751,7 @@ class Themify_Builder_Include {
 				'id' => 'background_position',
 				'label' => '',
 				'type' => 'select',
-				'default' => '',
+				'default' => 'left-top',
 				 'description'=>__('Background Position', 'themify'),
 				'meta' => array(
 						array('value' => 'left-top', 'name' => __('Left Top', 'themify')),
@@ -897,7 +897,7 @@ class Themify_Builder_Include {
 				'id' => 'background_slider_size',
 				'label' => __('Image Size', 'themify'),
 				'type' => 'select',
-				'default' => '',
+				'default' => 'thumbnail',
 				'meta' => $image_size,
 				'wrap_with_class' => 'tf-group-element tf-group-element-slider responsive-na',
 			),
@@ -906,7 +906,7 @@ class Themify_Builder_Include {
 				'id' => 'background_slider_mode',
 				'label' => __('Background Slider Mode', 'themify'),
 				'type' => 'select',
-				'default' => '',
+				'default' => 'best-fit',
 				'meta' => array(
 						array('value' => 'best-fit', 'name' => __('Best Fit', 'themify')),
 						array('value' => 'fullcover', 'name' => __('Fullcover', 'themify')),
@@ -957,7 +957,7 @@ class Themify_Builder_Include {
 				'id' => 'background_repeat',
 				'label' => '',
 				'type' => 'select',
-				'default' => '',
+				'default' => 'repeat',
 				'description'=>__('Background Mode', 'themify'),
 				'meta' => array(
 						array('value' => 'repeat', 'name' => __('Repeat All', 'themify')),
@@ -987,7 +987,7 @@ class Themify_Builder_Include {
 				'id' => 'background_position',
 				'label' => '',
 				'type' => 'select',
-				'default' => '',
+				'default' => 'left-top',
 				 'description'=>__('Background Position', 'themify'),
 				'meta' => array(
 						array('value' => 'left-top', 'name' => __('Left Top', 'themify')),

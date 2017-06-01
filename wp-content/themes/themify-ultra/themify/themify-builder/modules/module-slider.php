@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class TB_Slider_Module extends Themify_Builder_Module {
 	function __construct() {
 		parent::__construct(array(
-			'name' => __('Slider', 'themify'),
+			'name' => __( 'Slider', 'themify' ),
 			'slug' => 'slider'
 		));
 
@@ -22,8 +22,8 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			///////////////////////////////////////
 			$this->meta_box = $this->set_metabox();
 			$this->initialize_cpt( array(
-				'plural' => __('Slides', 'themify'),
-				'singular' => __('Slide', 'themify'),
+				'plural' => __( 'Slides', 'themify' ),
+				'singular' => __( 'Slide', 'themify' ),
 				'supports' => array('title', 'editor', 'author', 'custom-fields'),
 				'menu_icon' => 'dashicons-slides'
 			));
@@ -57,12 +57,11 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			15 => __( '15 sec', 'themify' ),
 			20 => __( '20 sec', 'themify' ),
 		);
-		$image_sizes = themify_get_image_sizes_list( false );
 		$display = array(
-			'blog' => __('Posts', 'themify'),
-			'image' => __('Images', 'themify'),
-			'video' => __('Videos', 'themify'),
-			'text' => __('Text', 'themify')
+			'blog' => __( 'Posts', 'themify' ),
+			'image' => __( 'Images', 'themify' ),
+			'video' => __( 'Videos', 'themify' ),
+			'text' => __( 'Text', 'themify' )
 		);
 		$slider_enabled = $ThemifyBuilder->is_cpt_active( 'slider' );
 		$portfolio_enabled = $ThemifyBuilder->is_cpt_active( 'portfolio' );
@@ -72,17 +71,17 @@ class TB_Slider_Module extends Themify_Builder_Module {
 		$taxonomies = $ThemifyBuilder->get_public_taxonomies();
 
 		if( $slider_enabled ) {
-			$display['slider'] = __('Slider Posts', 'themify');
+			$display['slider'] = __( 'Slider Posts', 'themify' );
 			unset( $post_types['slider'] );
 			unset( $taxonomies['slider-category'] );
 		}
 		if( $portfolio_enabled ) {
-			$display['portfolio'] = __('Portfolio', 'themify');
+			$display['portfolio'] = __( 'Portfolio', 'themify' );
 			unset( $post_types['portfolio'] );
 			unset( $taxonomies['portfolio-category'] );
 		}
 		if( $testimonial_enabled ) {
-			$display['testimonial'] = __('Testimonial', 'themify');
+			$display['testimonial'] = __( 'Testimonial', 'themify' );
 			unset( $post_types['testimonial'] );
 			unset( $taxonomies['testimonial-category'] );
 		}
@@ -91,13 +90,13 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'mod_title_slider',
 				'type' => 'text',
-				'label' => __('Module Title', 'themify'),
+				'label' => __( 'Module Title', 'themify' ),
 				'class' => 'large'
 			),
 			array(
 				'id' => 'layout_display_slider',
 				'type' => 'radio',
-				'label' => __('Display', 'themify'),
+				'label' => __( 'Display', 'themify' ),
 				'options' => $display,
 				'default' => 'blog',
 				'option_js' => true
@@ -105,14 +104,14 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'post_type',
 				'type' => 'select',
-				'label' => __('Post Type', 'themify'),
+				'label' => __( 'Post Type', 'themify' ),
 				'options' => $post_types,
 				'wrap_with_class' => 'tf-group-element tf-group-element-blog'
 			),
 			array(
 				'id' => 'taxonomy',
 				'type' => 'select',
-				'label' => __('Taxonomy', 'themify'),
+				'label' => __( 'Taxonomy', 'themify' ),
 				'options' => $taxonomies,
 				'wrap_with_class' => 'tf-group-element tf-group-element-blog'
 			),
@@ -122,9 +121,9 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'blog_category_slider',
 				'type' => 'query_category',
-				'label' => __('Category', 'themify'),
+				'label' => __( 'Category', 'themify' ),
 				'options' => array(),
-				'help' => sprintf(__('Add more <a href="%s" target="_blank">blog posts</a>', 'themify'), admin_url('post-new.php')),
+				'help' => sprintf( __( 'Add more <a href="%s" target="_blank">blog posts</a>', 'themify' ), admin_url( 'post-new.php' ) ),
 				'wrap_with_class' => 'tf-group-element tf-group-element-blog'
 			),
 		);
@@ -132,11 +131,11 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			$options[] = array(
 				'id' => 'slider_category_slider',
 				'type' => 'query_category',
-				'label' => __('Category', 'themify'),
+				'label' => __( 'Category', 'themify' ),
 				'options' => array(
 					'taxonomy' => 'slider-category'
 				),
-				'help' => sprintf(__('Add more <a href="%s" target="_blank">slider posts</a>', 'themify'), admin_url('post-new.php?post_type=slider')),
+				'help' => sprintf(__( 'Add more <a href="%s" target="_blank">slider posts</a>', 'themify' ), admin_url('post-new.php?post_type=slider')),
 				'wrap_with_class' => 'tf-group-element tf-group-element-slider'
 			);
 		}
@@ -144,11 +143,11 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			$options[] = array(
 				'id' => 'portfolio_category_slider',
 				'type' => 'query_category',
-				'label' => __('Category', 'themify'),
+				'label' => __( 'Category', 'themify' ),
 				'options' => array(
 					'taxonomy' => 'portfolio-category'
 				),
-				'help' => sprintf(__('Add more <a href="%s" target="_blank">portfolio posts</a>', 'themify'), admin_url('post-new.php?post_type=portfolio')),
+				'help' => sprintf(__( 'Add more <a href="%s" target="_blank">portfolio posts</a>', 'themify' ), admin_url('post-new.php?post_type=portfolio')),
 				'wrap_with_class' => 'tf-group-element tf-group-element-portfolio'
 			);
 		}
@@ -156,11 +155,11 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			$options[] = array(
 				'id' => 'testimonial_category_slider',
 				'type' => 'query_category',
-				'label' => __('Category', 'themify'),
+				'label' => __( 'Category', 'themify' ),
 				'options' => array(
 					'taxonomy' => 'testimonial-category'
 				),
-				'help' => sprintf(__('Add more <a href="%s" target="_blank">testimonial posts</a>', 'themify'), admin_url('post-new.php?post_type=testimonial')),
+				'help' => sprintf(__( 'Add more <a href="%s" target="_blank">testimonial posts</a>', 'themify' ), admin_url('post-new.php?post_type=testimonial')),
 				'wrap_with_class' => 'tf-group-element tf-group-element-testimonial'
 			);
 		}
@@ -168,124 +167,124 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'posts_per_page_slider',
 				'type' => 'text',
-				'label' => __('Query', 'themify'),
+				'label' => __( 'Query', 'themify' ),
 				'class' => 'xsmall',
-				'help' => __('number of posts to query', 'themify'),
+				'help' => __( 'number of posts to query', 'themify' ),
 				'wrap_with_class' => 'tf-group-element tf-group-element-blog tf-group-element-portfolio tf-group-element-slider tf-group-element-testimonial'
 			),
 			array(
 				'id' => 'offset_slider',
 				'type' => 'text',
-				'label' => __('Offset', 'themify'),
+				'label' => __( 'Offset', 'themify' ),
 				'class' => 'xsmall',
-				'help' => __('number of post to displace or pass over', 'themify'),
+				'help' => __( 'number of post to displace or pass over', 'themify' ),
 				'wrap_with_class' => 'tf-group-element tf-group-element-blog tf-group-element-portfolio tf-group-element-slider tf-group-element-testimonial'
 			),
 			array(
 				'id' => 'order_slider',
 				'type' => 'select',
-				'label' => __('Order', 'themify'),
-				'help' => __('Descending = show newer posts first', 'themify'),
+				'label' => __( 'Order', 'themify' ),
+				'help' => __( 'Descending = show newer posts first', 'themify' ),
 				'options' => array(
-					'desc' => __('Descending', 'themify'),
-					'asc' => __('Ascending', 'themify')
+					'desc' => __( 'Descending', 'themify' ),
+					'asc' => __( 'Ascending', 'themify' )
 				),
 				'wrap_with_class' => 'tf-group-element tf-group-element-blog tf-group-element-slider tf-group-element-portfolio tf-group-element-testimonial'
 			),
 			array(
 				'id' => 'orderby_slider',
 				'type' => 'select',
-				'label' => __('Order By', 'themify'),
+				'label' => __( 'Order By', 'themify' ),
 				'options' => array(
-					'date' => __('Date', 'themify'),
-					'id' => __('Id', 'themify'),
-					'author' => __('Author', 'themify'),
-					'title' => __('Title', 'themify'),
-					'name' => __('Name', 'themify'),
-					'modified' => __('Modified', 'themify'),
-					'rand' => __('Random', 'themify'),
-					'comment_count' => __('Comment Count', 'themify')
+					'date' => __( 'Date', 'themify' ),
+					'id' => __( 'Id', 'themify' ),
+					'author' => __( 'Author', 'themify' ),
+					'title' => __( 'Title', 'themify' ),
+					'name' => __( 'Name', 'themify' ),
+					'modified' => __( 'Modified', 'themify' ),
+					'rand' => __( 'Random', 'themify' ),
+					'comment_count' => __( 'Comment Count', 'themify' )
 				),
 				'wrap_with_class' => 'tf-group-element tf-group-element-blog tf-group-element-slider tf-group-element-portfolio tf-group-element-testimonial'
 			),
 			array(
 				'id' => 'display_slider',
 				'type' => 'select',
-				'label' => __('Display', 'themify'),
+				'label' => __( 'Display', 'themify' ),
 				'options' => array(
-					'content' => __('Content', 'themify'),
-					'excerpt' => __('Excerpt', 'themify'),
-					'none' => __('None', 'themify')
+					'content' => __( 'Content', 'themify' ),
+					'excerpt' => __( 'Excerpt', 'themify' ),
+					'none' => __( 'None', 'themify' )
 				),
 				'wrap_with_class' => 'tf-group-element tf-group-element-blog tf-group-element-slider tf-group-element-portfolio tf-group-element-testimonial'
 			),
 			array(
 				'id' => 'hide_post_title_slider',
 				'type' => 'select',
-				'label' => __('Hide Post Title', 'themify'),
+				'label' => __( 'Hide Post Title', 'themify' ),
 				'empty' => array(
 					'val' => '',
 					'label' => ''
 				),
 				'options' => array(
-					'yes' => __('Yes', 'themify'),
-					'no' => __('No', 'themify')
+					'yes' => __( 'Yes', 'themify' ),
+					'no' => __( 'No', 'themify' )
 				),
 				'wrap_with_class' => 'tf-group-element tf-group-element-blog tf-group-element-slider tf-group-element-portfolio tf-group-element-testimonial'
 			),
 			array(
 				'id' => 'unlink_post_title_slider',
 				'type' => 'select',
-				'label' => __('Unlink Post Title', 'themify'),
+				'label' => __( 'Unlink Post Title', 'themify' ),
 				'empty' => array(
 					'val' => '',
 					'label' => ''
 				),
 				'options' => array(
-					'yes' => __('Yes', 'themify'),
-					'no' => __('No', 'themify')
+					'yes' => __( 'Yes', 'themify' ),
+					'no' => __( 'No', 'themify' )
 				),
 				'wrap_with_class' => 'tf-group-element tf-group-element-blog tf-group-element-slider tf-group-element-portfolio'
 			),
 			array(
 				'id' => 'hide_feat_img_slider',
 				'type' => 'select',
-				'label' => __('Hide Featured Image', 'themify'),
+				'label' => __( 'Hide Featured Image', 'themify' ),
 				'empty' => array(
 					'val' => '',
 					'label' => ''
 				),
 				'options' => array(
-					'yes' => __('Yes', 'themify'),
-					'no' => __('No', 'themify')
+					'yes' => __( 'Yes', 'themify' ),
+					'no' => __( 'No', 'themify' )
 				),
 				'wrap_with_class' => 'tf-group-element tf-group-element-blog tf-group-element-slider tf-group-element-portfolio tf-group-element-testimonial'
 			),
 			array(
 				'id' => 'unlink_feat_img_slider',
 				'type' => 'select',
-				'label' => __('Unlink Featured Image', 'themify'),
+				'label' => __( 'Unlink Featured Image', 'themify' ),
 				'empty' => array(
 					'val' => '',
 					'label' => ''
 				),
 				'options' => array(
-					'yes' => __('Yes', 'themify'),
-					'no' => __('No', 'themify')
+					'yes' => __( 'Yes', 'themify' ),
+					'no' => __( 'No', 'themify' )
 				),
 				'wrap_with_class' => 'tf-group-element tf-group-element-blog tf-group-element-slider tf-group-element-portfolio'
 			),
 			array(
 				'id' => 'open_link_new_tab_slider',
 				'type' => 'select',
-				'label' => __('Open link in a new tab', 'themify'),
+				'label' => __( 'Open link in a new tab', 'themify' ),
 				'empty' => array(
 					'val' => '',
 					'label' => ''
 				),
 				'options' => array(
-					'yes' => __('Yes', 'themify'),
-					'no' => __('No', 'themify')
+					'yes' => __( 'Yes', 'themify' ),
+					'no' => __( 'No', 'themify' )
 				),
 				'wrap_with_class' => 'tf-group-element tf-group-element-blog tf-group-element-slider tf-group-element-portfolio tf-group-element-testimonial'
 			),
@@ -300,7 +299,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 					array(
 						'id' => 'img_url_slider',
 						'type' => 'image',
-						'label' => __('Image URL', 'themify'),
+						'label' => __( 'Image URL', 'themify' ),
 						'class' => 'xlarge',
 						'render_callback' => array(
 							'repeater' => 'img_content_slider',
@@ -310,7 +309,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 					array(
 						'id' => 'img_title_slider',
 						'type' => 'text',
-						'label' => __('Image Title', 'themify'),
+						'label' => __( 'Image Title', 'themify' ),
 						'class' => 'fullwidth',
 						'render_callback' => array(
 							'repeater' => 'img_content_slider'
@@ -319,7 +318,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 					array(
 						'id' => 'img_link_slider',
 						'type' => 'text',
-						'label' => __('Image Link', 'themify'),
+						'label' => __( 'Image Link', 'themify' ),
 						'class' => 'fullwidth',
 						'render_callback' => array(
 							'repeater' => 'img_content_slider',
@@ -342,7 +341,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 					array(
 						'id' => 'img_caption_slider',
 						'type' => 'textarea',
-						'label' => __('Image Caption', 'themify'),
+						'label' => __( 'Image Caption', 'themify' ),
 						'class' => 'fullwidth',
 						'rows' => 6,
 						'render_callback' => array(
@@ -367,11 +366,11 @@ class TB_Slider_Module extends Themify_Builder_Module {
 					array(
 						'id' => 'video_url_slider',
 						'type' => 'text',
-						'label' => __('Video URL', 'themify'),
+						'label' => __( 'Video URL', 'themify' ),
 						'class' => 'xlarge',
 						'help' => array(
 							'new_line' => true,
-							'text' => __('YouTube, Vimeo, etc', 'themify')
+							'text' => __( 'YouTube, Vimeo, etc', 'themify' )
 						),
 						'render_callback' => array(
 							'repeater' => 'video_content_slider',
@@ -381,7 +380,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 					array(
 						'id' => 'video_title_slider',
 						'type' => 'text',
-						'label' => __('Video Title', 'themify'),
+						'label' => __( 'Video Title', 'themify' ),
 						'class' => 'fullwidth',
 						'render_callback' => array(
 							'repeater' => 'video_content_slider'
@@ -390,7 +389,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 					array(
 						'id' => 'video_title_link_slider',
 						'type' => 'text',
-						'label' => __('Video Title Link', 'themify'),
+						'label' => __( 'Video Title Link', 'themify' ),
 						'class' => 'fullwidth',
 						'render_callback' => array(
 							'repeater' => 'video_content_slider',
@@ -400,7 +399,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 					array(
 						'id' => 'video_caption_slider',
 						'type' => 'textarea',
-						'label' => __('Video Caption', 'themify'),
+						'label' => __( 'Video Caption', 'themify' ),
 						'class' => 'fullwidth',
 						'rows' => 6,
 						'render_callback' => array(
@@ -411,7 +410,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 					array(
 						'id' => 'video_width_slider',
 						'type' => 'text',
-						'label' => __('Video Width', 'themify'),
+						'label' => __( 'Video Width', 'themify' ),
 						'class' => 'xsmall',
 						'render_callback' => array(
 							'repeater' => 'video_content_slider'
@@ -451,13 +450,13 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'layout_slider',
 				'type' => 'layout',
-				'label' => __('Slider Layout', 'themify'),
+				'label' => __( 'Slider Layout', 'themify' ),
 				'separated' => 'top',
 				'options' => array(
-					array('img' => 'slider-default.png', 'value' => 'slider-default', 'label' => __('Slider Default', 'themify')),
-					array('img' => 'slider-image-top.png', 'value' => 'slider-overlay', 'label' => __('Slider Overlay', 'themify')),
-					array('img' => 'slider-caption-overlay.png', 'value' => 'slider-caption-overlay', 'label' => __('Slider Caption Overlay', 'themify')),
-					array('img' => 'slider-agency.png', 'value' => 'slider-agency', 'label' => __('Agency', 'themify'))
+					array( 'img' => 'slider-default.png', 'value' => 'slider-default', 'label' => __( 'Slider Default', 'themify' ) ),
+					array( 'img' => 'slider-image-top.png', 'value' => 'slider-overlay', 'label' => __( 'Slider Overlay', 'themify' ) ),
+					array( 'img' => 'slider-caption-overlay.png', 'value' => 'slider-caption-overlay', 'label' => __( 'Slider Caption Overlay', 'themify' ) ),
+					array( 'img' => 'slider-agency.png', 'value' => 'slider-agency', 'label' => __( 'Agency', 'themify' ) )
 				),
 				'render_callback' => array(
 					'binding' => 'live',
@@ -467,19 +466,19 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'image_size_slider',
 				'type' => 'select',
-				'label' => Themify_Builder_Model::is_img_php_disabled() ? __('Image Size', 'themify') : false,
+				'label' => Themify_Builder_Model::is_img_php_disabled() ? __( 'Image Size', 'themify' ) : false,
 				'empty' => array(
 					'val' => '',
 					'label' => ''
 				),
-				'hide' => Themify_Builder_Model::is_img_php_disabled() ? false : true,
-				'options' => $image_sizes,
+				'hide' => ! Themify_Builder_Model::is_img_php_disabled(),
+				'options' => themify_get_image_sizes_list( false ),
 				'wrap_with_class' => 'tf-group-element tf-group-element-blog tf-group-element-slider tf-group-element-portfolio tf-group-element-image'
 			),
 			array(
 				'id' => 'img_w_slider',
 				'type' => 'text',
-				'label' => __('Image Width', 'themify'),
+				'label' => __( 'Image Width', 'themify' ),
 				'class' => 'xsmall',
 				'help' => 'px',
 				'wrap_with_class' => 'tf-group-element tf-group-element-blog tf-group-element-slider tf-group-element-portfolio tf-group-element-image'
@@ -487,7 +486,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'img_h_slider',
 				'type' => 'text',
-				'label' => __('Image Height', 'themify'),
+				'label' => __( 'Image Height', 'themify' ),
 				'class' => 'xsmall',
 				'help' => 'px',
 				'wrap_with_class' => 'tf-group-element tf-group-element-blog tf-group-element-slider tf-group-element-portfolio tf-group-element-image'
@@ -496,97 +495,97 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'slider_option_slider',
 				'type' => 'slider',
-				'label' => __('Slider Options', 'themify'),
+				'label' => __( 'Slider Options', 'themify' ),
 				'options' => array(
 					array(
 						'id' => 'visible_opt_slider',
 						'type' => 'select',
 						'default' => 1,
 						'options' => $visible_opt,
-						'help' => __('Visible', 'themify')
+						'help' => __( 'Visible', 'themify' )
 					),
 					array(
 						'id' => 'auto_scroll_opt_slider',
 						'type' => 'select',
 						'default' => 4,
 						'options' => $auto_scroll_opt,
-						'help' => __('Auto Scroll', 'themify')
+						'help' => __( 'Auto Scroll', 'themify' )
 					),
 					array(
 						'id' => 'scroll_opt_slider',
 						'type' => 'select',
 						'options' => $visible_opt,
-						'help' => __('Scroll', 'themify')
+						'help' => __( 'Scroll', 'themify' )
 					),
 					array(
 						'id' => 'speed_opt_slider',
 						'type' => 'select',
 						'options' => array(
-							'normal' => __('Normal', 'themify'),
-							'fast' => __('Fast', 'themify'),
-							'slow' => __('Slow', 'themify')
+							'normal' => __( 'Normal', 'themify' ),
+							'fast' => __( 'Fast', 'themify' ),
+							'slow' => __( 'Slow', 'themify' )
 						),
-						'help' => __('Speed', 'themify')
+						'help' => __( 'Speed', 'themify' )
 					),
 					array(
 						'id' => 'effect_slider',
 						'type' => 'select',
 						'options' => array(
-							'scroll' => __('Slide', 'themify'),
-							'fade' => __('Fade', 'themify'),
-							'crossfade' => __('Cross Fade', 'themify'),
-							'cover' => __('Cover', 'themify'),
-							'cover-fade' => __('Cover Fade', 'themify'),
-							'uncover' => __('Uncover', 'themify'),
-							'uncover-fade' => __('Uncover Fade', 'themify'),
-							'continuously' => __('Continuously', 'themify')
+							'scroll' => __( 'Slide', 'themify' ),
+							'fade' => __( 'Fade', 'themify' ),
+							'crossfade' => __( 'Cross Fade', 'themify' ),
+							'cover' => __( 'Cover', 'themify' ),
+							'cover-fade' => __( 'Cover Fade', 'themify' ),
+							'uncover' => __( 'Uncover', 'themify' ),
+							'uncover-fade' => __( 'Uncover Fade', 'themify' ),
+							'continuously' => __( 'Continuously', 'themify' )
 						),
-						'help' => __('Effect', 'themify')
+						'help' => __( 'Effect', 'themify' )
 					),
 					array(
 						'id' => 'pause_on_hover_slider',
 						'type' => 'select',
 						'options' => array(
-							'resume' => __('Yes', 'themify'),
-							'false' => __('No', 'themify')
+							'resume' => __( 'Yes', 'themify' ),
+							'false' => __( 'No', 'themify' )
 						),
-						'help' => __('Pause On Hover', 'themify')
+						'help' => __( 'Pause On Hover', 'themify' )
 					),
 					array(
 						'id' => 'wrap_slider',
 						'type' => 'select',
-						'help' => __('Wrap', 'themify'),
+						'help' => __( 'Wrap', 'themify' ),
 						'options' => array(
-							'yes' => __('Yes', 'themify'),
-							'no' => __('No', 'themify')
+							'yes' => __( 'Yes', 'themify' ),
+							'no' => __( 'No', 'themify' )
 						)
 					),
 					array(
 						'id' => 'show_nav_slider',
 						'type' => 'select',
-						'help' => __('Show slider pagination', 'themify'),
+						'help' => __( 'Show slider pagination', 'themify' ),
 						'options' => array(
-							'yes' => __('Yes', 'themify'),
-							'no' => __('No', 'themify')
+							'yes' => __( 'Yes', 'themify' ),
+							'no' => __( 'No', 'themify' )
 						)
 					),
 					array(
 						'id' => 'show_arrow_slider',
 						'type' => 'select',
-						'help' => __('Show slider arrow buttons', 'themify'),
+						'help' => __( 'Show slider arrow buttons', 'themify' ),
 						'options' => array(
-							'yes' => __('Yes', 'themify'),
-							'no' => __('No', 'themify')
+							'yes' => __( 'Yes', 'themify' ),
+							'no' => __( 'No', 'themify' )
 						)
 					),
-                                        array(
+					array(
 						'id' => 'show_arrow_buttons_vertical',
 						'type' => 'checkbox',
-                                                'label' => false,
-						'help' =>false,
-                                                'wrap_with_class'=>'',
+						'label' => false,
+						'help' => false,
+						'wrap_with_class' => '',
 						'options' => array(
-							array( 'name' => 'vertical', 'value' =>__('Display arrow buttons vertical middle on the left/right side', 'themify') )
+							array( 'name' => 'vertical', 'value' =>__( 'Display arrow buttons vertical middle on the left/right side', 'themify' ) )
 						)
 					),
 					array(
@@ -594,37 +593,37 @@ class TB_Slider_Module extends Themify_Builder_Module {
 						'type' => 'text',
 						'class' => 'xsmall',
 						'unit' => 'px',
-						'help' => __('Left margin space between slides', 'themify')
+						'help' => __( 'Left margin space between slides', 'themify' )
 					),
 					array(
 						'id' => 'right_margin_slider',
 						'type' => 'text',
 						'class' => 'xsmall',
 						'unit' => 'px',
-						'help' => __('Right margin space between slides', 'themify')
+						'help' => __( 'Right margin space between slides', 'themify' )
 					),
 					array(
 						'id' => 'height_slider',
 						'type' => 'select',
 						'options' => array(
-							'variable' => __('Variable', 'themify'),
-							'auto' => __('Auto', 'themify')
+							'variable' => __( 'Variable', 'themify' ),
+							'auto' => __( 'Auto', 'themify' )
 						),
-						'help' => __('Height <small class="description">"Auto" measures the highest slide and all other slides will be set to that size. "Variable" makes every slide has it\'s own height.</small>', 'themify')
+						'help' => __( 'Height <small class="description">"Auto" measures the highest slide and all other slides will be set to that size. "Variable" makes every slide has it\'s own height.</small>', 'themify' )
 					),
 				)
 			),
 			// Additional CSS
 			array(
 				'type' => 'separator',
-				'meta' => array( 'html' => '<hr/>')
+				'meta' => array( 'html' => '<hr/>' )
 			),
 			array(
 				'id' => 'css_slider',
 				'type' => 'text',
-				'label' => __('Additional CSS Class', 'themify'),
+				'label' => __( 'Additional CSS Class', 'themify' ),
 				'class' => 'large exclude-from-reset-field',
-				'help' => sprintf( '<br/><small>%s</small>', __('Add additional CSS class(es) for custom styling', 'themify') )
+				'help' => sprintf( '<br/><small>%s</small>', __( 'Add additional CSS class(es) for custom styling', 'themify' ) )
 			)
 		) );
 		return $options;
@@ -650,7 +649,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'multi_Animation Effect',
 				'type' => 'multi',
-				'label' => __('Effect', 'themify'),
+				'label' => __( 'Effect', 'themify' ),
 				'fields' => array(
 					array(
 						'id' => 'animation_effect',
@@ -686,12 +685,12 @@ class TB_Slider_Module extends Themify_Builder_Module {
 				'title' => '',
 				'description' => '',
 				'type' => 'separator',
-				'meta' => array('html'=>'<h4>'.__('Background', 'themify').'</h4>'),
+				'meta' => array( 'html' => '<h4>' . __( 'Background', 'themify' ) . '</h4>' )
 			),
 			array(
 				'id' => 'background_color',
 				'type' => 'color',
-				'label' => __('Background Color', 'themify'),
+				'label' => __( 'Background Color', 'themify' ),
 				'class' => 'small',
 				'prop' => 'background-color',
 				'selector' => '.module-slider',
@@ -699,17 +698,17 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			// Font
 			array(
 				'type' => 'separator',
-				'meta' => array('html'=>'<hr />')
+				'meta' => array( 'html' => '<hr />' )
 			),
 			array(
 				'id' => 'separator_font',
 				'type' => 'separator',
-				'meta' => array('html'=>'<h4>'.__('Font', 'themify').'</h4>'),
+				'meta' => array( 'html' => '<h4>' . __( 'Font', 'themify' ) . '</h4>' )
 			),
 			array(
 				'id' => 'font_family',
 				'type' => 'font_select',
-				'label' => __('Font Family', 'themify'),
+				'label' => __( 'Font Family', 'themify' ),
 				'class' => 'font-family-select',
 				'prop' => 'font-family',
 				'selector' => array( '.module-slider .slide-content', '.module-slider .slide-content .slide-title', '.module-slider .slide-content .slide-title a' )
@@ -717,7 +716,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'font_color',
 				'type' => 'color',
-				'label' => __('Font Color', 'themify'),
+				'label' => __( 'Font Color', 'themify' ),
 				'class' => 'small',
 				'prop' => 'color',
 				'selector' => array( '.module-slider .slide-content', '.module-slider .slide-content h1', '.module-slider .slide-content h2', '.module-slider .slide-content h3', '.module-slider .slide-content h4', '.module-slider .slide-content h5', '.module-slider .slide-content h6', '.module-slider .slide-content .slide-title', '.module-slider .slide-content .slide-title a' ),
@@ -725,7 +724,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'multi_font_size',
 				'type' => 'multi',
-				'label' => __('Font Size', 'themify'),
+				'label' => __( 'Font Size', 'themify' ),
 				'fields' => array(
 					array(
 						'id' => 'font_size',
@@ -737,18 +736,14 @@ class TB_Slider_Module extends Themify_Builder_Module {
 					array(
 						'id' => 'font_size_unit',
 						'type' => 'select',
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-							array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify')),
-						)
+						'meta' => Themify_Builder_Model::get_css_units()
 					)
 				)
 			),
 			array(
 				'id' => 'multi_line_height',
 				'type' => 'multi',
-				'label' => __('Line Height', 'themify'),
+				'label' => __( 'Line Height', 'themify' ),
 				'fields' => array(
 					array(
 						'id' => 'line_height',
@@ -760,11 +755,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 					array(
 						'id' => 'line_height_unit',
 						'type' => 'select',
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-							array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify')),
-						)
+						'meta' => Themify_Builder_Model::get_css_units()
 					)
 				)
 			),
@@ -772,30 +763,24 @@ class TB_Slider_Module extends Themify_Builder_Module {
 				'id' => 'text_align',
 				'label' => __( 'Text Align', 'themify' ),
 				'type' => 'radio',
-				'meta' => array(
-					array( 'value' => '', 'name' => __( 'Default', 'themify' ), 'selected' => true ),
-					array( 'value' => 'left', 'name' => __( 'Left', 'themify' ) ),
-					array( 'value' => 'center', 'name' => __( 'Center', 'themify' ) ),
-					array( 'value' => 'right', 'name' => __( 'Right', 'themify' ) ),
-					array( 'value' => 'justify', 'name' => __( 'Justify', 'themify' ) )
-				),
+				'meta' => Themify_Builder_Model::get_text_align(),
 				'prop' => 'text-align',
 				'selector' => '.module-slider .slide-content'
 			),
 			// Link
 			array(
 				'type' => 'separator',
-				'meta' => array('html'=>'<hr />')
+				'meta' => array( 'html' => '<hr />' )
 			),
 			array(
 				'id' => 'separator_link',
 				'type' => 'separator',
-				'meta' => array('html'=>'<h4>'.__('Link', 'themify').'</h4>'),
+				'meta' => array( 'html' => '<h4>' . __( 'Link', 'themify' ) . '</h4>' )
 			),
 			array(
 				'id' => 'link_color',
 				'type' => 'color',
-				'label' => __('Color', 'themify'),
+				'label' => __( 'Color', 'themify' ),
 				'class' => 'small',
 				'prop' => 'color',
 				'selector' => '.module-slider a'
@@ -803,7 +788,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'link_color_hover',
 				'type' => 'color',
-				'label' => __('Color Hover', 'themify'),
+				'label' => __( 'Color Hover', 'themify' ),
 				'class' => 'small',
 				'prop' => 'color',
 				'selector' => '.module-slider a:hover'
@@ -812,389 +797,55 @@ class TB_Slider_Module extends Themify_Builder_Module {
 				'id' => 'text_decoration',
 				'type' => 'select',
 				'label' => __( 'Text Decoration', 'themify' ),
-				'meta'	=> array(
-					array('value' => '',   'name' => '', 'selected' => true),
-					array('value' => 'underline',   'name' => __('Underline', 'themify')),
-					array('value' => 'overline', 'name' => __('Overline', 'themify')),
-					array('value' => 'line-through',  'name' => __('Line through', 'themify')),
-					array('value' => 'none',  'name' => __('None', 'themify'))
-				),
+				'meta'	=> Themify_Builder_Model::get_text_decoration(),
 				'prop' => 'text-decoration',
 				'selector' => '.module-slider a'
 			),
 			// Padding
 			array(
 				'type' => 'separator',
-				'meta' => array('html'=>'<hr />')
+				'meta' => array( 'html' => '<hr />' )
 			),
 			array(
 				'id' => 'separator_padding',
 				'type' => 'separator',
-				'meta' => array('html'=>'<h4>'.__('Padding', 'themify').'</h4>'),
+				'meta' => array( 'html' => '<h4>' . __( 'Padding', 'themify' ) . '</h4>' ),
 			),
-			array(
-				'id' => 'multi_padding_top',
-				'type' => 'multi',
-				'label' => __('Padding', 'themify'),
-				'fields' => array(
-					array(
-						'id' => 'padding_top',
-						'type' => 'text',
-						'class' => 'style_padding style_field xsmall',
-						'prop' => 'padding-top',
-						'selector' => '.module-slider',
-					),
-					array(
-						'id' => 'padding_top_unit',
-						'type' => 'select',
-						'description' => __('top', 'themify'),
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify'))
-						)
-					),
-				)
-			),
-			array(
-				'id' => 'multi_padding_right',
-				'type' => 'multi',
-				'label' => '',
-				'fields' => array(
-					array(
-						'id' => 'padding_right',
-						'type' => 'text',
-						'class' => 'style_padding style_field xsmall',
-						'prop' => 'padding-right',
-						'selector' => '.module-slider',
-					),
-					array(
-						'id' => 'padding_right_unit',
-						'type' => 'select',
-						'description' => __('right', 'themify'),
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify'))
-						)
-					),
-				)
-			),
-			array(
-				'id' => 'multi_padding_bottom',
-				'type' => 'multi',
-				'label' => '',
-				'fields' => array(
-					array(
-						'id' => 'padding_bottom',
-						'type' => 'text',
-						'class' => 'style_padding style_field xsmall',
-						'prop' => 'padding-bottom',
-						'selector' => '.module-slider',
-					),
-					array(
-						'id' => 'padding_bottom_unit',
-						'type' => 'select',
-						'description' => __('bottom', 'themify'),
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify'))
-						)
-					),
-				)
-			),
-			array(
-				'id' => 'multi_padding_left',
-				'type' => 'multi',
-				'label' => '',
-				'fields' => array(
-					array(
-						'id' => 'padding_left',
-						'type' => 'text',
-						'class' => 'style_padding style_field xsmall',
-						'prop' => 'padding-left',
-						'selector' => '.module-slider',
-					),
-					array(
-						'id' => 'padding_left_unit',
-						'type' => 'select',
-						'description' => __('left', 'themify'),
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify'))
-						)
-					),
-				)
-			),
-			// "Apply all" // apply all padding
-			array(
-				'id' => 'checkbox_padding_apply_all',
-				'class' => 'style_apply_all style_apply_all_padding',
-				'type' => 'checkbox',
-				'label' => false,
-				'options' => array(
-					array( 'name' => 'padding', 'value' => __( 'Apply to all padding', 'themify' ) )
-				)
-			),
+			Themify_Builder_Model::get_field_group( 'padding', '.module-slider', 'top' ),
+			Themify_Builder_Model::get_field_group( 'padding', '.module-slider', 'right' ),
+			Themify_Builder_Model::get_field_group( 'padding', '.module-slider', 'bottom' ),
+			Themify_Builder_Model::get_field_group( 'padding', '.module-slider', 'left' ),
+			Themify_Builder_Model::get_field_group( 'padding', '.module-slider', 'all' ),
 			// Margin
 			array(
 				'type' => 'separator',
-				'meta' => array('html'=>'<hr />')
+				'meta' => array( 'html' => '<hr />' )
 			),
 			array(
 				'id' => 'separator_margin',
 				'type' => 'separator',
-				'meta' => array('html'=>'<h4>'.__('Margin', 'themify').'</h4>'),
+				'meta' => array( 'html' => '<h4>' . __( 'Margin', 'themify') . '</h4>' ),
 			),
-			array(
-				'id' => 'multi_margin_top',
-				'type' => 'multi',
-				'label' => __('Margin', 'themify'),
-				'fields' => array(
-					array(
-						'id' => 'margin_top',
-						'type' => 'text',
-						'class' => 'style_margin style_field xsmall',
-						'prop' => 'margin-top',
-						'selector' => '.module-slider',
-					),
-					array(
-						'id' => 'margin_top_unit',
-						'type' => 'select',
-						'description' => __('top', 'themify'),
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify'))
-						)
-					),
-				)
-			),
-			array(
-				'id' => 'multi_margin_right',
-				'type' => 'multi',
-				'label' => '',
-				'fields' => array(
-					array(
-						'id' => 'margin_right',
-						'type' => 'text',
-						'class' => 'style_margin style_field xsmall',
-						'prop' => 'margin-right',
-						'selector' => '.module-slider',
-					),
-					array(
-						'id' => 'margin_right_unit',
-						'type' => 'select',
-						'description' => __('right', 'themify'),
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify'))
-						)
-					),
-				)
-			),
-			array(
-				'id' => 'multi_margin_bottom',
-				'type' => 'multi',
-				'label' => '',
-				'fields' => array(
-					array(
-						'id' => 'margin_bottom',
-						'type' => 'text',
-						'class' => 'style_margin style_field xsmall',
-						'prop' => 'margin-bottom',
-						'selector' => '.module-slider',
-					),
-					array(
-						'id' => 'margin_bottom_unit',
-						'type' => 'select',
-						'description' => __('bottom', 'themify'),
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify'))
-						)
-					),
-				)
-			),
-			array(
-				'id' => 'multi_margin_left',
-				'type' => 'multi',
-				'label' => '',
-				'fields' => array(
-					array(
-						'id' => 'margin_left',
-						'type' => 'text',
-						'class' => 'style_margin style_field xsmall',
-						'prop' => 'margin-left',
-						'selector' => '.module-slider',
-					),
-					array(
-						'id' => 'margin_left_unit',
-						'type' => 'select',
-						'description' => __('left', 'themify'),
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify'))
-						)
-					),
-				)
-			),
-			// "Apply all" // apply all margin
-			array(
-				'id' => 'checkbox_margin_apply_all',
-				'class' => 'style_apply_all style_apply_all_margin',
-				'type' => 'checkbox',
-				'label' => false,
-				'options' => array(
-					array( 'name' => 'margin', 'value' => __( 'Apply to all margin', 'themify' ) )
-				)
-			),
+			Themify_Builder_Model::get_field_group( 'margin', '.module-slider', 'top' ),
+			Themify_Builder_Model::get_field_group( 'margin', '.module-slider', 'right' ),
+			Themify_Builder_Model::get_field_group( 'margin', '.module-slider', 'bottom' ),
+			Themify_Builder_Model::get_field_group( 'margin', '.module-slider', 'left' ),
+			Themify_Builder_Model::get_field_group( 'margin', '.module-slider', 'all' ),
 			// Border
 			array(
 				'type' => 'separator',
-				'meta' => array('html'=>'<hr />')
+				'meta' => array( 'html' => '<hr />' )
 			),
 			array(
 				'id' => 'separator_border',
 				'type' => 'separator',
-				'meta' => array('html'=>'<h4>'.__('Border', 'themify').'</h4>'),
+				'meta' => array( 'html' => '<h4>' . __( 'Border', 'themify' ) . '</h4>' )
 			),
-			array(
-				'id' => 'multi_border_top',
-				'type' => 'multi',
-				'label' => __('Border', 'themify'),
-				'fields' => array(
-					array(
-						'id' => 'border_top_color',
-						'type' => 'color',
-						'class' => 'small',
-						'prop' => 'border-top-color',
-						'selector' => '.module-slider',
-					),
-					array(
-						'id' => 'border_top_width',
-						'type' => 'text',
-						'description' => 'px',
-						'class' => 'style_border style_field xsmall',
-						'prop' => 'border-top-width',
-						'selector' => '.module-slider',
-					),
-					array(
-						'id' => 'border_top_style',
-						'type' => 'select',
-						'description' => __('top', 'themify'),
-						'meta' => Themify_Builder_model::get_border_styles(),
-						'prop' => 'border-top-style',
-						'selector' => '.module-slider',
-					),
-				)
-			),
-			array(
-				'id' => 'multi_border_right',
-				'type' => 'multi',
-				'label' => '',
-				'fields' => array(
-					array(
-						'id' => 'border_right_color',
-						'type' => 'color',
-						'class' => 'small',
-						'prop' => 'border-right-color',
-						'selector' => '.module-slider',
-					),
-					array(
-						'id' => 'border_right_width',
-						'type' => 'text',
-						'description' => 'px',
-						'class' => 'style_border style_field xsmall',
-						'prop' => 'border-right-width',
-						'selector' => '.module-slider',
-					),
-					array(
-						'id' => 'border_right_style',
-						'type' => 'select',
-						'description' => __('right', 'themify'),
-						'meta' => Themify_Builder_model::get_border_styles(),
-						'prop' => 'border-right-style',
-						'selector' => '.module-slider',
-					)
-				)
-			),
-			array(
-				'id' => 'multi_border_bottom',
-				'type' => 'multi',
-				'label' => '',
-				'fields' => array(
-					array(
-						'id' => 'border_bottom_color',
-						'type' => 'color',
-						'class' => 'small',
-						'prop' => 'border-bottom-color',
-						'selector' => '.module-slider',
-					),
-					array(
-						'id' => 'border_bottom_width',
-						'type' => 'text',
-						'description' => 'px',
-						'class' => 'style_border style_field xsmall',
-						'prop' => 'border-bottom-width',
-						'selector' => '.module-slider',
-					),
-					array(
-						'id' => 'border_bottom_style',
-						'type' => 'select',
-						'description' => __('bottom', 'themify'),
-						'meta' => Themify_Builder_model::get_border_styles(),
-						'prop' => 'border-bottom-style',
-						'selector' => '.module-slider',
-					)
-				)
-			),
-			array(
-				'id' => 'multi_border_left',
-				'type' => 'multi',
-				'label' => '',
-				'fields' => array(
-					array(
-						'id' => 'border_left_color',
-						'type' => 'color',
-						'class' => 'small',
-						'prop' => 'border-left-color',
-						'selector' => '.module-slider',
-					),
-					array(
-						'id' => 'border_left_width',
-						'type' => 'text',
-						'description' => 'px',
-						'class' => 'style_border style_field xsmall',
-						'prop' => 'border-left-width',
-						'selector' => '.module-slider',
-					),
-					array(
-						'id' => 'border_left_style',
-						'type' => 'select',
-						'description' => __('left', 'themify'),
-						'meta' => Themify_Builder_model::get_border_styles(),
-						'prop' => 'border-left-style',
-						'selector' => '.module-slider',
-					)
-				)
-			),
-			// "Apply all" // apply all border
-			array(
-				'id' => 'checkbox_border_apply_all',
-				'class' => 'style_apply_all style_apply_all_border',
-				'type' => 'checkbox',
-				'label' => false,
-                                'default'=>'border',
-				'options' => array(
-					array( 'name' => 'border', 'value' => __( 'Apply to all border', 'themify' ) )
-				)
-			)
+			Themify_Builder_Model::get_field_group( 'border', '.module-slider', 'top' ),
+			Themify_Builder_Model::get_field_group( 'border', '.module-slider', 'right' ),
+			Themify_Builder_Model::get_field_group( 'border', '.module-slider', 'bottom' ),
+			Themify_Builder_Model::get_field_group( 'border', '.module-slider', 'left' ),
+			Themify_Builder_Model::get_field_group( 'border', '.module-slider', 'all' )
 		);
 
 		$title = array(
@@ -1202,12 +853,12 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'separator_font',
 				'type' => 'separator',
-				'meta' => array('html'=>'<h4>'.__('Font', 'themify').'</h4>'),
+				'meta' => array( 'html' => '<h4>' . __( 'Font', 'themify' ) . '</h4>' )
 			),
 			array(
 				'id' => 'font_family_title',
 				'type' => 'font_select',
-				'label' => __('Font Family', 'themify'),
+				'label' => __( 'Font Family', 'themify' ),
 				'class' => 'font-family-select',
 				'prop' => 'font-family',
 				'selector' => array( '.module-slider .slide-content .slide-title', '.module-slider .slide-content .slide-title a' )
@@ -1215,7 +866,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'font_color_title',
 				'type' => 'color',
-				'label' => __('Font Color', 'themify'),
+				'label' => __( 'Font Color', 'themify' ),
 				'class' => 'small',
 				'prop' => 'color',
 				'selector' => array( '.module-slider .slide-content .slide-title', '.module-slider .slide-content .slide-title a' )
@@ -1223,7 +874,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'font_color_title_hover',
 				'type' => 'color',
-				'label' => __('Color Hover', 'themify'),
+				'label' => __( 'Color Hover', 'themify' ),
 				'class' => 'small',
 				'prop' => 'color',
 				'selector' => array( '.module-slider .slide-content .slide-title:hover', '.module-slider .slide-content .slide-title a:hover' )
@@ -1231,7 +882,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'multi_font_size_title',
 				'type' => 'multi',
-				'label' => __('Font Size', 'themify'),
+				'label' => __( 'Font Size', 'themify' ),
 				'fields' => array(
 					array(
 						'id' => 'font_size_title',
@@ -1243,18 +894,14 @@ class TB_Slider_Module extends Themify_Builder_Module {
 					array(
 						'id' => 'font_size_title_unit',
 						'type' => 'select',
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-							array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify')),
-						)
+						'meta' => Themify_Builder_Model::get_css_units()
 					)
 				)
 			),
 			array(
 				'id' => 'multi_line_height_title',
 				'type' => 'multi',
-				'label' => __('Line Height', 'themify'),
+				'label' => __( 'Line Height', 'themify' ),
 				'fields' => array(
 					array(
 						'id' => 'line_height_title',
@@ -1266,11 +913,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 					array(
 						'id' => 'line_height_title_unit',
 						'type' => 'select',
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-							array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify')),
-						)
+						'meta' => Themify_Builder_Model::get_css_units()
 					)
 				)
 			),
@@ -1281,12 +924,12 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'separator_font',
 				'type' => 'separator',
-				'meta' => array('html'=>'<h4>'.__('Font', 'themify').'</h4>'),
+				'meta' => array( 'html' => '<h4>' . __( 'Font', 'themify' ) . '</h4>' )
 			),
 			array(
 				'id' => 'font_family_content',
 				'type' => 'font_select',
-				'label' => __('Font Family', 'themify'),
+				'label' => __( 'Font Family', 'themify' ),
 				'class' => 'font-family-select',
 				'prop' => 'font-family',
 				'selector' => '.module-slider .slide-content'
@@ -1294,7 +937,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'font_color_content',
 				'type' => 'color',
-				'label' => __('Font Color', 'themify'),
+				'label' => __( 'Font Color', 'themify' ),
 				'class' => 'small',
 				'prop' => 'color',
 				'selector' => '.module-slider .slide-content'
@@ -1302,7 +945,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'multi_font_size_content',
 				'type' => 'multi',
-				'label' => __('Font Size', 'themify'),
+				'label' => __( 'Font Size', 'themify' ),
 				'fields' => array(
 					array(
 						'id' => 'font_size_content',
@@ -1314,18 +957,14 @@ class TB_Slider_Module extends Themify_Builder_Module {
 					array(
 						'id' => 'font_size_content_unit',
 						'type' => 'select',
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-							array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify')),
-						)
+						'meta' => Themify_Builder_Model::get_css_units()
 					)
 				)
 			),
 			array(
 				'id' => 'multi_line_height_content',
 				'type' => 'multi',
-				'label' => __('Line Height', 'themify'),
+				'label' => __( 'Line Height', 'themify' ),
 				'fields' => array(
 					array(
 						'id' => 'line_height_content',
@@ -1337,11 +976,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 					array(
 						'id' => 'line_height_content_unit',
 						'type' => 'select',
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-							array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify')),
-						)
+						'meta' => Themify_Builder_Model::get_css_units()
 					)
 				)
 			),
@@ -1349,19 +984,20 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'separator_multi_columns',
 				'type' => 'separator',
-				'meta' => array('html'=>'<hr><h4>' . __( 'Multi-columns', 'themify' ) . '</h4>'),
+				'meta' => array( 'html' => '<hr><h4>' . __( 'Multi-columns', 'themify' ) . '</h4>' )
 			),
 			array(
 				'id' => 'column_count',
 				'type' => 'select',
-				'label' =>__('Column Count', 'themify'),
+				'label' =>__( 'Column Count', 'themify' ),
 				'meta' => array(
+					array( 'value' => '', 'name' => '' ),
 					array( 'value' => 1, 'name' => 1 ),
 					array( 'value' => 2, 'name' => 2 ),
 					array( 'value' => 3, 'name' => 3 ),
 					array( 'value' => 4, 'name' => 4 ),
 					array( 'value' => 5, 'name' => 5 ),
-					array( 'value' => 6, 'name' => 6 ),
+					array( 'value' => 6, 'name' => 6 )
 				),
 				'prop' => 'column-count',
 				'selector' => ' .slide-content'
@@ -1369,7 +1005,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'column_gap',
 				'type' => 'text',
-				'label' => __('Column Gap', 'themify'),
+				'label' => __( 'Column Gap', 'themify' ),
 				'class' => 'style_field_px xsmall',
 				'prop' => 'column-gap',
 				'selector' => ' .slide-content'
@@ -1377,7 +1013,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'column_divider',
 				'type' => 'multi',
-				'label' => __('Column Divider', 'themify'),
+				'label' => __( 'Column Divider', 'themify' ),
 				'fields' => array(
 					array(
 						'id' => 'column_divider_color',
@@ -1397,7 +1033,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 					array(
 						'id' => 'column_divider_style',
 						'type' => 'select',
-						'meta' => Themify_Builder_model::get_border_styles(),
+						'meta' => Themify_Builder_Model::get_border_styles(),
 						'class' => 'style_field_select',
 						'prop' => 'column-rule-style',
 						'selector' => ' .slide-content',
@@ -1412,15 +1048,19 @@ class TB_Slider_Module extends Themify_Builder_Module {
 				'id' => 'module-styling',
 				'tabs' => array(
 					'general' => array(
-		        	'label' => __('General', 'themify'),
+					'label' => __( 'General', 'themify' ),
 					'fields' => $general
 					),
+					'module-title' => array(
+						'label' => __( 'Module Title', 'themify' ),
+						'fields' => Themify_Builder_Model::module_title_custom_style( $this->slug )
+					),
 					'title' => array(
-						'label' => __('Slider Title', 'themify'),
+						'label' => __( 'Slider Title', 'themify' ),
 						'fields' => $title
 					),
 					'content' => array(
-						'label' => __('Slider Content', 'themify'),
+						'label' => __( 'Slider Content', 'themify' ),
 						'fields' => $content
 					)
 				)
@@ -1448,8 +1088,8 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			Themify_Builder_Model::$lightbox_link,
 			array(
 				'name' 		=> 'video_url',
-				'title' 	=> __('Video URL', 'themify'),
-				'description' => __('URL to embed a video instead of featured image', 'themify'),
+				'title' 	=> __( 'Video URL', 'themify' ),
+				'description' => __( 'URL to embed a video instead of featured image', 'themify' ),
 				'type' 		=> 'textbox',
 				'meta'		=> array()
 			)
@@ -1475,7 +1115,7 @@ class TB_Slider_Module extends Themify_Builder_Module {
 			'image' => 'yes',
 			'image_w' => '240px',
 			'image_h' => '180px',
-			'more_text' => __('More...', 'themify'),
+			'more_text' => __( 'More...', 'themify' ),
 			'title' => 'yes',
 			'display' => 'none',
 			'post_meta' => 'no',

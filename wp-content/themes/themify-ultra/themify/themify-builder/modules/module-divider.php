@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class TB_Divider_Module extends Themify_Builder_Module {
 	function __construct() {
 		parent::__construct(array(
-			'name' => __('Divider', 'themify'),
+			'name' => __( 'Divider', 'themify' ),
 			'slug' => 'divider'
 		));
 	}
@@ -17,7 +17,7 @@ class TB_Divider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'mod_title_divider',
 				'type' => 'text',
-				'label' => __('Module Title', 'themify'),
+				'label' => __( 'Module Title', 'themify' ),
 				'class' => 'large',
 				'render_callback' => array(
 					'binding' => 'live'
@@ -26,12 +26,12 @@ class TB_Divider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'style_divider',
 				'type' => 'layout',
-				'label' => __('Divider Style', 'themify'),
+				'label' => __( 'Divider Style', 'themify' ),
 				'options' => array(
-					array('img' => 'solid.png', 'value' => 'solid', 'label' => __('Solid', 'themify')),
-					array('img' => 'dotted.png', 'value' => 'dotted', 'label' => __('Dotted', 'themify')),
-					array('img' => 'dashed.png', 'value' => 'dashed', 'label' => __('Dashed', 'themify')),
-					array('img' => 'double.png', 'value' => 'double', 'label' => __('Double', 'themify'))
+					array( 'img' => 'solid.png', 'value' => 'solid', 'label' => __( 'Solid', 'themify' ) ),
+					array( 'img' => 'dotted.png', 'value' => 'dotted', 'label' => __( 'Dotted', 'themify' ) ),
+					array( 'img' => 'dashed.png', 'value' => 'dashed', 'label' => __( 'Dashed', 'themify' ) ),
+					array( 'img' => 'double.png', 'value' => 'double', 'label' => __( 'Double', 'themify' ) )
 				),
 				'render_callback' => array(
 					'binding' => 'live'
@@ -40,7 +40,7 @@ class TB_Divider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'stroke_w_divider',
 				'type' => 'text',
-				'label' => __('Stroke Thickness', 'themify'),
+				'label' => __( 'Stroke Thickness', 'themify' ),
 				'class' => 'xsmall',
 				'help' => 'px',
 				'value'=> 1,
@@ -51,10 +51,10 @@ class TB_Divider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'color_divider',
 				'type' => 'text',
-				'label' => __('Divider Color', 'themify'),
+				'label' => __( 'Divider Color', 'themify' ),
 				'class' => 'small',
 				'colorpicker' => true,
-				'value'=>'000',
+				'value' => '000',
 				'render_callback' => array(
 					'binding' => 'live',
 					'control_type' => 'color'
@@ -63,7 +63,7 @@ class TB_Divider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'top_margin_divider',
 				'type' => 'text',
-				'label' => __('Top Margin', 'themify'),
+				'label' => __( 'Top Margin', 'themify' ),
 				'class' => 'xsmall',
 				'help' => 'px',
 				'render_callback' => array(
@@ -73,7 +73,7 @@ class TB_Divider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'bottom_margin_divider',
 				'type' => 'text',
-				'label' => __('Bottom Margin', 'themify'),
+				'label' => __( 'Bottom Margin', 'themify' ),
 				'class' => 'xsmall',
 				'help' => 'px',
 				'render_callback' => array(
@@ -83,10 +83,10 @@ class TB_Divider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'divider_type',
 				'type' => 'radio',
-				'label' => __('Divider Width', 'themify'),
+				'label' => __( 'Divider Width', 'themify' ),
 				'options' => array(
-					'fullwidth' => __('Fullwidth ', 'themify'),
-					'custom' => __('Custom', 'themify'),
+					'fullwidth' => __( 'Fullwidth ', 'themify' ),
+					'custom' => __( 'Custom', 'themify' ),
 				),
 				'default' => 'fullwidth',
 				'option_js' => true,
@@ -97,7 +97,7 @@ class TB_Divider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'divider_width',
 				'type' => 'text',
-				'label' => __('Width', 'themify'),
+				'label' => __( 'Width', 'themify' ),
 				'class' => 'xsmall',
 				'help' => 'px',
 				'wrap_with_class' => 'tf-group-element tf-group-element-custom',
@@ -108,11 +108,11 @@ class TB_Divider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'divider_align',
 				'type' => 'select',
-				'label' =>__('Alignment', 'themify'),
+				'label' => __( 'Alignment', 'themify' ),
 				'options' => array(
-					'left' => __('Left ', 'themify'),
-					'center' => __('Center', 'themify'),
-					'right' => __('Right', 'themify'),
+					'left' => __( 'Left ', 'themify' ),
+					'center' => __( 'Center', 'themify' ),
+					'right' => __( 'Right', 'themify' ),
 				),
 				'default' => 'left',
 				'wrap_with_class' => 'tf-group-element tf-group-element-custom',
@@ -128,9 +128,9 @@ class TB_Divider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'css_divider',
 				'type' => 'text',
-				'label' => __('Additional CSS Class', 'themify'),
+				'label' => __( 'Additional CSS Class', 'themify' ),
 				'class' => 'large exclude-from-reset-field',
-				'help' => sprintf( '<br/><small>%s</small>', __('Add additional CSS class(es) for custom styling', 'themify') ),
+				'help' => sprintf( '<br/><small>%s</small>', __( 'Add additional CSS class(es) for custom styling', 'themify' ) ),
 				'render_callback' => array(
 					'binding' => 'live'
 				)
@@ -157,7 +157,7 @@ class TB_Divider_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'multi_Animation Effect',
 				'type' => 'multi',
-				'label' => __('Effect', 'themify'),
+				'label' => __( 'Effect', 'themify' ),
 				'fields' => array(
 					array(
 						'id' => 'animation_effect',

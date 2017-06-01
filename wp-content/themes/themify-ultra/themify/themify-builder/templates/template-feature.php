@@ -214,7 +214,7 @@ if (TFCache::start_cache('feature', self::$post_id, array('ID' => $module_ID))):
 					<div class="chart-html5-inset <?php if ('icon' == $icon_type_feature && !empty($icon_feature)) echo 'chart-html5-inset-icon' ?>">
 						
 						<?php if ( strpos( $icon_type_feature, 'image' ) !== false && !empty($image_feature)) : ?>
-							<?php $alt = ( $alt_text = get_post_meta(TB_Feature_Module::get_attachment_id_by_url($image_feature), '_wp_attachment_image_alt', true) ) ? $alt_text : $title_feature; ?>
+							<?php $alt = ( $alt_text = Themify_Builder_Model::get_alt_by_url( $image_feature ) ) ? $alt_text : $title_feature; ?>
 							<img src="<?php echo esc_url($image_feature); ?>" alt="<?php echo esc_attr($alt); ?>" />
 						<?php else : ?>
 							<?php if ('' != $icon_bg_feature) : ?><div class="module-feature-background" style="background: <?php echo esc_attr($this->stylesheet->get_rgba_color($icon_bg_feature)); ?>"></div><?php endif; ?>

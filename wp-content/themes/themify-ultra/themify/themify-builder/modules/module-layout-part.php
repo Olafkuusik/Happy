@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 class TB_Layout_Part_Module extends Themify_Builder_Module {
 	function __construct() {
 		parent::__construct(array(
-			'name' => __('Layout Part', 'themify'),
+			'name' => __( 'Layout Part', 'themify' ),
 			'slug' => 'layout-part'
 		));
 
@@ -17,30 +17,30 @@ class TB_Layout_Part_Module extends Themify_Builder_Module {
 	public function get_options() {
 		$options = array(
 			array(
-				'id'    => 'mod_title_layout_part',
-				'type'  => 'text',
-				'label' => __('Module Title', 'themify'),
-				'class' => 'large'
+				'id'	=> 'mod_title_layout_part',
+				'type'	=> 'text',
+				'label'	=> __( 'Module Title', 'themify' ),
+				'class'	=> 'large'
 			),
 			array(
-				'id'    => 'selected_layout_part',
-				'type'  => 'layout_part_select',
-				'label' => __('Select Layout Part', 'themify'),
-				'class' => '',
+				'id'	=> 'selected_layout_part',
+				'type'	=> 'layout_part_select',
+				'label'	=> __( 'Select Layout Part', 'themify' ),
+				'class'	=> '',
 				'render_callback' => array(
 					'control_type' => 'select'
 				)
 			),
 			// Additional CSS
-            array(
+			array(
 				'type' => 'separator',
-				'meta' => array( 'html' => '<hr/>')
+				'meta' => array( 'html' => '<hr/>' )
 			),
 			array(
 				'id'    => 'add_css_layout_part',
 				'type'  => 'text',
-				'label' => __('Additional CSS Class', 'themify'),
-				'help'  => sprintf( '<br/><small>%s</small>', __('Add additional CSS class(es) for custom styling', 'themify') ),
+				'label' => __( 'Additional CSS Class', 'themify' ),
+				'help'  => sprintf( '<br/><small>%s</small>', __( 'Add additional CSS class(es) for custom styling', 'themify' ) ),
 				'class' => 'large exclude-from-reset-field'
 			)
 		);
@@ -48,7 +48,18 @@ class TB_Layout_Part_Module extends Themify_Builder_Module {
 	}
 
 	public function get_styling() {
-		return array();
+		return array(
+			array(
+				'type' => 'tabs',
+				'id' => 'module-styling',
+				'tabs' => array(
+					'module-title' => array(
+						'label' => __( 'Module Title', 'themify' ),
+						'fields' => Themify_Builder_Model::module_title_custom_style( $this->slug )
+					)
+				)
+			),
+		);
 	}
 
 	function add_fields( $field, $mod_name ) {

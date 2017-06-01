@@ -25,7 +25,7 @@ class PackageConverter
         $wcpkg = array();
         $wcpkg['contents'] = self::makeWcItems($package);
         $wcpkg['contents_cost'] = self::calcContentsCostField($wcpkg['contents']);
-        $wcpkg['applied_coupons'] = array(); // is not supported yet
+        $wcpkg['applied_coupons'] = $package->getCoupons();
         $wcpkg['user']['ID'] = self::getCustomerId($package);
         $wcpkg['destination'] = self::getDestination($package);
         return $wcpkg;
@@ -62,11 +62,11 @@ class PackageConverter
             while ($quantity--) {
                 $item = new \WbsVendors\Dgm\Shengine\Woocommerce\Model\Item\WpmlAwareItem();
                 $item->setPrice($price);
-                $item->setDimensions(new \WbsVendors\Dgm\Shengine\Model\Dimensions((float)$product->length, (float)$product->width, (float)$product->height));
-                $item->setProductId((string)$product->id);
+                $item->setDimensions(self::getDimensions($product));
+                $item->setProductId((string)self::getProductAttr($product, 'id'));
                 $item->setWeight((float)$product->get_weight());
                 $item->setOriginalProductObject($product);
-                $item->setProductVariationId($product->variation_id ? (string)$product->variation_id : null);
+                $item->setProductVariationId(self::getProductAttr($product, 'variation_id'));
                 $item->setVariationAttributes($variationAttributes);
                 $items[] = $item;
             }
@@ -89,7 +89,12 @@ class PackageConverter
             $customer = new \WbsVendors\Dgm\Shengine\Model\Customer($_package['user']['ID']);
         }
 
-        return new \WbsVendors\Dgm\Shengine\Model\Package($items, $destination, $customer);
+        $coupons = array();
+        if (!empty($_package['applied_coupons'])) {
+            $coupons = array_map('strval', $_package['applied_coupons']);
+        }
+
+        return new \WbsVendors\Dgm\Shengine\Model\Package($items, $destination, $customer, $coupons);
     }
 
     private static function makeWcItems(\WbsVendors\Dgm\Shengine\Interfaces\IPackage $package)
@@ -115,9 +120,9 @@ class PackageConverter
                     /** @var WoocommerceItem $item */
                     $product = $item->getOriginalProductObject();
                 }
-                
+
                 if (!isset($product)) {
-                    
+
                     $productPostId = $item->getProductVariationId();
                     if (!isset($productPostId)) {
                         $productPostId = $item->getProductId();
@@ -132,8 +137,8 @@ class PackageConverter
                 $wcItem['data'] = $product;
                 $wcItem['quantity'] = count($items);
 
-                $wcItem['product_id'] = $product->id;
-                $wcItem['variation_id'] = $product->variation_id;
+                $wcItem['product_id'] = self::getProductAttr($product, 'id');
+                $wcItem['variation_id'] = self::getProductAttr($product, 'variation_id');
                 $wcItem['variation'] = ($product instanceof WC_Product_Variation) ? $product->get_variation_attributes() : null;
 
                 $wcItem['line_total'] = $line->getPrice(\WbsVendors\Dgm\Shengine\Model\Price::WITH_DISCOUNT);
@@ -197,5 +202,33 @@ class PackageConverter
         }
 
         return null;
+    }
+
+    private static function getDimensions(WC_Product $product)
+    {
+        return new \WbsVendors\Dgm\Shengine\Model\Dimensions(
+            (float)self::getProductAttr($product, 'length'),
+            (float)self::getProductAttr($product, 'width'),
+            (float)self::getProductAttr($product, 'height')
+        );
+    }
+
+    private static function getProductAttr(WC_Product $product, $attr)
+    {
+        if (version_compare(WC()->version, '3.0', '>=')) {
+            switch ((string)$attr) {
+
+                case 'id':
+                    return $product->is_type('variation') ? $product->get_parent_id() : $product->get_id();
+
+                case 'variation_id':
+                    return $product->is_type('variation') ? $product->get_id() : null;
+
+                default:
+                    return call_user_func(array(\WbsVendors_CCR::klass($product), "get_{$attr}"));
+            }
+        }
+
+        return $product->{$attr};
     }
 }

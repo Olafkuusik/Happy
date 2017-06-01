@@ -9,16 +9,17 @@ use Dgm\Shengine\Interfaces\IPackage;
 
 class Package implements \WbsVendors\Dgm\Shengine\Interfaces\IPackage
 {
-    public function __construct(array $items = array(), \WbsVendors\Dgm\Shengine\Model\Destination $destination = null, \WbsVendors\Dgm\Shengine\Model\Customer $customer = null)
+    public function __construct(array $items = array(), \WbsVendors\Dgm\Shengine\Model\Destination $destination = null, \WbsVendors\Dgm\Shengine\Model\Customer $customer = null, array $coupons = array())
     {
         $this->items = $items;
         $this->destination = $destination;
         $this->customer = $customer;
+        $this->coupons = $coupons;
     }
 
-    public static function fromOther($other, \WbsVendors\Dgm\Shengine\Model\Destination $destination = null, \WbsVendors\Dgm\Shengine\Model\Customer $customer = null)
+    public static function fromOther($other, \WbsVendors\Dgm\Shengine\Model\Destination $destination = null, \WbsVendors\Dgm\Shengine\Model\Customer $customer = null, array $coupons = array())
     {
-        $package = new self(array(), $destination, $customer);
+        $package = new self(array(), $destination, $customer, $coupons);
         $package = $package->merge($other);
         return $package;
     }
@@ -90,6 +91,11 @@ class Package implements \WbsVendors\Dgm\Shengine\Interfaces\IPackage
         return $this->customer;
     }
 
+    public function getCoupons()
+    {
+        return $this->coupons;
+    }
+
     public function split(\WbsVendors\Dgm\Shengine\Interfaces\IGrouping $by)
     {
         $buckets = array();
@@ -102,7 +108,7 @@ class Package implements \WbsVendors\Dgm\Shengine\Interfaces\IPackage
 
         $packages = array();
         foreach ($buckets as $id => $items) {
-            $packages[] = new \WbsVendors\Dgm\Shengine\Model\Package($items, $this->getDestination(), $this->getCustomer());
+            $packages[] = new \WbsVendors\Dgm\Shengine\Model\Package($items, $this->getDestination(), $this->getCustomer(), $this->getCoupons());
         }
 
         if (!$packages) {
@@ -138,7 +144,7 @@ class Package implements \WbsVendors\Dgm\Shengine\Interfaces\IPackage
 
         $package = $this;
         if (count($mergedItems) > count($theseItems)) {
-            $package = new \WbsVendors\Dgm\Shengine\Model\Package(array_values($mergedItems), $this->getDestination(), $this->getCustomer());
+            $package = new \WbsVendors\Dgm\Shengine\Model\Package(array_values($mergedItems), $this->getDestination(), $this->getCustomer(), $this->getCoupons());
         }
 
         return $package;
@@ -168,7 +174,7 @@ class Package implements \WbsVendors\Dgm\Shengine\Interfaces\IPackage
 
         $package = $this;
         if (count($restItems) < count($theseItems)) {
-            $package = new \WbsVendors\Dgm\Shengine\Model\Package($restItems, $this->getDestination(), $this->getCustomer());
+            $package = new \WbsVendors\Dgm\Shengine\Model\Package($restItems, $this->getDestination(), $this->getCustomer(), $this->getCoupons());
         }
 
         return $package;
@@ -178,4 +184,5 @@ class Package implements \WbsVendors\Dgm\Shengine\Interfaces\IPackage
     private $items;
     private $destination;
     private $customer;
+    private $coupons;
 }

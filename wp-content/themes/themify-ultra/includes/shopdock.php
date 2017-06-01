@@ -47,7 +47,9 @@
 		<!-- /#cart-wrap -->
 	<?php else: ?>
 		<?php printf( __( 'Your cart is empty. Go to <a href="%s">Shop</a>.', 'themify' )
-			, get_permalink( woocommerce_get_page_id( 'shop' ) ) ); ?>
+			, get_permalink( version_compare( WOOCOMMERCE_VERSION, '3.0.0', '>=' )
+				? wc_get_page_id( 'shop' )
+				: woocommerce_get_page_id( 'shop' ) ) ); ?>
 	<?php endif; // cart whether is not empty?>
 
 	<?php themify_shopdock_end(); //hook ?>

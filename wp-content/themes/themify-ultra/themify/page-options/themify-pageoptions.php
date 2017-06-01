@@ -40,7 +40,7 @@ class Themify_Pageoptions {
 		Themify_Metabox::get_instance()->admin_enqueue_scripts();
 		Themify_Metabox::get_instance()->enqueue();
 		wp_enqueue_style ( 'lightbox.css', themify_enque(THEMIFY_URI . '/css/lightbox.css') );
-		wp_enqueue_script( 'lightbox.js', themify_enque(THEMIFY_URI . '/js/lightbox.js'), array( 'jquery' ) );
+		wp_enqueue_script( 'lightbox.min.js', THEMIFY_URI . '/js/lightbox.min.js', array( 'jquery' ) );
 		wp_enqueue_style( 'themify-pageoptions', themify_enque(THEMIFY_URI . "/page-options/themify-pageoptions.css" ));
 		wp_enqueue_script( 'themify-pageoptions', themify_enque(THEMIFY_URI . "/page-options/themify-pageoptions.js"), array( 'jquery' ) );
 		wp_localize_script( 'themify-pageoptions', 'tfPageOptionsVars', array(

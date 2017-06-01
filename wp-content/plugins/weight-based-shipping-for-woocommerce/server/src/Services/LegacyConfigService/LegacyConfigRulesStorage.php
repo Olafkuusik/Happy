@@ -31,7 +31,7 @@ class LegacyConfigRulesStorage
 
                 $id = $matches[1];
 
-                $result = $callback($id);
+                $result = call_user_func($callback, $id);
                 if (is_bool($result)) {
                     return $result;
                 }

@@ -327,7 +327,7 @@ body:not(.header-overlay):not(.header-minbar):not(.header-leftpane):not(.header-
     position: absolute;
     right: 0;
     top: .7em;
-    padding: .5em;
+    padding: .9em;
     -webkit-transition: transform 0.3s ease-in-out;
     -moz-transition: transform 0.3s ease-in-out;
     transition: transform 0.3s ease-in-out;
@@ -995,6 +995,9 @@ HEADER WIDGETS
 		display: block;
 	}
 	
+	.sidebar2 #pagewrap #content,
+	.sidebar2 #pagewrap #sidebar,
+	.sidebar2 #pagewrap #sidebar-alt,
 	body:not(.sidebar2):not(.sidebar-none):not(.sidebar-left):not(.full_width) #content,
 	body:not(.sidebar2):not(.sidebar-left) #sidebar,
 	.sidebar-left #content,

@@ -318,3 +318,7 @@ a:focus {
 .js div:not(.caroufredsel_wrapper) > .themify_builder_slider > li:not(:first-child) {
 	display: none;
 }
+
+.mfp-hide {
+	display: none;
+}

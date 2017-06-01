@@ -1,7 +1,7 @@
 /*
 Theme Name: Themify Ultra
 Theme URI: http://themify.me/themes/ultra
-Version: 1.7.5
+Version: 1.7.9
 Description: Created by <a href="http://www.themify.me">Themify</a>.
 Author: Themify
 Author URI: http://www.themify.me
@@ -51,10 +51,9 @@ strong, sub, sup, tt, var, legend, fieldset, figure {
 	padding: 0;
 }
 
-img, fieldset {
+img, fieldset,a {
 	border: 0;
 }
-
 /* set img max-width */
 img {
 	max-width: 100%;
@@ -281,6 +280,7 @@ img, textarea, input, #pagewrap, .pagewidth, #headerwrap, #header, #main-nav, #m
 
 /* content */
 #content {
+	width: 71%;
 	padding: 5.75% 0;
 }
 
@@ -296,14 +296,15 @@ img, textarea, input, #pagewrap, .pagewidth, #headerwrap, #header, #main-nav, #m
 	font-size: .9em;
 	line-height: 1.8em;
 }
-
+#sidebar {
+	width: 24%;
+}
 #sidebar .secondary {
 	width: 47%;
 }
 
 /* sidebar2 */
 body:not(.sidebar2):not(.sidebar-none):not(.sidebar-left):not(.full_width) #content {
-	width: 71%;
 	float: left;
 }
 .sidebar2 #layout {
@@ -317,7 +318,6 @@ body:not(.sidebar2):not(.sidebar-none):not(.sidebar-left):not(.full_width) #cont
 	justify-content: space-between;
 }
 body:not(.sidebar2):not(.sidebar-left) #sidebar {
-	width: 24%;
 	float: right;
 }
 .sidebar2 #layout:after {
@@ -329,22 +329,19 @@ body:not(.sidebar2):not(.sidebar-left) #sidebar {
 	-ms-flex-direction: row-reverse;
 	flex-direction: row-reverse;
 }
-.sidebar2 #sidebar-alt {
-	-ms-flex-preferred-size: 15%;
-	flex-basis: 15%;
-}
 .sidebar2:not(.content-left):not(.content-right) #sidebar-alt {
 	-webkit-box-ordinal-group: 0;
 	-ms-flex-order: -1;
 	order: -1;
 }
+.sidebar2 #sidebar-alt {
+	width: 15%;
+}
 .sidebar2 #sidebar {
-	-ms-flex-preferred-size: 24%;
-	flex-basis: 24%;
+	width: 24%;
 }
 .sidebar2 #content {
-	-ms-flex-preferred-size: 51%;
-	flex-basis: 51%;
+	width: 51%;
 }
 
 /* full_width content */
@@ -366,11 +363,9 @@ body:not(.sidebar2):not(.sidebar-left) #sidebar {
 /* sidebar left */
 .sidebar-left #content {
 	float: right;
-	width: 71%;
 }
 .sidebar-left #sidebar {
 	float: left;
-	width: 24%;
 }
 
 /************************************************************************************
@@ -450,6 +445,9 @@ body.fixed-header.page-loaded.admin-bar:not(.header-block) #headerwrap {
 }
 body.no-fixed-header #pagewrap {
 	padding-top: 0 !important;
+}
+body:not(.page-loaded) #pagewrap {
+	padding-top: 0 !important; /* prevent header jumps when sticky header JS fails */
 }
 #header {
 	position: relative;
@@ -1252,13 +1250,16 @@ body.mobile-menu-visible {
 
 /* fixed-header */
 #headerwrap.fixed-header {
-    position: fixed !important;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     z-index: 1000;
     transition: height .3s;
     background-color: rgba(250, 250, 250, .9);
+}
+body.fixed-header.page-loaded #headerwrap.fixed-header {
+    position: fixed; /* prevent snappy sticky header */
 }
 body.admin-bar #headerwrap.fixed-header {
 	top: 32px;

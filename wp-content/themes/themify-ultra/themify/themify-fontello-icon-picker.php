@@ -37,13 +37,11 @@ class Themify_Icon_Picker_Fontello extends Themify_Icon_Picker_Font {
 	 */
 	function get_icons() {
 		$icons = array();
-		if( themify_check( 'setting-fontello' ) ) {
-			if( $config = themify_get_file_contents( $this->get_path() . 'config.json' ) ) {
-				$config = json_decode( $config, true );
-				if( isset( $config['glyphs'] ) && ! empty( $config['glyphs'] ) ) {
-					foreach( $config['glyphs'] as $glyph ) {
-						$icons[ 'icon-' . $glyph['css'] ] = $glyph['css'];
-					}
+		$config = themify_fontello_get_config();
+		if( $config ) {
+			if( isset( $config['glyphs'] ) && ! empty( $config['glyphs'] ) ) {
+				foreach( $config['glyphs'] as $glyph ) {
+					$icons[ 'icon-' . $glyph['css'] ] = $glyph['css'];
 				}
 			}
 		}
@@ -54,18 +52,6 @@ class Themify_Icon_Picker_Fontello extends Themify_Icon_Picker_Font {
 				'icons' => $icons
 			),
 		);
-	}
-
-	/**
-	 * Get the system path to where Fontello assets are located
-	 *
-	 * @return string
-	 */
-	function get_path() {
-		$path = themify_fontello_path();
-		if( $path ) {
-			return $path['dir'];
-		}
 	}
 
 	function picker_template() {

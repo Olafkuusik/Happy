@@ -25,7 +25,11 @@ if ( $pagination ) {
 	}
 }
 foreach ( $gallery_images as $image ) :
+	$alt = get_post_meta( $image->ID, '_wp_attachment_image_alt', true );
+	$caption = ! empty( $alt ) ? $alt : $image->post_excerpt;
+	$title = $image->post_title;
 	?>
+	
 	<dl class="gallery-item">
 		<dt class="gallery-icon">
 		<?php
@@ -37,7 +41,7 @@ foreach ( $gallery_images as $image ) :
 		} else {
 			$link = get_attachment_link( $image->ID );
 		}
-		$link_before = '' != $link ? sprintf( '<a title="%s" href="%s">', esc_attr( $image->post_title ), esc_url( $link ) ) : '';
+		$link_before = '' != $link ? sprintf( '<a title="%s" href="%s">', esc_attr( $caption ), esc_url( $link ) ) : '';
 		$link_before = apply_filters( 'themify_builder_image_link_before', $link_before, $image, $settings );
 		$link_after = '' != $link ? '</a>' : '';
 		if ( $this->is_img_php_disabled() ) {
@@ -50,13 +54,12 @@ foreach ( $gallery_images as $image ) :
 		echo ! empty( $img ) ? $link_before . $img . $link_after : '';
 		?>
 		</dt>
-		<?php $text =  isset( $image->post_excerpt ) && '' != $image->post_excerpt ?>
-		<dd<?php if( $text || ( $gallery_image_title==='library' && ! empty( $image->post_title ) ) ) : ?> class="wp-caption-text gallery-caption"<?php endif; ?>>
-			<?php if( $gallery_image_title === 'library' && ! empty( $image->post_title ) ) : ?>
-				<strong class="themify_image_title"><?php echo $image->post_title ?></strong>
+		<dd<?php if( ( $gallery_image_title === 'library' && ! empty( $title ) ) || ( $gallery_exclude_caption != 'yes' && ! empty( $caption ) ) ) : ?> class="wp-caption-text gallery-caption"<?php endif; ?>>
+			<?php if ( $gallery_image_title === 'library' && ! empty( $title ) ) : ?>
+				<strong class="themify_image_title"><?php echo $title ?></strong>
 			<?php endif; ?>
-			<?php if( $text ) : ?>
-				<?php echo wp_kses_post( $image->post_excerpt ); ?>
+			<?php if ( $gallery_exclude_caption != 'yes' && ! empty( $caption ) ) : ?>
+				<span class="themify_image_caption"><?php echo $caption ?></span>
 			<?php endif; ?>
 		</dd>
 	</dl>

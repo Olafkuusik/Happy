@@ -34,17 +34,21 @@ if ( ! empty( $gallery_images ) ) :
 		$i = 0;
 		foreach ( $gallery_images as $image ):
 			$link = wp_get_attachment_image_src( $image->ID,$s_image_size_gallery );
-                        $link = $link[0];
+			$link = $link[0];
+
+			$alt = get_post_meta( $image->ID, '_wp_attachment_image_alt', true );
+			$title = ! empty( $alt ) ? $alt : $image->post_excerpt;
+
 			if( $disable ) {
 				$img = wp_get_attachment_image( $image->ID, $image_size_gallery );
 			} else {
 				$img = wp_get_attachment_image_src( $image->ID, 'full' );
 				$img = themify_get_image( "ignore=true&src={$img[0]}&w={$thumb_w_gallery}&h={$thumb_h_gallery}" );
-                                $link = themify_get_image( "ignore=true&src={$link}&w={$s_image_w_gallery}&h={$s_image_h_gallery}&urlonly=1" );
+				$link = themify_get_image( "ignore=true&src={$link}&w={$s_image_w_gallery}&h={$s_image_h_gallery}&urlonly=1" );
 			}
 
 			if ( ! empty( $link ) ) {
-				echo '<a data-image="' . esc_url( $link ) . '" title="' . esc_attr( $image->post_title ) . '" href="#">';
+				echo '<a data-image="' . esc_url( $link ) . '" title="' . esc_attr( $title ) . '" href="#">';
 			}
 			echo wp_kses_post( $img );
 			if ( ! empty( $link ) ) {

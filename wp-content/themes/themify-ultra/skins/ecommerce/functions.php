@@ -27,6 +27,6 @@ add_filter( 'themify_theme_google_fonts', 'themify_theme_ecommerce_google_fonts'
  * @since 1.1
  */
 function themify_theme_ecommerce_custom_script() {
-	wp_enqueue_script( 'themify-ecommerce-script', THEME_URI . '/skins/ecommerce/js/script.js', array( 'jquery' ), wp_get_theme()->display( 'Version' ), true );	
+	wp_enqueue_script( 'themify-ecommerce-script', themify_enque(THEME_URI . '/skins/ecommerce/js/script.js'), array( 'jquery' ), wp_get_theme()->display( 'Version' ), true );	
 }
 add_action( 'wp_enqueue_scripts', 'themify_theme_ecommerce_custom_script' );

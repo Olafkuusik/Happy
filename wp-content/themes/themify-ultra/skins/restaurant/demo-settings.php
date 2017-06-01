@@ -1,6 +1,6 @@
 <?php
 
-// time: 1489233767
+// time: 1495384779
 
 
 function themify_import_get_term_id_from_slug( $slug ) {
@@ -8,24 +8,8 @@ function themify_import_get_term_id_from_slug( $slug ) {
 	return is_wp_error( $menu ) ? 0 : (int) $menu->term_id;
 }
 
-	$widgets = get_option( "widget_text" );
+	$widgets = get_option( "widget_archives" );
 $widgets[1002] = array (
-  'title' => '',
-  'text' => '',
-  'filter' => false,
-);
-update_option( "widget_text", $widgets );
-
-$widgets = get_option( "widget_text" );
-$widgets[1003] = array (
-  'title' => 'About',
-  'text' => 'The Ultra theme is Themify\'s flagship theme. It\'s a WordPress designed to give you more control on the design of your theme. Built to work seamlessly with our drag & drop Builder plugin, it gives you the ability to customize the look and feel of your content. ',
-  'filter' => false,
-);
-update_option( "widget_text", $widgets );
-
-$widgets = get_option( "widget_archives" );
-$widgets[1004] = array (
   'title' => '',
   'count' => 0,
   'dropdown' => 0,
@@ -33,19 +17,19 @@ $widgets[1004] = array (
 update_option( "widget_archives", $widgets );
 
 $widgets = get_option( "widget_meta" );
-$widgets[1005] = array (
+$widgets[1003] = array (
   'title' => '',
 );
 update_option( "widget_meta", $widgets );
 
 $widgets = get_option( "widget_search" );
-$widgets[1006] = array (
+$widgets[1004] = array (
   'title' => '',
 );
 update_option( "widget_search", $widgets );
 
 $widgets = get_option( "widget_categories" );
-$widgets[1007] = array (
+$widgets[1005] = array (
   'title' => '',
   'count' => 0,
   'hierarchical' => 0,
@@ -54,21 +38,21 @@ $widgets[1007] = array (
 update_option( "widget_categories", $widgets );
 
 $widgets = get_option( "widget_recent-posts" );
-$widgets[1008] = array (
+$widgets[1006] = array (
   'title' => '',
   'number' => 5,
 );
 update_option( "widget_recent-posts", $widgets );
 
 $widgets = get_option( "widget_recent-comments" );
-$widgets[1009] = array (
+$widgets[1007] = array (
   'title' => '',
   'number' => 5,
 );
 update_option( "widget_recent-comments", $widgets );
 
 $widgets = get_option( "widget_themify-feature-posts" );
-$widgets[1010] = array (
+$widgets[1008] = array (
   'title' => 'Recent Posts',
   'category' => '0',
   'show_count' => '3',
@@ -85,7 +69,7 @@ $widgets[1010] = array (
 update_option( "widget_themify-feature-posts", $widgets );
 
 $widgets = get_option( "widget_themify-feature-posts" );
-$widgets[1011] = array (
+$widgets[1009] = array (
   'title' => 'Recent Posts',
   'category' => '0',
   'show_count' => '2',
@@ -102,27 +86,27 @@ $widgets[1011] = array (
 update_option( "widget_themify-feature-posts", $widgets );
 
 $widgets = get_option( "widget_themify-social-links" );
+$widgets[1010] = array (
+  'title' => '',
+  'show_link_name' => NULL,
+  'open_new_window' => NULL,
+  'icon_size' => 'icon-medium',
+  'orientation' => 'horizontal',
+);
+update_option( "widget_themify-social-links", $widgets );
+
+$widgets = get_option( "widget_themify-social-links" );
+$widgets[1011] = array (
+  'title' => '',
+  'show_link_name' => NULL,
+  'open_new_window' => NULL,
+  'icon_size' => 'icon-medium',
+  'orientation' => 'horizontal',
+);
+update_option( "widget_themify-social-links", $widgets );
+
+$widgets = get_option( "widget_themify-social-links" );
 $widgets[1012] = array (
-  'title' => '',
-  'show_link_name' => NULL,
-  'open_new_window' => NULL,
-  'icon_size' => 'icon-medium',
-  'orientation' => 'horizontal',
-);
-update_option( "widget_themify-social-links", $widgets );
-
-$widgets = get_option( "widget_themify-social-links" );
-$widgets[1013] = array (
-  'title' => '',
-  'show_link_name' => NULL,
-  'open_new_window' => NULL,
-  'icon_size' => 'icon-medium',
-  'orientation' => 'horizontal',
-);
-update_option( "widget_themify-social-links", $widgets );
-
-$widgets = get_option( "widget_themify-social-links" );
-$widgets[1014] = array (
   'title' => '',
   'show_link_name' => NULL,
   'open_new_window' => NULL,
@@ -132,7 +116,7 @@ $widgets[1014] = array (
 update_option( "widget_themify-social-links", $widgets );
 
 $widgets = get_option( "widget_themify-twitter" );
-$widgets[1015] = array (
+$widgets[1013] = array (
   'title' => 'Latest Tweets',
   'username' => 'themify',
   'show_count' => '3',
@@ -145,7 +129,7 @@ $widgets[1015] = array (
 update_option( "widget_themify-twitter", $widgets );
 
 $widgets = get_option( "widget_themify-twitter" );
-$widgets[1016] = array (
+$widgets[1014] = array (
   'title' => 'Latest Tweets',
   'username' => 'themify',
   'show_count' => '2',
@@ -158,7 +142,7 @@ $widgets[1016] = array (
 update_option( "widget_themify-twitter", $widgets );
 
 $widgets = get_option( "widget_text" );
-$widgets[1017] = array (
+$widgets[1015] = array (
   'title' => 'Widget 1',
   'text' => 'Optional widget here',
   'filter' => false,
@@ -166,7 +150,7 @@ $widgets[1017] = array (
 update_option( "widget_text", $widgets );
 
 $widgets = get_option( "widget_text" );
-$widgets[1018] = array (
+$widgets[1016] = array (
   'title' => 'Widget 2',
   'text' => 'Display any widget here',
   'filter' => false,
@@ -174,7 +158,7 @@ $widgets[1018] = array (
 update_option( "widget_text", $widgets );
 
 $widgets = get_option( "widget_text" );
-$widgets[1019] = array (
+$widgets[1017] = array (
   'title' => 'Widget 3',
   'text' => 'For example, phone #: 123-333-4567',
   'filter' => false,
@@ -182,7 +166,7 @@ $widgets[1019] = array (
 update_option( "widget_text", $widgets );
 
 $widgets = get_option( "widget_archives" );
-$widgets[1020] = array (
+$widgets[1018] = array (
   'title' => '',
   'count' => 0,
   'dropdown' => 0,
@@ -190,19 +174,19 @@ $widgets[1020] = array (
 update_option( "widget_archives", $widgets );
 
 $widgets = get_option( "widget_meta" );
-$widgets[1021] = array (
+$widgets[1019] = array (
   'title' => '',
 );
 update_option( "widget_meta", $widgets );
 
 $widgets = get_option( "widget_search" );
-$widgets[1022] = array (
+$widgets[1020] = array (
   'title' => '',
 );
 update_option( "widget_search", $widgets );
 
 $widgets = get_option( "widget_text" );
-$widgets[1023] = array (
+$widgets[1021] = array (
   'title' => 'Widget 1',
   'text' => 'Optional widget here',
   'filter' => false,
@@ -210,7 +194,7 @@ $widgets[1023] = array (
 update_option( "widget_text", $widgets );
 
 $widgets = get_option( "widget_text" );
-$widgets[1024] = array (
+$widgets[1022] = array (
   'title' => 'Widget 2',
   'text' => 'Optional widget here',
   'filter' => false,
@@ -218,7 +202,7 @@ $widgets[1024] = array (
 update_option( "widget_text", $widgets );
 
 $widgets = get_option( "widget_text" );
-$widgets[1025] = array (
+$widgets[1023] = array (
   'title' => 'Widget 3',
   'text' => 'Optional widget here',
   'filter' => false,
@@ -226,7 +210,7 @@ $widgets[1025] = array (
 update_option( "widget_text", $widgets );
 
 $widgets = get_option( "widget_categories" );
-$widgets[1026] = array (
+$widgets[1024] = array (
   'title' => '',
   'count' => 0,
   'hierarchical' => 0,
@@ -235,21 +219,21 @@ $widgets[1026] = array (
 update_option( "widget_categories", $widgets );
 
 $widgets = get_option( "widget_recent-posts" );
-$widgets[1027] = array (
+$widgets[1025] = array (
   'title' => '',
   'number' => 5,
 );
 update_option( "widget_recent-posts", $widgets );
 
 $widgets = get_option( "widget_recent-comments" );
-$widgets[1028] = array (
+$widgets[1026] = array (
   'title' => '',
   'number' => 5,
 );
 update_option( "widget_recent-comments", $widgets );
 
 $widgets = get_option( "widget_text" );
-$widgets[1029] = array (
+$widgets[1027] = array (
   'title' => 'Address',
   'text' => '25 Ohio St. Cleveland. MA<br/>
 (912) 555-8900<br/>
@@ -259,7 +243,7 @@ $widgets[1029] = array (
 update_option( "widget_text", $widgets );
 
 $widgets = get_option( "widget_text" );
-$widgets[1030] = array (
+$widgets[1028] = array (
   'title' => 'Hours',
   'text' => 'MON - FRI 9AM -11PM<br/>
 SAT - SUN 5PM - 2AM<br/>
@@ -269,7 +253,7 @@ Bar open only on weekends',
 update_option( "widget_text", $widgets );
 
 $widgets = get_option( "widget_themify-twitter" );
-$widgets[1031] = array (
+$widgets[1029] = array (
   'title' => 'Latest Tweets',
   'username' => 'themify',
   'show_count' => '2',
@@ -282,7 +266,7 @@ $widgets[1031] = array (
 update_option( "widget_themify-twitter", $widgets );
 
 $widgets = get_option( "widget_text" );
-$widgets[1032] = array (
+$widgets[1030] = array (
   'title' => 'Address',
   'text' => '25 Ohio St. Cleveland. MA<br/>
 (912) 555-8900<br/>
@@ -292,13 +276,13 @@ $widgets[1032] = array (
 update_option( "widget_text", $widgets );
 
 $widgets = get_option( "widget_mc4wp_form_widget" );
-$widgets[1033] = array (
+$widgets[1031] = array (
   'title' => 'Subscribe',
 );
 update_option( "widget_mc4wp_form_widget", $widgets );
 
 $widgets = get_option( "widget_themify-social-links" );
-$widgets[1034] = array (
+$widgets[1032] = array (
   'title' => '',
   'show_link_name' => NULL,
   'open_new_window' => NULL,
@@ -308,7 +292,7 @@ $widgets[1034] = array (
 update_option( "widget_themify-social-links", $widgets );
 
 $widgets = get_option( "widget_text" );
-$widgets[1035] = array (
+$widgets[1033] = array (
   'title' => 'Hours',
   'text' => 'MON - FRI 9AM -11PM<br/>
 SAT - SUN 5PM - 2AM<br/>
@@ -317,61 +301,77 @@ Bar open only on weekends',
 );
 update_option( "widget_text", $widgets );
 
+$widgets = get_option( "widget_text" );
+$widgets[1034] = array (
+  'title' => '',
+  'text' => '',
+  'filter' => false,
+);
+update_option( "widget_text", $widgets );
+
+$widgets = get_option( "widget_text" );
+$widgets[1035] = array (
+  'title' => 'About',
+  'text' => 'The Ultra theme is Themify\'s flagship theme. It\'s a WordPress designed to give you more control on the design of your theme. Built to work seamlessly with our drag & drop Builder plugin, it gives you the ability to customize the look and feel of your content. ',
+  'filter' => false,
+);
+update_option( "widget_text", $widgets );
+
 
 
 $sidebars_widgets = array (
-  'orphaned_widgets_1' => 
-  array (
-    0 => 'text-1002',
-  ),
-  'orphaned_widgets_5' => 
-  array (
-    0 => 'text-1003',
-  ),
   'wp_inactive_widgets' => 
   array (
-    0 => 'archives-1004',
-    1 => 'meta-1005',
-    2 => 'search-1006',
-    3 => 'categories-1007',
-    4 => 'recent-posts-1008',
-    5 => 'recent-comments-1009',
-    6 => 'themify-feature-posts-1010',
-    7 => 'themify-feature-posts-1011',
-    8 => 'themify-social-links-1012',
-    9 => 'themify-social-links-1013',
-    10 => 'themify-social-links-1014',
-    11 => 'themify-twitter-1015',
-    12 => 'themify-twitter-1016',
-    13 => 'text-1017',
-    14 => 'text-1018',
-    15 => 'text-1019',
-    16 => 'archives-1020',
-    17 => 'meta-1021',
-    18 => 'search-1022',
-    19 => 'text-1023',
-    20 => 'text-1024',
-    21 => 'text-1025',
-    22 => 'categories-1026',
-    23 => 'recent-posts-1027',
-    24 => 'recent-comments-1028',
+    0 => 'archives-1002',
+    1 => 'meta-1003',
+    2 => 'search-1004',
+    3 => 'categories-1005',
+    4 => 'recent-posts-1006',
+    5 => 'recent-comments-1007',
+    6 => 'themify-feature-posts-1008',
+    7 => 'themify-feature-posts-1009',
+    8 => 'themify-social-links-1010',
+    9 => 'themify-social-links-1011',
+    10 => 'themify-social-links-1012',
+    11 => 'themify-twitter-1013',
+    12 => 'themify-twitter-1014',
+    13 => 'text-1015',
+    14 => 'text-1016',
+    15 => 'text-1017',
+    16 => 'archives-1018',
+    17 => 'meta-1019',
+    18 => 'search-1020',
+    19 => 'text-1021',
+    20 => 'text-1022',
+    21 => 'text-1023',
+    22 => 'categories-1024',
+    23 => 'recent-posts-1025',
+    24 => 'recent-comments-1026',
   ),
   'sidebar-main' => 
   array (
-    0 => 'text-1029',
-    1 => 'text-1030',
-    2 => 'themify-twitter-1031',
+    0 => 'text-1027',
+    1 => 'text-1028',
+    2 => 'themify-twitter-1029',
   ),
   'footer-widget-1' => 
   array (
-    0 => 'text-1032',
+    0 => 'text-1030',
   ),
   'footer-widget-2' => 
   array (
-    0 => 'mc4wp_form_widget-1033',
-    1 => 'themify-social-links-1034',
+    0 => 'mc4wp_form_widget-1031',
+    1 => 'themify-social-links-1032',
   ),
   'footer-widget-3' => 
+  array (
+    0 => 'text-1033',
+  ),
+  'orphaned_widgets_1' => 
+  array (
+    0 => 'text-1034',
+  ),
+  'orphaned_widgets_5' => 
   array (
     0 => 'text-1035',
   ),

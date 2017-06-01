@@ -14,13 +14,6 @@
  *
  * @return array
  */
-function themify_theme_customizer_add_section( $wp_customize ) {
-	$wp_customize->add_section( 'themify_skin_styles', array(
-		'title'       => __( 'Skin Styles', 'themify' ),
-		'description' => '',
-	));
-}
-add_action( 'themify_customizer_before_add_section', 'themify_theme_customizer_add_section' );
 
 /**
  * Add customizer controls
@@ -34,114 +27,6 @@ add_action( 'themify_customizer_before_add_section', 'themify_theme_customizer_a
 function themify_theme_customizer_definition( $args ) {
 	global $themify_customizer;
 	$args = array(
-		// Skin Styles
-		'body_skin_background' => array(
-			'control' => array(
-				'type'    => 'Themify_Background_Control',
-				'label'   => __( 'Body Background', 'themify' ),
-				'show_label' => true,
-				'section' => 'themify_skin_styles',
-			),
-			'selector' => 'body',
-			'prop' => 'background',
-		),
-		
-		'scheme_font_color' => array(
-			'control' => array(
-				'type'    => 'Themify_Color_Control',
-				'label'	  => __( 'Accent Color', 'themify' ),
-				'color_label' => __( 'Accent Font Color', 'themify' ),
-				'section' => 'themify_skin_styles',
-			),
-			'selector' => 'body #headerwrap,body .sidemenu,body #footerwrap,#footer .footer-widgets .widgettitle,body.header-leftpane #headerwrap #menu-icon,body.header-slide-out #headerwrap #menu-icon,body.header-horizontal #headerwrap #menu-icon,body.header-minbar #headerwrap #menu-icon,body #site-description,body .header-widget .widgettitle,body input[type=reset],body input[type=submit],body button,body #respond #cancel-comment-reply-link,body .commentlist .comment-reply-link,body .post-title a,body #main-nav > .current_page_item > a,body #main-nav > .current-menu-item > a,body #main-nav > li > a:hover,body.footer-horizontal-left .back-top .arrow-up a,body.footer-horizontal-right .back-top .arrow-up a,body.footer-left-col .back-top .arrow-up a,body.footer-right-col .back-top .arrow-up a,body.woocommerce #content input.button,body.woocommerce #respond input#submit,body.woocommerce a.button,body.woocommerce button.button,body.woocommerce input.button,body.woocommerce-page #content input.button,body.woocommerce-page #respond input#submit,body.woocommerce-page a.button,body.woocommerce-page button.button,body.woocommerce-page input.button,body.woocommerce #content input.button.alt,body.woocommerce #respond input#submit.alt,body.woocommerce a.button.alt,body.woocommerce button.button.alt,body.woocommerce input.button.alt,body.woocommerce-page #content input.button.alt,body.woocommerce-page #respond input#submit.alt,body.woocommerce-page a.button.alt,body.woocommerce-page button.button.alt,body.woocommerce-page input.button.alt,body.woocommerce ul.products li.product .add_to_cart_button,body.woocommerce-page ul.products li.product .add_to_cart_button,body.woocommerce ul.products li.product .button[data-product_id],body.woocommerce-page ul.products li.product .button[data-product_id],body.woocommerce span.onsale,body.woocommerce-page span.onsale,body.woocommerce ul.products li.product .onsale,body.woocommerce-page ul.products li.product .onsale,body.woocommerce-checkout #payment div.payment_box,body.woocommerce #content nav.woocommerce-pagination ul li a:focus,body.woocommerce #content nav.woocommerce-pagination ul li a:hover,body.woocommerce #content nav.woocommerce-pagination ul li span.current,body.woocommerce nav.woocommerce-pagination ul li a:focus,body.woocommerce nav.woocommerce-pagination ul li a:hover,body.woocommerce nav.woocommerce-pagination ul li span.current,body.woocommerce-page #content nav.woocommerce-pagination ul li a:focus,body.woocommerce-page #content nav.woocommerce-pagination ul li a:hover,body.woocommerce-page #content nav.woocommerce-pagination ul li span.current,body.woocommerce-page nav.woocommerce-pagination ul li a:focus,body.woocommerce-page nav.woocommerce-pagination ul li a:hover,body.woocommerce-page nav.woocommerce-pagination ul li span.current,body.woocommerce #content table.cart a.remove:hover,body.woocommerce table.cart a.remove:hover,body.woocommerce-page #content table.cart a.remove:hover,body.woocommerce-page table.cart a.remove:hover',
-			'prop' => 'color',
-		),
-
-		'scheme_link_color' => array(
-			'setting' => array( 'transport' => 'refresh' ),
-			'control' => array(
-				'type'    => 'Themify_Color_Control',
-				'color_label' => __( 'Accent Link Color', 'themify' ),
-				'section' => 'themify_skin_styles',
-			),
-			'selector' => 'body #headerwrap a, body #footerwrap a, body #main-nav a, body .sidemenu a, body .post-nav .arrow, body .widget .social-links a, body .widget .social-links a:hover, body .footer-nav li a',
-			'prop' => 'color',
-		),
-
-		'scheme_background' => array(
-			'control' => array(
-				'type'    => 'Themify_Color_Control',
-				'color_label' => __( 'Accent Background Color', 'themify' ),
-				'section' => 'themify_skin_styles',
-			),
-			'selector' => 'body #headerwrap,body .sidemenu,body #footerwrap,body.header-leftpane #headerwrap #menu-icon,body.header-slide-out #headerwrap #menu-icon,body.header-horizontal #headerwrap #menu-icon,body.header-minbar #headerwrap #menu-icon,body input[type=reset],body input[type=submit],body button,body #respond #cancel-comment-reply-link,body .commentlist .comment-reply-link,body.footer-horizontal-left .back-top .arrow-up a,body.footer-horizontal-right .back-top .arrow-up a,body.footer-left-col .back-top .arrow-up a,body.footer-right-col .back-top .arrow-up a,body.woocommerce #content input.button,body.woocommerce #respond input#submit,body.woocommerce a.button,body.woocommerce button.button,body.woocommerce input.button,body.woocommerce-page #content input.button,body.woocommerce-page #respond input#submit,body.woocommerce-page a.button,body.woocommerce-page button.button,body.woocommerce-page input.button,body.woocommerce #content input.button.alt,body.woocommerce #respond input#submit.alt,body.woocommerce a.button.alt,body.woocommerce button.button.alt,body.woocommerce input.button.alt,body.woocommerce-page #content input.button.alt,body.woocommerce-page #respond input#submit.alt,body.woocommerce-page a.button.alt,body.woocommerce-page button.button.alt,body.woocommerce-page input.button.alt,body.woocommerce ul.products li.product .add_to_cart_button,body.woocommerce-page ul.products li.product .add_to_cart_button,body.woocommerce ul.products li.product .button[data-product_id],body.woocommerce-page ul.products li.product .button[data-product_id],body.woocommerce span.onsale,body.woocommerce-page span.onsale,body.woocommerce ul.products li.product .onsale,body.woocommerce-page ul.products li.product .onsale,body.woocommerce-checkout #payment div.payment_box,body.woocommerce #content nav.woocommerce-pagination ul li a:focus,body.woocommerce #content nav.woocommerce-pagination ul li a:hover,body.woocommerce #content nav.woocommerce-pagination ul li span.current,body.woocommerce nav.woocommerce-pagination ul li a:focus,body.woocommerce nav.woocommerce-pagination ul li a:hover,body.woocommerce nav.woocommerce-pagination ul li span.current,body.woocommerce-page #content nav.woocommerce-pagination ul li a:focus,body.woocommerce-page #content nav.woocommerce-pagination ul li a:hover,body.woocommerce-page #content nav.woocommerce-pagination ul li span.current,body.woocommerce-page nav.woocommerce-pagination ul li a:focus,body.woocommerce-page nav.woocommerce-pagination ul li a:hover,body.woocommerce-page nav.woocommerce-pagination ul li span.current,body.woocommerce #content table.cart a.remove:hover,body.woocommerce table.cart a.remove:hover,body.woocommerce-page #content table.cart a.remove:hover,body.woocommerce-page table.cart a.remove:hover',
-			'prop' => 'background',
-		),
-
-		'body_skin_font' => array(
-			'control' => array(
-				'type'    => 'Themify_Font_Control',
-				'label'   => __( 'Typography', 'themify' ),
-				'show_label' => true,
-				'section' => 'themify_skin_styles',
-				'font_options' => array(
-					'show_size' => false,
-					'show_lineheight' => false,
-					'show_decoration' => false,
-					'show_transform' => false,
-					'show_align' => false,
-					'font_family_label' => __( 'Body Font', 'themify' ),
-				),
-			),
-			'selector' => 'body, body .post-meta, body #site-description, body .post-date .year, body .post-date .month, body .post-date .day, .loops-wrapper .entry-content',
-			'prop' => 'font',
-		),
-
-		'body_skin_font_color' => array(
-			'control' => array(
-				'type'    => 'Themify_Color_Control',
-				'color_label'   => __( 'Body Font Color', 'themify' ),
-				'section' => 'themify_skin_styles',
-			),
-			'selector' => 'body',
-			'prop' => 'color',
-		),
-
-		'body_skin_link_color' => array(
-			'control' => array(
-				'type'    => 'Themify_Color_Control',
-				'color_label'   => __( 'Body Link Color', 'themify' ),
-				'section' => 'themify_skin_styles',
-			),
-			'selector' => 'body a, body .post-nav .arrow',
-			'prop' => 'color',
-		),
-
-		'heading_skin_font' => array(
-			'control' => array(
-				'type'    => 'Themify_Font_Control',
-				'section' => 'themify_skin_styles',
-				'font_options' => array(
-					'show_size' => false,
-					'show_lineheight' => false,
-					'show_decoration' => false,
-					'show_transform' => false,
-					'show_align' => false,
-					'font_family_label' => __( 'Heading (h1 to h6)', 'themify' ),
-				),
-			),
-			'selector' => 'body h1, body h2, body h3, body h4, body h5, body h6',
-			'prop' => 'font',
-		),
-
-		'heading_skin_color' => array(
-			'control' => array(
-				'type'    => 'Themify_Color_Control',
-				'section' => 'themify_skin_styles',
-			),
-			'selector' => 'body h1, body h2, body h3, body h4, body h5, body h6',
-			'prop' => 'color',
-		),
 
 		// Accordion Start ---------------------------
 		'start_body_acc' => $themify_customizer->accordion_start( __( 'Body', 'themify' ) ),
@@ -216,6 +101,42 @@ function themify_theme_customizer_definition( $args ) {
 		),
 		
 		'end_body_acc' => $themify_customizer->accordion_end(),
+		// Accordion End   ---------------------------
+
+		// Accordion Start ---------------------------
+		'start_accent_acc' => $themify_customizer->accordion_start( __( 'Accent Styling', 'themify' ) ),
+		
+		// Accent Styles		
+		'scheme_font_color' => array(
+			'control' => array(
+				'type'    => 'Themify_Color_Control',
+				'label'   => __( 'Accent Styling', 'themify' ),
+				'color_label' => __( 'Accent Font Color', 'themify' ),
+			),
+			'selector' => 'body #headerwrap,body .sidemenu,body #footerwrap,#footer .footer-widgets .widgettitle,body.header-leftpane #headerwrap #menu-icon,body.header-slide-out #headerwrap #menu-icon,body.header-horizontal #headerwrap #menu-icon,body.header-minbar #headerwrap #menu-icon,body #site-description,body .header-widget .widgettitle,body input[type=reset],body input[type=submit],body button,body #respond #cancel-comment-reply-link,body .commentlist .comment-reply-link,body .post-title a,body #main-nav > .current_page_item > a,body #main-nav > .current-menu-item > a,body #main-nav > li > a:hover,body.footer-horizontal-left .back-top .arrow-up a,body.footer-horizontal-right .back-top .arrow-up a,body.footer-left-col .back-top .arrow-up a,body.footer-right-col .back-top .arrow-up a,body.woocommerce #content input.button,body.woocommerce #respond input#submit,body.woocommerce a.button,body.woocommerce button.button,body.woocommerce input.button,body.woocommerce-page #content input.button,body.woocommerce-page #respond input#submit,body.woocommerce-page a.button,body.woocommerce-page button.button,body.woocommerce-page input.button,body.woocommerce #content input.button.alt,body.woocommerce #respond input#submit.alt,body.woocommerce a.button.alt,body.woocommerce button.button.alt,body.woocommerce input.button.alt,body.woocommerce-page #content input.button.alt,body.woocommerce-page #respond input#submit.alt,body.woocommerce-page a.button.alt,body.woocommerce-page button.button.alt,body.woocommerce-page input.button.alt,body.woocommerce ul.products li.product .add_to_cart_button,body.woocommerce-page ul.products li.product .add_to_cart_button,body.woocommerce ul.products li.product .button[data-product_id],body.woocommerce-page ul.products li.product .button[data-product_id],body.woocommerce span.onsale,body.woocommerce-page span.onsale,body.woocommerce ul.products li.product .onsale,body.woocommerce-page ul.products li.product .onsale,body.woocommerce-checkout #payment div.payment_box,body.woocommerce #content nav.woocommerce-pagination ul li a:focus,body.woocommerce #content nav.woocommerce-pagination ul li a:hover,body.woocommerce #content nav.woocommerce-pagination ul li span.current,body.woocommerce nav.woocommerce-pagination ul li a:focus,body.woocommerce nav.woocommerce-pagination ul li a:hover,body.woocommerce nav.woocommerce-pagination ul li span.current,body.woocommerce-page #content nav.woocommerce-pagination ul li a:focus,body.woocommerce-page #content nav.woocommerce-pagination ul li a:hover,body.woocommerce-page #content nav.woocommerce-pagination ul li span.current,body.woocommerce-page nav.woocommerce-pagination ul li a:focus,body.woocommerce-page nav.woocommerce-pagination ul li a:hover,body.woocommerce-page nav.woocommerce-pagination ul li span.current,body.woocommerce #content table.cart a.remove:hover,body.woocommerce table.cart a.remove:hover,body.woocommerce-page #content table.cart a.remove:hover,body.woocommerce-page table.cart a.remove:hover',
+			'prop' => 'color',
+		),
+
+		'scheme_link_color' => array(
+			'setting' => array( 'transport' => 'refresh' ),
+			'control' => array(
+				'type'    => 'Themify_Color_Control',
+				'color_label' => __( 'Accent Link Color', 'themify' ),
+			),
+			'selector' => 'body #headerwrap a, body #footerwrap a, body #main-nav a, body .sidemenu a, body .post-nav .arrow, body .widget .social-links a, body .widget .social-links a:hover, body .footer-nav li a',
+			'prop' => 'color',
+		),
+
+		'scheme_background' => array(
+			'control' => array(
+				'type'    => 'Themify_Color_Control',
+				'color_label' => __( 'Accent Background Color', 'themify' ),
+			),
+			'selector' => 'body #headerwrap,.mobile_menu_active .sidemenu,body #footerwrap,.mobile_menu_active.header-leftpane #headerwrap #menu-icon,.mobile_menu_active.header-rightpane #headerwrap #menu-icon,body input[type=reset],body input[type=submit],body button,body #respond #cancel-comment-reply-link,body .commentlist .comment-reply-link,body.footer-horizontal-left .back-top .arrow-up a,body.footer-horizontal-right .back-top .arrow-up a,body.footer-left-col .back-top .arrow-up a,body.footer-right-col .back-top .arrow-up a,body.woocommerce #content input.button,body.woocommerce #respond input#submit,body.woocommerce a.button,body.woocommerce button.button,body.woocommerce input.button,body.woocommerce-page #content input.button,body.woocommerce-page #respond input#submit,body.woocommerce-page a.button,body.woocommerce-page button.button,body.woocommerce-page input.button,body.woocommerce #content input.button.alt,body.woocommerce #respond input#submit.alt,body.woocommerce a.button.alt,body.woocommerce button.button.alt,body.woocommerce input.button.alt,body.woocommerce-page #content input.button.alt,body.woocommerce-page #respond input#submit.alt,body.woocommerce-page a.button.alt,body.woocommerce-page button.button.alt,body.woocommerce-page input.button.alt,body.woocommerce ul.products li.product .add_to_cart_button,body.woocommerce-page ul.products li.product .add_to_cart_button,body.woocommerce ul.products li.product .button[data-product_id],body.woocommerce-page ul.products li.product .button[data-product_id],body.woocommerce span.onsale,body.woocommerce-page span.onsale,body.woocommerce ul.products li.product .onsale,body.woocommerce-page ul.products li.product .onsale,body.woocommerce-checkout #payment div.payment_box,body.woocommerce #content nav.woocommerce-pagination ul li a:focus,body.woocommerce #content nav.woocommerce-pagination ul li a:hover,body.woocommerce #content nav.woocommerce-pagination ul li span.current,body.woocommerce nav.woocommerce-pagination ul li a:focus,body.woocommerce nav.woocommerce-pagination ul li a:hover,body.woocommerce nav.woocommerce-pagination ul li span.current,body.woocommerce-page #content nav.woocommerce-pagination ul li a:focus,body.woocommerce-page #content nav.woocommerce-pagination ul li a:hover,body.woocommerce-page #content nav.woocommerce-pagination ul li span.current,body.woocommerce-page nav.woocommerce-pagination ul li a:focus,body.woocommerce-page nav.woocommerce-pagination ul li a:hover,body.woocommerce-page nav.woocommerce-pagination ul li span.current,body.woocommerce #content table.cart a.remove:hover,body.woocommerce table.cart a.remove:hover,body.woocommerce-page #content table.cart a.remove:hover,body.woocommerce-page table.cart a.remove:hover',
+			'prop' => 'background-color',
+		),
+		
+		'end_accent_acc' => $themify_customizer->accordion_end(),
 		// Accordion End   ---------------------------
 
 		// Accordion Start ---------------------------
@@ -315,6 +236,25 @@ function themify_theme_customizer_definition( $args ) {
 			),
 			'selector' => '#header a:hover',
 			'prop' => 'color',
+		),
+
+		'header_top_widgets_background' => array(
+			'control' => array(
+				'label'   => __( 'Header Top Widgets', 'themify' ),
+				'type'    => 'Themify_Background_Control',
+				'active_callback' => 'themify_is_header_top_widgets',
+			),
+			'selector' => '.header-widget-full',
+			'prop' => 'background',
+		),
+
+		'header_top_widgets_font' => array(
+			'control' => array(
+				'type'    => 'Themify_Font_Control',
+				'active_callback' => 'themify_is_header_top_widgets',
+			),
+			'selector' => '.header-widget-full',
+			'prop' => 'font',
 		),
 
 		'end_header_acc' => $themify_customizer->accordion_end(),
@@ -903,7 +843,7 @@ function themify_theme_customizer_definition( $args ) {
 				'type'    => 'Themify_Logo_Control',
 				'label'   => __( 'Footer Logo', 'themify' ),
 			),
-			'selector' => '#footer-logo',
+			'selector' => '#footer-logo, #footer #footer-logo a',
 			'prop' => 'logo',
 		),
 

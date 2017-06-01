@@ -126,7 +126,7 @@ $paged = $this->get_paged_query();
 		$args = apply_filters("themify_builder_module_{$mod_name}_query_args", $args, $fields_args);
 		$posts = $the_query->query($args);
 		?>
-		<div class="builder-posts-wrap portfolio clearfix loops-wrapper <?php echo $layout_portfolio ?>">
+		<div class="builder-posts-wrap portfolio clearfix loops-wrapper <?php echo apply_filters('themify_builder_module_loops_wrapper', $layout_portfolio) ?>">
 			<?php
 			// check if theme loop template exists
 			$is_theme_template = $this->is_loop_template_exist('loop-portfolio.php', 'includes');

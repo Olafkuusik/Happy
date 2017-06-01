@@ -51,7 +51,6 @@ var ytp = ytp || {};
                         'rel': 0,
                         'disablekb': '',
                         'fs': false,
-                        'playlist': YTPlayer.videoID,
                         'loop': YTPlayer.opt.loop,
                         'enablejsapi': 1,
                         'version': 3,
@@ -132,7 +131,6 @@ var ytp = ytp || {};
                                 YTPlayer.preventTrigger = false;
                                 return;
                             }
-
                             YTPlayer.state = state;
 
                             var eventType;
@@ -142,10 +140,13 @@ var ytp = ytp || {};
                                     break;
                                 case 0: //------------------------------------------------ ended
                                     eventType = "YTPEnd";
+                                    if(YTPlayer.opt.loop){
+                                       YTPlayer.player.seekTo(0);
+                                    }
                                     break;
                                 case 1: //------------------------------------------------ play
                                     eventType = "YTPPlay";
-
+                                    break;
                                 case 2: //------------------------------------------------ pause
                                     eventType = "YTPPause";
                                     break;
@@ -155,8 +156,6 @@ var ytp = ytp || {};
                                     break;
                                 case 5: //------------------------------------------------ cued
                                     eventType = "YTPCued";
-                                    break;
-                                default:
                                     break;
                             }
 
@@ -507,8 +506,7 @@ var ytp = ytp || {};
             if (YTPlayer.opt.mute) {
                 $(YTPlayer).ThemifyYTBMute();
             }
-            YTPlayer.player.playVideo();
-            YTPlayer.player.seekTo((YTPlayer.opt.startAt ? YTPlayer.opt.startAt : 1), true);
+            YTPlayer.player.seekTo((YTPlayer.opt.startAt ? YTPlayer.opt.startAt : 1), false);
         },
         /**
          *

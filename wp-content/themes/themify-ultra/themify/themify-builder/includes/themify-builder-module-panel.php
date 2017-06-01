@@ -54,6 +54,10 @@ if ( isset( $post ) && $post->post_status == 'auto-draft' ) $helper_class[] = 't
 	</ul>
 
 	<div class="tb_toolbar_save_wrap">
+		<?php if( ! empty( $_POST['post_id'] ) ): ?>
+			<div class="tb_toolbar_backend_edit"><a href="<?php echo get_edit_post_link( $_POST['post_id'] ); ?>" id="themify_builder_switch_backend"><i class="ti-arrow-left"></i><?php esc_html_e( 'Edit in backend', 'themify' ); ?></a></div>
+		<?php endif; ?>
+
 		<div class="tb_toolbar_close">
 			<a href="#"  class="tb_tooltip tb_toolbar_close_btn"><i class="ti-close"></i><span><?php esc_html_e( 'Close', 'themify' );?></span></a>
 		</div>

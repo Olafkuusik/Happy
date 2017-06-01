@@ -67,6 +67,12 @@ global $themify;
 		?>
 		<?php if (have_posts()) : ?>
 
+			<?php 
+			// Show filter
+			if ( 'slider' !== $themify->post_layout &&  $themify->post_filter == 'yes' ) {
+				get_template_part( 'includes/filter', 'portfolio' );
+			} ?>
+
 			<!-- loops-wrapper -->
 			<div id="loops-wrapper" class="loops-wrapper <?php echo esc_attr( themify_theme_query_classes() ); ?>">
 

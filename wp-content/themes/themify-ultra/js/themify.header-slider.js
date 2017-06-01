@@ -113,12 +113,12 @@
 	    if($('#gallery-controller').length > 0){
 			
 		if('object-fit' in document.body.style===false) {  
-		   Themify.LoadAsync(themify_vars.url + '/js/backstretch.js',null,null, null, function(){
+		   Themify.LoadAsync(themify_vars.url + '/js/backstretch.min.js',null,null, null, function(){
 	        	return ('undefined' !== typeof $.fn.backstretch);
 			});
 		}
 		
-	    Themify.LoadAsync(themify_vars.url+'/js/carousel.js',ThemifyGallerySlider, null, null, function(){
+	    Themify.LoadAsync(themify_vars.url+'/js/carousel.min.js',ThemifyGallerySlider, null, null, function(){
 	        	return ('undefined' !== typeof $.fn.carouFredSel);
 	        });
 	    }

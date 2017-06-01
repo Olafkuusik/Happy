@@ -18,49 +18,6 @@ class TB_Text_Module extends Themify_Builder_Module {
 		return $return;
 	}
 
-	private function get_heading_margin_multi_field( $h_level = 'h1', $margin_side = 'top' ) {
-		$h_level = strtolower( $h_level );
-		$margin_side = strtolower( $margin_side );
-
-		switch ($margin_side) {
-			case 'bottom':
-				$translated_description = __('bottom', 'themify'); break;
-			case 'left':
-				$translated_description = __('left', 'themify'); break;
-			case 'right':
-				$translated_description = __('right', 'themify'); break;
-			case 'top':
-				$translated_description = __('top', 'themify'); break;
-			default:
-				$translated_description = $margin_side;
-		}
-
-		return array(
-			'id' => 'multi_' . $h_level . '_margin_' . $margin_side,
-			'type' => 'multi',
-			'label' => ('top'===$margin_side ? __('Margin', 'themify') : ''),
-			'fields' => array(
-				array(
-					'id' => $h_level . '_margin_' . $margin_side,
-					'type' => 'text',
-					'class' => 'style_margin style_field xsmall',
-					'prop' => 'margin-' . $margin_side,
-					'selector' => '.module-text ' . $h_level,
-				),
-				array(
-					'id' => $h_level . '_margin_' . $margin_side . '_unit',
-					'type' => 'select',
-					'description' => $translated_description,
-					'meta' => array(
-						array('value' => 'px', 'name' => __('px', 'themify')),
-						array('value' => 'em', 'name' => __('em', 'themify')),
-						array('value' => '%', 'name' => __('%', 'themify'))
-					)
-				),
-			)
-		);
-	}
-
 	public function get_options() {
 		$options = array(
 			array(
@@ -151,16 +108,16 @@ class TB_Text_Module extends Themify_Builder_Module {
 				'title' => '',
 				'description' => '',
 				'type' => 'separator',
-				'meta' => array('html'=>'<h4>'.__('Background', 'themify').'</h4>'),
+				'meta' => array( 'html' => '<h4>' . __( 'Background', 'themify' ) . '</h4>' ),
 			),
 			array(
 				'id' => 'background_image',
 				'type' => 'image_and_gradient',
-				'label' => __('Background Image', 'themify'),
+				'label' => __( 'Background Image', 'themify' ),
 				'class' => 'xlarge',
 				'prop' => 'background-image',
 				'selector' => '.module-text',
-                                'option_js' => true,
+ 				'option_js' => true,
 			),
 			array(
 				'id' => 'background_color',
@@ -170,23 +127,15 @@ class TB_Text_Module extends Themify_Builder_Module {
 				'prop' => 'background-color',
 				'selector' => '.module-text',
 			),
-                       
 			// Background repeat
 			array(
 				'id' 		=> 'background_repeat',
-				'label'		=> __('Background Repeat', 'themify'),
+				'label'		=> __( 'Background Repeat', 'themify' ),
 				'type' 		=> 'select',
-				'default'	=> '',
-				'meta'		=> array(
-					array('value' => 'repeat', 'name' => __('Repeat All', 'themify')),
-					array('value' => 'repeat-x', 'name' => __('Repeat Horizontally', 'themify')),
-					array('value' => 'repeat-y', 'name' => __('Repeat Vertically', 'themify')),
-					array('value' => 'no-repeat', 'name' => __('Do not repeat', 'themify')),
-					array('value' => 'fullcover', 'name' => __('Fullcover', 'themify'))
-				),
+				'meta'		=> Themify_Builder_Model::get_background_options(),
 				'prop' => 'background-repeat',
 				'selector' => '.module-text',
-                                'wrap_with_class' => 'tf-group-element tf-group-element-image',
+				'wrap_with_class' => 'tf-group-element tf-group-element-image',
 			),
 			// Font
 			array(
@@ -201,7 +150,7 @@ class TB_Text_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'font_family',
 				'type' => 'font_select',
-				'label' => __('Font Family', 'themify'),
+				'label' => __( 'Font Family', 'themify' ),
 				'class' => 'font-family-select',
 				'prop' => 'font-family',
 				'selector' => array( '.module-text', '.module-text h1', '.module-text h2', '.module-text h3:not(.module-title)', '.module-text h4', '.module-text h5', '.module-text h6' )
@@ -209,7 +158,7 @@ class TB_Text_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'font_color',
 				'type' => 'color',
-				'label' => __('Font Color', 'themify'),
+				'label' => __( 'Font Color', 'themify' ),
 				'class' => 'small',
 				'prop' => 'color',
 				'selector' => array( '.module-text', '.module-text h1', '.module-text h2', '.module-text h3:not(.module-title)', '.module-text h4', '.module-text h5', '.module-text h6' ),
@@ -217,7 +166,7 @@ class TB_Text_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'multi_font_size',
 				'type' => 'multi',
-				'label' => __('Font Size', 'themify'),
+				'label' => __( 'Font Size', 'themify' ),
 				'fields' => array(
 					array(
 						'id' => 'font_size',
@@ -229,18 +178,15 @@ class TB_Text_Module extends Themify_Builder_Module {
 					array(
 						'id' => 'font_size_unit',
 						'type' => 'select',
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-							array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify')),
-						)
+						'meta' => Themify_Builder_Model::get_css_units(),
+						'default' => 'px'
 					)
 				)
 			),
 			array(
 				'id' => 'multi_line_height',
 				'type' => 'multi',
-				'label' => __('Line Height', 'themify'),
+				'label' => __( 'Line Height', 'themify' ),
 				'fields' => array(
 					array(
 						'id' => 'line_height',
@@ -252,11 +198,8 @@ class TB_Text_Module extends Themify_Builder_Module {
 					array(
 						'id' => 'line_height_unit',
 						'type' => 'select',
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-							array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify')),
-						)
+						'meta' => Themify_Builder_Model::get_css_units(),
+						'default' => 'px'
 					)
 				)
 			),
@@ -264,15 +207,9 @@ class TB_Text_Module extends Themify_Builder_Module {
 				'id' => 'text_align',
 				'label' => __( 'Text Align', 'themify' ),
 				'type' => 'radio',
-				'meta' => array(
-					array( 'value' => '', 'name' => __( 'Default', 'themify' ), 'selected' => true ),
-					array( 'value' => 'left', 'name' => __( 'Left', 'themify' ) ),
-					array( 'value' => 'center', 'name' => __( 'Center', 'themify' ) ),
-					array( 'value' => 'right', 'name' => __( 'Right', 'themify' ) ),
-					array( 'value' => 'justify', 'name' => __( 'Justify', 'themify' ) )
-				),
+				'meta' => Themify_Builder_Model::get_text_align(),
 				'prop' => 'text-align',
-				'selector' => '.module-text'
+				'selector' => '.module-text',
 			),
 			// Link
 			array(
@@ -282,7 +219,7 @@ class TB_Text_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'separator_link',
 				'type' => 'separator',
-				'meta' => array('html'=>'<h4>'.__('Link', 'themify').'</h4>'),
+				'meta' => array( 'html' => '<h4>' . __( 'Link', 'themify' ) . '</h4>'),
 			),
 			array(
 				'id' => 'link_color',
@@ -295,7 +232,7 @@ class TB_Text_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'link_color_hover',
 				'type' => 'color',
-				'label' => __('Color Hover', 'themify'),
+				'label' => __( 'Color Hover', 'themify' ),
 				'class' => 'small',
 				'prop' => 'color',
 				'selector' => '.module-text a:hover'
@@ -304,13 +241,7 @@ class TB_Text_Module extends Themify_Builder_Module {
 				'id' => 'text_decoration',
 				'type' => 'select',
 				'label' => __( 'Text Decoration', 'themify' ),
-				'meta'	=> array(
-					array('value' => '',   'name' => '', 'selected' => true),
-					array('value' => 'underline',   'name' => __('Underline', 'themify')),
-					array('value' => 'overline', 'name' => __('Overline', 'themify')),
-					array('value' => 'line-through',  'name' => __('Line through', 'themify')),
-					array('value' => 'none',  'name' => __('None', 'themify'))
-				),
+				'meta'	=> Themify_Builder_Model::get_text_decoration(),
 				'prop' => 'text-decoration',
 				'selector' => '.module-text a'
 			),
@@ -318,19 +249,20 @@ class TB_Text_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'separator_multi_columns',
 				'type' => 'separator',
-				'meta' => array('html'=>'<hr><h4>' . __( 'Multi-columns', 'themify' ) . '</h4>'),
+				'meta' => array( 'html' => '<hr><h4>' . __( 'Multi-columns', 'themify' ) . '</h4>' )
 			),
 			array(
 				'id' => 'column_count',
 				'type' => 'select',
-				'label' =>__('Column Count', 'themify'),
+				'label' => __( 'Column Count', 'themify' ),
 				'meta' => array(
+					array( 'value' => '', 'name' => '' ),
 					array( 'value' => 1, 'name' => 1 ),
 					array( 'value' => 2, 'name' => 2 ),
 					array( 'value' => 3, 'name' => 3 ),
 					array( 'value' => 4, 'name' => 4 ),
 					array( 'value' => 5, 'name' => 5 ),
-					array( 'value' => 6, 'name' => 6 ),
+					array( 'value' => 6, 'name' => 6 )
 				),
 				'prop' => 'column-count',
 				'selector' => '.module-text'
@@ -366,129 +298,29 @@ class TB_Text_Module extends Themify_Builder_Module {
 					array(
 						'id' => 'column_divider_style',
 						'type' => 'select',
-						'meta' => Themify_Builder_model::get_border_styles(),
+						'meta' => Themify_Builder_Model::get_border_styles(),
 						'class' => 'style_field_select',
 						'prop' => 'column-rule-style',
 						'selector' => '.module-text',
+						'default' => 'solid',
 					)
 				)
 			),
 			// Padding
 			array(
 				'type' => 'separator',
-				'meta' => array('html'=>'<hr />')
+				'meta' => array( 'html' => '<hr />' )
 			),
 			array(
 				'id' => 'separator_padding',
 				'type' => 'separator',
-				'meta' => array('html'=>'<h4>'.__('Padding', 'themify').'</h4>'),
+				'meta' => array( 'html' => '<h4>' . __( 'Padding', 'themify' ) . '</h4>' ),
 			),
-			array(
-				'id' => 'multi_padding_top',
-				'type' => 'multi',
-				'label' => __('Padding', 'themify'),
-				'fields' => array(
-					array(
-						'id' => 'padding_top',
-						'type' => 'text',
-						'class' => 'style_padding style_field xsmall',
-						'prop' => 'padding-top',
-						'selector' => '.module-text',
-					),
-					array(
-						'id' => 'padding_top_unit',
-						'type' => 'select',
-						'description' => __('top', 'themify'),
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify'))
-						)
-					),
-				)
-			),
-			array(
-				'id' => 'multi_padding_right',
-				'type' => 'multi',
-				'label' => '',
-				'fields' => array(
-					array(
-						'id' => 'padding_right',
-						'type' => 'text',
-						'class' => 'style_padding style_field xsmall',
-						'prop' => 'padding-right',
-						'selector' => '.module-text',
-					),
-					array(
-						'id' => 'padding_right_unit',
-						'type' => 'select',
-						'description' => __('right', 'themify'),
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify'))
-						)
-					),
-				)
-			),
-			array(
-				'id' => 'multi_padding_bottom',
-				'type' => 'multi',
-				'label' => '',
-				'fields' => array(
-					array(
-						'id' => 'padding_bottom',
-						'type' => 'text',
-						'class' => 'style_padding style_field xsmall',
-						'prop' => 'padding-bottom',
-						'selector' => '.module-text',
-					),
-					array(
-						'id' => 'padding_bottom_unit',
-						'type' => 'select',
-						'description' => __('bottom', 'themify'),
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify'))
-						)
-					),
-				)
-			),
-			array(
-				'id' => 'multi_padding_left',
-				'type' => 'multi',
-				'label' => '',
-				'fields' => array(
-					array(
-						'id' => 'padding_left',
-						'type' => 'text',
-						'class' => 'style_padding style_field xsmall',
-						'prop' => 'padding-left',
-						'selector' => '.module-text',
-					),
-					array(
-						'id' => 'padding_left_unit',
-						'type' => 'select',
-						'description' => __('left', 'themify'),
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify'))
-						)
-					),
-				)
-			),
-			// "Apply all" // apply all padding
-			array(
-				'id' => 'checkbox_padding_apply_all',
-				'class' => 'style_apply_all style_apply_all_padding',
-				'type' => 'checkbox',
-				'label' => false,
-				'options' => array(
-					array( 'name' => 'padding', 'value' => __( 'Apply to all padding', 'themify' ) )
-				)
-			),
+			Themify_Builder_Model::get_field_group( 'padding', '.module-text', 'top' ),
+			Themify_Builder_Model::get_field_group( 'padding', '.module-text', 'right' ),
+			Themify_Builder_Model::get_field_group( 'padding', '.module-text', 'bottom' ),
+			Themify_Builder_Model::get_field_group( 'padding', '.module-text', 'left' ),
+			Themify_Builder_Model::get_field_group( 'padding', '.module-text', 'all' ),
 			// Margin
 			array(
 				'type' => 'separator',
@@ -497,114 +329,14 @@ class TB_Text_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'separator_margin',
 				'type' => 'separator',
-				'meta' => array('html'=>'<h4>'.__('Margin', 'themify').'</h4>'),
+				'meta' => array( 'html' => '<h4>' . __( 'Margin', 'themify') . '</h4>' ),
 			),
-			array(
-				'id' => 'multi_margin_top',
-				'type' => 'multi',
-				'label' => __('Margin', 'themify'),
-				'fields' => array(
-					array(
-						'id' => 'margin_top',
-						'type' => 'text',
-						'class' => 'style_margin style_field xsmall',
-						'prop' => 'margin-top',
-						'selector' => '.module-text',
-					),
-					array(
-						'id' => 'margin_top_unit',
-						'type' => 'select',
-						'description' => __('top', 'themify'),
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify'))
-						)
-					),
-				)
-			),
-			array(
-				'id' => 'multi_margin_right',
-				'type' => 'multi',
-				'label' => '',
-				'fields' => array(
-					array(
-						'id' => 'margin_right',
-						'type' => 'text',
-						'class' => 'style_margin style_field xsmall',
-						'prop' => 'margin-right',
-						'selector' => '.module-text',
-					),
-					array(
-						'id' => 'margin_right_unit',
-						'type' => 'select',
-						'description' => __('right', 'themify'),
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify'))
-						)
-					),
-				)
-			),
-			array(
-				'id' => 'multi_margin_bottom',
-				'type' => 'multi',
-				'label' => '',
-				'fields' => array(
-					array(
-						'id' => 'margin_bottom',
-						'type' => 'text',
-						'class' => 'style_margin style_field xsmall',
-						'prop' => 'margin-bottom',
-						'selector' => '.module-text',
-					),
-					array(
-						'id' => 'margin_bottom_unit',
-						'type' => 'select',
-						'description' => __('bottom', 'themify'),
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify'))
-						)
-					),
-				)
-			),
-			array(
-				'id' => 'multi_margin_left',
-				'type' => 'multi',
-				'label' => '',
-				'fields' => array(
-					array(
-						'id' => 'margin_left',
-						'type' => 'text',
-						'class' => 'style_margin style_field xsmall',
-						'prop' => 'margin-left',
-						'selector' => '.module-text',
-					),
-					array(
-						'id' => 'margin_left_unit',
-						'type' => 'select',
-						'description' => __('left', 'themify'),
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-                                                        array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify'))
-						)
-					),
-				)
-			),
-			// "Apply all" // apply all margin
-			array(
-				'id' => 'checkbox_margin_apply_all',
-				'class' => 'style_apply_all style_apply_all_margin',
-				'type' => 'checkbox',
-				'label' => false,
-				'options' => array(
-					array( 'name' => 'margin', 'value' => __( 'Apply to all margin', 'themify' ) )
-				)
-			),
+			Themify_Builder_Model::get_field_group( 'margin', '.module-text', 'top' ),
+			Themify_Builder_Model::get_field_group( 'margin', '.module-text', 'right' ),
+			Themify_Builder_Model::get_field_group( 'margin', '.module-text', 'bottom' ),
+			Themify_Builder_Model::get_field_group( 'margin', '.module-text', 'left' ),
+			Themify_Builder_Model::get_field_group( 'margin', '.module-text', 'all' ),
+			// Border
 			// Border
 			array(
 				'type' => 'separator',
@@ -613,589 +345,87 @@ class TB_Text_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'separator_border',
 				'type' => 'separator',
-				'meta' => array('html'=>'<h4>'.__('Border', 'themify').'</h4>'),
+				'meta' => array( 'html' => '<h4>' . __( 'Border', 'themify' ) . '</h4>' )
 			),
-			array(
-				'id' => 'multi_border_top',
-				'type' => 'multi',
-				'label' => __('Border', 'themify'),
-				'fields' => array(
-					array(
-						'id' => 'border_top_color',
-						'type' => 'color',
-						'class' => 'small',
-						'prop' => 'border-top-color',
-						'selector' => '.module-text',
-					),
-					array(
-						'id' => 'border_top_width',
-						'type' => 'text',
-						'description' => 'px',
-						'class' => 'style_border style_field xsmall',
-						'prop' => 'border-top-width',
-						'selector' => '.module-text',
-					),
-					array(
-						'id' => 'border_top_style',
-						'type' => 'select',
-						'description' => __('top', 'themify'),
-						'meta' => Themify_Builder_model::get_border_styles(),
-						'prop' => 'border-top-style',
-						'selector' => '.module-text',
-					),
-				)
-			),
-			array(
-				'id' => 'multi_border_right',
-				'type' => 'multi',
-				'label' => '',
-				'fields' => array(
-					array(
-						'id' => 'border_right_color',
-						'type' => 'color',
-						'class' => 'small',
-						'prop' => 'border-right-color',
-						'selector' => '.module-text',
-					),
-					array(
-						'id' => 'border_right_width',
-						'type' => 'text',
-						'description' => 'px',
-						'class' => 'style_border style_field xsmall',
-						'prop' => 'border-right-width',
-						'selector' => '.module-text',
-					),
-					array(
-						'id' => 'border_right_style',
-						'type' => 'select',
-						'description' => __('right', 'themify'),
-						'meta' => Themify_Builder_model::get_border_styles(),
-						'prop' => 'border-right-style',
-						'selector' => '.module-text',
-					)
-				)
-			),
-			array(
-				'id' => 'multi_border_bottom',
-				'type' => 'multi',
-				'label' => '',
-				'fields' => array(
-					array(
-						'id' => 'border_bottom_color',
-						'type' => 'color',
-						'class' => 'small',
-						'prop' => 'border-bottom-color',
-						'selector' => '.module-text',
-					),
-					array(
-						'id' => 'border_bottom_width',
-						'type' => 'text',
-						'description' => 'px',
-						'class' => 'style_border style_field xsmall',
-						'prop' => 'border-bottom-width',
-						'selector' => '.module-text',
-					),
-					array(
-						'id' => 'border_bottom_style',
-						'type' => 'select',
-						'description' => __('bottom', 'themify'),
-						'meta' => Themify_Builder_model::get_border_styles(),
-						'prop' => 'border-bottom-style',
-						'selector' => '.module-text',
-					)
-				)
-			),
-			array(
-				'id' => 'multi_border_left',
-				'type' => 'multi',
-				'label' => '',
-				'fields' => array(
-					array(
-						'id' => 'border_left_color',
-						'type' => 'color',
-						'class' => 'small',
-						'prop' => 'border-left-color',
-						'selector' => '.module-text',
-					),
-					array(
-						'id' => 'border_left_width',
-						'type' => 'text',
-						'description' => 'px',
-						'class' => 'style_border style_field xsmall',
-						'prop' => 'border-left-width',
-						'selector' => '.module-text',
-					),
-					array(
-						'id' => 'border_left_style',
-						'type' => 'select',
-						'description' => __('left', 'themify'),
-						'meta' => Themify_Builder_model::get_border_styles(),
-						'prop' => 'border-left-style',
-						'selector' => '.module-text',
-					)
-				)
-			),
-			// "Apply all" // apply all border
-			array(
-				'id' => 'checkbox_border_apply_all',
-				'class' => 'style_apply_all style_apply_all_border',
-				'type' => 'checkbox',
-				'label' => false,
-                                'default'=>'border',
-				'options' => array(
-					array( 'name' => 'border', 'value' => __( 'Apply to all border', 'themify' ) )
-				)
-			)
+			Themify_Builder_Model::get_field_group( 'border', '.module-text', 'top' ),
+			Themify_Builder_Model::get_field_group( 'border', '.module-text', 'right' ),
+			Themify_Builder_Model::get_field_group( 'border', '.module-text', 'bottom' ),
+			Themify_Builder_Model::get_field_group( 'border', '.module-text', 'left' ),
+			Themify_Builder_Model::get_field_group( 'border', '.module-text', 'all' )
 		);
 
-		$heading = array(
-			// Font H1
-			array(
-				'id' => 'separator_font',
-				'type' => 'separator',
-				'meta' => array('html'=>'<h4>'.__('Heading 1 Font', 'themify').'</h4>'),
-			),
-			array(
-				'id' => 'font_family_h1',
-				'type' => 'font_select',
-				'label' => __('Font Family', 'themify'),
-				'class' => 'font-family-select',
-				'prop' => 'font-family',
-				'selector' => '.module.module-text h1'
-			),
-			array(
-				'id' => 'font_color_h1',
-				'type' => 'color',
-				'label' => __('Font Color', 'themify'),
-				'class' => 'small',
-				'prop' => 'color',
-				'selector' => '.module.module-text h1'
-			),
-			array(
-				'id' => 'multi_font_size_h1',
-				'type' => 'multi',
-				'label' => __('Font Size', 'themify'),
-				'fields' => array(
-					array(
-						'id' => 'font_size_h1',
-						'type' => 'text',
-						'class' => 'xsmall',
-						'prop' => 'font-size',
-						'selector' => '.module-text h1'
-					),
-					array(
-						'id' => 'font_size_h1_unit',
-						'type' => 'select',
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-							array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify')),
+		$heading = array();
+
+		while( count( $heading ) < 6 ) {
+			$size = count( $heading ) + 1;
+			$selector = '.module.module-text h' . $size;
+			$heading[] = array(
+				// Font H1
+				array(
+					'id' => 'separator_font',
+					'type' => 'separator',
+					'meta' => array( 'html' => '<h4>' . sprintf( __( 'Heading %s Font', 'themify'), $size ) . '</h4>' ),
+				),
+				array(
+					'id' => 'font_family_h' . $size,
+					'type' => 'font_select',
+					'label' => __( 'Font Family', 'themify' ),
+					'class' => 'font-family-select',
+					'prop' => 'font-family',
+					'selector' => $selector
+				),
+				array(
+					'id' => 'font_color_h' . $size,
+					'type' => 'color',
+					'label' => __( 'Font Color', 'themify' ),
+					'class' => 'small',
+					'prop' => 'color',
+					'selector' => $selector
+				),
+				array(
+					'id' => 'multi_font_size_h' . $size,
+					'type' => 'multi',
+					'label' => __( 'Font Size', 'themify' ),
+					'fields' => array(
+						array(
+							'id' => 'font_size_h' . $size,
+							'type' => 'text',
+							'class' => 'xsmall',
+							'prop' => 'font-size',
+							'selector' => $selector
+						),
+						array(
+							'id' => 'font_size_h' . $size . '_unit',
+							'type' => 'select',
+							'meta' => Themify_Builder_Model::get_css_units(),
+							'default' => 'px'
 						)
 					)
-				)
-			),
-			array(
-				'id' => 'multi_line_height_h1',
-				'type' => 'multi',
-				'label' => __('Line Height', 'themify'),
-				'fields' => array(
-					array(
-						'id' => 'line_height_h1',
-						'type' => 'text',
-						'class' => 'xsmall',
-						'prop' => 'line-height',
-						'selector' => '.module-text h1'
-					),
-					array(
-						'id' => 'line_height_h1_unit',
-						'type' => 'select',
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-							array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify')),
+				),
+				array(
+					'id' => 'multi_line_height_h' . $size,
+					'type' => 'multi',
+					'label' => __('Line Height', 'themify'),
+					'fields' => array(
+						array(
+							'id' => 'line_height_h' . $size,
+							'type' => 'text',
+							'class' => 'xsmall',
+							'prop' => 'line-height',
+							'selector' => $selector
+						),
+						array(
+							'id' => 'line_height_h' . $size . '_unit',
+							'type' => 'select',
+							'meta' => Themify_Builder_Model::get_css_units(),
+							'default' => 'px'
 						)
 					)
-				)
-			),
-			// Heading 1 Margin
-			$this->get_heading_margin_multi_field( 'h1', 'top' ),
-			$this->get_heading_margin_multi_field( 'h1', 'bottom' ),
-			// Font H2
-			array(
-				'type' => 'separator',
-				'meta' => array('html'=>'<hr />')
-			),
-			array(
-				'id' => 'separator_font',
-				'type' => 'separator',
-				'meta' => array('html'=>'<h4>'.__('Heading 2 Font', 'themify').'</h4>'),
-			),
-			array(
-				'id' => 'font_family_h2',
-				'type' => 'font_select',
-				'label' => __('Font Family', 'themify'),
-				'class' => 'font-family-select',
-				'prop' => 'font-family',
-				'selector' => '.module.module-text h2'
-			),
-			array(
-				'id' => 'font_color_h2',
-				'type' => 'color',
-				'label' => __('Font Color', 'themify'),
-				'class' => 'small',
-				'prop' => 'color',
-				'selector' => '.module.module-text h2'
-			),
-			array(
-				'id' => 'multi_font_size_h2',
-				'type' => 'multi',
-				'label' => __('Font Size', 'themify'),
-				'fields' => array(
-					array(
-						'id' => 'font_size_h2',
-						'type' => 'text',
-						'class' => 'xsmall',
-						'prop' => 'font-size',
-						'selector' => '.module-text h2'
-					),
-					array(
-						'id' => 'font_size_h2_unit',
-						'type' => 'select',
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-							array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify')),
-						)
-					)
-				)
-			),
-			array(
-				'id' => 'multi_line_height_h2',
-				'type' => 'multi',
-				'label' => __('Line Height', 'themify'),
-				'fields' => array(
-					array(
-						'id' => 'line_height_h2',
-						'type' => 'text',
-						'class' => 'xsmall',
-						'prop' => 'line-height',
-						'selector' => '.module-text h2'
-					),
-					array(
-						'id' => 'line_height_h2_unit',
-						'type' => 'select',
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-							array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify')),
-						)
-					)
-				)
-			),
-			// Heading 2 Margin
-			$this->get_heading_margin_multi_field( 'h2', 'top' ),
-			$this->get_heading_margin_multi_field( 'h2', 'bottom' ),
-			// Font H3
-			array(
-				'type' => 'separator',
-				'meta' => array('html'=>'<hr />')
-			),
-			array(
-				'id' => 'separator_font',
-				'type' => 'separator',
-				'meta' => array('html'=>'<h4>'.__('Heading 3 Font', 'themify').'</h4>'),
-			),
-			array(
-				'id' => 'font_family_h3',
-				'type' => 'font_select',
-				'label' => __('Font Family', 'themify'),
-				'class' => 'font-family-select',
-				'prop' => 'font-family',
-				'selector' => '.module.module-text h3'
-			),
-			array(
-				'id' => 'font_color_h3',
-				'type' => 'color',
-				'label' => __('Font Color', 'themify'),
-				'class' => 'small',
-				'prop' => 'color',
-				'selector' => '.module.module-text h3'
-			),
-			array(
-				'id' => 'multi_font_size_h3',
-				'type' => 'multi',
-				'label' => __('Font Size', 'themify'),
-				'fields' => array(
-					array(
-						'id' => 'font_size_h3',
-						'type' => 'text',
-						'class' => 'xsmall',
-						'prop' => 'font-size',
-						'selector' => '.module-text h3'
-					),
-					array(
-						'id' => 'font_size_h3_unit',
-						'type' => 'select',
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-							array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify')),
-						)
-					)
-				)
-			),
-			array(
-				'id' => 'multi_line_height_h3',
-				'type' => 'multi',
-				'label' => __('Line Height', 'themify'),
-				'fields' => array(
-					array(
-						'id' => 'line_height_h3',
-						'type' => 'text',
-						'class' => 'xsmall',
-						'prop' => 'line-height',
-						'selector' => '.module-text h3'
-					),
-					array(
-						'id' => 'line_height_h3_unit',
-						'type' => 'select',
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-							array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify')),
-						)
-					)
-				)
-			),
-			// Heading 3 Margin
-			$this->get_heading_margin_multi_field( 'h3', 'top' ),
-			$this->get_heading_margin_multi_field( 'h3', 'bottom' ),
-			// Font H4
-			array(
-				'type' => 'separator',
-				'meta' => array('html'=>'<hr />')
-			),
-			array(
-				'id' => 'separator_font',
-				'type' => 'separator',
-				'meta' => array('html'=>'<h4>'.__('Heading 4 Font', 'themify').'</h4>'),
-			),
-			array(
-				'id' => 'font_family_h4',
-				'type' => 'font_select',
-				'label' => __('Font Family', 'themify'),
-				'class' => 'font-family-select',
-				'prop' => 'font-family',
-				'selector' => '.module.module-text h4'
-			),
-			array(
-				'id' => 'font_color_h4',
-				'type' => 'color',
-				'label' => __('Font Color', 'themify'),
-				'class' => 'small',
-				'prop' => 'color',
-				'selector' => '.module.module-text h4'
-			),
-			array(
-				'id' => 'multi_font_size_h4',
-				'type' => 'multi',
-				'label' => __('Font Size', 'themify'),
-				'fields' => array(
-					array(
-						'id' => 'font_size_h4',
-						'type' => 'text',
-						'class' => 'xsmall',
-						'prop' => 'font-size',
-						'selector' => '.module-text h4'
-					),
-					array(
-						'id' => 'font_size_h4_unit',
-						'type' => 'select',
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-							array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify')),
-						)
-					)
-				)
-			),
-			array(
-				'id' => 'multi_line_height_h4',
-				'type' => 'multi',
-				'label' => __('Line Height', 'themify'),
-				'fields' => array(
-					array(
-						'id' => 'line_height_h4',
-						'type' => 'text',
-						'class' => 'xsmall',
-						'prop' => 'line-height',
-						'selector' => '.module-text h4'
-					),
-					array(
-						'id' => 'line_height_h4_unit',
-						'type' => 'select',
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-							array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify')),
-						)
-					)
-				)
-			),
-			// Heading 3 Margin
-			$this->get_heading_margin_multi_field( 'h4', 'top' ),
-			$this->get_heading_margin_multi_field( 'h4', 'bottom' ),
-			// Font H5
-			array(
-				'type' => 'separator',
-				'meta' => array('html'=>'<hr />')
-			),
-			array(
-				'id' => 'separator_font',
-				'type' => 'separator',
-				'meta' => array('html'=>'<h4>'.__('Heading 5 Font', 'themify').'</h4>'),
-			),
-			array(
-				'id' => 'font_family_h5',
-				'type' => 'font_select',
-				'label' => __('Font Family', 'themify'),
-				'class' => 'font-family-select',
-				'prop' => 'font-family',
-				'selector' => '.module.module-text h5'
-			),
-			array(
-				'id' => 'font_color_h5',
-				'type' => 'color',
-				'label' => __('Font Color', 'themify'),
-				'class' => 'small',
-				'prop' => 'color',
-				'selector' => '.module.module-text h5'
-			),
-			array(
-				'id' => 'multi_font_size_h5',
-				'type' => 'multi',
-				'label' => __('Font Size', 'themify'),
-				'fields' => array(
-					array(
-						'id' => 'font_size_h5',
-						'type' => 'text',
-						'class' => 'xsmall',
-						'prop' => 'font-size',
-						'selector' => '.module-text h5'
-					),
-					array(
-						'id' => 'font_size_h5_unit',
-						'type' => 'select',
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-							array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify')),
-						)
-					)
-				)
-			),
-			array(
-				'id' => 'multi_line_height_h5',
-				'type' => 'multi',
-				'label' => __('Line Height', 'themify'),
-				'fields' => array(
-					array(
-						'id' => 'line_height_h5',
-						'type' => 'text',
-						'class' => 'xsmall',
-						'prop' => 'line-height',
-						'selector' => '.module-text h5'
-					),
-					array(
-						'id' => 'line_height_h5_unit',
-						'type' => 'select',
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-							array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify')),
-						)
-					)
-				)
-			),
-			// Heading 5 Margin
-			$this->get_heading_margin_multi_field( 'h5', 'top' ),
-			$this->get_heading_margin_multi_field( 'h5', 'bottom' ),
-			// Font H6
-			array(
-				'type' => 'separator',
-				'meta' => array('html'=>'<hr />')
-			),
-			array(
-				'id' => 'separator_font',
-				'type' => 'separator',
-				'meta' => array('html'=>'<h4>'.__('Heading 6 Font', 'themify').'</h4>'),
-			),
-			array(
-				'id' => 'font_family_h6',
-				'type' => 'font_select',
-				'label' => __('Font Family', 'themify'),
-				'class' => 'font-family-select',
-				'prop' => 'font-family',
-				'selector' => '.module.module-text h6'
-			),
-			array(
-				'id' => 'font_color_h6',
-				'type' => 'color',
-				'label' => __('Font Color', 'themify'),
-				'class' => 'small',
-				'prop' => 'color',
-				'selector' => '.module.module-text h6'
-			),
-			array(
-				'id' => 'multi_font_size_h6',
-				'type' => 'multi',
-				'label' => __('Font Size', 'themify'),
-				'fields' => array(
-					array(
-						'id' => 'font_size_h6',
-						'type' => 'text',
-						'class' => 'xsmall',
-						'prop' => 'font-size',
-						'selector' => '.module-text h6'
-					),
-					array(
-						'id' => 'font_size_h6_unit',
-						'type' => 'select',
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-							array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify')),
-						)
-					)
-				)
-			),
-			array(
-				'id' => 'multi_line_height_h6',
-				'type' => 'multi',
-				'label' => __('Line Height', 'themify'),
-				'fields' => array(
-					array(
-						'id' => 'line_height_h6',
-						'type' => 'text',
-						'class' => 'xsmall',
-						'prop' => 'line-height',
-						'selector' => '.module-text h6'
-					),
-					array(
-						'id' => 'line_height_h6_unit',
-						'type' => 'select',
-						'meta' => array(
-							array('value' => 'px', 'name' => __('px', 'themify')),
-							array('value' => 'em', 'name' => __('em', 'themify')),
-							array('value' => '%', 'name' => __('%', 'themify')),
-						)
-					)
-				)
-			),
-			// Heading 6 Margin
-			$this->get_heading_margin_multi_field( 'h6', 'top' ),
-			$this->get_heading_margin_multi_field( 'h6', 'bottom' ),
-		);
+				),
+				Themify_Builder_Model::get_field_group( 'margin', $selector, 'top', 'h' . $size ),
+				Themify_Builder_Model::get_field_group( 'margin', $selector, 'bottom', 'h' . $size )
+			);
+		}
 
 		return array(
 			array(
@@ -1203,12 +433,16 @@ class TB_Text_Module extends Themify_Builder_Module {
 				'id' => 'module-styling',
 				'tabs' => array(
 					'general' => array(
-		        	'label' => __('General', 'themify'),
-					'fields' => $general
+						'label' => __( 'General', 'themify' ),
+						'fields' => $general
+					),
+					'module-title' => array(
+						'label' => __( 'Module Title', 'themify' ),
+						'fields' => Themify_Builder_Model::module_title_custom_style( $this->slug )
 					),
 					'heading' => array(
-						'label' => __('Heading', 'themify'),
-						'fields' => $heading
+						'label' => __( 'Heading', 'themify' ),
+						'fields' => call_user_func_array( 'array_merge', $heading )
 					)
 				)
 			),

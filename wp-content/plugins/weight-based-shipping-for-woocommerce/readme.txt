@@ -43,11 +43,32 @@ See <a href="https://wordpress.org/plugins/weight-based-shipping-for-woocommerce
 <br><br>
 
 <blockquote>
-    Also, check out our <a href="http://tablerateshipping.com">advanced table rate shipping plugin for WooCommerce</a>.<br>
+    Also, check out our <a href="https://tablerateshipping.com">advanced table rate shipping plugin for WooCommerce</a>.<br>
     <br>
 </blockquote>
 
+
 == Changelog ==
+
+= 5.0.8 =
+* Fix IE11 error preventing from adding/importing rules
+
+= 5.0.7 =
+* Fix welcome screen buttons appearance in WP 4.7.5
+
+= 5.0.6 =
+* A bunch of minor fixes
+
+= 5.0.5 =
+* Fix PHP 5.3.x error while importing legacy rules
+* Fix WooCommerce 3.x deprecation notice about get_variation_id
+
+= 5.0.4 =
+* Fix WooCommerce 3.x deprecation notices
+* Deactivate other active versions of the plugin upon activation (fixed)
+
+= 5.0.3-beta =
+* Fix 'fatal error: call to undefined function Wbs\wc_get_shipping_method_count()'
 
 = 5.0.2-beta =
 * Avoid conflicts with other plugins using same libraries
@@ -165,14 +186,6 @@ See <a href="https://wordpress.org/plugins/weight-based-shipping-for-woocommerce
 = 2.2.2 =
 
 Fix "parse error: syntax error, unexpected T_FUNCTION in woocommerce-weight-based-shipping.php on line 610" http://wordpress.org/support/topic/fatal-error-1164.
-
-= 2.2.1 =
-
-Allow zero weight shipping. Thus only Handling Fee is added to the final price.
-
-Previously, weight based shipping option has not been shown to user if total weight of their cart is zero. Since version 2.2.1 this is changed so shipping option is available to user with price set to Handling Fee. If it does not suite your needs well you can return previous behavior by setting Min Weight to something a bit greater zero, e.g. 0.001, so that zero-weight orders will not match constraints and the shipping option will not be shown.
-
-== Upgrade Notice ==
 
 = 2.2.1 =
 

@@ -373,7 +373,6 @@ var ThemifyBuilderModuleJs;
 			self.rowCover();
 			self.fallbackRowId();
 			self.onInfScr();
-			self.InitScrollHighlight();
 			self.galleryPagination();
 			self.showcaseGallery();
 			self.InitVideoDimension();
@@ -406,6 +405,7 @@ var ThemifyBuilderModuleJs;
             if( $( '.themify_builder .builder-zooming' ).length ) {
                 self.backgroundZooming();
             }
+			self.InitScrollHighlight();
 		},
 		wowInit: function ( callback ) {
 			callback = callback || ThemifyBuilderModuleJs.wowCallback;
@@ -414,7 +414,7 @@ var ThemifyBuilderModuleJs;
 	        		&& $( tbLocalScript.animationInviewSelectors.toString() ).length ) {
 				if (!ThemifyBuilderModuleJs.wow) {
 					Themify.LoadCss( tbLocalScript.builder_url + '/css/animate.min.css', null, null, null, function(){
-						Themify.LoadAsync(themify_vars.url + '/js/wow.js', callback, null, null, function () {
+						Themify.LoadAsync(themify_vars.url + '/js/wow.min.js', callback, null, null, function () {
 							return (ThemifyBuilderModuleJs.wow);
 						});
 					} );
@@ -468,22 +468,28 @@ var ThemifyBuilderModuleJs;
 			$('div.themify_builder_row.fullwidth, div.themify_builder_row.fullwidth_row_container').each(function () {
 				var $this = $( this ),
 					row = $this.closest('.themify_builder_content'),
-					padding = $this.attr( 'data-padding' );
+					padding = $this.data( 'padding' ),
+					margin = $this.data( 'margin' );
 				if( padding == undefined ) {
 					padding = [ parseInt( $this.css( 'paddingLeft' ) ), parseInt( $this.css( 'paddingRight' ) ) ];
-					$this.attr( 'data-padding', padding[0] + ',' + padding[1] );
-				} else {
-					padding = padding.split(',').map( parseFloat );
+					$this.data( 'padding', padding );
 				}
 
+				if( margin == undefined ) {
+					margin = [ parseInt( $this.css( 'marginLeft' ) ), parseInt( $this.css( 'marginRight' ) ) ];
+					$this.data( 'margin', margin );
+				}
+
+				var marginSum = margin[0] + margin[1];
 				var left = row.offset().left - container.offset().left;
 				var right = container.outerWidth() - left - row.outerWidth();
+				var isFullwidth = $this.hasClass( 'fullwidth' );
 				$this.css({
-					'margin-left': -left,
-					'margin-right': -right,
-					'padding-left': $this.hasClass( 'fullwidth' ) ? 0 : left + padding[0],
-					'padding-right': $this.hasClass( 'fullwidth' ) ? 0 : right + padding[1],
-					'width': container.outerWidth() + 'px'
+					'margin-left': -left + ( isFullwidth ? margin[0] : 0 ),
+					'margin-right': -right + ( isFullwidth ? margin[1] : 0 ),
+					'padding-left': isFullwidth ? padding[0] : left + padding[0],
+					'padding-right': isFullwidth ? padding[1] : right + padding[1],
+					'width': container.outerWidth() - ( isFullwidth ? marginSum : 0 ) + 'px'
 				});
 			});
 		},
@@ -681,9 +687,9 @@ var ThemifyBuilderModuleJs;
 				});
 
 				if ($is_local.length > 0) {
-					Themify.LoadAsync(themify_vars.url + '/js/video.js', function () {
+					Themify.LoadAsync(themify_vars.url + '/js/video.min.js', function () {
 						Themify.LoadAsync(
-							themify_vars.url + '/js/bigvideo.js',
+							themify_vars.url + '/js/bigvideo.min.js',
 							function () {
 								self.fullwidthVideoCallBack($is_local);
 							},
@@ -696,14 +702,6 @@ var ThemifyBuilderModuleJs;
 					});
 				}
 
-				if ($is_vimeo.length > 0) {
-					Themify.LoadAsync(
-						tbLocalScript.builder_url + '/js/froogaloop.min.js',
-						function () {
-							self.fullwidthVimeoCallBack($is_vimeo);
-						}
-					);
-				}
 				if ($is_vimeo.length > 0) {
 					Themify.LoadAsync(
 						tbLocalScript.builder_url + '/js/froogaloop.min.js',
@@ -939,7 +937,7 @@ var ThemifyBuilderModuleJs;
 				var $self = this;
 				Themify.LoadAsync(themify_vars.includesURL + 'js/imagesloaded.min.js', function () {
 						if('undefined' === typeof $.fn.carouFredSel){
-							Themify.LoadAsync(themify_vars.url + '/js/carousel.js', function(){
+							Themify.LoadAsync(themify_vars.url + '/js/carousel.min.js', function(){
                                                             $self.carouselCalback(el);
                                                         }, null, null, function () {
 								return ('undefined' !== typeof $.fn.carouFredSel);
@@ -1052,7 +1050,9 @@ var ThemifyBuilderModuleJs;
 						items: $this.data('visible')
 					};
 				}
-
+                                if(self.isBuilderActive()){//temp solution,should be removed in the new version
+					$this.closest('.module-slider').find('.carousel-nav-wrap').remove();
+				}
 				if ($this.data('wrap') == 'no') {
 					$args.circular = false;
 					$args.infinite = false;
@@ -1624,7 +1624,7 @@ var ThemifyBuilderModuleJs;
                             prev = false;
                     function Breakpoints() {
 
-                        var width = window.innerWidth,
+                        var width = document.body.clientWidth,
                                 cl = 'desktop';
                         if (width <= mobile) {
                             cl = 'mobile';

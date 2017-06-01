@@ -288,12 +288,12 @@ class="hide-if none header-horizontal header-leftpane header-minbar boxed-layout
 						<span class="label">' . __( 'Footer Design', 'themify' ) . '</span>';
 		$val = themify_check( $key ) ? themify_get( $key ) : '';
 		foreach ( $design_options as $option ) {
-                        if($option['value']==='default'){
-                            continue;
-                        }
-                        elseif($option['value']==='footer-block'){
-                            $option['selected'] = true;
-                        }
+			if( $option['value'] === 'default' ) {
+				continue;
+			} elseif( $option['value'] === 'footer-block' ) {
+				$option['selected'] = true;
+			}
+			
 			if ( ( '' == $val || ! $val ) && $option['selected'] ) {
 				$val = $option['value'];
 			}
@@ -355,9 +355,6 @@ class="hide-if none header-horizontal header-leftpane header-minbar boxed-layout
 			__('Exclude Back to Top button', 'themify')
 		);
 
-	// End group of elements to hide
-	$html .= '</div><!-- /.group-hide -->';
-
 	$options = array(
 		array(
 			'value' => 'footerwidget-4col',
@@ -383,7 +380,7 @@ class="hide-if none header-horizontal header-leftpane header-minbar boxed-layout
 	);
 	$val = themify_get( 'setting-footer_widgets' );
 		
-	$html .= '<p data-show-if-element="[name=setting-exclude_footer_widgets]" data-show-if-value="false"><span class="label">' . __( 'Footer Widgets', 'themify' ) . '</span>';
+	$html .= '<p class="hide-if none" data-show-if-element="[name=setting-exclude_footer_widgets]" data-show-if-value="false"><span class="label">' . __( 'Footer Widgets', 'themify' ) . '</span>';
 
 	foreach($options as $option){
 		if(('' == $val || !$val || !isset($val)) && isset($option['selected']) && $option['selected']){ 
@@ -402,12 +399,15 @@ class="hide-if none header-horizontal header-leftpane header-minbar boxed-layout
 		
 		// Footer widget position
 		$key = 'setting-footer_widget_position';
-	$html .= '<p><span class="label">' . __( 'Footer Widgets Position', 'themify' ) . '</span>';
+	$html .= '<p class="hide-if none"><span class="label">' . __( 'Footer Widgets Position', 'themify' ) . '</span>';
 		$html.='<select name="' . $key . '">' . themify_options_module( array(
 				array( 'name' => __( 'After Footer Text', 'themify' ), 'value' => '' ),
 				array( 'name' => __( 'Before Footer Text', 'themify' ), 'value' => 'top' ),
 		), $key ) . '
 		</select>';
+
+	// End group of elements to hide
+	$html .= '</div><!-- /.group-hide -->';
 		
 	return $html;
 }
@@ -770,6 +770,15 @@ function themify_default_layout( $data = array() ){
 						), 'setting-post_content_layout' ) . '
 					</select>
 				</p>';
+	
+	/**
+	 * Enable Post Filter
+	 */
+	$output .= '<p><span class="label">' . __( 'Post Filter', 'themify' ) . '</span>
+			<select name="setting-post_filter">' 
+			. themify_options_module( $binary_options, 'setting-post_filter' ) . '
+			</select>
+		</p>';
 
 	/**
 	 * Enable Masonry

@@ -82,7 +82,7 @@ global $themify; ?>
 
 			<?php
 			// Categories for Query Posts or Portfolios
-			$categories = '0' == $themify->query_category? themify_get_all_terms_ids($themify->query_taxonomy) : explode(',', str_replace(' ', '', $themify->query_category));
+			$categories = '0' == $themify->query_category ? themify_get_all_terms_ids( $themify->query_taxonomy ) : explode(',', str_replace(' ', '', $themify->query_category));
 			$qpargs = array(
 				'post_type' => $themify->query_post_type,
 				'tax_query' => array(
@@ -108,7 +108,7 @@ global $themify; ?>
 				/////////////////////////////////////////////
 				// Entry Filter
 				/////////////////////////////////////////////
-				if ( ('portfolio' == $themify->query_post_type || 'post' == $themify->query_post_type )&& ( count( $categories ) > 1 ) && 'slider' !== $themify->post_layout && (!isset($themify->post_filter) || $themify->post_filter=='yes')) : ?>
+				if ( in_array( $themify->query_post_type, array( 'post', 'portfolio' ) ) && ( count( $categories ) > 1 ) && 'slider' !== $themify->post_layout && (!isset($themify->post_filter) || $themify->post_filter=='yes')) : ?>
 					<?php get_template_part( 'includes/filter', 'portfolio' ); ?>
 				<?php endif; // portfolio query ?>
 

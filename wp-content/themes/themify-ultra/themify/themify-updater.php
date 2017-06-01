@@ -612,7 +612,7 @@ function themify_get_member_username_cached() {
 	$username = '';
 
 	if ( isset( $_COOKIE['themify_user_u_v2'] ) ) {
-		$username = decrypt_cookie( $_COOKIE['themify_user_u_v2'], 'themify_user_u_v2' );
+		$username = decrypt_cookie( str_replace(chr(0),'', $_COOKIE['themify_user_u_v2']), 'themify_user_u_v2' );
 	}
 
 	return $username;
@@ -625,7 +625,7 @@ function themify_get_member_password_cached() {
 	$password = '';
 
 	if ( isset( $_COOKIE['themify_user_p_v2'] ) ) {
-		$password = decrypt_cookie( $_COOKIE['themify_user_p_v2'], 'themify_user_p_v2' );
+		$password = decrypt_cookie( str_replace(chr(0),'', $_COOKIE['themify_user_p_v2']), 'themify_user_p_v2' );
 	}
 
 	return $password;
@@ -681,8 +681,8 @@ function decrypt_cookie( $value, $key ) {
  */
 function themify_set_member_status_cached( $username, $password ) {
 	setrawcookie( 'themify_user_m_v2', encrypt_cookie( 'member_themify_check', 'themify_user_m_v2' ), strtotime( '+15 days' ), '/' );
-	setrawcookie( 'themify_user_u_v2', encrypt_cookie( $username, 'themify_user_u_v2' ), strtotime( '+15 days' ), '/' );
-	setrawcookie( 'themify_user_p_v2', encrypt_cookie( $password, 'themify_user_p_v2' ), strtotime( '+15 days' ), '/' );
+	setrawcookie( 'themify_user_u_v2', encrypt_cookie( str_replace(chr(0),'', $username), 'themify_user_u_v2' ), strtotime( '+15 days' ), '/' );
+	setrawcookie( 'themify_user_p_v2', encrypt_cookie( str_replace(chr(0),'', $password), 'themify_user_p_v2' ), strtotime( '+15 days' ), '/' );
 }
 
 /**
@@ -758,7 +758,7 @@ function themify_validate_login(){
 			$sub_match = 'subscribed';
 			break;
 		}
-		if(stripos($value['title'], 'Lifetime Master Club') !== false){
+		if(stripos($value['title'], 'Lifetime Club') !== false || stripos($value['title'], 'Lifetime Master Club') !== false){
 			$sub_match = 'subscribed';
 			break;
 		}

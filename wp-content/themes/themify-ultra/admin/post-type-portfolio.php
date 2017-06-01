@@ -997,6 +997,15 @@ if ( ! function_exists( 'themify_default_portfolio_index_layout' ) ) {
 					</select>
 				</p>';
 
+	/**
+	 * Enable Post Filter
+	 */
+	$output .= '<p><span class="label">' . __( 'Post Filter', 'themify' ) . '</span>
+			<select name="setting-portfolio_post_filter">' 
+			. themify_options_module( $binary_options, 'setting-portfolio_post_filter' ) . '
+			</select>
+		</p>';
+
 		/**
 		 * Enable Masonry
 		 */

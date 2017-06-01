@@ -324,7 +324,7 @@ function themify_theme_query_post_meta_box($args = array()) {
 				'name' => 'No',
 				),
 			)
-			),
+		),
 		// Featured Image Size
 		array(
 			'name'	=>	'feature_size_page',
@@ -615,6 +615,26 @@ function themify_theme_query_portfolio_meta_box($args = array()){
 				array( 'name' => __('None', 'themify'), 'value' => 'none' )
 			),
 			'default' => 'excerpt',
+		),
+		// Post filter 
+		array(
+			'name' => 'portfolio_post_filter',
+			'type' => 'dropdown',
+			'title' => __('Post Filter', 'themify'),
+			'meta' =>array(
+				array(
+				'value' => '',
+				'name' => '',
+				),
+				array(
+				'value' => 'yes',
+				'name' => 'Yes',
+				),
+				array(
+				'value' => 'no',
+				'name' => 'No',
+				),
+			)
 		),
 		// Featured Image Size
 		array(

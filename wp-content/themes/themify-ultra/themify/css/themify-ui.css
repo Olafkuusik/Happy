@@ -2355,12 +2355,13 @@ li.role-access-controller {
 		top: 50px;
 	}
 	#themify #maintabnav {
-		height: 100px;
 		padding-left: 5px;
+		height: auto;
+		padding-top: 100px;
 	}
 	
 	#themify #maintabnav a {
-		min-width: 55px;
+		min-width: 40px;
 		padding: 40px 22px;
 		font-size: .95em !important;
 	}
@@ -2460,7 +2461,7 @@ li.role-access-controller {
 	#themify #maintabnav a,
 	#themify #maintabnav a:hover {
 		padding: 0 10px;
-		height: 100px;
+		height: 60px;
 		text-indent: -999em;
 	}
 	#themify #maintabnav a:before,
@@ -2475,7 +2476,7 @@ li.role-access-controller {
 	#themify #maintabnav .ui-tabs-active a,
 	#themify #maintabnav .ui-tabs-active a:hover {
 		padding: 0 10px;
-		height: 95px;
+		height: 55px;
 	}
 	#themify #maintabnav .ui-tabs-active a:before,
 	#themify #maintabnav .ui-tabs-active a:hover:before {

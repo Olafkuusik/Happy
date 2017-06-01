@@ -1,11 +1,12 @@
 <?php
 /**
+ * Plugin Family Id: dangoodman/wc-weight-based-shipping
  * Plugin Name: WooCommerce Weight Based Shipping
  * Plugin URI: https://wordpress.org/plugins/weight-based-shipping-for-woocommerce/
  * Description: Simple yet flexible shipping method for WooCommerce.
- * Version: 5.0.2-beta
- * Author: dangoodman
- * Author URI: https://tablerateshipping.com
+ * Version: 5.0.8
+ * Author: weightbasedshipping.com
+ * Author URI: https://weightbasedshipping.com
  * Requires at least: 4.0
  * Tested up to: 4.7
  * WC requires at least: 2.3

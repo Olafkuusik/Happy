@@ -1,6 +1,6 @@
 <?php
 
-// time: 1489233875
+// time: 1495384916
 
 
 function themify_import_get_term_id_from_slug( $slug ) {

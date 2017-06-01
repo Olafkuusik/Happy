@@ -196,7 +196,7 @@ var ThemifyLiveStyling;
 			if ( ! _.isUndefined( rule ) ) {
 				for (var st in styles) {
 					
-					if (styles[st]) {
+					if (styles[st] && styles[st]!=='#'&& styles[st]!=='url("")') {
 						rule.style[ st ] = styles[st];
 					} else {
 						rule.style[ st ] = '';
@@ -205,7 +205,7 @@ var ThemifyLiveStyling;
 			} else {
 				var $inline = '';
 				for (var st in styles) {
-					if (styles[st]) {
+					if (styles[st] && styles[st]!=='#' && styles[st]!=='url("")') {
 						$inline += st + ':' + styles[st] + ';';
 					}
 				}
@@ -934,6 +934,26 @@ var ThemifyLiveStyling;
 				api.vent.trigger('dom:builder:change');
 			});
 		}
+
+		$( '#themify_builder_switch_backend' ).on( 'click', this.switchBackEnd );
+	};
+
+	api.switchBackEnd = function( e ) {
+		e.preventDefault();
+
+		var backendURL = $( this ).attr( 'href' );
+
+		if( ThemifyBuilderCommon.undoManager.instance.hasUndo() && backendURL ) {
+			api.Utils.saveBuilder( true, function () {
+				// Clear undo history
+				ThemifyBuilderCommon.undoManager.instance.clear();
+				window.location = backendURL;
+			} );
+		} else {
+			window.location = backendURL;
+		}
+		
+		sessionStorage.setItem( 'focusBackendEditor', true );
 	};
 
 	api.initFrontend = function() {
@@ -1022,6 +1042,19 @@ var ThemifyLiveStyling;
 			}
 		};
 
+		ThemifyLiveStyling.prototype.convertToPX = function( selector, value ) {
+			var pxValue = parseInt( value ),
+				unit = value.match( /\D{1,2}$/ );
+
+			if( unit[0] && unit[0] === '%' ) {
+				pxValue = $( selector ).outerWidth() * pxValue / 100;
+			} else if( unit[0] && unit[0] === 'em' ) {
+				pxValue = parseInt( $( selector ).css( 'fontSize' ) ) * pxValue;
+			}
+
+			return pxValue;
+		};
+
 		/**
 		 * Apply CSS rules to the live styled element.
 		 *
@@ -1034,7 +1067,8 @@ var ThemifyLiveStyling;
 			}
 			var prefix = '.themify_builder .tb_element_cid_' + api.activeModel.cid,
 				type = api.activeModel.get('elType'),
-				sep = 'module' === type ? ' ' : '';
+				sep = 'module' === type ? ' ' : '',
+				_this = this;
 			
 			selectors.forEach(function(selector) {
 				var fullSelector;
@@ -1045,6 +1079,45 @@ var ThemifyLiveStyling;
 				}
 
 				api.styleSheet.setStyles( fullSelector, newStyleObj );
+
+				if( $( fullSelector ).hasClass( 'fullwidth' ) ) {
+					var container = $( tbLocalScript.fullwidth_container );
+					var row = $( fullSelector ).closest('.themify_builder_content');
+					var left = row.offset().left - container.offset().left;
+					var right = container.outerWidth() - left - row.outerWidth();
+					var padding = $( fullSelector ).data( 'padding' );
+					var margin = $( fullSelector ).data( 'margin' );
+
+					if( newStyleObj[ 'padding-left' ] ) {
+						$( fullSelector ).css( { paddingLeft: '' } );
+						padding[0] = _this.convertToPX( fullSelector, newStyleObj[ 'padding-left' ] );
+					}
+
+					if( newStyleObj[ 'padding-right' ] ) {
+						$( fullSelector ).css( { paddingRight: '' } );
+						padding[1] = _this.convertToPX( fullSelector, newStyleObj[ 'padding-right' ] );
+					}
+
+					if( newStyleObj[ 'padding-left' ] || newStyleObj[ 'padding-right' ] ) {
+						$( fullSelector ).data( 'padding', padding );
+					}
+
+					if( newStyleObj[ 'margin-left' ] ) {
+						margin[0] = _this.convertToPX( fullSelector, newStyleObj[ 'margin-left' ] );
+						$( fullSelector ).css( { marginLeft: -left + margin[0] } );
+					}
+
+					if( newStyleObj[ 'margin-right' ] ) {
+						margin[1] = _this.convertToPX( fullSelector, newStyleObj[ 'margin-right' ] );
+						$( fullSelector ).css( { marginRight: -right + margin[1] } );
+					}
+
+					if( newStyleObj[ 'margin-left' ] || newStyleObj[ 'margin-right' ] ) {
+						$( fullSelector ).css( { width: container.outerWidth() - ( margin[0] + margin[1] ) + 'px' } );
+						$( fullSelector ).data( 'margin', margin );
+					}
+
+				}
 			});
 			api.Frontend.responsiveFrame.doSync();
 

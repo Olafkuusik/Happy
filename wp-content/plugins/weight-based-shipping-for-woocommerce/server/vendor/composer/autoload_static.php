@@ -4,7 +4,7 @@
 
 namespace WbsVendors\Composer\Autoload;
 
-class ComposerStaticInit990ec89bb71b5db5d5dc706b3cf8d5d9
+class ComposerStaticInit3d2de2f2ace99de36b3d7b2030d830f6
 {
     public static $files = array (
         'b411d774a68934fe83360f73e6fe640f' => __DIR__ . '/..' . '/dangoodman/composer-capsule-runtime/autoload.php',
@@ -64,21 +64,8 @@ class ComposerStaticInit990ec89bb71b5db5d5dc706b3cf8d5d9
         ),
     );
 
-    public static $prefixesPsr0 = array (
-        'D' => 
-        array (
-            'Deferred\\Tests' => 
-            array (
-                0 => __DIR__ . '/..' . '/dangoodman/deferred/tests',
-            ),
-            'Deferred' => 
-            array (
-                0 => __DIR__ . '/..' . '/dangoodman/deferred/src',
-            ),
-        ),
-    );
-
     public static $classMap = array (
+        'WbsVendors\\Deferred\\Deferred' => __DIR__ . '/..' . '/dangoodman/deferred/Deferred.php',
         'WbsVendors\\Dgm\\Arrays\\Arrays' => __DIR__ . '/..' . '/dangoodman/arrays/Arrays.php',
         'WbsVendors\\Dgm\\ClassNameAware\\ClassNameAware' => __DIR__ . '/..' . '/dangoodman/class-name-aware/ClassNameAware.php',
         'WbsVendors\\Dgm\\SimpleProperties\\SimpleProperties' => __DIR__ . '/..' . '/dangoodman/simple-properties/SimpleProperties.php',
@@ -88,10 +75,9 @@ class ComposerStaticInit990ec89bb71b5db5d5dc706b3cf8d5d9
     public static function getInitializer(\WbsVendors\Composer\Autoload\ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = \WbsVendors\Composer\Autoload\ComposerStaticInit990ec89bb71b5db5d5dc706b3cf8d5d9::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = \WbsVendors\Composer\Autoload\ComposerStaticInit990ec89bb71b5db5d5dc706b3cf8d5d9::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = \WbsVendors\Composer\Autoload\ComposerStaticInit990ec89bb71b5db5d5dc706b3cf8d5d9::$prefixesPsr0;
-            $loader->classMap = \WbsVendors\Composer\Autoload\ComposerStaticInit990ec89bb71b5db5d5dc706b3cf8d5d9::$classMap;
+            $loader->prefixLengthsPsr4 = \WbsVendors\Composer\Autoload\ComposerStaticInit3d2de2f2ace99de36b3d7b2030d830f6::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = \WbsVendors\Composer\Autoload\ComposerStaticInit3d2de2f2ace99de36b3d7b2030d830f6::$prefixDirsPsr4;
+            $loader->classMap = \WbsVendors\Composer\Autoload\ComposerStaticInit3d2de2f2ace99de36b3d7b2030d830f6::$classMap;
 
         }, null, \WbsVendors\Composer\Autoload\ClassLoader::class);
     }

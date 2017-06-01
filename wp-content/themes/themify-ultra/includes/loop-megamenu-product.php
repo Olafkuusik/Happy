@@ -12,7 +12,7 @@ $dimensions = apply_filters( 'themify_mega_menu_image_dimensions', array(
 ) );
 ?>
 
-<article itemscope itemtype="http://schema.org/Article" class="post type-<?php echo get_post_type(); ?>">
+<article class="post type-<?php echo get_post_type(); ?>">
 	<figure class="post-image">
 		<a href="<?php echo themify_get_featured_image_link(); ?>">
 			<?php echo themify_get_image('ignore=true&w='. $dimensions['width'] .'&h=' . $dimensions['height']); ?>

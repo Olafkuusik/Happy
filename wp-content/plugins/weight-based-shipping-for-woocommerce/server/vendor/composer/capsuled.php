@@ -3,8 +3,8 @@
   array (
     'class' => 
     array (
-      'ComposerAutoloaderInit990ec89bb71b5db5d5dc706b3cf8d5d9' => 'WbsVendors_ComposerAutoloaderInit990ec89bb71b5db5d5dc706b3cf8d5d9',
-      'Composer\\Autoload\\ComposerStaticInit990ec89bb71b5db5d5dc706b3cf8d5d9' => 'WbsVendors\\Composer\\Autoload\\ComposerStaticInit990ec89bb71b5db5d5dc706b3cf8d5d9',
+      'ComposerAutoloaderInit3d2de2f2ace99de36b3d7b2030d830f6' => 'WbsVendors_ComposerAutoloaderInit3d2de2f2ace99de36b3d7b2030d830f6',
+      'Composer\\Autoload\\ComposerStaticInit3d2de2f2ace99de36b3d7b2030d830f6' => 'WbsVendors\\Composer\\Autoload\\ComposerStaticInit3d2de2f2ace99de36b3d7b2030d830f6',
       'Composer\\Autoload\\ClassLoader' => 'WbsVendors\\Composer\\Autoload\\ClassLoader',
       'Dgm\\Arrays\\Arrays' => 'WbsVendors\\Dgm\\Arrays\\Arrays',
       'BoxPacking\\Packer' => 'WbsVendors\\BoxPacking\\Packer',
@@ -30,6 +30,7 @@
       'Dgm\\Shengine\\Aggregators\\SumAggregator' => 'WbsVendors\\Dgm\\Shengine\\Aggregators\\SumAggregator',
       'Dgm\\Shengine\\Attributes\\AbstractAttribute' => 'WbsVendors\\Dgm\\Shengine\\Attributes\\AbstractAttribute',
       'Dgm\\Shengine\\Attributes\\CountAttribute' => 'WbsVendors\\Dgm\\Shengine\\Attributes\\CountAttribute',
+      'Dgm\\Shengine\\Attributes\\CouponsAttribute' => 'WbsVendors\\Dgm\\Shengine\\Attributes\\CouponsAttribute',
       'Dgm\\Shengine\\Attributes\\CustomerRolesAttribute' => 'WbsVendors\\Dgm\\Shengine\\Attributes\\CustomerRolesAttribute',
       'Dgm\\Shengine\\Attributes\\DestinationAttribute' => 'WbsVendors\\Dgm\\Shengine\\Attributes\\DestinationAttribute',
       'Dgm\\Shengine\\Attributes\\ItemAttribute' => 'WbsVendors\\Dgm\\Shengine\\Attributes\\ItemAttribute',
@@ -63,6 +64,7 @@
       'Dgm\\Shengine\\Conditions\\Common\\Compare\\NotEqualCondition' => 'WbsVendors\\Dgm\\Shengine\\Conditions\\Common\\Compare\\NotEqualCondition',
       'Dgm\\Shengine\\Conditions\\Common\\Enum\\AbstractEnumCondition' => 'WbsVendors\\Dgm\\Shengine\\Conditions\\Common\\Enum\\AbstractEnumCondition',
       'Dgm\\Shengine\\Conditions\\Common\\Enum\\DisjointCondition' => 'WbsVendors\\Dgm\\Shengine\\Conditions\\Common\\Enum\\DisjointCondition',
+      'Dgm\\Shengine\\Conditions\\Common\\Enum\\EmptyEnumCondition' => 'WbsVendors\\Dgm\\Shengine\\Conditions\\Common\\Enum\\EmptyEnumCondition',
       'Dgm\\Shengine\\Conditions\\Common\\Enum\\EqualEnumCondition' => 'WbsVendors\\Dgm\\Shengine\\Conditions\\Common\\Enum\\EqualEnumCondition',
       'Dgm\\Shengine\\Conditions\\Common\\Enum\\IntersectCondition' => 'WbsVendors\\Dgm\\Shengine\\Conditions\\Common\\Enum\\IntersectCondition',
       'Dgm\\Shengine\\Conditions\\Common\\Enum\\SubsetCondition' => 'WbsVendors\\Dgm\\Shengine\\Conditions\\Common\\Enum\\SubsetCondition',
@@ -137,8 +139,8 @@
   array (
     'class' => 
     array (
-      'WbsVendors_ComposerAutoloaderInit990ec89bb71b5db5d5dc706b3cf8d5d9' => 'ComposerAutoloaderInit990ec89bb71b5db5d5dc706b3cf8d5d9',
-      'WbsVendors\\Composer\\Autoload\\ComposerStaticInit990ec89bb71b5db5d5dc706b3cf8d5d9' => 'Composer\\Autoload\\ComposerStaticInit990ec89bb71b5db5d5dc706b3cf8d5d9',
+      'WbsVendors_ComposerAutoloaderInit3d2de2f2ace99de36b3d7b2030d830f6' => 'ComposerAutoloaderInit3d2de2f2ace99de36b3d7b2030d830f6',
+      'WbsVendors\\Composer\\Autoload\\ComposerStaticInit3d2de2f2ace99de36b3d7b2030d830f6' => 'Composer\\Autoload\\ComposerStaticInit3d2de2f2ace99de36b3d7b2030d830f6',
       'WbsVendors\\Composer\\Autoload\\ClassLoader' => 'Composer\\Autoload\\ClassLoader',
       'WbsVendors\\Dgm\\Arrays\\Arrays' => 'Dgm\\Arrays\\Arrays',
       'WbsVendors\\BoxPacking\\Packer' => 'BoxPacking\\Packer',
@@ -164,6 +166,7 @@
       'WbsVendors\\Dgm\\Shengine\\Aggregators\\SumAggregator' => 'Dgm\\Shengine\\Aggregators\\SumAggregator',
       'WbsVendors\\Dgm\\Shengine\\Attributes\\AbstractAttribute' => 'Dgm\\Shengine\\Attributes\\AbstractAttribute',
       'WbsVendors\\Dgm\\Shengine\\Attributes\\CountAttribute' => 'Dgm\\Shengine\\Attributes\\CountAttribute',
+      'WbsVendors\\Dgm\\Shengine\\Attributes\\CouponsAttribute' => 'Dgm\\Shengine\\Attributes\\CouponsAttribute',
       'WbsVendors\\Dgm\\Shengine\\Attributes\\CustomerRolesAttribute' => 'Dgm\\Shengine\\Attributes\\CustomerRolesAttribute',
       'WbsVendors\\Dgm\\Shengine\\Attributes\\DestinationAttribute' => 'Dgm\\Shengine\\Attributes\\DestinationAttribute',
       'WbsVendors\\Dgm\\Shengine\\Attributes\\ItemAttribute' => 'Dgm\\Shengine\\Attributes\\ItemAttribute',
@@ -197,6 +200,7 @@
       'WbsVendors\\Dgm\\Shengine\\Conditions\\Common\\Compare\\NotEqualCondition' => 'Dgm\\Shengine\\Conditions\\Common\\Compare\\NotEqualCondition',
       'WbsVendors\\Dgm\\Shengine\\Conditions\\Common\\Enum\\AbstractEnumCondition' => 'Dgm\\Shengine\\Conditions\\Common\\Enum\\AbstractEnumCondition',
       'WbsVendors\\Dgm\\Shengine\\Conditions\\Common\\Enum\\DisjointCondition' => 'Dgm\\Shengine\\Conditions\\Common\\Enum\\DisjointCondition',
+      'WbsVendors\\Dgm\\Shengine\\Conditions\\Common\\Enum\\EmptyEnumCondition' => 'Dgm\\Shengine\\Conditions\\Common\\Enum\\EmptyEnumCondition',
       'WbsVendors\\Dgm\\Shengine\\Conditions\\Common\\Enum\\EqualEnumCondition' => 'Dgm\\Shengine\\Conditions\\Common\\Enum\\EqualEnumCondition',
       'WbsVendors\\Dgm\\Shengine\\Conditions\\Common\\Enum\\IntersectCondition' => 'Dgm\\Shengine\\Conditions\\Common\\Enum\\IntersectCondition',
       'WbsVendors\\Dgm\\Shengine\\Conditions\\Common\\Enum\\SubsetCondition' => 'Dgm\\Shengine\\Conditions\\Common\\Enum\\SubsetCondition',

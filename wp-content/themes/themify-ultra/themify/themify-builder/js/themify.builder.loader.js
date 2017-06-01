@@ -69,7 +69,7 @@ var tbLoaderVars, themifyBuilder;
 				$.ajax({
 					url:tbLoaderVars.ajaxurl,
 					type:'POST',
-					data:{'action':'themify_builder_loader_tpl'},
+					data:{'action':'themify_builder_loader_tpl', 'post_id': tbLoaderVars.post_ID},
 					success:function(resp){
 						
 						if (resp) {

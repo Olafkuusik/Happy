@@ -570,18 +570,6 @@ if( is_admin() )
 	add_filter( 'http_request_args', 'themify_hide_themes', 5, 2);
 
 /**
- * Add property attribute for HTML validation purpose
- * @since 2.7.3
- */
-function themify_style_loader_tag( $link, $handle ) {
-	if ( 'mediaelement' === $handle || 'wp-mediaelement' === $handle ) {
-		$link = str_replace( "type='text/css'", "type='text/css' property='stylesheet'", $link );
-	}
-	return $link;
-}
-add_action( 'style_loader_tag', 'themify_style_loader_tag', 10, 2 );
-
-/**
  * Add menu name as a classname to menus when "container" is missing
  *
  * @since 2.8.9
@@ -765,65 +753,62 @@ if( !isset($themify_data['setting-exclude_img_rss']) || '' == $themify_data['set
  * Show custom 404 page (function)
  */
 function themify_404_display_static_page_result( $posts ) {
-	remove_filter( 'posts_results', 'themify_404_display_static_page_result', 999,1 ); 
+	remove_filter( 'posts_results', 'themify_404_display_static_page_result', 999, 1 ); 
 	
-        $pageid = themify_get( 'setting-page_404' );
+	$pageid = themify_get( 'setting-page_404' );
 
-        if ( 0 != $pageid ) {
-                $condition = is_main_query() && ! is_robots() && ! is_home() && ! is_feed() && ! is_search() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX );
+	if ( 0 != $pageid ) {
+		$condition = is_main_query() && ! is_robots() && ! is_home() && ! is_feed() && ! is_search() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX );
 
-                if ( empty( $posts ) && $condition ) {
+		if ( empty( $posts ) && $condition ) {
+			$posts = array( get_post( $pageid ) );
+			add_action( 'wp', 'themify_404_header' );
+			add_filter( 'body_class', 'themify_404_body_class' );
+			add_filter( 'template_include', 'themify_404_template', 99 );
+		} else {
+			$count = count( $posts );
 
-                        $posts = array( get_post( $pageid ) );
-                        add_action( 'wp', 'themify_404_header' );
-                        add_filter( 'body_class', 'themify_404_body_class' );
-                        add_filter( 'template_include', 'themify_404_template', 99 );
+			if ( 1 === $count ) {
+				$condition = $condition && ! is_user_logged_in();
+				// Show 404 if is draft or private AND user is not logged
+				if ($condition && ('draft' == $posts[0]->post_status || 'private' == $posts[0]->post_status)) {
+					$posts = array( get_post( $pageid ) );
+					add_action( 'wp', 'themify_404_header' );
+					add_filter( 'body_class', 'themify_404_body_class' );
+					add_filter( 'template_include', 'themify_404_template', 99 );
+				// Do a 404 if the 404 page is opened directly
+				} elseif ( 'page' === $posts[0]->post_type && $posts[0]->ID == $pageid ) {
+					add_action( 'wp', 'themify_404_header' );
+					add_filter( 'body_class', 'themify_404_body_class' );
+				}
+			}
+		}
+	}
 
-                }
-                else {
-                        $count = count( $posts );
-
-                        if ( 1 === $count ) {
-                                $condition = $condition && ! is_user_logged_in();
-                                // Show 404 if is draft or private AND user is not logged
-                                if ($condition && ('draft' == $posts[0]->post_status || 'private' == $posts[0]->post_status)) {
-
-                                        $posts = array( get_post( $pageid ) );
-                                        add_action( 'wp', 'themify_404_header' );
-                                        add_filter( 'body_class', 'themify_404_body_class' );
-                                        add_filter( 'template_include', 'themify_404_template', 99 );
-
-                                }
-                                // Do a 404 if the 404 page is opened directly
-                                elseif ( 'page' === $posts[0]->post_type && $posts[0]->ID == $pageid ) {
-
-                                        add_action( 'wp', 'themify_404_header' );
-                                        add_filter( 'body_class', 'themify_404_body_class' );
-
-                                }
-                        }
-                }
-        }
 	return $posts;
 }
 
-function themify_404_display_static_page_pre_get($query){
-    if ($query->is_404()) {
-        remove_filter( 'pre_get_posts', 'themify_404_display_static_page_pre_get', 999,1 ); 
-        global $wpdb;
-        if(0 != themify_get( 'setting-page_404' ) && empty($wpdb->last_result) && $query->is_main_query() && !$query->is_robots() && !$query->is_home() && ! $query->is_feed() && ! $query->is_search() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX )){
-            add_action( 'wp', 'themify_404_header' );
-            add_filter( 'body_class', 'themify_404_body_class' );
-            add_filter( 'template_include', 'themify_404_template', 99 );
-            remove_filter( 'posts_results', 'themify_404_display_static_page_result', 999,1 ); 
-        }
-    }
-    return $query;
+function themify_404_display_static_page_pre_get( $query ) {
+	if ( $query->is_404() ) {
+		remove_filter( 'pre_get_posts', 'themify_404_display_static_page_pre_get', 999,1 ); 
+		global $wpdb;
+		$page_404 = themify_get( 'setting-page_404' );
+		
+		if( 0 != $page_404 && $query->is_main_query() && !$query->is_robots() && !$query->is_home() && ! $query->is_feed() && ! $query->is_search() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
+			$query->set( 'page_id', $page_404 );
+			add_action( 'wp', 'themify_404_header' );
+			add_filter( 'body_class', 'themify_404_body_class' );
+			add_filter( 'template_include', 'themify_404_template', 99 );
+			remove_filter( 'posts_results', 'themify_404_display_static_page_result', 999,1 ); 
+		}
+	}
+
+	return $query;
 }
 
 if ( ! is_admin() && ! is_customize_preview() ) {
-    add_filter( 'posts_results', 'themify_404_display_static_page_result', 999,1 );
-    add_filter( 'pre_get_posts', 'themify_404_display_static_page_pre_get', 999,1 );
+	add_filter( 'posts_results', 'themify_404_display_static_page_result', 999, 1 );
+	add_filter( 'pre_get_posts', 'themify_404_display_static_page_pre_get', 999, 1 );
 }
 
 /**
@@ -944,7 +929,7 @@ add_action( 'after_setup_theme', 'themify_theme_load_skin_functions', 1 );
  */
 function themify_set_global_menu_trigger_point() { ?>
 	<script>
-		var tf_mobile_menu_trigger_point = <?php echo themify_get( 'setting-mobile_menu_trigger_point', 1200 ); ?>;
+		var tf_mobile_menu_trigger_point = <?php echo themify_get_option( 'setting-mobile_menu_trigger_point', 1200 ); ?>;
 	</script><?php
 }
 add_action( 'wp_head', 'themify_set_global_menu_trigger_point' );
@@ -1024,16 +1009,27 @@ function themify_load_main_script() {
 	//Enqueue main js that will load others needed js
 	if ( ! wp_script_is( 'themify-main-script' ) ) {
 		wp_register_script( 'themify-main-script', themify_enque(THEMIFY_URI.'/js/main.js'), array('jquery'), THEMIFY_VERSION, true );
-		wp_localize_script( 'themify-main-script', 'themify_vars', apply_filters( 'themify_main_script_vars', array(
+                $localiztion = array(
 			'version' => THEMIFY_VERSION,
 			'url' => THEMIFY_URI,
 			'map_key' => themify_get( 'setting-google_map_key' ),
-		) ) );
+                        'includesURL' => includes_url(),
+                        'isCached' => themify_get('setting-page_builder_cache'),
+                        'minify'=>array(
+                            'css'=>array(
+                                'themify-icons'=>themify_enque(THEMIFY_URI.'/themify-icons/themify-icons.css',true),
+                                'themify.framework'=>themify_enque(THEMIFY_URI.'/css/themify.framework.css',true),
+                                'lightbox'=>themify_enque(THEMIFY_URI.'/css/lightbox.css',true),
+                            ),
+                            'js'=>array(
+                                'backstretch.themify-version'=>themify_enque(THEMIFY_URI.'/js/backstretch.themify-version.js',true),
+                                'themify.dropdown'=>themify_enque(THEMIFY_URI.'/js/themify.dropdown.js',true),
+                            )
+                        )
+		);
+		wp_localize_script( 'themify-main-script', 'themify_vars',apply_filters('themify_main_script_vars',$localiztion) );
 		wp_enqueue_script( 'themify-main-script' );
 	}
-
-	// Register carousel script
-	wp_register_script('themify-carousel-js', themify_enque(THEMIFY_URI . "/js/carousel.js"), '', THEMIFY_VERSION, true);
 }
 
 /**

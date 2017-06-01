@@ -1401,6 +1401,7 @@ BUILDER ROW
 .frontend .themify_builder_content .themify_builder_row_content,
 .frontend .themify_builder_content .themify_builder_sub_row_content{
         background: none;
+        width:100%;
 } 
 .themify_builder_active .hide-builder-content {
 	display: none;
@@ -2136,11 +2137,13 @@ BUILDER COLUMN
 	display: inline-block;
 	vertical-align: middle;
 	visibility: hidden;
+	max-height: 17px;
 }
 .themify_builder_col.col-full .themify_builder_column_action li a span,
 .themify_builder_col.col4-2 .themify_builder_column_action li a span,
 .themify_builder_col.col2-1 .themify_builder_column_action li a span {
 	visibility: visible;
+	white-space: normal;
 }
 .themify_builder_col.col-full .themify_builder_sub_row_content > .themify_builder_col:not(.col2-1):not(.col4-2):not(.col-full) .themify_builder_column_action li.menu_icon > a,
 .themify_builder_col:not(.col2-1):not(.col4-2):not(.col-full) .themify_builder_sub_row_content > .themify_builder_col.col-full .themify_builder_column_action li.menu_icon > a,
@@ -2741,7 +2744,8 @@ LIGHTBOX FIELDS AND INPUT
 .tfb-lightbox-open .themify_builder_input, #themify_builder_overlay.tfb-lightbox-open .themify_builder_row {
 	visibility: visible;
 }
-.themify_builder_input.pushed {
+.themify_builder_input.pushed,
+.tf_multi_fields.pushed {
 	margin-left: 24%;
 }
 /* fix vertical alignment in checkbox fields with only one option */
@@ -4268,6 +4272,7 @@ body.folded .themify_builder_module_panel.themify_builder_module_panel_fixed {
 	margin:0 auto;
 	-webkit-box-shadow: 0 1px 16px rgba(0,0,0,.13);
 	box-shadow: 0 1px 16px rgba(0,0,0,.13);
+	margin-top: 37px;
 }
 .themify_builder_responsive_switcher_item .breakpoint-tablet-landscape .ti-tablet-landscape:before {
 	-webkit-transform: rotate(270deg);
@@ -4888,6 +4893,9 @@ MODULE FRONT RESPONSIVE
 		display: inline-flex;
 		width: 100%;
 	}
+	.themify_builder_admin .themify_builder_row  .sub_column {
+		display: block;
+	}
 }
 
 /* fix backend editor display in metabox */
@@ -5427,13 +5435,19 @@ MODULE FRONT RESPONSIVE
 
 /* CLOSE & SAVE */
 .tb_toolbar_save_wrap {
-	position: relative;
-	display: inline-block;
-	float: right;
-	top: 3px;
-	right: 3px;
-	z-index: 1;
+	position:relative;
+	display:inline-block;
+	float:right;
+	top:3px;
+	right:3px;
+	z-index:1
 }
+.tb_toolbar_save_wrap a {
+	color:#bababa;
+	padding:5px 6px;
+	display:inline-block
+}
+.tb_toolbar_backend_edit,
 .tb_toolbar_close,
 .tb_toolbar_revision_btn,
 .tb_toolbar_save_btn {
@@ -5441,18 +5455,16 @@ MODULE FRONT RESPONSIVE
 	position: relative;
 	vertical-align: middle;
 }
-.tb_toolbar_close a {
-	color: #bababa;
-	padding: 5px 6px;
-	display: inline-block;
+.tb_toolbar_backend_edit i {
+    margin-right: 4px;
 }
 .tb_toolbar_close a span {
-	right: 0;
-	left: auto;
+	right:0;
+	left:auto
 }
 .tb_toolbar_close span:before {
-	right: 10px;
-	left: auto;
+	right:10px;
+	left:auto
 }
 .tb_toolbar_save_btn {
 	color: #fff;
@@ -5807,4 +5819,32 @@ Simple Bar
 /* COLUMN DIRECTION */
 .themify_builder .themify_builder_row .row_inner_wrapper .direction-rtl{
 	flex-direction:row-reverse;
+}
+
+/* Switch to backend link */
+.tb_toolbar_backend_edit {
+	display: inline-block;
+	margin-right: 8px;
+	vertical-align: middle;
+}
+
+.tb_toolbar_backend_edit a {
+	color: #dcdcdc;
+}
+
+.tb_toolbar_backend_edit a:hover {
+	color: #ffffff;
+}
+
+.tb_toolbar_backend_edit a i {
+	margin-right: 6px;
+	position: relative;
+	top: 1px;
+}
+
+/* fix tinymce menus and color picker position
+ * ticket: #5308
+ */
+body.themify_builder_active {
+	position: static !important;
 }

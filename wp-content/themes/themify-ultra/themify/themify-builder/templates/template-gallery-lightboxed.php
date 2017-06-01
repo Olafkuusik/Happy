@@ -24,22 +24,21 @@ foreach ( $gallery_images as $key => $image ): ?>
 
                 $img = wp_get_attachment_image_src( $image->ID, 'full' );
 
+                $alt = get_post_meta( $image->ID, '_wp_attachment_image_alt', true );
+                $title = ! empty( $alt ) ? $alt : $image->post_excerpt;
+
                 if ( ! empty( $link ) ) {
-                        echo '<dt class="gallery-icon"><a href="' . esc_url( $link ) . '" title="' . esc_attr( $image->post_title ) . '">';
+                        echo '<dt class="gallery-icon"><a href="' . esc_url( $link ) . '" title="' . esc_attr(  $title ) . '">';
                 }
                 echo wp_kses_post( ( 0 == $key ) ? $thumbnail : $img[1] );
                 if ( ! empty( $link ) ) {
                         echo '</a></dt>';
-                }
-                $text = isset( $image->post_excerpt ) && '' != $image->post_excerpt;
-                ?>
-                <dd<?php if($text || ($gallery_image_title==='library' && !empty($image->post_title))):?> class="wp-caption-text gallery-caption"<?php endif;?>>
-                    <?php if($gallery_image_title==='library' && !empty($image->post_title)):?>
-                        <strong class="themify_image_title"><?php echo $image->post_title?></strong>
+                } ?>
+
+                <dd<?php if( $gallery_image_title==='library' && !empty( $title ) ):?> class="wp-caption-text gallery-caption"<?php endif;?>>
+                    <?php if($gallery_image_title==='library' && !empty( $title ) ):?>
+                        <strong class="themify_image_title"><?php echo $title; ?></strong>
                     <?php endif;?>
-                    <?php if($text) : ?>
-                            <?php echo wp_kses_post( $image->post_excerpt ); ?>
-                    <?php endif; ?>
                 </dd>
         </dl>
 

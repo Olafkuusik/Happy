@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'WbsVendors\\Deferred\\Deferred' => $vendorDir . '/dangoodman/deferred/Deferred.php',
     'WbsVendors\\Dgm\\Arrays\\Arrays' => $vendorDir . '/dangoodman/arrays/Arrays.php',
     'WbsVendors\\Dgm\\ClassNameAware\\ClassNameAware' => $vendorDir . '/dangoodman/class-name-aware/ClassNameAware.php',
     'WbsVendors\\Dgm\\SimpleProperties\\SimpleProperties' => $vendorDir . '/dangoodman/simple-properties/SimpleProperties.php',

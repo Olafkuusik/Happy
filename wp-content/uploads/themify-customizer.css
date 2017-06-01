@@ -5,13 +5,16 @@
 }
 #site-description {	display: none; 
 }
+#main-nav {	
+	margin-top: 15px; 
+}
 #main-nav a {		font-weight:normal;
  
 }
 #footerwrap {	
 	background-color: #000000; 
 }
-#footer-logo {	display: none; 
+#footer-logo, #footer #footer-logo a {	display: none; 
 }
 #footer {	
 	color: #fcfcfc; 
@@ -26,7 +29,18 @@
 .footer-widgets .widget li {	
 	padding-top: -15%; 
 }
-@media screen and (max-width: 976px) { /* Themify Customize Styling */
+
+/* Themify Custom CSS */
+
+
+.header-horizontal #header {
+ text-align:inherit;
+ padding: 0.2em 0;
+}
+
+.fixed-header {
+	max-height: 200px;
+}@media screen and (max-width: 976px) { /* Themify Customize Styling */
 #site-logo, #site-logo a, .header-horizontal #site-logo, .header-minbar #site-logo, .header-leftpane #site-logo, .header-slide-out #site-logo, .boxed-compact #site-logo, .header-top-bar #site-logo img {		width: 450px; 
 }
 #site-logo, #site-logo a, .header-horizontal #site-logo, .header-minbar #site-logo, .header-leftpane #site-logo, .header-slide-out #site-logo, .boxed-compact #site-logo, .header-top-bar #site-logo a {		width: 450px; 

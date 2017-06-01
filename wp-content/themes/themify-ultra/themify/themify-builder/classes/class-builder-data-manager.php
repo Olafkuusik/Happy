@@ -96,6 +96,12 @@ class ThemifyBuilder_Data_Manager {
 	public function save_data( $builder_data, $post_id, $import = false ) {
 		global $ThemifyBuilder;
 
+		/* if there's no data to save, do not save anything */
+		if( empty( $builder_data ) || ( is_array( $builder_data ) && count( $builder_data ) === 1 && $ThemifyBuilder->is_empty_row( $builder_data[0] ) ) ) {
+			delete_post_meta( $post_id, $this->meta_key );
+			return;
+		}
+
 		$builder_data = $this->construct_data( $builder_data, $post_id, $import );
 
 		/* save the data in json format */
@@ -104,6 +110,7 @@ class ThemifyBuilder_Data_Manager {
 		/* remove the old data format */
 		delete_post_meta( $post_id, $ThemifyBuilder->meta_key );
 		Themify_Builder::remove_cache($post_id);
+
 		/**
 		 * Fires After Builder Saved.
 		 * 

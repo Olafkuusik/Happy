@@ -240,7 +240,7 @@
 			var self = this;
 
 			// Smooth Scroll and Link Highlight
-			$(this.options.context).find('a[href*="#"]').not('a[href="#"]').not('a.ab-item').on('click', function (e) {
+			$(this.options.context).find('a[href*="#"]:not(.themify_lightbox)').not('a[href="#"]').not('a.ab-item').on('click', function (e) {
 				// Build class to scroll to
 				var href = $(this).prop('hash'),
 					classToScroll = href.replace(/#/, self.options.prefix);
@@ -250,7 +250,7 @@
 					// Set state
 					self.scrolling = true;
 					// Perform scroll
-					self.linkScroll(classToScroll, href);
+					setTimeout( function() { self.linkScroll(classToScroll, href); }, 100 );
 					// Avoid link behaviour
 					e.preventDefault();
 				}
@@ -276,35 +276,33 @@
 			}, self.options.scrollRate);
 
 			// Initial section visibility check and link highlight
-			$(window).load(function () {
-				if (self.isHash(window.location.hash)) {
-					// If there's a hash, scroll to it
-					var hash = window.location.hash,
-						current_url = cleanup_url( window.location.href ),
-						$linkHash = $(self.options.context).find('a[href="' + hash + '"], a[href="' + current_url + hash + '"], a[href="' + current_url + '/' + hash + '"]');
-					if ($linkHash.length > 0) {
-						$linkHash.each(function () {
-							var $link = $(this);
-							if ($link.prop('hash') === hash) {
-								$link.trigger('click');
-								return;
-							}
-						});
-					} else {
-						// Build class to scroll to
-						var classToScroll = hash.replace(/#/, self.options.prefix);
-						// If the section exists in this page
-						if ($(classToScroll).length > 0) {
-							// Set state
-							self.scrolling = true;
-							// Perform scroll
-							self.linkScroll(classToScroll, hash);
+			if (self.isHash(window.location.hash)) {
+				// If there's a hash, scroll to it
+				var hash = window.location.hash,
+					current_url = cleanup_url( window.location.href ),
+					$linkHash = $(self.options.context).find('a[href="' + hash + '"], a[href="' + current_url + hash + '"], a[href="' + current_url + '/' + hash + '"]');
+				if ($linkHash.length > 0) {
+					$linkHash.each(function () {
+						var $link = $(this);
+						if ($link.prop('hash') === hash) {
+							$link.trigger('click');
+							return;
 						}
-					}
+					});
 				} else {
-					self.manualScroll(elementsToCheck);
+					// Build class to scroll to
+					var classToScroll = hash.replace(/#/, self.options.prefix);
+					// If the section exists in this page
+					if ($(classToScroll).length > 0) {
+						// Set state
+						self.scrolling = true;
+						// Perform scroll
+						setTimeout( function() { self.linkScroll(classToScroll, hash); }, 100 );
+					}
 				}
-			});
+			} else {
+				self.manualScroll(elementsToCheck);
+			}
 		}
 	};
 

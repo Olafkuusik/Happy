@@ -19,6 +19,7 @@ if ( isset( $themify->is_shortcode ) && $themify->is_shortcode ) {
 	}
 	$taxo = $themify->query_taxonomy;
 }
+
 ?>
 
 <ul class="post-filter">

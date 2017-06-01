@@ -496,7 +496,7 @@ class Themify_Widgets_Menu {
 		if( 'nav-menus' != $screen->base )
 			return;
 
-		wp_enqueue_script( 'themify-widgets-menu-admin', get_template_directory_uri() . '/admin/js/admin-nav-menu.js', array( 'jquery' ) );
+		wp_enqueue_script( 'themify-widgets-menu-admin', themify_enque(get_template_directory_uri() . '/admin/js/admin-nav-menu.js'), array( 'jquery' ) );
 		Themify_Metabox::get_instance()->enqueue();
 
 		do_action( 'themify_widgets_menu_enqueue_admin_scripts' );

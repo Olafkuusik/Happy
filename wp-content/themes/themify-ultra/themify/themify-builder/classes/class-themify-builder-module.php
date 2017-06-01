@@ -123,6 +123,210 @@ abstract class Themify_Builder_Module {
 	}
 
 	/**
+	 * Used internally to get the Styling settings from module
+	 *
+	 * Uses get_styling() method and then applies set_styling_field_types() on
+	 * the result to set the special styling fields
+	 *
+	 * @return array
+	 */
+	public function get_styling_settings() {
+		$styling = $this->get_styling();
+
+		if( ! empty( $styling ) ) {
+			$styling = $this->set_styling_field_types( $styling );
+		}
+
+		return $styling;
+	}
+
+	function set_styling_field_types( $var ) {
+		if( is_array( $var ) ) {
+			foreach( $var as $key => $value ) {
+				if( isset( $value['type'] ) && $value['type'] == 'tabs' ) {
+					foreach( $value['tabs'] as $tab_key => $tab_value ) {
+						$var[ $key ]['tabs'][ $tab_key ]['fields'] = $this->set_styling_field_types( $var[ $key ]['tabs'][ $tab_key ]['fields'] );
+					}
+				} elseif( isset( $value['type'] ) && $value['type'] == 'border' ) {
+					$border_options = $this->border_styling( $value );
+					array_splice( $var, $key, 0, $border_options );
+				}
+			}
+		}
+
+		return $var;
+	}
+
+	/**
+	 * Generate the array for Border styling settings
+	 * Used when type = "border"
+	 *
+	 * @return array
+	 */
+	function border_styling( $args = array() ) {
+		$args = wp_parse_args( $args, array(
+			'separator' => true,
+			'selector' => '.module',
+			'id' => 'border',
+			'label' => __( 'Border', 'themify' ),
+		) );
+		extract( $args );
+
+		$options = array();
+		if( $separator ) {
+			$options[] = array(
+				'type' => 'separator',
+				'meta' => array('html'=>'<hr />')
+			);
+			$options[] = array(
+				'id' => "separator_{$id}",
+				'type' => 'separator',
+				'meta' => array('html'=>'<h4>' . $label . '</h4>'),
+			);
+		}
+
+		$options = array_merge( $options, array(
+			array(
+				'id' => "multi_{$id}_top",
+				'type' => 'multi',
+				'label' => __( 'Border', 'themify' ),
+				'fields' => array(
+					array(
+						'id' => "{$id}_top_color",
+						'type' => 'color',
+						'class' => 'small',
+						'prop' => 'border-top-color',
+						'selector' => $selector,
+					),
+					array(
+						'id' => "{$id}_top_width",
+						'type' => 'text',
+						'description' => 'px',
+						'class' => 'style_border style_field xsmall',
+						'prop' => 'border-top-width',
+						'selector' => $selector,
+					),
+					array(
+						'id' => "{$id}_top_style",
+						'type' => 'select',
+						'description' => __('top', 'themify'),
+						'meta' => Themify_Builder_model::get_border_styles(),
+						'prop' => 'border-top-style',
+						'selector' => $selector,
+						'default' => 'solid',
+					),
+				)
+			),
+			array(
+				'id' => "multi_{$id}_right",
+				'type' => 'multi',
+				'label' => '',
+				'fields' => array(
+					array(
+						'id' => "{$id}_right_color",
+						'type' => 'color',
+						'class' => 'small',
+						'prop' => 'border-right-color',
+						'selector' => $selector,
+					),
+					array(
+						'id' => "{$id}_right_width",
+						'type' => 'text',
+						'description' => 'px',
+						'class' => 'style_border style_field xsmall',
+						'prop' => 'border-right-width',
+						'selector' => $selector,
+					),
+					array(
+						'id' => "{$id}_right_style",
+						'type' => 'select',
+						'description' => __('right', 'themify'),
+						'meta' => Themify_Builder_model::get_border_styles(),
+						'prop' => 'border-right-style',
+						'selector' => $selector,
+						'default' => 'solid',
+					)
+				)
+			),
+			array(
+				'id' => 'multi_border_bottom',
+				'type' => 'multi',
+				'label' => '',
+				'fields' => array(
+					array(
+						'id' => "{$id}_bottom_color",
+						'type' => 'color',
+						'class' => 'small',
+						'prop' => 'border-bottom-color',
+						'selector' => $selector,
+					),
+					array(
+						'id' => "{$id}_bottom_width",
+						'type' => 'text',
+						'description' => 'px',
+						'class' => 'style_border style_field xsmall',
+						'prop' => 'border-bottom-width',
+						'selector' => $selector,
+					),
+					array(
+						'id' => "{$id}_bottom_style",
+						'type' => 'select',
+						'description' => __('bottom', 'themify'),
+						'meta' => Themify_Builder_model::get_border_styles(),
+						'prop' => 'border-bottom-style',
+						'selector' => $selector,
+						'default' => 'solid',
+					)
+				)
+			),
+			array(
+				'id' => "multi_{$id}_left",
+				'type' => 'multi',
+				'label' => '',
+				'fields' => array(
+					array(
+						'id' => "{$id}_left_color",
+						'type' => 'color',
+						'class' => 'small',
+						'prop' => 'border-left-color',
+						'selector' => $selector,
+					),
+					array(
+						'id' => "{$id}_left_width",
+						'type' => 'text',
+						'description' => 'px',
+						'class' => 'style_border style_field xsmall',
+						'prop' => 'border-left-width',
+						'selector' => $selector,
+					),
+					array(
+						'id' => "{$id}_left_style",
+						'type' => 'select',
+						'description' => __('left', 'themify'),
+						'meta' => Themify_Builder_model::get_border_styles(),
+						'prop' => 'border-left-style',
+						'selector' => $selector,
+						'default' => 'solid',
+					)
+				)
+			),
+			// "Apply all" // apply all border
+			array(
+				'id' => 'checkbox_border_apply_all',
+				'class' => 'style_apply_all style_apply_all_border',
+				'type' => 'checkbox',
+				'label' => false,
+				'default' => 'border',
+				'options' => array(
+					array( 'name' => 'border', 'value' => __( 'Apply to all border', 'themify' ) )
+				)
+			)
+		) );
+
+		return $options;
+	}
+
+	/**
 	 * Get module styling options.
 	 * 
 	 * @access public
@@ -436,9 +640,19 @@ abstract class Themify_Builder_Module {
 	}
 
 	public function print_template() {
+		global $ThemifyBuilder;
+
 		ob_start();
 
-		$this->_visual_template();
+		/* look for template-{slug}-visual template file first, revert back to _visual_template() method
+		 * if there's no template file.
+		 */
+		$template_file = $ThemifyBuilder->locate_template( 'template-' . $this->slug . '-visual.php' );
+		if( file_exists( $template_file ) ) {
+			include $template_file;
+		} else {
+			$this->_visual_template();
+		}
 
 		$content_template = ob_get_clean();
 
@@ -469,6 +683,13 @@ abstract class Themify_Builder_Module {
 		<?php
 	}
 
+	/**
+	 * Template for live preview
+	 *
+	 * By default looks for a template-{slug}-visual.php template file
+	 *
+	 * @return string
+	 */
 	protected function _visual_template() {}
 
 	public function get_default_settings() { return array(); }
@@ -485,7 +706,7 @@ abstract class Themify_Builder_Module {
 			),
 			'styling' => array(
 				'name' => esc_html__( 'Styling', 'themify' ),
-				'options' => apply_filters('themify_builder_styling_settings_fields', $this->get_styling(), $this)
+				'options' => apply_filters('themify_builder_styling_settings_fields', $this->get_styling_settings(), $this)
 			)
 		);
 

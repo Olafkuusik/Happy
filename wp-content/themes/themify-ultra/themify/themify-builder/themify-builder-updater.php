@@ -250,7 +250,7 @@ log</a> for details.</p>', 'themify'),
 				$sub_match = 'true';
 				break;
 			}
-			if(stripos($value['title'], 'Lifetime Master Club') !== false){
+			if(stripos($value['title'], 'Lifetime Club') !== false || stripos($value['title'], 'Lifetime Master Club') !== false){
 				$sub_match = 'true';
 				break;
 			}

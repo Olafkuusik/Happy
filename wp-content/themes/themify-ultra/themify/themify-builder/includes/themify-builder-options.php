@@ -366,7 +366,10 @@ if (!function_exists('themify_builder_module_settings_field')) {
 
 				<?php
 				if ($field['type'] == 'multi') {
-					echo '<div class="' . esc_attr($id) . ' tf_multi_fields tf_fields_count_' . esc_attr(count($field['fields'])) . '">';
+					echo '<div class="' . esc_attr($id) . ' tf_multi_fields tf_fields_count_' . esc_attr(count($field['fields'])) . ( ! empty( $field['pushed'] ) ? ' ' . $field['pushed'] : '' ) . '">';
+					
+					if ( isset( $field['before'] ) ) printf( '<div>%s</div>', wp_kses_post( $field['before'] ) );
+
 					foreach ($field['fields'] as $_field) {
 						themify_builder_module_settings_field(array($_field), $module_name);
 					}
@@ -451,6 +454,7 @@ if (!function_exists('themify_builder_module_settings_field')) {
 								<input type="text" class="<?php echo esc_attr($field['class']); ?> colordisplay" <?php echo themify_builder_get_binding_data($field); ?> />
 								<input type="hidden" <?php echo $ThemifyBuilder->get_element_attributes( $input_props ); ?> value="<?php if (isset($field['value'])) echo esc_attr($field['value']); ?>"<?php echo themify_builder_get_control_binding_data( $field ); ?> />
 							<?php else : ?>
+								<?php if ( isset( $field['before'] ) ) echo wp_kses_post($field['before']); ?>
 								<input type="text" <?php echo $ThemifyBuilder->get_element_attributes( $input_props ); ?> value="<?php if (isset($field['value'])) echo esc_attr($field['value']); ?>" <?php echo themify_builder_get_binding_data($field); echo themify_builder_get_control_binding_data($field); ?> />
 								<?php
 								if (isset($field['after'])) : echo wp_kses_post($field['after']);
@@ -474,6 +478,8 @@ if (!function_exists('themify_builder_module_settings_field')) {
 							<?php
 							$option_js = (isset($field['option_js']) && $field['option_js'] == true) ? 'tf-option-checkbox-js' : '';
 							$option_js_wrap =$option_js ? 'tf-option-checkbox-enable' : '';
+
+							if ( isset( $field['before'] ) ) echo wp_kses_post( $field['before'] );
 							?>
 							<div id="<?php echo esc_attr($field['id']); ?>" class="tfb_lb_option tf-radio-input-container <?php echo esc_attr($option_js_wrap); ?>"<?php echo themify_builder_get_control_binding_data( $field ); ?>>
 								<?php foreach ($field['options'] as $k => $v): ?>
@@ -777,11 +783,12 @@ if (!function_exists('themify_builder_styling_field')) {
 	 * @return string
 	 */
 	function themify_builder_styling_field($styling) {
+		$default = isset( $styling['default'] ) ? 'data-default="' . esc_attr( $styling['default'] ) . '"' : '';
 		switch ($styling['type']) {
 
 			case 'text':
 				?>
-				<input id="<?php echo esc_attr($styling['id']); ?>" name="<?php echo esc_attr($styling['id']); ?>" type="text" value="" class="<?php echo esc_attr($styling['class']); ?> tfb_lb_option">
+				<input id="<?php echo esc_attr($styling['id']); ?>" name="<?php echo esc_attr($styling['id']); ?>" type="text" value="" class="<?php echo esc_attr($styling['class']); ?> tfb_lb_option" <?php echo $default; ?>>
 				<?php
 				if (isset($styling['description'])) {
 					echo '<small>' . wp_kses_post($styling['description']) . '</small>';
@@ -792,7 +799,7 @@ if (!function_exists('themify_builder_styling_field')) {
 
 			case 'textarea':
 				?>
-				<textarea id="<?php echo esc_attr($styling['id']); ?>" name="<?php echo esc_attr($styling['id']); ?>" class="<?php echo esc_attr($styling['class']); ?> tfb_lb_option"><?php
+				<textarea id="<?php echo esc_attr($styling['id']); ?>" name="<?php echo esc_attr($styling['id']); ?>" class="<?php echo esc_attr($styling['class']); ?> tfb_lb_option" <?php echo $default; ?>><?php
 					if (isset($styling['value'])) : echo esc_textarea($styling['value']);
 					endif;
 					?></textarea>
@@ -810,7 +817,7 @@ if (!function_exists('themify_builder_styling_field')) {
 
 			case 'image':
 				?>
-				<input id="<?php echo esc_attr($styling['id']); ?>" name="<?php echo esc_attr($styling['id']); ?>" placeholder="<?php if (isset($styling['value'])) echo esc_attr($styling['value']); ?>" class="<?php echo esc_attr($styling['class']); ?> themify-builder-uploader-input tfb_lb_option" type="text" /><br />
+				<input id="<?php echo esc_attr($styling['id']); ?>" name="<?php echo esc_attr($styling['id']); ?>" placeholder="<?php if (isset($styling['value'])) echo esc_attr($styling['value']); ?>" class="<?php echo esc_attr($styling['class']); ?> themify-builder-uploader-input tfb_lb_option" type="text" <?php echo $default; ?> /><br />
 
 				<div class="small">
 
@@ -837,7 +844,7 @@ if (!function_exists('themify_builder_styling_field')) {
 
 			case 'video':
 				?>
-				<input id="<?php echo esc_attr($styling['id']); ?>" name="<?php echo esc_attr($styling['id']); ?>" placeholder="<?php if (isset($styling['value'])) echo esc_attr($styling['value']); ?>" class="<?php echo esc_attr($styling['class']); ?> themify-builder-uploader-input tfb_lb_option" type="text" /><br />
+				<input id="<?php echo esc_attr($styling['id']); ?>" name="<?php echo esc_attr($styling['id']); ?>" placeholder="<?php if (isset($styling['value'])) echo esc_attr($styling['value']); ?>" class="<?php echo esc_attr($styling['class']); ?> themify-builder-uploader-input tfb_lb_option" type="text" <?php echo $default; ?> /><br />
 
 				<div class="small">
 
@@ -865,13 +872,9 @@ if (!function_exists('themify_builder_styling_field')) {
 			case 'select':
 				?>
 
-				<select id="<?php echo esc_attr($styling['id']); ?>" name="<?php echo esc_attr($styling['id']); ?>" class="tfb_lb_option <?php echo isset($styling['class']) ? esc_attr($styling['class']) : ''; ?>" <?php echo themify_builder_get_binding_data($styling); ?>>
-					<?php if (isset($styling['default'])): ?>
-						<option value="<?php echo esc_attr($styling['default']); ?>"><?php echo esc_html($styling['default']); ?></option>
-						<?php
-					endif;
+				<select id="<?php echo esc_attr($styling['id']); ?>" name="<?php echo esc_attr($styling['id']); ?>" class="tfb_lb_option <?php echo isset($styling['class']) ? esc_attr($styling['class']) : ''; ?>" <?php echo themify_builder_get_binding_data($styling); ?> <?php echo $default; ?>>
 
-					foreach ($styling['meta'] as $option):
+					<?php foreach ($styling['meta'] as $option):
 						?>
 						<option <?php if(is_array($option) && !empty($option['disable'])):?>disabled="disabled"<?php endif;?> value="<?php echo esc_attr($option['value']); ?>"><?php echo esc_html($option['name']); ?></option>
 					<?php endforeach; ?>
@@ -890,11 +893,11 @@ if (!function_exists('themify_builder_styling_field')) {
 			case 'animation_select':
 				?>
 				<?php $class = isset($styling['class']) ? $styling['class'] : ''; ?>
-				<select id="<?php echo esc_attr($styling['id']); ?>" name="<?php echo esc_attr($styling['id']); ?>" class="tfb_lb_option <?php echo esc_attr($class); ?>">
+				<select id="<?php echo esc_attr($styling['id']); ?>" name="<?php echo esc_attr($styling['id']); ?>" class="tfb_lb_option <?php echo esc_attr($class); ?>" <?php echo $default; ?>>
 					<option value=""></option>
 
 					<?php
-					$animation = Themify_Builder_model::get_preset_animation();
+					$animation = Themify_Builder_Model::get_preset_animation();
 					foreach ($animation as $group):
 						?>
 
@@ -942,8 +945,8 @@ if (!function_exists('themify_builder_styling_field')) {
 				}
 				?>
 				<div class="themify_builder_font_preview_wrapper">
-					<select  id="<?php echo esc_attr($styling['id']); ?>" name="<?php echo esc_attr($styling['id']); ?>" class="tfb_lb_option <?php echo esc_attr($styling['class']); ?>">
-						<option value="<?php echo esc_attr($styling['default']); ?>"><?php echo $default ? esc_html($styling['default']) : '---'; ?></option>
+					<select  id="<?php echo esc_attr($styling['id']); ?>" name="<?php echo esc_attr($styling['id']); ?>" class="tfb_lb_option <?php echo esc_attr($styling['class']); ?>" <?php echo $default; ?>>
+						<option value=""><?php echo $default ? esc_html($styling['default']) : '---'; ?></option>
 						<optgroup label="<?php echo $web_safe_group ?>"></optgroup>
 						<optgroup  label="<?php echo $google_fonts_group ?>"></optgroup>
 					</select>
@@ -961,23 +964,27 @@ if (!function_exists('themify_builder_styling_field')) {
 				<span class="builderColorSelect"><span></span></span>
 				<input type="text" class="<?php echo esc_attr($styling['class']); ?> colordisplay"/>
 				<input type="text" class="opacity-input color_opacity" />
-				<input id="<?php echo esc_attr($styling['id']); ?>" name="<?php echo esc_attr($styling['id']); ?>" value="" class="builderColorSelectInput tfb_lb_option" type="hidden" />
+				<input id="<?php echo esc_attr($styling['id']); ?>" name="<?php echo esc_attr($styling['id']); ?>" value="" class="builderColorSelectInput tfb_lb_option" type="hidden" <?php echo $default; ?> />
 				<?php
 				break;
 
 			case 'gradient' :
 				?>
 				<div class="themify-gradient-field">
-					<select class="tfb_lb_option themify-gradient-type" id="<?php echo esc_attr($styling['id']); ?>-gradient-type" name="<?php echo esc_attr($styling['id']); ?>-gradient-type">
+					<select class="tfb_lb_option themify-gradient-type" id="<?php echo esc_attr($styling['id']); ?>-gradient-type" name="<?php echo esc_attr($styling['id']); ?>-gradient-type" data-default="linear">
 						<option value="linear"><?php _e( 'Linear', 'themify' ); ?></option>
 						<option value="radial"><?php _e( 'Radial', 'themify' ); ?></option>
 					</select>
-					<input type="text" class="xsmall tfb_lb_option themify-gradient-angle" id="<?php echo esc_attr($styling['id']); ?>-gradient-angle" name="<?php echo esc_attr($styling['id']); ?>-gradient-angle" value="180" data-min="0" data-max="360" data-cursor="true" data-thickness=".4" data-step="1" data-width="63" data-height="63" />
-                                        <span><?php _e( 'Rotation', 'themify' ); ?></span>
-					<label  class="themify-radial-circle" for="<?php echo esc_attr($styling['id']); ?>-circle-radial"><input type="checkbox" value="1" id="<?php echo esc_attr($styling['id']); ?>-circle-radial" name="<?php echo esc_attr($styling['id']); ?>-circle-radial" /><?php _e('Circle Radial','themify')?></label>
-                                        <div class="themify-gradient-container"></div>
-					<input style="display: none;" type="text" class="xlarge themify-gradient tfb_lb_option" data-id="<?php  esc_attr_e($styling['id']); ?>" id="<?php  esc_attr_e($styling['id']); ?>-gradient" name="<?php echo esc_attr($styling['id']); ?>-gradient" data-default-gradient="<?php echo isset( $styling['default-gradient'] )?$styling['default-gradient']:'0% rgba(0,0,0, 1)|100% rgba(255,255,255,1)'; ?>" />
-					<textarea style="display: none;" class="xlarge tfb_lb_option themify-gradient-css" id="<?php echo esc_attr($styling['id']); ?>-css" name="<?php echo esc_attr($styling['id']); ?>-css"></textarea>
+					<input type="text" class="xsmall tfb_lb_option themify-gradient-angle" id="<?php echo esc_attr($styling['id']); ?>-gradient-angle" name="<?php echo esc_attr($styling['id']); ?>-gradient-angle" value="0" data-min="0" data-max="360" data-cursor="true" data-thickness=".4" data-step="1" data-width="63" data-height="63" data-default="0" />
+					<span><?php _e( 'Rotation', 'themify' ); ?></span>
+
+					<select class="tfb_lb_option themify-radial-circle" id="<?php echo esc_attr($styling['id']); ?>-circle-radial" name="<?php echo esc_attr($styling['id']); ?>-circle-radial" data-default="ellipse">
+						<option value="ellipse"><?php _e( 'Ellipse', 'themify' ); ?></option>
+						<option value="circle"><?php _e( 'Circle', 'themify' ); ?></option>
+					</select>
+
+					<div class="themify-gradient-container"></div>
+					<input style="display: none;" type="text" class="xlarge themify-gradient tfb_lb_option" data-id="<?php  esc_attr_e($styling['id']); ?>" id="<?php  esc_attr_e($styling['id']); ?>-gradient" name="<?php echo esc_attr($styling['id']); ?>-gradient" data-default-gradient="<?php echo isset( $styling['default-gradient'] )?$styling['default-gradient']:'0% rgba(0,0,0, 1)|100% rgba(255,255,255,1)'; ?>" data-default="0% rgb(0, 0, 0)|100% rgb(255, 255, 255)" />
 					<a href="#" title="<?php _e( 'Clear Gradient', 'themify' ); ?>" class="themify-clear-gradient"><i class="ti ti-close"></i></a>
 				</div>
 				<?php
@@ -1029,7 +1036,7 @@ if (!function_exists('themify_builder_styling_field')) {
 				endif;
 				$option_js_wrap = (isset($styling['option_js']) && $styling['option_js'] == true) ? ' tf-option-checkbox-enable' : '';
 				?>
-				<div id="<?php echo esc_attr($styling['id']); ?>" class="tfb_lb_option themify-checkbox<?php echo $option_js_wrap ?>">
+				<div id="<?php echo esc_attr($styling['id']); ?>" class="tfb_lb_option themify-checkbox<?php echo $option_js_wrap ?>" <?php echo $default; ?>>
 					<?php foreach ($styling['options'] as $opt): ?>
 						<?php
 						$checkbox_checked = '';
@@ -1040,7 +1047,7 @@ if (!function_exists('themify_builder_styling_field')) {
 						}
 						$data_el = (isset($styling['option_js']) && $styling['option_js'] == true) ? 'data-selected="tf-checkbox-element-' . $opt['name'] . '"' : '';
 						?>
-						<input id="<?php echo esc_attr($styling['id'] . '_' . $opt['name']); ?>" name="<?php echo esc_attr($styling['id']); ?>" type="checkbox" class="<?php echo isset($styling['class']) ? $styling['class'] : '' ?> tfb_lb_option tf-checkbox" value="<?php echo esc_attr($opt['name']); ?>" <?php echo $checkbox_checked . ' ' . $data_el; ?> />
+						<input id="<?php echo esc_attr($styling['id'] . '_' . $opt['name']); ?>" name="<?php echo esc_attr($styling['id']); ?>" type="checkbox" class="<?php echo isset($styling['class']) ? $styling['class'] : '' ?> tf-checkbox" value="<?php echo esc_attr($opt['name']); ?>" <?php echo $checkbox_checked . ' ' . $data_el; ?> />
 						<label for="<?php echo esc_attr($styling['id'] . '_' . $opt['name']); ?>" class="pad-right"><?php echo wp_kses_post($opt['value']); ?></label>
 
 						<?php if (isset($opt['help'])): ?>
@@ -1062,14 +1069,14 @@ if (!function_exists('themify_builder_styling_field')) {
 				$option_js = (isset($styling['option_js']) && $styling['option_js'] == true) ? 'tf-option-checkbox-js' : '';
 				$option_js_wrap = $option_js ? 'tf-option-checkbox-enable' : '';
 				?>
-				<div id="<?php echo esc_attr($styling['id']); ?>" class="tfb_lb_option tf-radio-input-container <?php echo esc_attr($option_js_wrap); ?>">
+				<div id="<?php echo esc_attr($styling['id']); ?>" class="tfb_lb_option tf-radio-input-container <?php echo esc_attr($option_js_wrap); ?>" <?php echo $default; ?>>
 					<?php
 					foreach ($styling['meta'] as $k=>$option) {
 						$checked = isset($option['selected']) && $option['selected'] == true ? 'checked="checked"' : '';
 						$data_el = $option_js ? 'data-selected="tf-group-element-' . $option['value'] . '"' : '';
 						$checked = !$checked && isset($styling['default']) && $styling['default'] == $k ? 'checked="checked"' : $checked;
                                                 ?>
-						<input <?php if(is_array($option) && !empty($option['disable'])):?>disabled="disabled"<?php endif;?> type="radio" id="<?php echo esc_attr($styling['id'] . '_' . $option['value']); ?>" name="<?php echo esc_attr($styling['id']); ?>" value="<?php echo esc_attr($option['value']); ?>" class="tfb_lb_option <?php echo $option_js; ?>" <?php echo $checked . ' ' . $data_el; ?>> <label for="<?php echo esc_attr($styling['id'] . '_' . $option['value']); ?>"><?php echo esc_html($option['name']); ?></label>
+						<input <?php if(is_array($option) && !empty($option['disable'])):?>disabled="disabled"<?php endif;?> type="radio" id="<?php echo esc_attr($styling['id'] . '_' . $option['value']); ?>" name="<?php echo esc_attr($styling['id']); ?>" value="<?php echo esc_attr($option['value']); ?>" class="<?php echo $option_js; ?>" <?php echo $checked . ' ' . $data_el; ?>> <label for="<?php echo esc_attr($styling['id'] . '_' . $option['value']); ?>"><?php echo esc_html($option['name']); ?></label>
 						<?php
 					}
 					?>

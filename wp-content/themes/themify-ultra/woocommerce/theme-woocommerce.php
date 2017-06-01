@@ -156,10 +156,14 @@ function themify_theme_delete_image_sizes_flag() {
 /** gets the url to remove an item from dock cart */
 function themify_get_remove_url( $cart_item_key ) {
 	global $woocommerce;
-	$cart_page_id = woocommerce_get_page_id('cart');
+
+	$cart_page_id = version_compare( WOOCOMMERCE_VERSION, '3.0.0', '>=' )
+		? wc_get_page_id( 'cart' )
+		: woocommerce_get_page_id( 'cart' );
+		
 	if ($cart_page_id)
 		return apply_filters('woocommerce_get_remove_url', $woocommerce->nonce_url( 'cart', add_query_arg('update_cart', $cart_item_key, get_permalink($cart_page_id))));
-}  
+}
 
 /**
  * Remove from cart/update

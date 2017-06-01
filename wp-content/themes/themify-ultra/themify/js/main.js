@@ -11,10 +11,10 @@ var Themify, ThemifyGallery;
 		Themify.triggerEvent( window, 'resize' );
 		$( 'body' ).addClass( 'page-loaded' );
 	});
-
 	Themify = {
 		fonts:[],
 		cssLazy:[],
+                jsLazy:[],
 		triggerEvent: function (a, b) {
 			var c;
 			document.createEvent ? (c = document.createEvent("HTMLEvents"), c.initEvent(b, !0, !0)) : document.createEventObject && (c = document.createEventObject(), c.eventType = b), c.eventName = b, a.dispatchEvent ? a.dispatchEvent(c) : a.fireEvent && htmlEvents["on" + b] ? a.fireEvent("on" + c.eventType, c) : a[b] ? a[b]() : a["on" + b] && a["on" + b]()
@@ -37,7 +37,7 @@ var Themify, ThemifyGallery;
 					}
 				});
 				$('body').on('builderscriptsloaded.themify', function () {
-					$self.LoadAsync(tbLocalScript.builder_url + '/js/themify.builder.script.js');
+                                    $self.LoadAsync(tbLocalScript.builder_url + '/js/themify.builder.script.js');
 				});
 			}
 			else {
@@ -69,7 +69,6 @@ var Themify, ThemifyGallery;
 		LazyLoad: function() {
 			var editMode = $('body').hasClass('themify_builder_active'),
                             self = Themify,
-                            isLoaded = function( css ) { return $.inArray( css, self.cssLazy ) !== -1; },
                             is_fontawesome = editMode || $('.fa').length>0,
                             is_themify_icons = editMode || $( 'span[class*="ti-"], i[class*="ti-"], .module-menu[data-menu-breakpoint]').length>0;
                             if(!editMode){
@@ -80,21 +79,19 @@ var Themify, ThemifyGallery;
                                             is_themify_icons = self.checkFont('Themify');
                                     }
                             }
-                            else if(typeof tbLocalScript !== 'undefined' && tbLocalScript && $('link#builder-styles').length===0 && ! isLoaded( 'builder-styles' ) ){
+                            else if(typeof tbLocalScript !== 'undefined' && tbLocalScript && $('link#builder-styles').length===0 ){
                             
                                 self.LoadCss(  tbLocalScript.builder_url + '/css/themify-builder-style.css', themify_vars.version );
-				self.cssLazy.push( 'builder-styles' );
                             }
 			
                         /*Load addons css/js,we don't need to wait the loading of builder*/
                         if(typeof tbLocalScript !== 'undefined' && tbLocalScript && Object.keys(tbLocalScript.addons).length>0){
                             for(var i in tbLocalScript.addons){
-                                if(!isLoaded( i )  && $(tbLocalScript.addons[i].selector).length>0){
+                                if($(tbLocalScript.addons[i].selector).length>0){
                                     if(tbLocalScript.addons[i].css){
                                         if( ! $( 'link[href*="' + tbLocalScript.addons[i].css + '"]' ).length )
 											self.LoadCss(tbLocalScript.addons[i].css, tbLocalScript.addons[i].ver );
                                     }
-                                    
                                     if(tbLocalScript.addons[i].js){
                                         if(tbLocalScript.addons[i].external){
                                             var s = document.createElement('script');
@@ -105,25 +102,20 @@ var Themify, ThemifyGallery;
                                         }
                                         self.LoadAsync(tbLocalScript.addons[i].js,null, tbLocalScript.addons[i].ver );
                                     }
-                                    self.cssLazy.push( i );
                                 }
                             }
                         }
-			if( (editMode  || is_fontawesome) && ! isLoaded( 'font-awesome' ) ) {
-				self.LoadCss( themify_vars.url + '/fontawesome/css/font-awesome.min.css', themify_vars.version );
-				self.cssLazy.push( 'font-awesome' );
+			if(is_fontawesome) {
+                            self.LoadCss( themify_vars.url + '/fontawesome/css/font-awesome.min.css', themify_vars.version );
 			}
-			if( (editMode  || is_themify_icons) && !isLoaded( 'themify-icons' )) {
-				self.LoadCss(themify_vars.url + '/themify-icons/themify-icons.css', themify_vars.version);
-				self.cssLazy.push( 'themify-icons' );
+			if(is_themify_icons) {
+                            self.LoadCss(themify_vars.url + '/themify-icons/themify-icons.css', themify_vars.version);
 			}
-			if( $( 'i[class*="icon-"]' ).length>0 && typeof themify_vars.fontello_path == 'string' && !isLoaded( 'themify-fontello' )) {
-				self.LoadCss( themify_vars.fontello_path );
-				self.cssLazy.push( 'themify-fontello' );
+			if($( 'i[class*="icon-"]' ).length>0 && typeof themify_vars.fontello_path === 'string') {
+                            self.LoadCss( themify_vars.fontello_path );
 			}
-			if(!isLoaded( 'themify-framework' ) && $( '.shortcode' ).length>0) {
-				self.LoadCss( themify_vars.url + '/css/themify.framework.css', null, $( '#themify-framework-css' )[0] );
-				self.cssLazy.push( 'themify-framework' );
+			if($( '.shortcode' ).length>0) {
+                            self.LoadCss( themify_vars.url + '/css/themify.framework.css', null, $( '#themify-framework-css' )[0] );
 			}  
 		},
 		InitCarousel: function () {
@@ -131,7 +123,7 @@ var Themify, ThemifyGallery;
 				var $self = this;
 				$self.LoadAsync(themify_vars.includesURL + 'js/imagesloaded.min.js', function () {
 						if('undefined' === typeof $.fn.carouFredSel){
-							$self.LoadAsync(themify_vars.url + '/js/carousel.js', $self.carouselCalback, null, null, function () {
+							$self.LoadAsync(themify_vars.url + '/js/carousel.min.js', $self.carouselCalback, null, null, function () {
 								return ('undefined' !== typeof $.fn.carouFredSel);
 							});
 						}
@@ -318,18 +310,18 @@ var Themify, ThemifyGallery;
 				}, delay);
 			});
 		},
-		LoadAsync: function (src, callback, version, defer, test) {
-                    function hash(str){
-                        var hash = 0;
-                        for (var i = 0; i < str.length; i++) {
-                            var char = str.charCodeAt(i);
-                            hash = ((hash<<5)-hash)+char;
-                            hash = hash & hash; // Convert to 32bit integer
-                        }
-                        return hash;
+                hash:function(str){
+                    var hash = 0;
+                    for (var i = 0,len=str.length; i < len; ++i) {
+                        var char = str.charCodeAt(i);
+                        hash = ((hash<<5)-hash)+char;
+                        hash = hash & hash; // Convert to 32bit integer
                     }
-                    var id = hash(src), // Make script path as ID
-                            existElemens = document.getElementById(id);
+                    return hash;
+                },
+		LoadAsync: function (src, callback, version, defer, test) {
+                    var id = this.hash(src), // Make script path as ID
+                        existElemens =  $.inArray( id, this.jsLazy ) !== -1 || document.getElementById(id);
 			if (existElemens) {
 				if (callback) {
 					if (test) {
@@ -362,6 +354,16 @@ var Themify, ThemifyGallery;
                             } catch (e) {
                             }
                         }
+                        this.jsLazy.push(id);
+                        if(src.indexOf('.min.js')===-1){
+                            var name = src.match(/([^\/]+)(?=\.\w+$)/);
+                            if(name &&  name[0]){
+                                name = name[0];
+                                if(themify_vars.minify.js[name]){
+                                    src = src.replace(name+'.js',name+'.min.js');
+                                }
+                            }
+                        }
 			var s, r, t;
 			r = false;
 			s = document.createElement('script');
@@ -387,13 +389,25 @@ var Themify, ThemifyGallery;
 			t.parentNode.insertBefore(s, t);
 		},
 		LoadCss: function (href, version, before, media, callback) {
-			var fullHref = version ? href + '?version=' + version : href;
-			if ($("link[href='" + fullHref + "']").length > 0) {
+                        var id = this.hash(href),
+                            existElemens =  $.inArray( id, this.cssLazy ) !== -1 || document.getElementById(id),
+                            fullHref = version ? href + '?version=' + version : href;
+			if (existElemens || $("link[href='" + fullHref + "']").length > 0) {
 				return;
 			}
-			var doc = window.document;
-			var ss = doc.createElement("link");
-			var ref;
+                        this.cssLazy.push(id);
+                        if(href.indexOf('.min.css')===-1){
+                            var name = href.match(/([^\/]+)(?=\.\w+$)/);
+                            if(name &&  name[0]){
+                                name = name[0];
+                                if(themify_vars.minify.css[name]){
+                                    fullHref = fullHref.replace(name+'.css',name+'.min.css');
+                                }
+                            }
+                        }
+			var doc = window.document,
+                            ss = doc.createElement("link"),
+                            ref;
 			if (before) {
 				ref = before;
 			}
@@ -408,6 +422,7 @@ var Themify, ThemifyGallery;
 			// temporarily set media to something inapplicable to ensure it'll fetch without blocking render
 			ss.media = "only x";
 			ss.async = 'async';
+                        ss.id = id;
 
 			// Inject link
 			// Note: `insertBefore` is used instead of `appendChild`, for safety re: http://www.paulirish.com/2011/surefire-dom-element-insertion/
@@ -511,7 +526,7 @@ var Themify, ThemifyGallery;
 			var self = this;
 			if( lightboxConditions ) {
 				this.LoadCss(themify_vars.url + '/css/lightbox.css', null);
-				this.LoadAsync(themify_vars.url + '/js/lightbox.js', function () {
+				this.LoadAsync(themify_vars.url + '/js/lightbox.min.js', function () {
 					Themify.lightboxCallback($el, $args);
 				}, null, null, function () {
 					return ('undefined' !== typeof $.fn.magnificPopup);

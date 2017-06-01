@@ -230,18 +230,12 @@
     },
     {
         "name": "dangoodman/shengine",
-        "version": "1.0.1",
-        "version_normalized": "1.0.1.0",
+        "version": "1.1.0",
+        "version_normalized": "1.1.0.0",
         "source": {
             "type": "git",
             "url": "git@bitbucket.org:dangoodman/lib-shengine.git",
-            "reference": "8120ced8530567a8eef1c915ba8abb4500304a97"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "file:///D:/projects/all/private-composer-repo/out/dist/dangoodman/shengine/dangoodman-shengine-1.0.1-ff5660.zip",
-            "reference": "8120ced8530567a8eef1c915ba8abb4500304a97",
-            "shasum": "8f961aad5bab9062dc54816ca1bce61ddf78dd7b"
+            "reference": "df04fcf0e1d1d1e04097dbfb2a9246a50eb1000c"
         },
         "require": {
             "dangoodman/arrays": "^1.0",
@@ -256,9 +250,9 @@
         "require-dev": {
             "phpunit/phpunit": "5.3.*"
         },
-        "time": "2017-01-19T14:16:10+00:00",
+        "time": "2017-03-24T13:48:17+00:00",
         "type": "library",
-        "installation-source": "dist",
+        "installation-source": "source",
         "autoload": {
             "psr-4": {
                 "Dgm\\Shengine\\": "src/"
@@ -272,17 +266,17 @@
     },
     {
         "name": "dangoodman/deferred",
-        "version": "1.0.0",
-        "version_normalized": "1.0.0.0",
+        "version": "1.0.1",
+        "version_normalized": "1.0.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/dangoodman/deferred.git",
-            "reference": "facdc9256189aa0926a55dfccaa43a5c7a6f355e"
+            "reference": "cf0d7d8370c0f7225da872a3a2e3c8f1a5bc4205"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/dangoodman/deferred/zipball/facdc9256189aa0926a55dfccaa43a5c7a6f355e",
-            "reference": "facdc9256189aa0926a55dfccaa43a5c7a6f355e",
+            "url": "https://api.github.com/repos/dangoodman/deferred/zipball/cf0d7d8370c0f7225da872a3a2e3c8f1a5bc4205",
+            "reference": "cf0d7d8370c0f7225da872a3a2e3c8f1a5bc4205",
             "shasum": ""
         },
         "require": {
@@ -291,14 +285,13 @@
         "require-dev": {
             "phpunit/phpunit": "~3.7"
         },
-        "time": "2016-05-23T17:48:46+00:00",
+        "time": "2017-04-26T11:54:04+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
-            "psr-0": {
-                "Deferred\\Tests": "tests/",
-                "Deferred": "src/"
-            }
+            "classmap": [
+                "Deferred.php"
+            ]
         },
         "notification-url": "https://packagist.org/downloads/",
         "license": [
@@ -338,28 +331,22 @@
     },
     {
         "name": "dangoodman/shengine-wc-converters",
-        "version": "1.0.2",
-        "version_normalized": "1.0.2.0",
+        "version": "1.2.1",
+        "version_normalized": "1.2.1.0",
         "source": {
             "type": "git",
             "url": "git@bitbucket.org:dangoodman/lib-shengine-wc-converters.git",
-            "reference": "1144d71705f13b0d0bde11d9061e6385d0ed7320"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "file:///D:/projects/all/private-composer-repo/out/dist/dangoodman/shengine-wc-converters/dangoodman-shengine-wc-converters-1.0.2-05117b.zip",
-            "reference": "1144d71705f13b0d0bde11d9061e6385d0ed7320",
-            "shasum": "ea306f9baf4760945de9bc3f4611f19f761789dd"
+            "reference": "e03ebcbef71388d026b50d8e7ee09b194b3be775"
         },
         "require": {
             "dangoodman/arrays": "^1.0",
-            "dangoodman/shengine": "^1.0.1",
+            "dangoodman/shengine": "^1.1.0",
             "dangoodman/shengine-wc-item": "^1.0",
             "php": ">=5.3"
         },
-        "time": "2017-01-19T14:20:26+00:00",
+        "time": "2017-04-28T21:55:23+00:00",
         "type": "library",
-        "installation-source": "dist",
+        "installation-source": "source",
         "autoload": {
             "psr-4": {
                 "Dgm\\Shengine\\Woocommerce\\Converters\\": "src/"

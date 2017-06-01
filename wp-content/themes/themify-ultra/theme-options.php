@@ -18,6 +18,7 @@ class Themify {
 	 */
 	public $post_layout;
 	public $post_layout_type = 'default';
+	public $post_filter;
 	public $hide_title;
 	public $hide_meta;
 	public $hide_meta_author;
@@ -116,23 +117,18 @@ class Themify {
 		///////////////////////////////////////////
 		//Global options setup
 		///////////////////////////////////////////
-		$this->layout = themify_get( 'setting-default_layout' );
-		if ( $this->layout == '' ) {
-			$this->layout = 'sidebar1';
-		}
-
+		$this->layout = themify_get( 'setting-default_layout', 'sidebar1' );
 		$this->post_layout = themify_get( 'setting-default_post_layout', 'list-post' );
-
 		$this->page_title = themify_get( 'setting-hide_page_title' );
 		$this->hide_title = themify_get( 'setting-default_post_title' );
 		$this->unlink_title = themify_get( 'setting-default_unlink_post_title' );
-		$this->media_position = themify_check( 'setting-default_media_position' ) ? themify_get( 'setting-default_media_position' ) : 'above';
+		$this->media_position = themify_get( 'setting-default_media_position', 'above' );
 		$this->hide_image = themify_get( 'setting-default_post_image' );
 		$this->unlink_image = themify_get( 'setting-default_unlink_post_image' );
 		$this->auto_featured_image = ! themify_check( 'setting-auto_featured_image' ) ? 'field_name=post_image, image, wp_thumb&' : '';
 		$this->hide_page_image = themify_get( 'setting-hide_page_image' ) == 'yes' ? 'yes' : 'no';
-		$this->image_page_single_width = themify_check( 'setting-page_featured_image_width' ) ? themify_get( 'setting-page_featured_image_width' ) : $this->page_image_width;
-		$this->image_page_single_height = themify_check( 'setting-page_featured_image_height' ) ? themify_get( 'setting-page_featured_image_height' ) : 0;
+		$this->image_page_single_width = themify_get( 'setting-page_featured_image_width', $this->page_image_width );
+		$this->image_page_single_height = themify_get( 'setting-page_featured_image_height', 0 );
 
 		$this->hide_meta = themify_get( 'setting-default_post_meta' );
 		$this->hide_meta_author = themify_get( 'setting-default_post_meta_author' );
@@ -141,11 +137,11 @@ class Themify {
 		$this->hide_meta_tag = themify_get( 'setting-default_post_meta_tag' );
 
 		$this->hide_date = themify_get( 'setting-default_post_date' );
-                $this->inline_date = $this->hide_date=='yes'?false:themify_get( 'setting-default_display_date_inline' );
+		$this->inline_date = $this->hide_date == 'yes' ? false : themify_get( 'setting-default_display_date_inline' );
 
 		// Set Order & Order By parameters for post sorting
-		$this->order = themify_check( 'setting-index_order' ) ? themify_get( 'setting-index_order' ) : 'DESC';
-		$this->orderby = themify_check( 'setting-index_orderby' ) ? themify_get( 'setting-index_orderby' ) : 'date';
+		$this->order = themify_get( 'setting-index_order', 'DESC' );
+		$this->orderby = themify_get( 'setting-index_orderby', 'date' );
 
 		$this->display_content = themify_get( 'setting-default_layout_display' );
 		$this->avatar_size = apply_filters( 'themify_author_box_avatar_size', $this->avatar_size );
@@ -156,34 +152,41 @@ class Themify {
 	}
 
 	function template_redirect() {
-
 		$post_image_width = $post_image_height = '';
-		if (is_page()) {
-			if(post_password_required()){
+
+		if ( is_page() ) {
+			if ( post_password_required() ) {
 				return;
 			}
+
 			$this->page_id = get_the_ID();
 			$this->post_layout = themify_get( 'layout', 'list-post' );
 			// set default post layout
-			if($this->post_layout == ''){
+			if ( $this->post_layout == '' ) {
 				$this->post_layout = 'list-post';
 			}
-			$post_image_width = themify_get('image_width');
-			$post_image_height = themify_get('image_height');
-		}
-		if(!is_numeric($post_image_width)){
-			$post_image_width = themify_get('setting-image_post_width');
-		}
-		if(!is_numeric($post_image_height)){
-			$post_image_height = themify_get('setting-image_post_height');
+
+			$post_image_width = themify_get( 'image_width' );
+			$post_image_height = themify_get( 'image_height' );
+
+			if( themify_get( 'portfolio_post_filter' ) ) {
+				$this->post_filter = themify_get( 'portfolio_post_filter' );
+			}
 		}
 
+		if ( ! is_numeric( $post_image_width ) ) {
+			$post_image_width = themify_get( 'setting-image_post_width' );
+		}
 
-		if( is_singular() ) {
+		if ( ! is_numeric( $post_image_height ) ) {
+			$post_image_height = themify_get( 'setting-image_post_height' );
+		}
+
+		if ( is_singular() ) {
 			$this->display_content = 'content';
 		}
 		
-		if(!is_numeric($post_image_width) || !is_numeric($post_image_height) ) {
+		if ( ! is_numeric( $post_image_width ) || ! is_numeric( $post_image_height ) ) {
 			///////////////////////////////////////////
 			// Setting image width, height
 			///////////////////////////////////////////
@@ -218,12 +221,21 @@ class Themify {
 				break;
 			}
 		}
-		if (is_numeric($post_image_width) ) {
+
+		if ( is_numeric( $post_image_width ) ) {
 			$this->width = $post_image_width;
 		}
-		if (is_numeric($post_image_height) ) {
+		
+		if ( is_numeric( $post_image_height ) ) {
 			$this->height = $post_image_height;
 		}
+
+		if( is_home() || is_category() || is_tag() ) {
+			$this->query_taxonomy = 'category';
+			$this->post_filter = themify_get( 'setting-post_filter', 'yes' );
+			$this->post_layout_type = themify_get( 'setting-post_content_layout' );
+		}
+
 		if ( is_page() || themify_is_shop() ) {
 			// Set Page Number for Pagination
 			if ( get_query_var( 'paged' ) ) {
@@ -302,7 +314,7 @@ class Themify {
 
 				$this->display_content = themify_get( $this->query_post_type . '_display_content', 'excerpt' );
 				$this->posts_per_page = themify_get( $this->query_post_type . '_posts_per_page' );
-				$this->order = themify_get( $this->query_post_type . '_order' );
+				$this->order = themify_get( $this->query_post_type . '_order', 'desc' );
 				$this->orderby = themify_get( $this->query_post_type . '_orderby' );
 				$this->use_original_dimensions = 'no';
 
@@ -353,69 +365,43 @@ class Themify {
 				$this->page_navigation = themify_get( 'hide_navigation' );
 				$this->posts_per_page = themify_get( 'posts_per_page' );
 
-				$this->order = ( themify_get( 'order' ) && '' != themify_get( 'order' ) ) ? themify_get( 'order' ) : ( themify_check( 'setting-index_order' ) ? themify_get( 'setting-index_order' ) : 'DESC' );
-				$this->orderby = ( themify_get( 'orderby' ) && '' != themify_get( 'orderby' ) ) ? themify_get( 'orderby' ) : ( themify_check( 'setting-index_orderby' ) ? themify_get( 'setting-index_orderby' ) : 'date' );
+				$this->order = themify_get( 'order', 'desc' );
+				$this->orderby = themify_get( 'orderby', 'date' );
 
 			}
+			
+
+			$this->post_layout_type = themify_get( $this->query_post_type . '_content_layout', 'default' ) === 'default'
+				? themify_get( 'setting-' . $this->query_post_type . '_content_layout' )
+				: themify_get( $this->query_post_type . '_content_layout' );
 		}
-		elseif (is_tax('portfolio-category')) {
-			$this->post_layout = themify_check('setting-default_portfolio_index_post_layout')? themify_get('setting-default_portfolio_index_post_layout') : 'grid3';
+		elseif ( is_post_type_archive( 'portfolio' ) || is_tax('portfolio-category') ) {
+			$this->layout = themify_get( 'setting-default_portfolio_index_layout', 'sidebar-none' );
+			$this->post_layout = themify_get( 'setting-default_portfolio_index_post_layout', 'grid3' );
+			$this->post_layout_type = themify_get( 'setting-portfolio_content_layout' );
+			$this->post_filter = themify_get( 'setting-portfolio_post_filter', 'yes' );
+			$this->query_taxonomy = 'portfolio-category';
+			$this->query_post_type = 'portfolio';
 
-			switch ( $this->post_layout ) {
-				case 'grid4':
-					$this->width = self::$grid4_width;
-					$this->height = self::$grid4_height;
-					break;
-				case 'grid3':
-					$this->width = self::$grid3_width;
-					$this->height = self::$grid3_height;
-					break;
-				case 'grid2':
-					$this->width = self::$grid2_width;
-					$this->height = self::$grid2_height;
-					break;
-				case 'list-large-image':
-					$this->width = self::$list_large_image_width;
-					$this->height = self::$list_large_image_height;
-					break;
-				case 'list-thumb-image':
-					$this->width = self::$list_thumb_image_width;
-					$this->height = self::$list_thumb_image_height;
-					break;
-				case 'grid2-thumb':
-					$this->width = self::$grid2_thumb_width;
-					$this->height = self::$grid2_thumb_height;
-					break;
-				case 'list-post':
-					$this->width = self::$list_post_width;
-					$this->height = self::$list_post_height;
-					break;
-				default:
-					$this->width = self::$list_post_width;
-					$this->height = self::$list_post_height;
-					break;
+			$p_layout = str_replace( '-', '_', $this->post_layout );
+			$this->width = ! empty( self::${$p_layout . '_width'} ) 
+				? self::${$p_layout . '_width'} : self::$list_post_width;
+			$this->height = ! empty( self::${$p_layout . '_height'} ) 
+				? self::${$p_layout . '_height'} : self::$list_post_height;
+
+			$this->display_content = themify_get( 'setting-default_portfolio_index_display', 'none' );
+			$this->hide_title = themify_get( 'setting-default_portfolio_index_title', 'no' );
+			$this->unlink_title = themify_get( 'setting-default_portfolio_index_unlink_post_title', 'no' );
+			$this->hide_meta = themify_get( 'setting-default_portfolio_index_post_meta_category', 'yes' );
+			$this->hide_date = themify_get( 'setting-default_portfolio_index_post_date', 'yes' );
+			$this->unlink_image = themify_get( 'setting-default_portfolio_index_unlink_post_image', 'no' );
+
+			if ( themify_check( 'setting-default_portfolio_index_image_post_width' ) ) {
+				$this->width = themify_get( 'setting-default_portfolio_index_image_post_width' );
 			}
 
-			$this->layout = themify_check('setting-default_portfolio_index_layout')? themify_get('setting-default_portfolio_index_layout') : 'sidebar-none';
-
-			$this->display_content = themify_check('setting-default_portfolio_index_display') ?
-										themify_get('setting-default_portfolio_index_display'): 'none';
-
-			$this->hide_title = themify_check('setting-default_portfolio_index_title')? themify_get('setting-default_portfolio_index_title'): 'no';
-
-			$this->unlink_title = themify_check('setting-default_portfolio_index_unlink_post_title')? themify_get('setting-default_portfolio_index_unlink_post_title'): 'no';
-
-			$this->hide_meta = themify_check('setting-default_portfolio_index_post_meta_category')?
-					themify_get('setting-default_portfolio_index_post_meta_category') : 'yes';
-
-			$this->hide_date = themify_check('setting-default_portfolio_index_post_date')?
-					themify_get('setting-default_portfolio_index_post_date') : 'yes';
-
-			if ( themify_check('setting-default_portfolio_index_image_post_width') ) {
-				$this->width = themify_get('setting-default_portfolio_index_image_post_width');
-			}
-			if ( themify_check('setting-default_portfolio_index_image_post_height') ) {
-				$this->height = themify_get('setting-default_portfolio_index_image_post_height');
+			if ( themify_check( 'setting-default_portfolio_index_image_post_height' ) ) {
+				$this->height = themify_get( 'setting-default_portfolio_index_image_post_height' );
 			}
 		}
 		elseif ( is_single() ) {

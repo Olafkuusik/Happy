@@ -44,9 +44,6 @@ add_action( 'woocommerce_after_main_content', 'themify_after_shop_content', 20);
 remove_action( 'woocommerce_sidebar', 'woocommerce_get_sidebar', 10);
 add_action('template_redirect', 'themify_woocommerce_sidebar_layout', 12);
 
-// Add product variations
-add_action('woocommerce_before_add_to_cart_form', 'themify_available_variations');
-
 // Show excerpt or content in product archive pages
 add_action('woocommerce_after_shop_loop_item', 'themify_after_shop_loop_item');
 // Set WC image sizes
@@ -61,13 +58,16 @@ add_filter('woocommerce_get_price_html', 'themify_no_price');
 // Set number of products shown in product archive pages
 add_filter('loop_shop_per_page', 'themify_products_per_page');
 // Alter or remove success message after adding to cart with ajax.
-add_filter( 'wc_add_to_cart_message', 'themify_theme_wc_add_to_cart_message' );
+$cart_message = 'wc_add_to_cart_message' . version_compare( WOOCOMMERCE_VERSION, '3.0.0', '>=' ) ? '_html' : '';
+add_filter( $cart_message, 'themify_theme_wc_add_to_cart_message' );
 
 /**
  * Fragments
  * Adding cart total and shopdock markup to the fragments
  */
-add_filter( 'add_to_cart_fragments', 'themify_theme_add_to_cart_fragments' );
+$cart_fragments_hook = version_compare( WOOCOMMERCE_VERSION, '3.0.0', '>=' )
+	? 'woocommerce_add_to_cart_fragments' : 'add_to_cart_fragments';
+add_filter( $cart_fragments_hook, 'themify_theme_add_to_cart_fragments' );
 
 /**
  * Theme delete cart hook

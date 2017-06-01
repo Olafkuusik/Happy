@@ -528,15 +528,15 @@ class Themify_Builder_Layouts {
 	 */
 	public function row_actions( $actions ) {
 		global $post;
-		$builder_link = sprintf( '<a href="%s" target="_blank">%s</a>', esc_url( get_permalink( $post->ID ) . '#builder_active' ), __('Themify Builder', 'themify' ));
+
 		if ( ( $this->layout->post_type_name == get_post_type() ) || ( $this->layout_part->post_type_name == get_post_type() ) ) {
 			$actions['themify-builder-duplicate'] = sprintf( '<a href="%s">%s</a>', wp_nonce_url( admin_url( 'post.php?post=' . $post->ID . '&action=duplicate_tbuilder' ), 'duplicate_themify_builder' ), __('Duplicate', 'themify') );
+		}
+
+		$registered_post_types = themify_post_types();
+		if ( current_user_can( 'edit_post', get_the_id() ) && in_array( get_post_type(), $registered_post_types ) ) {
+			$builder_link = sprintf( '<a href="%s" target="_blank">%s</a>', esc_url( get_permalink( $post->ID ) . '#builder_active' ), __('Themify Builder', 'themify' ));
 			$actions['themify-builder'] = $builder_link;
-		} else {
-			// print builder links on another post types
-			$registered_post_types = themify_post_types();
-			if ( in_array( get_post_type(), $registered_post_types ) ) 
-				$actions['themify-builder'] = $builder_link;
 		}
 
 		return $actions;

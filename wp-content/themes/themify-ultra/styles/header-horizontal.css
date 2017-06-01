@@ -5,6 +5,9 @@ HEADER HORIZONTAL
 body.fixed-header.page-loaded #headerwrap {
 	position: fixed;
 }
+body.announcement-top.fixed-header.page-loaded #headerwrap {
+	position: absolute; /* fix A.Bar */
+}
 #header {
 	text-align: inherit;
 	padding: 1em 0;

@@ -30,6 +30,7 @@ if (TFCache::start_cache('gallery', self::$post_id, array('ID' => $module_ID))):
         'gallery_pagination'=>false,
         'gallery_per_page'=>'',
         'gallery_image_title'=>false,
+        'gallery_exclude_caption'=>false,
         'layout_masonry' => ''
     );
 

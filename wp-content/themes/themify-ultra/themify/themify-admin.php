@@ -120,8 +120,7 @@ function themify_page() {
 		themify_updater();
 	}
 
-	global $themify_config;
-	themify_load_config();
+	$themify_config = themify_load_config();
 
 	// check theme information
 	$theme = wp_get_theme();
@@ -2799,12 +2798,12 @@ if(!function_exists('themify_manage_script_minification_settings')) {
                     $expire = $expire>0?intval($expire):2;
                    
                     $output .= '<label><input ' . checked( $value, 'enable', false ). ' type="radio" name="'.$key.'" value="enable" /> ';
-                    $output .= __('Enable minification for faster page load)', 'themify').'</label>';
+                    $output .= __('Enable minification (all Javascript &amp; CSS files will be minified/compiled)', 'themify').'</label>';
                     $output .='<br/><br/>';
                     $output .= '<div style="margin: 5px 0px 5px 35px;" data-show-if-element="[name='.$key.']:checked" data-show-if-value=' . '["enable"]' . '>';
-                    $output .= '<label class="pushlabel" for="setting-page_builder_cache"><input  type="checkbox" id="setting-page_builder_cache" name="setting-page_builder_cache" '.checked( themify_check( 'setting-page_builder_cache' ), true, false ).'/> ' . __('Enable Builder Caching(will cache the Builder Content)', 'themify').'</label>';
+                    $output .= '<label class="pushlabel" for="setting-page_builder_cache"><input  type="checkbox" id="setting-page_builder_cache" name="setting-page_builder_cache" '.checked( themify_check( 'setting-page_builder_cache' ), true, false ).'/> ' . __('Enable Builder Caching (will cache the Builder content)', 'themify').'</label>';
                     $output .='<br/><br/>';
-                    $output .= '<label class="pushlabel" for="setting-cache_gzip"><input  type="checkbox" id="setting-cache_gzip" name="setting-cache_gzip" '.checked( themify_check( 'setting-cache_gzip' ), true, false ).'/> ' . __('Enable gzip(will add gzip code in htaccess file)', 'themify').'</label>';
+                    $output .= '<label class="pushlabel" for="setting-cache_gzip"><input  type="checkbox" id="setting-cache_gzip" name="setting-cache_gzip" '.checked( themify_check( 'setting-cache_gzip' ), true, false ).'/> ' . __('Enable gzip (will add gzip code in htaccess file)', 'themify').'</label>';
                     $output .='</div>';
 
                     $output .= '<span class="pushlabel"><label><input ' . checked( $value, 'disable', false ). ' type="radio" name="'.$key.'" value="disable" /> ';
@@ -2819,6 +2818,11 @@ if(!function_exists('themify_manage_script_minification_settings')) {
                 else{
                     $output.=__('Minification and caching requires 5.4 or abov. Your server does not support it.Please contact your host provider to upgrade php version.','themify');
                 }
+                $output .='<br/><br/>';
+                        $output .='<p>
+                                <span class="label">' . __( 'Minified CSS/JS', 'themify' ) . '</span>
+                                <input type="checkbox" id="'.$key.'-min" name="'.$key.'-min" '. checked( themify_get($key.'-min' ), 'on', false ) .'/> ' . __('Do not use minified Javascript &amp; CSS files', 'themify') . '</label>
+                        </p>';
 		return $output;
 	}
 }

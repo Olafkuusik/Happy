@@ -8,9 +8,9 @@ if (!defined('ABSPATH'))
  * @author Themify
  */
 $fields_default = array(
-    'mod_title_testimonial' => '',
-	'layout_testimonial'=>'',
-    'tab_content_testimonial'=> '',
+	'mod_title_testimonial' => '',
+	'layout_testimonial' => '',
+	'tab_content_testimonial' => '',
 	'img_w_slider' => '',
 	'img_h_slider' => '',
 	'visible_opt_slider' => '',
@@ -30,10 +30,10 @@ $fields_default = array(
     'css_testimonial' => ''
 );
 
-$fields_args = wp_parse_args($mod_settings, $fields_default);
-extract($fields_args, EXTR_SKIP);
-$animation_effect = $this->parse_animation_effect($animation_effect, $fields_args);
-$arrow_vertical=$show_arrow_slider==='yes' && $show_arrow_buttons_vertical==='vertical'?'themify_builder_slider_vertical':'';
+$fields_args = wp_parse_args( $mod_settings, $fields_default );
+extract( $fields_args, EXTR_SKIP );
+$animation_effect = $this->parse_animation_effect( $animation_effect, $fields_args );
+$arrow_vertical = $show_arrow_slider === 'yes' && $show_arrow_buttons_vertical === 'vertical' ? 'themify_builder_slider_vertical':'';
 $container_class = implode(' ', 
 	apply_filters( 'themify_builder_module_classes', array(
 		'module', 'module-' . $mod_name, $module_ID,'module-slider','themify_builder_slider_wrap', 'clearfix', $css_testimonial,$layout_testimonial, $animation_effect,$arrow_vertical
@@ -41,8 +41,8 @@ $container_class = implode(' ',
 );
 
 $container_props = apply_filters( 'themify_builder_module_container_props', array(
-    'id' => $module_ID,
-    'class' => $container_class
+	'id' => $module_ID,
+	'class' => $container_class
 ), $fields_args, $mod_name, $module_ID );
 
 $this->in_the_loop = true;
@@ -77,7 +77,7 @@ $paged = $this->get_paged_query();
 <div<?php echo $this->get_element_attributes( $container_props ); ?>>
 
 	<?php if ( $mod_title_testimonial != '' ): ?>
-		<?php echo $settings['before_title'] . wp_kses_post( apply_filters( 'themify_builder_module_title', $mod_title_testimonial, $fields_args ) ) . $settings['after_title']; ?>
+		<?php echo $mod_settings['before_title'] . wp_kses_post( apply_filters( 'themify_builder_module_title', $mod_title_testimonial, $fields_args ) ) . $mod_settings['after_title']; ?>
 	<?php endif; ?>
 	
 	<ul class="themify_builder_slider" 
@@ -158,7 +158,7 @@ $paged = $this->get_paged_query();
 				<div class="testimonial-author">
 					<div class="person-name"><?php echo $content['person_name_testimonial']; ?></div>
 					<div class="person-company">
-				<span class="person-position"><?php echo $content['person_position_testimonial']; ?></span>, <span class="person-company"><?php if(trim($content['company_website_testimonial'])!=''){ ?><a href="<?php echo $content['company_website_testimonial']; ?>"><?php } ?><?php echo $content['company_testimonial']; ?><?php if(trim($content['company_website_testimonial'])!=''){ ?></a><?php } ?></span>
+				<span class="person-position"><?php echo $content['person_position_testimonial']; ?></span>, <span class="person-company"><?php if(!empty($content['company_website_testimonial'])){ ?><a href="<?php echo $content['company_website_testimonial']; ?>"><?php } ?><?php echo $content['company_testimonial']; ?><?php if(!empty($content['company_website_testimonial'])){ ?></a><?php } ?></span>
 					</div>
 				</div>
 				<?php } ?>

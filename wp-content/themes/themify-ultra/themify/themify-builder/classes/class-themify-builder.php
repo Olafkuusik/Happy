@@ -136,6 +136,7 @@ class Themify_Builder {
 		// Filtered post types
 		add_filter('themify_post_types', array($this, 'extend_post_types'));
 		add_filter('themify_builder_module_content', array('Themify_Builder_Model','format_text'));
+                add_filter('themify_main_script_vars',array($this,'add_minify_vars'));
 		add_filter('themify_builder_module_content', 'do_shortcode', 12 );
 		/**
 		 * WordPress 4.4 Responsive Images support */
@@ -153,15 +154,13 @@ class Themify_Builder {
 
 		// Asynchronous Loader
 		add_action('wp_enqueue_scripts', array($this, 'register_frontend_js_css'), 9);
+		add_action( 'template_redirect', array( $this, 'setup_frontend_editor' ) );
 		if (Themify_Builder_Model::is_frontend_editor_page()) {
-			add_action('wp_enqueue_scripts', array($this, 'async_load_builder_js'), 9);
-			add_action('wp_footer', array($this, 'async_load_assets_loaded'), 99);
 			add_action('wp_ajax_themify_builder_loader', array($this, 'async_load_builder'));
 			add_action('themify_builder_frontend_load_builder_tmpl',array($this, 'async_load_builder_responsive'));
 			add_action('wp_ajax_themify_builder_loader_tpl', array($this, 'async_load_builder_tpl'));
 			
 			// load module panel frontend
-			add_action('wp_footer', array($this, 'builder_module_panel_frontedit'), 10);
 			// Frontend builder javascript tmpl load
 			add_action('themify_builder_frontend_load_builder_tmpl', array($this, 'load_javascript_template_front'), 10);
 		}
@@ -212,7 +211,7 @@ class Themify_Builder {
 		add_action('themify_builder_edit_module_panel', array($this, 'module_edit_panel_front'), 10, 2);
 
 		// Switch to frontend
-		add_action('save_post', array($this, 'switch_frontend'), 999, 1);
+		add_action('admin_init', array($this, 'switch_frontend'));
 
 		// WordPress Search
 		add_filter('posts_where', array($this, 'do_search'), 10, 2);
@@ -221,9 +220,6 @@ class Themify_Builder {
 
 		// Add body class .ios7 for old version of IOS
 		add_filter( 'body_class', array($this, 'check_for_old_ios') );
-		
-		// Render any js classname
-		add_action('wp_head', array($this, 'render_javascript_classes'));
 
 		// Add extra protocols like skype: to WordPress allowed protocols.
 		if (!has_filter('kses_allowed_protocols', 'themify_allow_extra_protocols') && function_exists('themify_allow_extra_protocols')) {
@@ -255,6 +251,19 @@ class Themify_Builder {
 
 		add_filter( 'themify_builder_module_args', array( $this, 'add_module_args' ) );
 
+	}
+
+	/**
+	 * Load assets required to load the frontend editor
+	 *
+	 * Ensures user has proper access rights before loading
+	 */
+	function setup_frontend_editor() {
+		if( current_user_can( 'edit_post', get_the_id() ) ) {
+			add_action( 'wp_enqueue_scripts', array( $this, 'async_load_builder_js' ), 9 );
+			add_action( 'wp_footer', array( $this, 'async_load_assets_loaded' ), 99 );
+			add_action( 'wp_footer', array( $this, 'builder_module_panel_frontedit' ), 10 );
+		}
 	}
 
 	/**
@@ -718,13 +727,6 @@ class Themify_Builder {
 				'type' => 'page_builder',
 				'meta' => array()
 			),
-			array(
-				'name' => 'builder_switch_frontend',
-				'title' => false,
-				'type' => 'textbox',
-				'value' => 0,
-				'meta' => array('size' => 'small')
-			)
 		));
 
 		$types = $this->builder_post_types_support();
@@ -890,10 +892,10 @@ class Themify_Builder {
 						wp_enqueue_script($script, themify_https_esc('http://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js'));
 						break;
 					case 'themify-builder-undo-manager-js':
-						wp_enqueue_script($script, themify_enque(THEMIFY_BUILDER_URI . '/js/undomanager.js'), array('jquery'));
+						wp_enqueue_script($script, THEMIFY_BUILDER_URI . '/js/undomanager.min.js', array('jquery'));
 						break;
 					case 'themify-builder-common-js':
-						wp_register_script('themify-builder-simple-bar-js', themify_enque(THEMIFY_BUILDER_URI . "/js/simplebar.js"), array('jquery'), '2.0.3', true);
+						wp_register_script('themify-builder-simple-bar-js', THEMIFY_BUILDER_URI . "/js/simplebar.min.js", array('jquery'), '2.0.3', true);
 						wp_register_script('themify-builder-common-js', themify_enque(THEMIFY_BUILDER_URI . "/js/themify.builder.common.js"), array('jquery','themify-builder-simple-bar-js'), THEMIFY_VERSION, true);
 						wp_enqueue_script('themify-builder-common-js');
 
@@ -907,8 +909,7 @@ class Themify_Builder {
 						break;
 
 					case 'themify-builder-app-js':
-						wp_register_script('themify-builder-app-js', themify_enque(THEMIFY_BUILDER_URI . "/js/themify-builder-app.js"), array('jquery'), THEMIFY_VERSION, true);
-						wp_enqueue_script('themify-builder-app-js');
+						wp_enqueue_script('themify-builder-app-js', themify_enque(THEMIFY_BUILDER_URI . "/js/themify-builder-app.js"), array('jquery'), THEMIFY_VERSION, true);
 						break;
 
 					case 'themify-builder-admin-js':
@@ -1019,17 +1020,7 @@ class Themify_Builder {
 
 		wp_enqueue_style( 'builder-styles', themify_enque(THEMIFY_BUILDER_URI . '/css/themify-builder-style.css'),array(), THEMIFY_VERSION );
 		add_filter( 'style_loader_tag', array( $this, 'builder_stylesheet_style_tag' ), 10, 4 );
-
 		////Enqueue main js that will load others needed js
-		wp_register_script('themify-main-script', themify_enque(THEMIFY_URI . '/js/main.js'), array('jquery'), THEMIFY_VERSION, true);
-		wp_localize_script('themify-main-script', 'themify_vars', apply_filters( 'themify_main_script_vars', array(
-			'version' => THEMIFY_VERSION,
-			'url' => THEMIFY_URI,
-			'TB' => 1,
-			'map_key'=>self::getMapKey(),
-			'includesURL' => includes_url(),
-			'isCached' => themify_get('setting-page_builder_cache')
-		) ) );
 
 		wp_localize_script('themify-main-script', 'tbLocalScript', apply_filters('themify_builder_script_vars', array(
 			'isAnimationActive' => Themify_Builder_Model::is_animation_active(),
@@ -1059,7 +1050,6 @@ class Themify_Builder {
 			'lightboxContext' => apply_filters('themify_lightbox_context', 'body')
 					)
 		);
-
 		//Inject variable values in Scroll-Highlight script
 		wp_localize_script('themify-main-script', 'tbScrollHighlight', apply_filters('themify_builder_scroll_highlight_vars', array(
 			'fixedHeaderSelector' => '',
@@ -1067,8 +1057,6 @@ class Themify_Builder {
 			'navigation' => '#main-nav',
 			'scrollOffset' => 0
 		)));
-
-		wp_enqueue_script('themify-main-script');
 	}
 
 	/**
@@ -1146,9 +1134,7 @@ class Themify_Builder {
 
 			// is mobile version
 			if ($this->isMobile()) {
-				wp_register_script('themify-builder-mobile-ui-js', themify_enque(THEMIFY_BUILDER_URI . "/js/jquery.ui.touch-punch.js"), array('jquery'), THEMIFY_VERSION, true);
-				wp_enqueue_script('jquery-ui-mouse');
-				wp_enqueue_script('themify-builder-mobile-ui-js');
+				wp_enqueue_script('themify-builder-mobile-ui-js', THEMIFY_BUILDER_URI . "/js/jquery.ui.touch-punch.min.js", array('jquery-ui-mouse'), THEMIFY_VERSION, true);
 			}
 
 			foreach ($enqueue_scripts as $script) {
@@ -1162,7 +1148,7 @@ class Themify_Builder {
 						break;
 
 					case 'themify-colorpicker':
-						wp_enqueue_script($script, themify_enque(THEMIFY_METABOX_URI . 'js/jquery.minicolors.js'), array('jquery')); // grab from themify framework
+						wp_enqueue_script($script, THEMIFY_METABOX_URI . 'js/jquery.minicolors.min.js', array('jquery')); // grab from themify framework
 						break;
 
 					case 'themify-builder-google-webfont':
@@ -1170,12 +1156,12 @@ class Themify_Builder {
 						break;
 
 					case 'themify-builder-undo-manager-js':
-						wp_enqueue_script($script, themify_enque(THEMIFY_BUILDER_URI . '/js/undomanager.js'), array('jquery'));
+						wp_enqueue_script($script, THEMIFY_BUILDER_URI . '/js/undomanager.min.js', array('jquery'));
 						break;
 
 					case 'themify-builder-common-js':
 						// front ui js
-						wp_register_script('themify-builder-simple-bar-js', themify_enque(THEMIFY_BUILDER_URI . "/js/simplebar.js"), array('jquery'), '2.0.3', true);
+						wp_register_script('themify-builder-simple-bar-js', THEMIFY_BUILDER_URI . "/js/simplebar.min.js", array('jquery'), '2.0.3', true);
 						wp_register_script($script, themify_enque(THEMIFY_BUILDER_URI . "/js/themify.builder.common.js"), array('jquery', 'themify-builder-simple-bar-js'), THEMIFY_VERSION, true);
 						wp_enqueue_script($script);
 
@@ -1189,8 +1175,7 @@ class Themify_Builder {
 						break;
 
 					case 'themify-builder-app-js':
-						wp_register_script('themify-builder-app-js', themify_enque(THEMIFY_BUILDER_URI . "/js/themify-builder-app.js"), array('jquery'), THEMIFY_VERSION, true);
-						wp_enqueue_script('themify-builder-app-js');
+						wp_enqueue_script('themify-builder-app-js', themify_enque(THEMIFY_BUILDER_URI . "/js/themify-builder-app.js"), array('jquery'), THEMIFY_VERSION, true);
 						break;
 
 					case 'themify-builder-front-ui-js':
@@ -1723,6 +1708,12 @@ class Themify_Builder {
 			global $wpdb;
 			foreach ($ids as $v) {
 				$post_id = isset($v['id']) ? $v['id'] : '';
+
+				/* skip saving the data if user doesn't have access rights to modify it */
+				if( ! current_user_can( 'edit_post', $post_id ) ) {
+					continue;
+				}
+
 				$post_data =  !empty($v['data']) && is_array($v['data'])  > 0  ? $v['data'] : array();
 
 				if ('main' === $saveto) {
@@ -1838,25 +1829,38 @@ class Themify_Builder {
 	 * @return string
 	 */
 	public function get_builder_stylesheet( $builder_output ) {
+
+		/* in RSS feeds and REST API endpoints, do not output the scripts */
+		if( is_feed() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
+			return;
+		}
+
 		static $builder_loaded = false;
 		$output = '';
-		if(! $builder_loaded && !Themify_Builder_Model::is_front_builder_activate() && strpos($builder_output,'themify_builder_row')!==false) { // check if builder has any content
+		// check if builder has any content
+		if( ! $builder_loaded && ! Themify_Builder_Model::is_front_builder_activate() && strpos( $builder_output,'themify_builder_row' ) !== false ) {
 			$builder_loaded = true;
-				wp_dequeue_style('builder-styles');
-				$link_tag = "<link id='builder-styles' rel='stylesheet' href='". themify_enque(THEMIFY_BUILDER_URI . '/css/themify-builder-style.css').'?ver='.THEMIFY_VERSION. "' type='text/css' />";
-				$output .= $this->get_responsive_breakpoint_script();
-				$output .= '<script type="text/javascript">
-					if( document.getElementById( "builder-styles-css" ) ) document.getElementById( "builder-styles-css" ).insertAdjacentHTML( "beforebegin", "' . $link_tag . '" );
-					</script>';
+			wp_dequeue_style('builder-styles');
+			$link_tag = "<link id='builder-styles' rel='stylesheet' href='". themify_enque(THEMIFY_BUILDER_URI . '/css/themify-builder-style.css').'?ver='.THEMIFY_VERSION. "' type='text/css' />";
+			$output .= $this->get_responsive_breakpoint_script();
+			$output .= '<script type="text/javascript">
+				if( document.getElementById( "builder-styles-css" ) ) document.getElementById( "builder-styles-css" ).insertAdjacentHTML( "beforebegin", "' . $link_tag . '" );
+				</script>';
 		}
 		return $output;
 	}
 
+	/**
+	 * Output the script tag that adds responsive body classes
+	 *
+	 * @todo: move to builder.script.js
+	 */
 	function get_responsive_breakpoint_script() {
 		$breakpoints = themify_get_breakpoints();
+		ob_start();
 		?>
 <script>
-(function a( $el, el ){
+(function ( $el, el ){
 	function responsive_classes() {
 		if ( el.clientWidth > <?php echo $breakpoints['tablet_landscape'][1]; ?> ) {
 			$el.removeClass( 'tb_tablet tb_mobile' ).addClass( 'tb_desktop' );
@@ -1871,6 +1875,7 @@ class Themify_Builder {
 })( jQuery( 'body' ), document.body )
 </script>
 		<?php
+		return ob_get_clean();
 	}
 
 	/**
@@ -1960,7 +1965,7 @@ class Themify_Builder {
 		if( ! current_user_can( 'upload_files' ) ) {
 			die;
 		}
-                
+
 		$imgid = $_POST['imgid'];
 		/** If post ID is set, uploaded image will be attached to it. @var String */
 		$postid = $_POST['topost'];
@@ -2002,7 +2007,12 @@ class Themify_Builder {
 							$data = $wp_filesystem->get_contents($path);
 							$data = is_serialized($data)?maybe_unserialize($data):json_decode($data);
 							// set data here
-							$GLOBALS['ThemifyBuilder_Data_Manager']->save_data($data, $postid, true);
+
+							// safety check: ensure user has access rights to edit the post
+							if( current_user_can( 'edit_post', $postid ) ) {
+								$GLOBALS['ThemifyBuilder_Data_Manager']->save_data( $data, $postid, true );
+							}
+
 							if($is_txt){
 								$wp_filesystem->delete($destination_path . '/builder_data_export.txt');
 							}
@@ -2082,16 +2092,14 @@ class Themify_Builder {
 	 * Switch to frontend
 	 * @param int $post_id
 	 */
-	function switch_frontend($post_id) {
-		//verify post is not a revision
-		if (!wp_is_post_revision($post_id)) {
-			$redirect = isset($_POST['builder_switch_frontend']) ? $_POST['builder_switch_frontend'] : 0;
-			self::remove_cache($post_id);
-			// redirect to frontend
-			if (1 == $redirect) {
-				$_POST['builder_switch_frontend'] = 0;
-				$post_url = get_permalink($post_id);
-				wp_redirect(themify_https_esc($post_url) . '#builder_active');
+	function switch_frontend() {
+		if( isset( $_GET['builder_switch_frontend'] ) ) {
+			//verify post is not a revision
+			if ( isset( $_GET['post'] ) && ( $post_id = $_GET['post'] ) && ! wp_is_post_revision( $post_id ) ) {
+				self::remove_cache( $post_id );
+				// redirect to frontend
+				$post_url = get_permalink( $post_id );
+				wp_redirect( themify_https_esc( $post_url ) . '#builder_active' );
 				exit;
 			}
 		}
@@ -2151,7 +2159,7 @@ class Themify_Builder {
 				<script type="text/json"><?php echo json_encode($this->clean_json_bad_escaped_char($mod_settings)); ?></script>
 			</div>
 		</div>
-		<div class="themify_builder_data_mod_name"><?php echo Themify_Builder_model::get_module_name($mod_name); ?></div>
+		<div class="themify_builder_data_mod_name"><?php echo Themify_Builder_Model::get_module_name($mod_name); ?></div>
 		<?php
 	}
 
@@ -2306,7 +2314,7 @@ class Themify_Builder {
 		$mod_id = $mod['mod_name'] . '-' . $builder_id . '-' . implode('-', $identifier);
 		$output .= PHP_EOL; // add line break
 	   
-		$is_frontend = Themify_Builder_model::is_frontend_editor_page() || ( isset($_GET['themify_builder_infinite_scroll']) && 'yes' === $_GET['themify_builder_infinite_scroll'] ) || $this->stylesheet->is_front_end_style_inline;
+		$is_frontend = Themify_Builder_Model::is_frontend_editor_page() || ( isset($_GET['themify_builder_infinite_scroll']) && 'yes' === $_GET['themify_builder_infinite_scroll'] ) || $this->stylesheet->is_front_end_style_inline;
 		if (!$is_frontend) {
 			$post = get_post($builder_id);
 			$is_frontend = is_object($post) && $post->post_type == 'tbuilder_layout_part';
@@ -2314,7 +2322,7 @@ class Themify_Builder {
 	   
 		if ($wrap) {
 			if ($is_frontend && $mod['mod_name']  && !isset($this->modules_styles[$mod['mod_name']])) {
-				$styling = Themify_Builder_model::$modules[$mod['mod_name']]->get_styling();
+				$styling = Themify_Builder_Model::$modules[$mod['mod_name']]->get_styling_settings();
 				$all_rules = $this->stylesheet->make_styling_rules($styling, $mod['mod_settings'], 1);
 				if (!empty($all_rules)) {
 					foreach ($all_rules as $id=>$rule) {
@@ -2358,6 +2366,16 @@ class Themify_Builder {
 			return $output;
 		}
 	}
+
+        public function add_minify_vars($vars){
+            $vars['minify']['js']['themify.builder.script'] = themify_enque(THEMIFY_BUILDER_URI.'/js/themify.builder.script.js',true);
+            $vars['minify']['js']['themify.scroll-highlight'] = themify_enque(THEMIFY_BUILDER_URI.'/js/themify.scroll-highlight.js',true);
+            $vars['minify']['js']['themify-youtube-bg'] = themify_enque(THEMIFY_BUILDER_URI.'/js/themify-youtube-bg.js',true);
+            $vars['minify']['js']['themify.parallaxit'] = themify_enque(THEMIFY_BUILDER_URI.'/js/premium/themify.parallaxit.js',true);
+            $vars['minify']['css']['themify-builder-style'] = themify_enque(THEMIFY_BUILDER_URI.'/css/themify-builder-style.css',true);
+            
+            return $vars;
+        }
 
 	public function add_module_args( $args ) {
 		$args['before_title'] = '<h3 class="module-title">';
@@ -2691,8 +2709,12 @@ class Themify_Builder {
 	 */
 	function builder_import_submit_ajaxify() {
 		check_ajax_referer('tfb_load_nonce', 'nonce');
-		parse_str($_POST['data'], $imports);
 		$import_to = (int) $_POST['importTo'];
+		if( ! current_user_can( 'edit_post', $import_to ) ) {
+			die;
+		}
+
+		parse_str($_POST['data'], $imports);
 		$import_type = $_POST['importType'];
 
 		if (is_array($imports) && !empty($imports)) {
@@ -2705,17 +2727,18 @@ class Themify_Builder {
 
 			foreach ($imports as $post_id) {
 				if (!empty($post_id)){
-                                    $builder_data = $this->get_builder_data($post_id);
-                                    $meta_values[] = $builder_data;
-                                }
+					$builder_data = $this->get_builder_data($post_id);
+					$meta_values[] = $builder_data;
+				}
 			}
 
 			if (!empty($meta_values)) {
-							$result = array();
-							foreach ($meta_values as $meta) {
-                                                            $result = array_merge($result, (array) $meta);
-							}
-							$GLOBALS['ThemifyBuilder_Data_Manager']->save_data($result, $import_to);
+				$result = array();
+				foreach ($meta_values as $meta) {
+					$result = array_merge($result, (array) $meta);
+				}
+
+				$GLOBALS['ThemifyBuilder_Data_Manager']->save_data( $result, $import_to );
 			}
 		}
 
@@ -2750,6 +2773,21 @@ class Themify_Builder {
 	}
 
 	/**
+	 * Check if the given array is an empty Builder row (no modules AND no styling settings)
+	 *
+	 * @return bool
+	 */
+	function is_empty_row( $row ) {
+		if ( ( isset( $row['cols'] ) && empty( $row['cols'] ) && ! isset( $row['styling'] ) )
+			|| ( isset( $row['cols'] ) && count( $row['cols'] ) == 1 && empty( $row['cols'][0]['modules'] ) && empty( $row['cols'][0]['styling'] ) && ( ! isset( $row['styling'] ) || empty( $row['styling'] ) ) ) // there's only one column and it's empty
+		) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Get template row
 	 *
 	 * @param array  $rows
@@ -2766,15 +2804,18 @@ class Themify_Builder {
 			return false;
 		}
 
+		/* ensure $row is a valid Builder row */
+		if ( ! ( isset( $row['row_order'] ) || isset( $row['cols'] ) || isset( $row['styling'] ) ) ) {
+			return '';
+		}
+
 		if (null === $frontedit_active) {
 			$frontedit_active = self::$frontedit_active;
 		}
 
 		// prevent empty rows from being rendered
 		if ( ! $frontedit_active ) {
-			if ( (empty( $row['cols'] ) && ! isset( $row['styling'] ) )
-							|| ( isset( $row['cols'] ) && count( $row['cols'] ) == 1 && empty( $row['cols'][0]['modules'] ) && empty( $row['cols'][0]['styling'] ) && ( ! isset( $row['styling'] ) || empty( $row['styling'] ) ) ) // there's only one column and it's empty
-			) {
+			if( $this->is_empty_row( $row ) ) {
 				return '';
 			}
 		}
@@ -2808,24 +2849,29 @@ class Themify_Builder {
 		// @backward-compatibility
 		if (!isset($row['styling']['background_type']) && !empty($row['styling']['background_video'])) {
 			$row['styling']['background_type'] = 'video';
+		} elseif(isset($row['styling']['background_type']) && $row['styling']['background_type']==='image' && isset($row['styling']['background_zoom']) && $row['styling']['background_zoom']==='zoom' && $row['styling']['background_repeat']=='repeat-none'){
+			$row_classes[] = 'themify-bg-zoom';
+		}
+
+		if( Themify_Builder_Model::is_animation_active() ) {
+			foreach ($class_fields as $field) {
+				if (!empty($row['styling'][$field])) {
+					if ('animation_effect' === $field) {
+						$row_classes[] = 'wow';
+					}
+					$row_classes[] = $row['styling'][$field];
 				}
-				elseif(isset($row['styling']['background_type']) && $row['styling']['background_type']==='image' && isset($row['styling']['background_zoom']) && $row['styling']['background_zoom']==='zoom' && $row['styling']['background_repeat']=='repeat-none'){
-						$row_classes[] = 'themify-bg-zoom';
-				}
-		foreach ($class_fields as $field) {
-			if (!empty($row['styling'][$field])) {
-				if ('animation_effect' === $field) {
-					$row_classes[] = 'wow';
-				}
-				$row_classes[] = $row['styling'][$field];
+			}
+
+			if (!empty($row['styling']['animation_effect_delay'])) {
+				$row_classes[] = 'animation_effect_delay_' . $row['styling']['animation_effect_delay'];
+			}
+
+			if (!empty($row['styling']['animation_effect_repeat'])) {
+				$row_classes[] = 'animation_effect_repeat_' . $row['styling']['animation_effect_repeat'];
 			}
 		}
-		if (!empty($row['styling']['animation_effect_delay'])) {
-			$row_classes[] = 'animation_effect_delay_' . $row['styling']['animation_effect_delay'];
-		}
-		if (!empty($row['styling']['animation_effect_repeat'])) {
-			$row_classes[] = 'animation_effect_repeat_' . $row['styling']['animation_effect_repeat'];
-		}
+
 		if (!empty($row['styling']['background_image'])  && !empty($row['styling']['background_position'])) {
 			$row_classes[] = 'bg-position-' . $row['styling']['background_position'];
 		}
@@ -3065,8 +3111,9 @@ class Themify_Builder {
 		if (null === $frontedit_active) {
 			$frontedit_active = self::$frontedit_active;
 		}
-				$column_count = isset( $row['cols'] )?count($row['cols']):0;
-		$grid_class = explode(' ', $col['grid_class']);
+
+		$column_count = isset( $row['cols'] ) ? count( $row['cols'] ) : 0;
+		$grid_class = explode( ' ', $col['grid_class'] );
 		$dynamic_class = array();
 		$dynamic_class[0] = $frontedit_active ? 'themify_builder_col' : $order_classes[$cols];
 		$dynamic_class[1] = $frontedit_active ? '' : 'tb-column';
@@ -3074,13 +3121,13 @@ class Themify_Builder {
 		$dynamic_class[3] = 'module_column tb_' . $builder_id . '_column'; // who's your daddy?
 
 		if (isset($col['column_order'])) {
-                    $dynamic_class[] = 'module_column_' . $col['column_order'];
-                    $dynamic_class[] = 'module_column_' . $builder_id . '-' . $row['row_order'] . '-' . $col['column_order'];
+			$dynamic_class[] = 'module_column_' . $col['column_order'];
+			$dynamic_class[] = 'module_column_' . $builder_id . '-' . $row['row_order'] . '-' . $col['column_order'];
 		}
 
-		if($column_count>1 && (($key = array_search('last', $grid_class) ) !== false || ($key = array_search('first', $grid_class)) !== false)){
-                        unset($grid_class[$key]);
-                }
+		if ( $column_count>1 && (($key = array_search('last', $grid_class) ) !== false || ( $key = array_search( 'first', $grid_class ) ) !== false) ) {
+			unset($grid_class[$key]);
+		}
 
 		if (!empty($col['styling']['background_repeat'])) {
 			$dynamic_class[] = $col['styling']['background_repeat'];
@@ -3089,21 +3136,26 @@ class Themify_Builder {
 		$print_column_classes = array_unique(array_merge($grid_class,$dynamic_class));
 		// remove class "last" if the column is fullwidth
 		if (1 == $column_count && ( $key = array_search('last', $print_column_classes) ) !== false ) {
-						unset($print_column_classes[$key]);
+			unset($print_column_classes[$key]);
 		}
-		if (!empty($col['styling']['background_image'])  && !empty($col['styling']['background_position'])) {
+
+		if ( !empty($col['styling']['background_image']) && !empty($col['styling']['background_position']) ) {
 			$print_column_classes[] = 'bg-position-' . $col['styling']['background_position'];
 		}
-		if(isset($col['styling']['background_type']) && $col['styling']['background_type']==='image' && isset($col['styling']['background_zoom']) && $col['styling']['background_zoom']==='zoom' && $col['styling']['background_repeat']=='repeat-none'){
-						$print_column_classes[] = 'themify-bg-zoom';
+
+		if (isset($col['styling']['background_type']) && $col['styling']['background_type']==='image' && isset($col['styling']['background_zoom']) && $col['styling']['background_zoom']==='zoom' && $col['styling']['background_repeat']=='repeat-none') {
+			$print_column_classes[] = 'themify-bg-zoom';
 		}
+
 		if (!empty($col['styling']['custom_css_column'])) {
 			$print_column_classes[] = $col['styling']['custom_css_column'];
 		}
+
 		$print_column_classes = implode(' ', $print_column_classes);
 
 		// background video
-				$video_data = isset($col['styling']) && Themify_Builder_Model::is_premium()?Themify_Builder_Include::get_video_background($col['styling']):'';
+		$video_data = isset($col['styling']) && Themify_Builder_Model::is_premium()
+			? Themify_Builder_Include::get_video_background( $col['styling'] ) : '';
 
 		if ( ! $echo ) {
 			$output = PHP_EOL; // add line break
@@ -3113,12 +3165,12 @@ class Themify_Builder {
 		// Start Column Render ######
 		?>
 
-		<div <?php if(!empty($col['grid_width']) && ($frontedit_active || Themify_Builder_Model::is_frontend_editor_page() || ! $this->stylesheet->is_enqueue_stylesheet() )):?>style="width:<?php echo $col['grid_width']?>%"<?php endif;?> class="<?php  esc_attr_e($print_column_classes); ?>" <?php echo $video_data; ?>>
+		<div class="<?php  esc_attr_e($print_column_classes); ?>" <?php echo $video_data; ?>>
 
 			<?php
 			if (isset($col['styling'])) {
 				$column_order = $row['row_order'] . '-' . $col['column_order'];
-                                do_action('themify_builder_background_styling',$col,$column_order,'col');	
+				do_action('themify_builder_background_styling',$col,$column_order,'col');	
 			}
 			?>
 
@@ -3412,10 +3464,9 @@ class Themify_Builder {
 			$output = PHP_EOL; // add line break
 			ob_start();
 		}
-                $style = !empty($sub_col['grid_width']) && ($frontedit_active || Themify_Builder_Model::is_frontend_editor_page() || ! $this->stylesheet->is_enqueue_stylesheet() )?'style="width:'.$sub_col['grid_width'].'%;"':'';																								
-		echo sprintf('<div %s class="%s" %s>',$style, esc_attr($print_sub_col_classes), $video_data);
-		?>
-		<?php
+
+		echo sprintf('<div class="%s" %s>', esc_attr($print_sub_col_classes), $video_data);
+
 		if (isset($sub_col['styling'])) {
 			$sub_column_order = $rows . '-' . $cols . '-' . $modules . '-' . $col_key;
 						do_action('themify_builder_background_styling',$sub_col,$sub_column_order,'sub-col');
@@ -3541,35 +3592,6 @@ class Themify_Builder {
 		}
 		// It's a Themify theme.
 		return true;
-	}
-
-	/**
-	 * Add any js classname to html element when JavaScript is enabled
-	 */
-	function render_javascript_classes() {
-		echo '<script type="text/javascript">';
-		?>
-				function isSupportTransition() {
-				var b = document.body || document.documentElement,
-				s = b.style,
-				p = 'transition';
-
-				if (typeof s[p] == 'string') { return true; }
-
-				// Tests for vendor specific prop
-				var v = ['Moz', 'webkit', 'Webkit', 'Khtml', 'O', 'ms'];
-				p = p.charAt(0).toUpperCase() + p.substr(1);
-
-				for (var i=0; i<v.length; i++) {
-					if (typeof s[v[i] + p] == 'string') { return true; }
-					}
-					return false;
-					}
-					if ( isSupportTransition() ) {
-					document.documentElement.className += " csstransitions";	
-					}
-		<?php
-		echo '</script>';
 	}
 
 	function parse_slug_to_ids($slug_string, $post_type = 'post') {
@@ -3788,6 +3810,56 @@ class Themify_Builder {
 	 */
 	public function render_sub_column_styling( $builder_id, $rows, $cols, $modules, $sub_column ) {
 		$this->stylesheet->render_sub_column_styling( $builder_id, $rows, $cols, $modules, $sub_column );
+	}
+
+	/**
+	 * Gets the data from a "query_category" field and
+	 * returns a formatted "tax_query" array expected by WP_Query.
+	 *
+	 * @return array
+	 */
+	public function parse_query_category_field( $value, $taxonomy = 'category' ) {
+		$query = array();
+		if ( '0' !== $value ) {
+			$terms = array_map( 'trim', explode( ',', $value ) );
+			$ids_in = array_filter( $terms, create_function( '$a', 'return is_numeric( $a ) && "-" !== $a[0];' ) );
+			$ids_not_in = array_filter( $terms, create_function( '$a', 'return is_numeric( $a ) && "-" === $a[0];' ) );
+			$slugs_in = array_filter( $terms, create_function( '$a', 'return ! is_numeric( $a ) && "-" !== $a[0];' ) );
+			$slugs_not_in = array_filter( $terms, create_function( '$a', 'return ! is_numeric( $a ) && "-" === $a[0];' ) );
+
+			if ( ! empty( $ids_in ) ) {
+				$query[] = array(
+					'taxonomy' => $taxonomy,
+					'field' => 'id',
+					'terms' => $ids_in
+				);
+			}
+			if ( ! empty( $ids_not_in ) ) {
+				$query[] = array(
+					'taxonomy' => $taxonomy,
+					'field' => 'id',
+					'terms' => array_map( 'abs', $ids_not_in ),
+					'operator' => 'NOT IN'
+				);
+			}
+			if ( ! empty( $slugs_in ) ) {
+				$query[] = array(
+					'taxonomy' => $taxonomy,
+					'field' => 'slug',
+					'terms' => $slugs_in
+				);
+			}
+			if ( ! empty( $slugs_not_in ) ) {
+				$query[] = array(
+					'taxonomy' => $taxonomy,
+					'field' => 'slug',
+					'terms' => array_map( create_function( '$a', 'return substr( $a, 1 );' ), $slugs_not_in ), // remove the minus sign (first character)
+					'operator' => 'NOT IN'
+				);
+			}
+		}
+
+		return $query;
 	}
 }
 endif;

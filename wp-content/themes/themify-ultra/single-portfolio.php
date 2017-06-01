@@ -37,7 +37,7 @@ global $themify;
 		<div id="content" class="list-post">
 			<?php themify_content_start(); // hook ?>
 
-			<article itemscope itemtype="http://schema.org/Article" id="post-<?php the_id(); ?>" <?php post_class('post clearfix'); ?>>
+			<article id="post-<?php the_id(); ?>" <?php post_class('post clearfix'); ?>>
 				<?php themify_post_start(); // hook   ?>
 				<div class="post-content">
 					<div class="entry-content" itemprop="articleBody">

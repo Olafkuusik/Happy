@@ -58,6 +58,18 @@ class Themify_Hooks {
 		parse_str( $logic, $logic );
 		$query_object = get_queried_object();
 
+		// Logged-in check
+		if( isset( $logic['general']['logged'] ) ) {
+			if( ! is_user_logged_in() ) {
+				return false;
+			}
+			unset( $logic['general']['logged'] );
+			if( empty( $logic['general'] ) ) {
+				unset( $logic['general'] );
+			}
+		}
+
+		// User role check
 		if ( ! empty( $logic['roles'] ) ) {
 			if ( ! in_array( $GLOBALS['current_user']->roles[0], array_keys( $logic['roles'] ) ) ) {
 				return false; // bail early.
@@ -65,7 +77,7 @@ class Themify_Hooks {
 		}
 		unset( $logic['roles'] );
 
-		if ( ! empty($logic)) {
+		if ( ! empty( $logic ) ) {
 			$visible = false; // if any condition is set for a hook, hide it on all pages of the site except for the chosen ones.
 
 			if (
@@ -76,6 +88,10 @@ class Themify_Hooks {
 				|| ( is_author() && isset($logic['general']['author']) )
 				|| ( is_category() && isset($logic['general']['category']) )
 				|| ( is_tag() && isset($logic['general']['tag']) )
+				|| ( is_date() && isset($logic['general']['date']) )
+				|| ( is_year() && isset($logic['general']['year']) )
+				|| ( is_month() && isset($logic['general']['month']) )
+				|| ( is_day() && isset($logic['general']['day']) )
 				|| ( is_singular() && isset($logic['general'][$query_object->post_type]) && $query_object->post_type != 'page' && $query_object->post_type != 'post' )
 				|| ( is_tax() && isset($logic['general'][$query_object->taxonomy]) )
 			) {
@@ -405,6 +421,16 @@ class Themify_Hooks {
 		$output .= '<label><input type="checkbox" name="general[tag]" ' . $checked . ' />' . __( 'Tag archive', 'themify' ) . '</label>';
 		$checked = isset($selected['general']['author']) ? checked($selected['general']['author'], 'on', false) : '';
 		$output .= '<label><input type="checkbox" name="general[author]" ' . $checked . ' />' . __( 'Author pages', 'themify' ) . '</label>';
+		$checked = isset($selected['general']['date']) ? checked($selected['general']['date'], 'on', false) : '';
+		$output .= '<label><input type="checkbox" name="general[date]" ' . $checked . ' />' . __( 'Date archive pages', 'themify' ) . '</label>';
+		$checked = isset($selected['general']['year']) ? checked($selected['general']['year'], 'on', false) : '';
+		$output .= '<label><input type="checkbox" name="general[year]" ' . $checked . ' />' . __( 'Year based archive', 'themify' ) . '</label>';
+		$checked = isset($selected['general']['month']) ? checked($selected['general']['month'], 'on', false) : '';
+		$output .= '<label><input type="checkbox" name="general[month]" ' . $checked . ' />' . __( 'Month based archive', 'themify' ) . '</label>';
+		$checked = isset($selected['general']['day']) ? checked($selected['general']['day'], 'on', false) : '';
+		$output .= '<label><input type="checkbox" name="general[day]" ' . $checked . ' />' . __( 'Day based archive', 'themify' ) . '</label>';
+		$checked = isset( $selected['general']['logged'] ) ? checked( $selected['general']['logged'], 'on', false ) : '';
+		$output .= '<label><input type="checkbox" name="general[logged]" '. $checked .' />' . __( 'User logged in', 'themify' ) . '</label>';
 
 		/* General views for CPT */
 		foreach ( get_post_types( array( 'public' => true, 'exclude_from_search' => false, '_builtin' => false ) ) as $key => $post_type ) {

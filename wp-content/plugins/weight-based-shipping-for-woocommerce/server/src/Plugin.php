@@ -64,7 +64,7 @@ class Plugin
         }
 
         add_action('woocommerce_init', function() {
-            if (wc_get_shipping_method_count(true) == 0) {
+            if (function_exists('wc_get_shipping_method_count') && wc_get_shipping_method_count(true) == 0) {
                 set_transient(
                     'wc_shipping_method_count_1_' . \WC_Cache_Helper::get_transient_version('shipping'), 1,
                     DAY_IN_SECONDS * 30

@@ -28,6 +28,11 @@ interface IPackage extends \WbsVendors\Dgm\Shengine\Interfaces\IItemAggregatable
      * @return Customer|null
      */
     function getCustomer();
+
+    /**
+     * @return string[]
+     */
+    function getCoupons();
     
     /**
      * @param IGrouping $by

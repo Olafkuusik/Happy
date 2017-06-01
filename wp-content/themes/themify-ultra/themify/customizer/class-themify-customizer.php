@@ -17,7 +17,7 @@ class Themify_Customizer {
 	 * Settings to build controls in Theme Customizer
 	 * @var array
 	 */
-	var $settings = array();
+	var $settings = null;
 
 	/**
 	 * List of selector/property/property value to build CSS rules.
@@ -65,7 +65,6 @@ class Themify_Customizer {
 
 		// Build list of settings for live preview and CSS generation
 		add_action('customize_register', array($this, 'build_settings_and_styles'), 12);
-		add_action('after_setup_theme', array($this, 'build_settings_and_styles'));
 
 		// Initialize Theme Customizer
 		add_action('customize_register', array($this, 'customize_register'), 14);
@@ -106,32 +105,35 @@ class Themify_Customizer {
 	 * @since 1.0.0
 	 */
 	function build_settings_and_styles() {
-		////////////////////////
-		// Build Controls
-		////////////////////////
-		$this->settings = apply_filters('themify_customizer_settings', array());
-		
-		////////////////////////
-		// Rest/Import/Export Buttons
-		////////////////////////
-		$this->settings['tools'] = array( 'control' => array(
-											'type'    => 'Themify_Tools_Control',
-											'label'   => __( 'Tools', 'themify' ),
-										),
-										'selector' => 'tools',
-										'prop' => 'tools',
-									);
+		if( $this->settings === null ) {
+			////////////////////////
+			// Build Controls
+			////////////////////////
+			$this->settings = apply_filters('themify_customizer_settings', array());
+			
+			////////////////////////
+			// Rest/Import/Export Buttons
+			////////////////////////
+			$this->settings['tools'] = array(
+				'control' => array(
+					'type'    => 'Themify_Tools_Control',
+					'label'   => __( 'Tools', 'themify' ),
+				),
+				'selector' => 'tools',
+				'prop' => 'tools',
+			);
 
-		////////////////////////
-		// Build CSS Styling
-		////////////////////////
-		foreach ($this->settings as $key => $setting) {
-			if (isset($setting['selector'])) {
-				$this->styles[$setting['selector']][] = array(
-					'prop' => isset($setting['prop']) ? $setting['prop'] : '',
-					'key' => isset($key) ? $key : '',
-					'prefix' => isset($setting['prefix']) ? $setting['prefix'] : '',
-				);
+			////////////////////////
+			// Build CSS Styling
+			////////////////////////
+			foreach ($this->settings as $key => $setting) {
+				if (isset($setting['selector'])) {
+					$this->styles[$setting['selector']][] = array(
+						'prop' => isset($setting['prop']) ? $setting['prop'] : '',
+						'key' => isset($key) ? $key : '',
+						'prefix' => isset($setting['prefix']) ? $setting['prefix'] : '',
+					);
+				}
 			}
 		}
 	}
@@ -187,7 +189,7 @@ class Themify_Customizer {
 		wp_enqueue_style('themify-customize-control', themify_enque(THEMIFY_CUSTOMIZER_URI . '/css/themify.customize-control.css'), array(), THEMIFY_VERSION);
 
 		// Minicolors JS
-		wp_enqueue_script('themify-colorpicker-js', themify_enque(THEMIFY_METABOX_URI . 'js/jquery.minicolors.js'), array('jquery'), THEMIFY_VERSION);
+		wp_enqueue_script('themify-colorpicker-js', themify_enque(THEMIFY_METABOX_URI . 'js/jquery.minicolors.min.js'), array('jquery'), THEMIFY_VERSION);
 
 		// Plupload
 		wp_enqueue_script( 'plupload-all' );
@@ -451,6 +453,7 @@ class Themify_Customizer {
 						'settings' => isset($control['settings']) ? $control['settings'] : $setting_id,
 						'priority' => $priority,
 						'accordion_id' => $this->get_accordion_id(),
+						'active_callback' => isset( $control['active_callback'] ) ? $control['active_callback'] : null,
 							)
 					));
 				} elseif ('nav_menu' == $class) {
@@ -606,6 +609,10 @@ class Themify_Customizer {
 				update_option('themify_customizer_stylesheet_timestamp', current_time('y.m.d.H.i.s'));
 				TFCache::removeDirectory(TFCache::get_cache_dir() . 'styles/');
 			}
+
+			update_option( 'themify_custom_fonts', ! empty( $this->customizer_fonts )
+				? $this->customizer_fonts
+				: array() );
 		} elseif ($delete_empty) {
 			$filesystem->execute->delete($css_file);
 			TFCache::removeDirectory(TFCache::get_cache_dir() . 'styles/');
@@ -707,6 +714,7 @@ class Themify_Customizer {
 	 */
 	function get_css() {
 		$output = '';
+		$this->build_settings_and_styles();
 		$css = $this->generate_css();
 		$css .= $this->generate_responsive_css();
 		$custom_css = $this->custom_css();
@@ -727,13 +735,12 @@ class Themify_Customizer {
 	 * @since 2.2.7 Fonts are enqueued in a single call.
 	 */
 	function enqueue_fonts( $fonts ) {
-		$this->generate_css(true); // Call only to enqueue fonts.
-		$breakpoints = array( 'tablet_landscape', 'tablet', 'mobile' );
-		foreach( $breakpoints as $device ) {
-			$this->generate_css( true, $device );
-		}
-		if ( ! empty( $this->customizer_fonts ) ) {
-			foreach( $this->customizer_fonts as $font ) {
+		$custom_fonts = ! empty( $this->customizer_fonts )
+			? $this->customizer_fonts
+			: get_option( 'themify_custom_fonts' ) ? get_option( 'themify_custom_fonts' ) : array();
+
+		if ( ! empty( $custom_fonts ) ) {
+			foreach( $custom_fonts as $font ) {
 				$fonts[] = $font;
 			}
 		}
@@ -894,11 +901,11 @@ class Themify_Customizer {
 	 * Generate CSS rules and output them.
 	 * @uses filter 'themify_theme_styling' over output.
 	 * 
-	 * @param bool $fonts_only Whether to extracts fonts or not.
+	 * @param bool $device generate responsive styles
 	 *
 	 * @return string
 	 */
-	function generate_css($fonts_only = false, $device = null) {
+	function generate_css( $device = null ) {
 		global $wp_customize;
 		$is_customize = isset($wp_customize);
 
@@ -907,18 +914,16 @@ class Themify_Customizer {
 		$custom_css = '';
 
 		foreach ($this->styles as $selector => $style) {
-			if (!isset($css[$selector])) {
+			if ( ! isset( $css[$selector] ) ) {
 				$css[$selector] = '';
 			}
 
-			if (!$fonts_only) {
-
-				if ('customcss' === $selector && (!$is_customize || $this->saving_stylesheet) && is_null( $device ) ) {
-					$custom_css = $this->custom_css();
-					continue;
-				}
+			if ( 'customcss' === $selector && ( ! $is_customize || $this->saving_stylesheet ) && is_null( $device ) ) {
+				$custom_css = $this->custom_css();
+				continue;
 			}
-			if (isset($style[0])) {
+
+			if ( isset( $style[0] ) ) {
 				if (is_array($style[0])) {
 					foreach (array_map('unserialize', array_unique(array_map('serialize', $style))) as $mstyle) {
 						if ('logo' === $mstyle['prop'] || 'tagline' === $mstyle['prop'] || 'sticky-logo' === $mstyle['prop']) {
@@ -930,7 +935,7 @@ class Themify_Customizer {
 							}
 
 							if( 'sticky-logo' === $mstyle['prop'] ) {
-								$bg = $this->build_css_rule($selector, 'background', $mstyle['key'], isset($mstyle['prefix']) ? $mstyle['prefix'] : '', isset($mstyle['suffix']) ? $mstyle['suffix'] : '', $fonts_only, $device );
+								$bg = $this->build_css_rule($selector, 'background', $mstyle['key'], isset($mstyle['prefix']) ? $mstyle['prefix'] : '', isset($mstyle['suffix']) ? $mstyle['suffix'] : '', $device );
 								if( !empty( $bg ) ) {
 									$css[$selector . ' > *'] = 'display: none;';
 									$css[$selector] = 'display: inline-block; background-size: contain; background-repeat: no-repeat;'
@@ -939,7 +944,7 @@ class Themify_Customizer {
 								}
 							}
 						}
-						$css[$selector] .= $this->build_css_rule($selector, $mstyle['prop'], $mstyle['key'], isset($mstyle['prefix']) ? $mstyle['prefix'] : '', isset($mstyle['suffix']) ? $mstyle['suffix'] : '', $fonts_only, $device );
+						$css[$selector] .= $this->build_css_rule($selector, $mstyle['prop'], $mstyle['key'], isset($mstyle['prefix']) ? $mstyle['prefix'] : '', isset($mstyle['suffix']) ? $mstyle['suffix'] : '', $device );
 					}
 				} else {
 					if ('logo' === $style['prop'] || 'tagline' === $style['prop'] || 'sticky-logo' === $style['prop']) {
@@ -951,7 +956,7 @@ class Themify_Customizer {
 						}
 
 						if( 'sticky-logo' === $style['prop'] ) {
-							$bg = $this->build_css_rule($selector, 'background', $style['key'], isset($style['prefix']) ? $style['prefix'] : '', isset($style['suffix']) ? $style['suffix'] : '', $fonts_only, $device );
+							$bg = $this->build_css_rule($selector, 'background', $style['key'], isset($style['prefix']) ? $style['prefix'] : '', isset($style['suffix']) ? $style['suffix'] : '', $device );
 							if( !empty( $bg ) ) {
 								$css[$selector . ' > *'] = 'display: none;';
 								$css[$selector] = 'display: inline-block; background-size: contain; background-repeat: no-repeat;'
@@ -960,31 +965,28 @@ class Themify_Customizer {
 							}
 						}
 					}
-					$css[$selector] .= $this->build_css_rule($selector, $style['prop'], $style['key'], isset($style['prefix']) ? $style['prefix'] : '', isset($style['suffix']) ? $style['suffix'] : '', $fonts_only, $device
-					);
+					$css[$selector] .= $this->build_css_rule($selector, $style['prop'], $style['key'], isset($style['prefix']) ? $style['prefix'] : '', isset($style['suffix']) ? $style['suffix'] : '', $device );
 				}
 			}
 		}
 		$out = '';
 
-		if (!$fonts_only) {
-			if (!empty($css)) {
-				foreach ($css as $selector => $properties) {
-					if( $selector === 'body' 
-						&& strpos( $properties, 'background-attachment: fixed' ) != false ) {
-						preg_match_all( "/background.+?;/", $properties, $bg_before );
-						$bg_before = ! empty( $bg_before ) ? implode( "\n\t", $bg_before[0] ) : '';
-						$out .= ".iphone:before {\n\tcontent: '';\n\t$bg_before \n}\n";
-					}
-					$out .= '' != $properties ? "$selector {\t$properties \n}\n" : '';
+		if (!empty($css)) {
+			foreach ($css as $selector => $properties) {
+				if( $selector === 'body' 
+					&& strpos( $properties, 'background-attachment: fixed' ) != false ) {
+					preg_match_all( "/background.+?;/", $properties, $bg_before );
+					$bg_before = ! empty( $bg_before ) ? implode( "\n\t", $bg_before[0] ) : '';
+					$out .= ".iphone:before {\n\tcontent: '';\n\t$bg_before \n}\n";
 				}
-				if (!empty($out)) {
-					$out = "/* Themify Customize Styling */\n" . apply_filters('themify_customizer_styling', $out);
-				}
+				$out .= '' != $properties ? "$selector {\t$properties \n}\n" : '';
 			}
-			if (!empty($custom_css)) {
-				$out .= "\n/* Themify Custom CSS */\n" . apply_filters('themify_customizer_custom_css', $custom_css);
+			if (!empty($out)) {
+				$out = "/* Themify Customize Styling */\n" . apply_filters('themify_customizer_styling', $out);
 			}
+		}
+		if (!empty($custom_css)) {
+			$out .= "\n/* Themify Custom CSS */\n" . apply_filters('themify_customizer_custom_css', $custom_css);
 		}
 
 		return $out;
@@ -1001,7 +1003,7 @@ class Themify_Customizer {
 
 		$out = '';
 		foreach( $breakpoints as $device => $width ) {
-			$css = $this->generate_css( false, $device );
+			$css = $this->generate_css( $device );
 			if ( ! empty( $css ) ) {
 				$out .= sprintf( '@media screen and (max-width: %spx) { %s }', $width, $css );
 			}
@@ -1137,10 +1139,9 @@ class Themify_Customizer {
 	 * @param string $mod_name The 'theme_mod' option to fetch.
 	 * @param string $prefix Prefix for CSS property value.
 	 * @param string $suffix Suffix for CSS property value.
-	 * @param bool $fonts_only Whether to extracts fonts or not.
 	 * @return string CSS rule: selector, property and property value. Empty if 'theme_mod' option specified is empty.
 	 */
-	function build_css_rule($selector, $style, $mod_name, $prefix = '', $suffix = '', $fonts_only = false, $device = null) {
+	function build_css_rule( $selector, $style, $mod_name, $prefix = '', $suffix = '', $device = null ) {
 		$mod = $this->get_cached_mod($mod_name, false, $device);
 		$out = '';
 		if (!empty($mod)) {
@@ -1220,9 +1221,7 @@ class Themify_Customizer {
 					$out .= $opacity < 1 ? "\n\tcolor: rgba(" . $this->hex2rgb($font->color) . ',' . $opacity . ');' : "\n\tcolor: #$font->color;";
 				}
 			}
-			if ($fonts_only) {
-				return '';
-			}
+
 			if ('logo' === $style || 'tagline' === $style) {
 				// Logo/description Rule
 				$element = json_decode($mod);
@@ -1413,7 +1412,7 @@ class Themify_Customizer {
 			$url = apply_filters('themify_customizer_logo_home_url', isset($logo->link) && !empty($logo->link) ? $logo->link : home_url() );
 		}
 		$html = '<a href="' . esc_url($url) . '" title="' . esc_attr($site_name) . '">';
-		if (isset($this->settings[$location . '_image']) && $has_image_src && $is_image_mode) {
+		if ($has_image_src && $is_image_mode) {
 			$html .= '<img src="' . esc_url(themify_https_esc($logo->src)) . '" alt="' . esc_attr($site_name) . '" title="' . esc_attr($site_name) . '" />';
 			$html .= is_customize_preview()
 				? '<span style="display: none;">' . esc_html($site_name) . '</span>' : '';
@@ -1436,7 +1435,7 @@ class Themify_Customizer {
 		$has_image_src = isset($desc->src) && '' != $desc->src;
 		$is_image_mode = isset($desc->mode) && 'image' === $desc->mode;
 		$html = '';
-		if (isset($this->settings[$location]) && $has_image_src && $is_image_mode) {
+		if ($has_image_src && $is_image_mode) {
 			$html .= '<img src="' . esc_url(themify_https_esc($desc->src)) . '" alt="' . esc_attr($site_desc) . '" title="' . esc_attr($site_desc) . '" />';
 			$html .= is_customize_preview()
 				? '<span style="display: none;">' . esc_html($site_desc) . '</span>' : '';

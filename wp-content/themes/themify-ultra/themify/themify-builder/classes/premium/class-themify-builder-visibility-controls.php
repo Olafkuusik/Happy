@@ -17,10 +17,10 @@
 		public function __construct() {
 			add_filter( 'themify_builder_module_lightbox_form_settings', array( $this, 'register_module_visibility_controls' ), 10, 2 );
 			add_filter( 'themify_builder_row_lightbox_form_settings', array( $this, 'register_row_visibility_controls' ), 10 );
-                        if(Themify_Builder_Model::is_premium()){
-                            add_filter( 'themify_builder_row_classes', array( $this, 'row_classes' ), 10, 3 );
-                            add_filter( 'themify_builder_module_classes', array( $this, 'module_classes' ), 10, 4 );
-                        }
+						if(Themify_Builder_Model::is_premium()){
+							add_filter( 'themify_builder_row_classes', array( $this, 'row_classes' ), 10, 3 );
+							add_filter( 'themify_builder_module_classes', array( $this, 'module_classes' ), 10, 4 );
+						}
 		}
 
 		/**
@@ -59,7 +59,7 @@
 		 * @return 	array 
 		 */
 		public function add_row_visibility_controls() {
-                        $disable = Themify_Builder_Model::is_premium();
+						$disable = Themify_Builder_Model::is_premium();
 			$visibility_controls =	array(
 				array(
 					'id' => 'separator_visibility',
@@ -76,7 +76,8 @@
 						array('value' => 'show', 'name' => __('Show', 'themify'), 'selected' => true),
 						array('value' => 'hide', 'name' => __('Hide', 'themify'),'disable'=>!$disable),
 					),
-                                        'wrap_with_class' => !$disable?'themify_builder_lite':''
+					'wrap_with_class' => !$disable?'themify_builder_lite':'',
+					'default' => 'show',
 				),
 				array(
 					'id' => 'visibility_tablet',
@@ -86,7 +87,8 @@
 						array('value' => 'show', 'name' => __('Show', 'themify'), 'selected' => true),
 						array('value' => 'hide', 'name' => __('Hide', 'themify'),'disable'=>!$disable),
 					),
-                                        'wrap_with_class' => !$disable?'themify_builder_lite':''
+					'wrap_with_class' => !$disable?'themify_builder_lite':'',
+					'default' => 'show',
 				),
 				array(
 					'id' => 'visibility_mobile',
@@ -96,7 +98,8 @@
 						array('value' => 'show', 'name' => __('Show', 'themify'), 'selected' => true),
 						array('value' => 'hide', 'name' => __('Hide', 'themify'),'disable'=>!$disable),
 					),
-                                        'wrap_with_class' => !$disable?'themify_builder_lite':''
+					'wrap_with_class' => !$disable?'themify_builder_lite':'',
+					'default' => 'show',
 				)
 			);
 
@@ -110,7 +113,7 @@
 		 * @return 	array
 		 */
 		public function add_module_visibility_controls() {		
-                        $disable = Themify_Builder_Model::is_premium();
+						$disable = Themify_Builder_Model::is_premium();
 			$visibility_controls =	array(
 				array(
 					'id' => 'separator_visibility',
@@ -127,7 +130,8 @@
 						array('value' => 'show', 'name' => __('Show', 'themify'), 'selected' => true),
 						array('value' => 'hide', 'name' => __('Hide', 'themify'),'disable'=>!$disable),
 					),
-                                        'wrap_with_class' => !$disable?'themify_builder_lite':''
+					'wrap_with_class' => !$disable?'themify_builder_lite':'',
+					'default' => 'show',
 				),
 				array(
 					'id' => 'visibility_tablet',
@@ -137,7 +141,8 @@
 						array('value' => 'show', 'name' => __('Show', 'themify'), 'selected' => true),
 						array('value' => 'hide', 'name' => __('Hide', 'themify'),'disable'=>!$disable),
 					),
-                                        'wrap_with_class' => !$disable?'themify_builder_lite':''
+					'wrap_with_class' => !$disable?'themify_builder_lite':'',
+					'default' => 'show',
 				),
 				array(
 					'id' => 'visibility_mobile',
@@ -147,7 +152,8 @@
 						array('value' => 'show', 'name' => __('Show', 'themify'), 'selected' => true),
 						array('value' => 'hide', 'name' => __('Hide', 'themify'),'disable'=>!$disable),
 					),
-                                        'wrap_with_class' => !$disable?'themify_builder_lite':''
+					'wrap_with_class' => !$disable?'themify_builder_lite':'',
+					'default' => 'show',
 				)
 			);
 			return $visibility_controls;
