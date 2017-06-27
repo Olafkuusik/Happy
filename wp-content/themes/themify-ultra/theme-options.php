@@ -493,6 +493,13 @@ class Themify {
 			$this->image_align = themify_get( 'setting-image_post_align' );
 			$this->image_setting = 'setting=image_post&';
 		}
+
+		if ( themify_is_woocommerce_active() ) {
+			if ( is_woocommerce() ) {
+				$this->post_layout = themify_check( 'setting-products_layout' )? themify_get( 'setting-products_layout' ) : 'list-post';
+				$this->layout = themify_check( 'setting-shop_layout' )? themify_get( 'setting-shop_layout' ) : 'sidebar-none';			
+			}
+		}
 	}
 }
 

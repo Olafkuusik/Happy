@@ -82,7 +82,7 @@ class Themify_Hooks {
 
 			if (
 				( is_front_page() && isset($logic['general']['home']) )
-				|| ( is_page() && isset( $logic['general']['page'] ) && ! is_front_page() )
+				|| ( is_page() && isset( $logic['general']['page'] ) && ! is_front_page() && ! themify_is_custom_404() )
 				|| ( is_single() && isset($logic['general']['single']) )
 				|| ( is_search() && isset($logic['general']['search']) )
 				|| ( is_author() && isset($logic['general']['author']) )

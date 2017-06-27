@@ -80,7 +80,7 @@ if (TFCache::start_cache('image', self::$post_id, array('ID' => $module_ID))):
 		} else {
 			$class = '';
 		}
-		$image = '<img src="' . esc_url($url_image) . '" alt="' . esc_attr($image_alt) . ( ! empty( $image_title ) ? ( ' title=' . esc_attr( $image_title ) ) : '' ) . '" width="' . esc_attr($width_image) . '" height="' . esc_attr($height_image) . '" class="'. $class .'">';
+		$image = '<img src="' . esc_url($url_image) . '" alt="' . esc_attr($image_alt) . ( ! empty( $image_title ) ? ( ' title=' . esc_attr( $image_title ) ) : '' ) . '" width="' . esc_attr($width_image) . '" height="' . esc_attr($height_image) . '" class="'. $class .'" style="width:' . ( !empty( $width_image ) ? esc_attr($width_image) . 'px' : 'auto' ) . ';height:' . ( !empty( $height_image ) ? esc_attr($height_image) . 'px' : 'auto' ) . ';">';
 		if( !empty( $attachment_id ) ) {
 			$image = wp_get_attachment_image( $attachment_id, $preset );
 		}

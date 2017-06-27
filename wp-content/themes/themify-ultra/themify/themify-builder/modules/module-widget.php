@@ -13,6 +13,26 @@ class TB_Widget_Module extends Themify_Builder_Module {
 
 		add_action( 'themify_builder_lightbox_fields', array( $this, 'widget_fields' ), 10, 2 );
 		add_action( 'wp_ajax_module_widget_get_form', array( $this, 'widget_get_form' ), 10 );
+		add_action( 'themify_builder_admin_enqueue', array( $this, 'themify_builder_admin_enqueue' ) );
+		add_action( 'themify_builder_load_javascript_templates', array( $this, 'themify_builder_load_javascript_templates' ) );
+	}
+
+	/**
+	 * Load assets required by core & custom widgets
+	 *
+	 * @since 3.2.0
+	 */
+	public function themify_builder_admin_enqueue() {
+		do_action( 'admin_print_scripts-widgets.php' );
+	}
+
+	/**
+	 * Load JavaScript templates for widgets
+	 *
+	 * @since 3.2.0
+	 */
+	public function themify_builder_load_javascript_templates() {
+		do_action( 'admin_footer-widgets.php' );
 	}
 
 	public function get_options() {
@@ -331,13 +351,21 @@ class TB_Widget_Module extends Themify_Builder_Module {
 		$widget_class = $_POST['load_class'];
 		if ( $widget_class == '') die(-1);
 
-		$get_instance = isset( $_POST['widget_instance'] ) ? $_POST['widget_instance'] : '';
-		$instance = array();
-		if ( is_array( $get_instance ) && count( $get_instance ) > 0 ) {
-			foreach ( $get_instance as $k => $s ) {
-				$instance = $s;
+		$instance = isset( $_POST['widget_instance'] ) ? $_POST['widget_instance'] : array();
+
+		/**
+		 * Backward compatibility for versions prior to 3.2.0
+		 * Previsouly the widget $instance was stored as a multidimensional array
+		 */
+		if( ! isset( $instance['id_base'] ) ) {
+			if ( is_array( $instance ) && count( $instance ) > 0 ) {
+				foreach ( $instance as $k => $s ) {
+					$instance = $s;
+				}
 			}
 		}
+
+		$instance = themify_builder_widget_module_sanitize_widget_instance( $instance );
 
 		$widget = new $widget_class();
 		$widget->number = next_widget_id_number( $_POST['id_base'] );
@@ -355,9 +383,25 @@ class TB_Widget_Module extends Themify_Builder_Module {
 		$widget->form($instance);
 		$form = ob_get_clean();
 
+		$base_name = 'widget-' . $wp_widget_factory->widgets[$widget_class]->id_base . '\[' . $widget->number . '\]';
+		$form = preg_replace( "/{$base_name}/", '', $form ); // remove extra names
+		$form = str_replace( array( '[', ']' ), '', $form ); // remove extra [ & ] characters
+
 		$widget->form = $form;
 
-		echo $widget->form;
+		echo '<div class="widget-inside">';
+			echo '<div class="form">';
+				echo '<div class="widget-content">';
+					echo $widget->form;
+				echo '</div>';
+				echo '<input type="hidden" class="id_base" name="id_base" value="' . esc_attr( $widget->id_base ) . '" />';
+				/**
+				 * The widget-id is not used to save widget data, it is however needed for compatibility
+				 * with how core renders the module forms.
+				 */
+				echo '<input type="hidden" class="widget-id" name="widget-id" value="' . time() . '" />';
+			echo '</div>';
+		echo '</div>';
 		echo '<br/>';
 		die();
 	}
@@ -367,3 +411,33 @@ class TB_Widget_Module extends Themify_Builder_Module {
 // Module Options
 ///////////////////////////////////////
 Themify_Builder_Model::register_module( 'TB_Widget_Module' );
+
+/*
+ * Sanitize keys for widget fields
+ * This is required to provide backward compatibility with how widget data was saved.
+ *
+ * @return array
+ * @since 3.2.0
+ */
+function themify_builder_widget_module_sanitize_widget_instance( $instance ) {
+	$new_instance = array();
+	if (is_array($instance) && count($instance) > 0) {
+		foreach ($instance as $key => $val) {
+			/* check if the keys are "clean" */
+			if( false === strpos( $key, '[' ) ) {
+				$new_instance[ $key ] = $val;
+			} else {
+				preg_match_all('/\[([^\]]*)\]/', $key, $matches);
+				if (is_array($matches)) {
+					if (isset($matches[count($matches) - 1])) {
+						if (isset($matches[count($matches) - 1][1])) {
+							$new_instance[$matches[count($matches) - 1][1]] = $val;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return $new_instance;
+}

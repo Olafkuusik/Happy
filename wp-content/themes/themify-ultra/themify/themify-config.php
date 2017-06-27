@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 /**
  * Theme and Themify Framework Path and URI
- * @since 1.2.2
+ * @since 1.2.2 
  */
 defined( 'THEME_DIR' ) || define( 'THEME_DIR', get_template_directory() );
 defined( 'THEME_URI' ) || define( 'THEME_URI', get_template_directory_uri() );
@@ -49,7 +49,7 @@ function themify_config_init() {
 
 	/* 	Theme Config
  	***************************************************************************/
-	define( 'THEMIFY_VERSION', '3.1.8' );
+	define( 'THEMIFY_VERSION', '3.2.0' );
 
 	/* 	Run after update
  	***************************************************************************/
@@ -248,7 +248,7 @@ if( is_admin() ){
 	/**
  	* Enqueue jQuery and other scripts
  	*******************************************************/
-	add_action( 'admin_enqueue_scripts', 'themify_enqueue_scripts' );
+	add_action( 'admin_enqueue_scripts', 'themify_enqueue_scripts', 12 );
 
 	/**
  	* Ajaxify admin
@@ -428,6 +428,7 @@ function themify_deprecated_shortcodes_init() {
 	 * Fix empty auto paragraph in shortcodes
 	 */
 	add_filter( 'the_content', 'themify_fix_shortcode_empty_paragraph' );
+	add_filter( 'themify_builder_module_content', 'themify_fix_shortcode_empty_paragraph' );
 
 	/**
 	 * Assets required for the Themify shortcodes
@@ -446,7 +447,7 @@ function themify_deprecated_shortcodes_init() {
 	 */
 	function themify_framework_stylesheet_style_tag( $tag, $handle, $href, $media ) {
 		if( 'themify-framework' == $handle ) {
-			$tag = '<meta name="themify-framework-css" content="" id="themify-framework-css">' . "\n";
+			$tag = '<meta name="themify-framework-css" content="themify-framework-css" id="themify-framework-css">' . "\n";
 		}
 
 		return $tag;
@@ -481,6 +482,7 @@ function themify_deprecated_shortcodes_init() {
 			'slide'        => 'themify_shortcode_slide',
 			'author_box'   => 'themify_shortcode_author_box',
 			'icon'         => 'themify_shortcode_icon',
+			'list'         => 'themify_shortcode_icon_list',
 		);
 	}
 	endif;
@@ -494,7 +496,18 @@ function themify_deprecated_shortcodes_init() {
 	}
 	// Backwards compatibility
 	add_shortcode( 'themify_video', 'wp_video_shortcode' );
-
-	add_shortcode( 'themify_list', 'themify_shortcode_icon_list' );
 }
 add_action( 'after_setup_theme', 'themify_deprecated_shortcodes_init' );
+
+/**
+ * Setup procedure to load theme features packed in Themify framework
+ *
+ * @since 3.2.0
+ */
+function themify_load_theme_features() {
+	/* load megamenu feature */
+	if( current_theme_supports( 'themify-mega-menu' ) ) {
+		include( THEMIFY_DIR . '/megamenu/class-mega-menu.php' );
+	}
+}
+add_action( 'after_setup_theme', 'themify_load_theme_features', 11 );

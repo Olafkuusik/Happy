@@ -647,7 +647,7 @@ class TB_Image_Module extends Themify_Builder_Module {
 
 	protected function _visual_template() { 
 		$module_args = $this->get_module_args(); ?>
-		<# var fullwidth = data.auto_fullwidth ? 'auto_fullwidth' : ''; #>
+		<# var fullwidth = data.auto_fullwidth && data.auto_fullwidth == '1' ? 'auto_fullwidth' : ''; #>
 		<div class="module module-<?php echo esc_attr( $this->slug ); ?> {{ fullwidth }} {{ data.style_image }} {{ data.css_image }} <# ! _.isUndefined( data.appearance_image ) ? print( data.appearance_image.split('|').join(' ') ) : ''; #>">
 			<# if ( data.mod_title_image ) { #>
 			<?php echo $module_args['before_title']; ?>{{{ data.mod_title_image }}}<?php echo $module_args['after_title']; ?>
@@ -656,8 +656,11 @@ class TB_Image_Module extends Themify_Builder_Module {
 			<#
 			var attr = data.width_image ? 'width="'+ data.width_image +'" ': '';
 			attr += data.height_image ? 'height="' + data.height_image +'" ' : '';
+			var style = 'width:' + ( data.width_image ? data.width_image + 'px;' : 'auto;' );
+			style += 'height:' + ( data.height_image ? data.height_image + 'px;' : 'auto;' );
+			style += 'object-fit: cover;'
 				
-			var image = '<img src="'+ data.url_image +'" '+ attr +'>';
+			var image = '<img src="'+ data.url_image +'" style="' + style + '">';
 			#>
 			<div class="image-wrap">
 				<# if ( data.link_image ) { #>

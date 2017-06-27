@@ -18,8 +18,35 @@ if ( isset( $post ) && $post->post_status == 'auto-draft' ) $helper_class[] = 't
 			<a href="#" class="tb_module_panel_lock"><i class="ti-lock"></i></a>
 		</div>
 		<!-- /tb_module_panel_top_wrap -->
+		<ul class="tb_module_types">
+			<li class="active"><a href="#" data-target="tb_module_panel_modules_wrap">Modules</a></li>
+			<li><a href="#" data-target="tb_module_panel_rows_wrap">Rows</a></li>
+		</ul>
 		<div class="tb_module_panel_modules_wrap"></div>
 		<!-- /tb_module_panel_modules_wrap -->
+		
+		<div class="tb_module_panel_rows_wrap">
+		
+			<div class="tb_row_cat_filter_wrap">
+				<span class="tb_row_cat_filter_active">All</span>
+				<!-- /tb_row_cat_filter_active -->
+				<ul class="tb_row_cat_filter">
+					<li><a href="#">All</a></li>
+					<!-- Fetch Testimonials from themify server with JS -->
+				</ul>
+				<!-- /tb_row_cat_filter -->
+			</div>
+			<!-- /tb_row_cat_filter_wrap -->
+			
+			<div class="tb_predesigned_rows_list">
+			
+				<!-- Fetch Pre-Design Rows from themify server with JS -->
+				
+			</div>
+			<!-- /tb_predesigned_rows_list -->
+			
+		</div>
+		<!-- /tb_module_panel_rows_wrap -->
 	</div>
 	<!-- /tb_module_panel -->
 	

@@ -552,6 +552,7 @@ var ThemifyLiveStyling;
 			this.listenTo(this, 'custom:preview:init', this.previewInit);
 		},
 		createEl: function( markup, styles ) {
+			if( false === markup ) markup = themifyBuilder.i18n.excludedModule;
 			if ( this.$('.module').length>0) {
 				this.$('.module').replaceWith( markup );
 			} else {
@@ -905,6 +906,17 @@ var ThemifyLiveStyling;
 					$('body').trigger('builder_toggle_frontend', is_edit);
 				}
 				api.Utils.columnDrag(null,false);
+				setTimeout( function(){
+
+					/**
+					 * Fix WP 4.8 widgets interface
+					 * This needs to be revised when #5687 is fixed
+					 */
+					wp.mediaWidgets.init();
+					wp.textWidgets.init();
+
+					$( 'body' ).trigger( 'builder_finished_loading' );
+				}, 2000 );
 			}
 		});
 	};
@@ -1069,7 +1081,7 @@ var ThemifyLiveStyling;
 				type = api.activeModel.get('elType'),
 				sep = 'module' === type ? ' ' : '',
 				_this = this;
-			
+		
 			selectors.forEach(function(selector) {
 				var fullSelector;
 				if ( selector && selector.length > 0 ) {
@@ -1087,34 +1099,37 @@ var ThemifyLiveStyling;
 					var right = container.outerWidth() - left - row.outerWidth();
 					var padding = $( fullSelector ).data( 'padding' );
 					var margin = $( fullSelector ).data( 'margin' );
+					if(padding){
+						if( newStyleObj[ 'padding-left' ] ) {
+							$( fullSelector ).css( { paddingLeft: '' } );
+							padding[0] = _this.convertToPX( fullSelector, newStyleObj[ 'padding-left' ] );
+						}
 
-					if( newStyleObj[ 'padding-left' ] ) {
-						$( fullSelector ).css( { paddingLeft: '' } );
-						padding[0] = _this.convertToPX( fullSelector, newStyleObj[ 'padding-left' ] );
+						if( newStyleObj[ 'padding-right' ] ) {
+							$( fullSelector ).css( { paddingRight: '' } );
+							padding[1] = _this.convertToPX( fullSelector, newStyleObj[ 'padding-right' ] );
+						}
+
+						if( newStyleObj[ 'padding-left' ] || newStyleObj[ 'padding-right' ] ) {
+							$( fullSelector ).data( 'padding', padding );
+						}
 					}
+					if(margin){
+				
+						if( newStyleObj[ 'margin-left' ] ) {
+							margin[0] = _this.convertToPX( fullSelector, newStyleObj[ 'margin-left' ] );
+							$( fullSelector ).css( { marginLeft: -left + margin[0] } );
+						}
 
-					if( newStyleObj[ 'padding-right' ] ) {
-						$( fullSelector ).css( { paddingRight: '' } );
-						padding[1] = _this.convertToPX( fullSelector, newStyleObj[ 'padding-right' ] );
-					}
+						if( newStyleObj[ 'margin-right' ] ) {
+							margin[1] = _this.convertToPX( fullSelector, newStyleObj[ 'margin-right' ] );
+							$( fullSelector ).css( { marginRight: -right + margin[1] } );
+						}
 
-					if( newStyleObj[ 'padding-left' ] || newStyleObj[ 'padding-right' ] ) {
-						$( fullSelector ).data( 'padding', padding );
-					}
-
-					if( newStyleObj[ 'margin-left' ] ) {
-						margin[0] = _this.convertToPX( fullSelector, newStyleObj[ 'margin-left' ] );
-						$( fullSelector ).css( { marginLeft: -left + margin[0] } );
-					}
-
-					if( newStyleObj[ 'margin-right' ] ) {
-						margin[1] = _this.convertToPX( fullSelector, newStyleObj[ 'margin-right' ] );
-						$( fullSelector ).css( { marginRight: -right + margin[1] } );
-					}
-
-					if( newStyleObj[ 'margin-left' ] || newStyleObj[ 'margin-right' ] ) {
-						$( fullSelector ).css( { width: container.outerWidth() - ( margin[0] + margin[1] ) + 'px' } );
-						$( fullSelector ).data( 'margin', margin );
+						if( newStyleObj[ 'margin-left' ] || newStyleObj[ 'margin-right' ] ) {
+							$( fullSelector ).css( { width: container.outerWidth() - ( margin[0] + margin[1] ) + 'px' } );
+							$( fullSelector ).data( 'margin', margin );
+						}
 					}
 
 				}
@@ -1145,6 +1160,11 @@ var ThemifyLiveStyling;
 			});
 			$('body').on('themify_builder_color_picker_change', function(e, colorType, rgbaString) {
 				if (colorType === 'cover_color') {
+					
+					var checked = self.$context.find('input[name="'+colorType+'-type"]:checked');
+					if(checked.val()!=='color' && checked.val()!=='hover_color'){
+						return;
+					}
 					self.addOrRemoveComponentOverlay(rgbaString,false);
 				} else if(self.isInit) {
 					
@@ -1404,8 +1424,7 @@ var ThemifyLiveStyling;
 				var previousVal = self.getStylingVal('background_repeat');
 
 				var val = $(this).val();
-
-				if (val.length > 0) {
+				if (val && val.length > 0) {
 					if (previousVal.length > 0) {
 						self.$liveStyledElmt.removeClass(previousVal);
 					}
@@ -1426,7 +1445,7 @@ var ThemifyLiveStyling;
 
 				var val = $(this).val();
 
-				if (val.length > 0) {
+				if (val && val.length > 0) {
 					if (previousVal.length > 0) {
 						self.$liveStyledElmt.removeClass(previousVal);
 					}

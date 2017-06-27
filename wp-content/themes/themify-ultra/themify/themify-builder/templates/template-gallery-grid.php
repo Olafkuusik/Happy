@@ -16,17 +16,14 @@ if ( $pagination ) {
 	if ( $total <= $settings['gallery_per_page'] ) {
 		$pagination = false;
 	} else {
-		$current = is_front_page() ? get_query_var( 'page', 1 ) : get_query_var( 'paged', 1 );
-		if ( ! $current ) {
-			$current = 1;
-		}
+		$current = isset( $_GET['builder_gallery'] ) ? $_GET['builder_gallery'] : 1;
 		$offset = $settings['gallery_per_page'] * ( $current - 1 );
 		$gallery_images = array_slice( $gallery_images, $offset, $settings['gallery_per_page'], true );
 	}
 }
 foreach ( $gallery_images as $image ) :
 	$alt = get_post_meta( $image->ID, '_wp_attachment_image_alt', true );
-	$caption = ! empty( $alt ) ? $alt : $image->post_excerpt;
+	$caption = ! empty( $image->post_excerpt ) ? $image->post_excerpt : $alt;
 	$title = $image->post_title;
 	?>
 	
@@ -73,9 +70,21 @@ foreach ( $gallery_images as $image ) :
 <?php if ( $pagination ) : ?>
 	<div class="builder_gallery_nav" data->
 		<?php
+
+		/**
+		 * fix paginate_links url in modules loaded by Ajax request: the url does not match the actual page url.
+		 * #5345
+		 * @note: paginate_links seems buggy with successive requests, the url parameters get jumbled up;
+		 * hence the remove_query_args to remove the parameter from url before it's added in by paginate_links.
+		 */
+		$key = defined( 'DOING_AJAX' ) && DOING_AJAX ? 'HTTP_REFERER' : 'REQUEST_URI';
+		$base = remove_query_arg( 'builder_gallery', $_SERVER[ $key ] );
+
 		echo paginate_links( array(
+			'base' => $base . '%_%',
 			'current' => $current,
-			'total' => ceil( $total / $settings['gallery_per_page'] )
+			'total' => ceil( $total / $settings['gallery_per_page'] ),
+			'format' => '?builder_gallery=%#%'
 		) );
 		?>
 	</div>

@@ -209,7 +209,12 @@ class Themify_Customizer {
 			'clearMessage' => __('This will reset all styling and customization. Do you want to proceed?', 'themify'),
 			'exportMessage' => __('You have un-saved settings. If proceed then export will not have them. Do you want to proceed?', 'themify'),
 			'confirm_on_unload' => __('You have unsaved data.', 'themify'),
-                        'header_transparnet'=>  $this->get_header_transparent()?__('Transparent header is being selected in header background option, thus header background does not reflect on preview but it will show on pages with regular header background mode.','themify'):false
+			'header_transparnet'=>  $this->get_header_transparent()?__('Transparent header is being selected in header background option, thus header background does not reflect on preview but it will show on pages with regular header background mode.','themify'):false,
+			'responsiveBreakpoints' => array(
+				'tablet_landscape' => themify_get_option( 'setting-customizer_responsive_design_tablet_landscape', false ),
+				'tablet' => themify_get_option( 'setting-customizer_responsive_design_tablet', false ),
+				'mobile' => themify_get_option( 'setting-customizer_responsive_design_mobile', false )
+			)
 		);
 
 		// Pass JS variables to controls
@@ -598,6 +603,7 @@ class Themify_Customizer {
 	function write_stylesheet($delete_empty = true) {
 		$this->saving_stylesheet = true;
 
+		$this->build_settings_and_styles();
 		$css_file = $this->get_stylesheet();
 		$css_to_save = $this->generate_css();
 		$css_to_save .= $this->generate_responsive_css();
@@ -687,6 +693,7 @@ class Themify_Customizer {
 		if ( $this->is_readable_and_not_empty( $this->get_stylesheet() ) ) {
 			return true;
 		}
+
 		// so try to generate stylesheet...
 		$this->write_stylesheet( false );
 
@@ -1154,7 +1161,14 @@ class Themify_Customizer {
 						$font_family = $font->family->name;
 						if(!empty($font->weight) && $font->weight!=='normal'){
 							$font_family.=':normal,'.$font->weight;
+
+							if( ! empty( $font->italic ) ) {
+								$font_family .= ',' . $font->italic;
+							}
+						} else if( ! empty( $font->italic ) ) {
+							$font_family .= ':normal,' . $font->italic;
 						}
+
 						$this->customizer_fonts[] = $font_family;
 					}
 					$out .= sprintf("\n\tfont-family:%s;", $prefix . $font->family->name . $suffix);

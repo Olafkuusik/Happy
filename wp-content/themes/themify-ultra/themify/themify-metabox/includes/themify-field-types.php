@@ -454,7 +454,8 @@ function themify_meta_field_radio( $args ) {
 
 	$html = '';
 	foreach ( $meta_box['meta'] as $k => $option ) {
-		$radio_selected = ( isset( $option['selected'] ) && $option['selected'] && '' == $meta_value ) ? 'checked="checked"' : checked( $meta_value, esc_attr( $option['value'] ), false );
+		$radio_selected = ( isset( $option['selected'] ) && $option['selected'] && '' == $meta_value ) || ( isset( $meta_box['default'] ) && $option['value'] == $meta_box['default'] && '' == $meta_value ) ? 'checked="checked"' : checked( $meta_value, esc_attr( $option['value'] ), false );
+
 		$rid = $meta_box['name'] . '-' . esc_attr( $option['value'] );
 		$html .= sprintf( '<input type="radio" name="%s" id="%s" value="%s" %s /><label for="%s" class="selectit">%s</label>',
 			// radio

@@ -1,4 +1,7 @@
 /* Themify Customize Styling */
+#headerwrap {	background-image: url(http://happy.ee/wp-content/uploads/2017/06/1527670_75opa.png);
+	background-position: center center; 
+}
 #site-logo, #site-logo a, .header-horizontal #site-logo, .header-minbar #site-logo, .header-leftpane #site-logo, .header-slide-out #site-logo, .boxed-compact #site-logo, .header-top-bar #site-logo img {		width: 450px; 
 }
 #site-logo, #site-logo a, .header-horizontal #site-logo, .header-minbar #site-logo, .header-leftpane #site-logo, .header-slide-out #site-logo, .boxed-compact #site-logo, .header-top-bar #site-logo a {		width: 450px; 

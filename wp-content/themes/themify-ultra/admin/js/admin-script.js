@@ -207,6 +207,21 @@
 				$gutter.show();
             }
         });
+
+        $( 'input[name="setting-default_portfolio_single_layout"]' ).on( 'change', function() {
+            var layout = $( this ).parent().next().find('a');
+
+            if( this.value !== 'sidebar-none' ) { 
+                if( layout.last().hasClass( 'selected' ) ) {
+                    layout.first().trigger( 'click' );
+                }
+                layout.last().hide();
+            } else {
+                layout.last().show();
+            }
+
+        } ).trigger( 'change' );
+        
         // Don't call trigger change,otherwise the query input will be empty
         query_change($('#query_category'));
         query_change($('#portfolio_query_category'));

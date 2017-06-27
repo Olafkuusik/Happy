@@ -3,8 +3,8 @@
   array (
     'class' => 
     array (
-      'ComposerAutoloaderInit3d2de2f2ace99de36b3d7b2030d830f6' => 'WbsVendors_ComposerAutoloaderInit3d2de2f2ace99de36b3d7b2030d830f6',
-      'Composer\\Autoload\\ComposerStaticInit3d2de2f2ace99de36b3d7b2030d830f6' => 'WbsVendors\\Composer\\Autoload\\ComposerStaticInit3d2de2f2ace99de36b3d7b2030d830f6',
+      'ComposerAutoloaderInit51f686b33a4fd4fc87f6420f27e1bdb8' => 'WbsVendors_ComposerAutoloaderInit51f686b33a4fd4fc87f6420f27e1bdb8',
+      'Composer\\Autoload\\ComposerStaticInit51f686b33a4fd4fc87f6420f27e1bdb8' => 'WbsVendors\\Composer\\Autoload\\ComposerStaticInit51f686b33a4fd4fc87f6420f27e1bdb8',
       'Composer\\Autoload\\ClassLoader' => 'WbsVendors\\Composer\\Autoload\\ClassLoader',
       'Dgm\\Arrays\\Arrays' => 'WbsVendors\\Dgm\\Arrays\\Arrays',
       'BoxPacking\\Packer' => 'WbsVendors\\BoxPacking\\Packer',
@@ -126,6 +126,7 @@
       'Dgm\\Shengine\\Woocommerce\\Model\\Item\\WpmlAwareItem' => 'WbsVendors\\Dgm\\Shengine\\Woocommerce\\Model\\Item\\WpmlAwareItem',
       'Dgm\\SimpleProperties\\SimpleProperties' => 'WbsVendors\\Dgm\\SimpleProperties\\SimpleProperties',
       'Dgm\\WcTools\\WcTools' => 'WbsVendors\\Dgm\\WcTools\\WcTools',
+      'DgmWpDismissibleNotices' => 'WbsVendors_DgmWpDismissibleNotices',
       'DgmWpPrerequisitesChecker' => 'WbsVendors_DgmWpPrerequisitesChecker',
     ),
     'func' => 
@@ -139,8 +140,8 @@
   array (
     'class' => 
     array (
-      'WbsVendors_ComposerAutoloaderInit3d2de2f2ace99de36b3d7b2030d830f6' => 'ComposerAutoloaderInit3d2de2f2ace99de36b3d7b2030d830f6',
-      'WbsVendors\\Composer\\Autoload\\ComposerStaticInit3d2de2f2ace99de36b3d7b2030d830f6' => 'Composer\\Autoload\\ComposerStaticInit3d2de2f2ace99de36b3d7b2030d830f6',
+      'WbsVendors_ComposerAutoloaderInit51f686b33a4fd4fc87f6420f27e1bdb8' => 'ComposerAutoloaderInit51f686b33a4fd4fc87f6420f27e1bdb8',
+      'WbsVendors\\Composer\\Autoload\\ComposerStaticInit51f686b33a4fd4fc87f6420f27e1bdb8' => 'Composer\\Autoload\\ComposerStaticInit51f686b33a4fd4fc87f6420f27e1bdb8',
       'WbsVendors\\Composer\\Autoload\\ClassLoader' => 'Composer\\Autoload\\ClassLoader',
       'WbsVendors\\Dgm\\Arrays\\Arrays' => 'Dgm\\Arrays\\Arrays',
       'WbsVendors\\BoxPacking\\Packer' => 'BoxPacking\\Packer',
@@ -262,6 +263,7 @@
       'WbsVendors\\Dgm\\Shengine\\Woocommerce\\Model\\Item\\WpmlAwareItem' => 'Dgm\\Shengine\\Woocommerce\\Model\\Item\\WpmlAwareItem',
       'WbsVendors\\Dgm\\SimpleProperties\\SimpleProperties' => 'Dgm\\SimpleProperties\\SimpleProperties',
       'WbsVendors\\Dgm\\WcTools\\WcTools' => 'Dgm\\WcTools\\WcTools',
+      'WbsVendors_DgmWpDismissibleNotices' => 'DgmWpDismissibleNotices',
       'WbsVendors_DgmWpPrerequisitesChecker' => 'DgmWpPrerequisitesChecker',
     ),
     'func' => 

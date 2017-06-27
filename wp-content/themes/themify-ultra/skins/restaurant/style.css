@@ -8,6 +8,10 @@ Required Plugins: builder-contact, builder-maps-pro
 /************************************************************************************
 GENERAL
 *************************************************************************************/
+@font-face {
+	font-family: 'themify_theme_icon';
+	src: url('data:application/octet-stream;base64,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') format('woff');
+}
 body {
 	font-family: 'Cabin', sans-serif;
 	font-size: 1.1em;
@@ -385,8 +389,8 @@ FOOTER
 .footer-block #footerwrap .back-top a:before {
 	font-size: 2rem;
 	font-weight: bold;
-	content: '\f106';
-	font-family: FontAwesome;
+	content: '\f106'; /* fa-angle-up */
+	font-family: 'themify_theme_icon';
 }
 .footer-block #footerwrap .back-top:hover .arrow-up a {
 	bottom: 0;
@@ -468,9 +472,10 @@ FOOTER
 	line-height: inherit;
 }
 .full-section-scrolling #footerwrap.expanded .back-top a:before {
-	content: '\f00d';
+	content: '\e809'; /* fa-close */
 	font-size: 1.5rem;
 	font-weight: normal;
+	font-family: 'themify_theme_icon';
 }
 
 /************************************************************************************
@@ -584,13 +589,19 @@ MOBILE MENU ACTIVE
 }
 .mobile_menu_active #headerwrap #main-nav .current_page_item > a,
 .mobile_menu_active #headerwrap #main-nav .current-menu-item > a,
-.mobile_menu_active.transparent-header #headerwrap #main-nav li a:hover {
+.mobile_menu_active #headerwrap #main-nav li a:hover {
 	color: #dfa300;
 }
-.mobile_menu_active.header-horizontal #headerwrap #main-nav .highlight-link a:hover,
-.mobile_menu_active.header-horizontal #main-nav .highlight-link.current_page_item > a,
-.mobile_menu_active.header-horizontal #main-nav .highlight-link.current-menu-item > a {
-	background: none;
+.mobile_menu_active.header-horizontal #headerwrap #main-nav .highlight-link > a {
+	border: 2px solid #dfa300;
+	border-radius: 4px;
+	padding: 0.7em 1.1em;
+}
+.mobile_menu_active.header-horizontal #headerwrap #main-nav .highlight-link.current_page_item > a,
+.mobile_menu_active.header-horizontal #headerwrap #main-nav .highlight-link.current-menu-item > a {
+	box-shadow: none;
+	background-color: #dfa300;
+	color: #fff;
 }
 
 /************************************************************************************
@@ -641,7 +652,7 @@ MEDIA QUERIES
 @media screen and (max-width: 680px) {
 	.header-horizontal #headerwrap.fixed-header #header #site-logo,
 	.header-horizontal #site-logo {
-		margin-top: 0;
+		margin: .3em 0;
 		font-size: 2em;
 	}
 	/* grid2-thumb layout */

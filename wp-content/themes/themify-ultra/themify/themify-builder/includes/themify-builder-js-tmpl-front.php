@@ -93,6 +93,7 @@
 			<div class="row-data-styling" data-styling=""></div>
 		</div>
 	</div>
+	<div class="empty_holder_text"></div>
 </script>
 
 <script type="text/html" id="tmpl-builder_visual_column_item">
@@ -114,12 +115,7 @@
 		<li class="themify_builder_column_dragger_li"><a href="#" class="themify_builder_column_dragger"><span class="ti-arrows-horizontal"></span></a></li>
 	</ul>
 	<div class="tb-column-inner">
-		<div class="themify_module_holder">
-			<div class="empty_holder_text">
-				<a href="#" class="tb_empty_row_btn js-tb_empty_row_btn"></a>
-				<span><?php _e('drop module here', 'themify') ?></span>
-			</div>
-		</div>
+		<div class="themify_module_holder"></div>
 	</div>
 	<div class="column-data-styling" data-styling=""></div>
 </script>

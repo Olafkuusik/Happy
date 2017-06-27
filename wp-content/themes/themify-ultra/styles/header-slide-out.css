@@ -195,7 +195,7 @@ body.fixed-header.page-loaded #headerwrap {
 /* sub-menu child arrow */
 #main-nav .menu-item-has-children .child-arrow:before,
 #main-nav .page_item_has_children .child-arrow:before {
-    content: "\e64b";
+    content: "\e64b"; /* ti-angle-down */
 	font-family: themify;
 	font-size: 0.8em;
 	cursor: pointer;
@@ -208,7 +208,7 @@ body.fixed-header.page-loaded #headerwrap {
 }
 #main-nav .menu-item-has-children .child-arrow.toggle-on:before,
 #main-nav .page_item_has_children .child-arrow.toggle-on:before {
-    content: "\e646";
+    content: "\e646"; /* ti-close */
 	-webkit-transform: rotate(-90deg);
 	-moz-transform: rotate(-90deg);
 	transform: rotate(-90deg);
@@ -307,8 +307,8 @@ body:not(.mobile_menu_active) #headerwrap #menu-icon-close {
 	color: inherit;
 }
 body:not(.mobile_menu_active) #headerwrap #menu-icon-close:after {
-	content: "\e646";
-	font-family: 'themify';
+	content: "\e800"; /* ti-close */
+	font-family: 'themify_theme_icon';
 }
 
 /* Slide Menu Styles */

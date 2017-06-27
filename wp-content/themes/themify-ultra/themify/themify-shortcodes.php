@@ -700,9 +700,14 @@ function themify_shortcode_twitter( $atts, $content = null ) {
 
 	extract( shortcode_atts( array(
 		'username' => '',
+		'type' => '',
+		'timeline_height' => 400,
+		'timeline_width' => 300,
 		'show_count' => 5,
 		'show_timestamp' => 'true',
+		'hide_footer' => false,
 		'show_follow' => 'false',
+		'embed_code' => '',
 		'follow_text' => __('&rarr; Follow me', 'themify'),
 		'include_retweets' => 'false',
 		'exclude_replies' => 'false',
@@ -718,6 +723,31 @@ function themify_shortcode_twitter( $atts, $content = null ) {
 
 	if ( 'true' == $is_widget ) {
 		$transient_id = $widget_id;
+	}
+	
+	if( $type ) {
+		if( $type == 'type-timeline') {
+			$screen_name = sanitize_user( strip_tags( $username ) );
+			$data_chrome = '';
+			if( $hide_footer ) {
+				$data_chrome = 'data-chrome="nofooter"';
+			}
+			
+			$show_replies = false; 
+			if( $exclude_replies == 'false' ) {
+				$show_replies = true;
+			}
+			
+			$out = "<a class='twitter-timeline' {$data_chrome} data-show-replies='$show_replies' data-height='$timeline_height' data-width='$timeline_width'
+	  					href='https://twitter.com/{$screen_name}'>
+							Tweets by @{$screen_name}
+					</a>
+					<script async src='//platform.twitter.com/widgets.js' charset='utf-8'></script>";
+			
+			return $out;
+		}
+		
+		return $embed_code;
 	}
 
 	$args = array(

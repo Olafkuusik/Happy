@@ -256,8 +256,8 @@ body.mobile-menu-visible:not(.fixed-header-on):not(.transparent-header) #headerw
 /* dropdown icon */
 #main-nav .page_item_has_children .child-arrow:before,
 #main-nav .menu-item-has-children .child-arrow:before {
-    content: "\e64b";
-	font-family: themify;
+    content: "\e801"; /* ti-angle-down */
+	font-family: 'themify_theme_icon';
 	font-size: 0.65em;
 	cursor: pointer;
     position: absolute;
@@ -559,9 +559,6 @@ body.mobile-menu-visible:not(.fixed-header-on):not(.transparent-header) #headerw
 .mobile_menu_active.mobile-menu-visible #headerwrap.fixed-header .social-widget,
 .mobile_menu_active.mobile-menu-visible #headerwrap.fixed-header #searchform-wrap {
 	display: block;
-}
-.mobile_menu_active #main-nav .menu-item-has-children .child-arrow:before {
-	top: 16px;
 }
 
 @media screen and (max-width: 760px) {

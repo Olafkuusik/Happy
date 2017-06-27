@@ -1,7 +1,15 @@
 /* .themify_builder_155_row.module_row_0 Style */
 .themify_builder_155_row.module_row_0.module_row {
-	background-image: url(http://localhost/happy/wp-content/uploads/2016/08/1527670.png)
+	background-image: url(http://happy.ee/wp-content/uploads/2016/08/1527670.png)
 }
 
 .themify_builder .button-155-0-0-1.module-button { text-align: center;  } 
 .themify_builder .button-155-0-0-1.module-button a { padding-right: 3%; padding-left: 3%;  } 
+.themify_builder .text-155-1-0-1.module-text { font-family: PT Sans; color: #464646; font-size: 2.5em; text-align: center;  } 
+.themify_builder .text-155-1-0-1.module-text h1 { font-family: PT Sans; color: #464646;  } 
+.themify_builder .text-155-1-0-1.module-text h2 { font-family: PT Sans; color: #464646;  } 
+.themify_builder .text-155-1-0-1.module-text h3:not(.module-title) { font-family: PT Sans; color: #464646;  } 
+.themify_builder .text-155-1-0-1.module-text h4 { font-family: PT Sans; color: #464646;  } 
+.themify_builder .text-155-1-0-1.module-text h5 { font-family: PT Sans; color: #464646;  } 
+.themify_builder .text-155-1-0-1.module-text h6 { font-family: PT Sans; color: #464646;  } 
+.themify_builder .text-155-1-0-1.module.module-text h1 { font-family: Roboto;  } 

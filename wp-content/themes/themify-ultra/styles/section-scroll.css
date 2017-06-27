@@ -58,7 +58,7 @@ SECTION SCROLL
 	bottom: 0;
 }
 #footerwrap.expanded .back-top a:before {
-	content: '\e646';
+	content: '\e800'; /* ti-close */
 }
 #footerwrap.expanded {
 	-webkit-transform: translateY(0px);

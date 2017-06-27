@@ -340,7 +340,7 @@ var ThemifyBuilderModuleJs;
 			}
 			$(window).bind('hashchange', this.tabsDeepLink);
 
-			$( window ).on( 'resize', function( e ) {
+			$( window ).on( 'resize builder_load_module_partial builder_toggle_frontend', function( e ) {
 				this.menuModuleMobileStuff( e );
 			}.bind( this ) );
 		},
@@ -357,7 +357,7 @@ var ThemifyBuilderModuleJs;
 						self.setupFullwidthRows()
 					}
 				});
-				$('body').on('builderfullwidth.themify', function( event, $context ){
+				$('body').on('builder_finished_loading builderSwitchBreakpoint.themify builderfullwidth.themify', function( event, $context ){
 					self.setupFullwidthRows();
 				});
 			}
@@ -379,7 +379,8 @@ var ThemifyBuilderModuleJs;
 			self.carousel();
 			self.playFocusedVideoBg();
 			self.menuModuleMobileStuff();
-                        self.GridBreakPoint();
+			self.GridBreakPoint();
+			self.videoIframeStopAudio();
 		},
 		/**
 		 * Executed on JavaScript 'load' window event.
@@ -464,21 +465,22 @@ var ThemifyBuilderModuleJs;
 			}
 		},
 		setupFullwidthRows: function () {
-			var container = $(tbLocalScript.fullwidth_container);
 			$('div.themify_builder_row.fullwidth, div.themify_builder_row.fullwidth_row_container').each(function () {
 				var $this = $( this ),
+					container = $this.closest( tbLocalScript.fullwidth_container ),
 					row = $this.closest('.themify_builder_content'),
-					padding = $this.data( 'padding' ),
-					margin = $this.data( 'margin' );
+					padding = $this.attr( 'data-padding' ),
+					margin = $this.attr( 'data-margin' );
 				if( padding == undefined ) {
-					padding = [ parseInt( $this.css( 'paddingLeft' ) ), parseInt( $this.css( 'paddingRight' ) ) ];
-					$this.data( 'padding', padding );
+					padding = parseInt( $this.css( 'paddingLeft' ) ) + ',' + parseInt( $this.css( 'paddingRight' ) );
+					$this.attr( 'data-padding', padding );
 				}
-
 				if( margin == undefined ) {
-					margin = [ parseInt( $this.css( 'marginLeft' ) ), parseInt( $this.css( 'marginRight' ) ) ];
-					$this.data( 'margin', margin );
+					margin = parseInt( $this.css( 'marginLeft' ) ) + ',' + parseInt( $this.css( 'marginRight' ) );
+					$this.attr( 'data-margin', margin );
 				}
+				margin = margin.split(',').map( Number );
+				padding = padding.split(',').map( Number );
 
 				var marginSum = margin[0] + margin[1];
 				var left = row.offset().left - container.offset().left;
@@ -1561,7 +1563,7 @@ var ThemifyBuilderModuleJs;
 
 								$this.next( 'style' ).html( styleContent );
 							}
-							$this.append( '<a class="menu-module-burger"></a>' );
+							if( $(this).find( '.menu-module-burger' ).length == 0 ) $this.append( '<a class="menu-module-burger"></a>' );
 						}
 					}
 				} );
@@ -1613,60 +1615,198 @@ var ThemifyBuilderModuleJs;
 				}
 			}
 		},
-                GridBreakPoint: function () {
-                    if (this.isBuilderActive()) {
-                        return false;
-                    }
-                    var tablet = tbLocalScript.breakpoints.tablet_landscape,
-                            mobile = tbLocalScript.breakpoints.mobile,
-                            rows = $('.row_inner,.sub_row_inner_wrapper'),
-                            default_mobile = $('.mobile-auto'),
-                            prev = false;
-                    function Breakpoints() {
+		GridBreakPoint: function () {
+			if (this.isBuilderActive()) {
+				return false;
+			}
+			var tablet = tbLocalScript.breakpoints.tablet_landscape,
+					mobile = tbLocalScript.breakpoints.mobile,
+					rows = $('.row_inner,.sub_row_inner_wrapper'),
+					default_mobile = $('.mobile-auto'),
+					prev = false;
+			function Breakpoints() {
 
-                        var width = document.body.clientWidth,
-                                cl = 'desktop';
-                        if (width <= mobile) {
-                            cl = 'mobile';
-                        }
-                        else if (width <= tablet[1]) {
-                            cl = 'tablet';
-                        }
+				var width = document.body.clientWidth,
+						cl = 'desktop';
+				if (width <= mobile) {
+					cl = 'mobile';
+				}
+				else if (width <= tablet[1]) {
+					cl = 'tablet';
+				}
 
-                        if (cl !== prev) {
-                            if (default_mobile.length > 0) {
-                                if (cl === 'tablet') {
-                                    default_mobile.removeClass('mobile-auto');
-                                }
-                                else if (cl === 'mobile') {
-                                    default_mobile.addClass('mobile-auto');
-                                }
+				if (cl !== prev) {
+					if (default_mobile.length > 0) {
+						if (cl === 'tablet') {
+							default_mobile.removeClass('mobile-auto');
+						}
+						else if (cl === 'mobile') {
+							default_mobile.addClass('mobile-auto');
+						}
 
-                            }
-                            rows.each(function () {
-                                var $children = $(this).children('.module_column'),
-                                        $first = $children.first(),
-                                        $last = $children.last();
-                                if ($(this).hasClass(cl + '-col-direction-rtl')) {
-                                    $first.removeClass('first').addClass('last');
-                                    $last.removeClass('last').addClass('first');
-                                }
-                                else {
-                                    $first.removeClass('last').addClass('first');
-                                    $last.removeClass('first').addClass('last');
-                                }
-                            });
-                            prev = cl;
-                        }
-                    }
+					}
+					rows.each(function () {
+						var $children = $(this).children('.module_column'),
+								$first = $children.first(),
+								$last = $children.last();
+						if ($(this).hasClass(cl + '-col-direction-rtl')) {
+							$first.removeClass('first').addClass('last');
+							$last.removeClass('last').addClass('first');
+						}
+						else {
+							$first.removeClass('last').addClass('first');
+							$last.removeClass('first').addClass('last');
+						}
+					});
+					prev = cl;
+				}
+			}
 
-                    Breakpoints();
-                    $(window).resize(function (e) {
-                        if (!e.isTrigger) {
-                            Breakpoints();
-                        }
-                    });
-                }
+			Breakpoints();
+			$(window).resize(function (e) {
+				if (!e.isTrigger) {
+					Breakpoints();
+				}
+			});
+		},
+		videoIframeStopAudio: function() {
+			var audioPlayersFreeze = function() {
+				$( 'audio' ).each( function() {
+					if ( this.dataset.activePlayer == 1 ) {
+						this.pause();
+						this.dataset.isPlaying = 0;
+						this.dataset.activePlayer = 0;
+					}
+				} );
+
+				youtubeIframes.each( function() {
+					if( this.dataset.activePlayer == 1 ) {
+						this.contentWindow
+							.postMessage( '{ "event": "command", "func": "pauseVideo" }', '*' );
+						this.dataset.activePlayer = 0;
+					}
+				} );
+
+				vimeoIframes.each( function() {
+					if( this.dataset.activePlayer == 1 ) {
+						this.contentWindow
+							.postMessage( '{ "method": "pause" }', '*' );
+						this.dataset.activePlayer = 0;
+					}
+				} );
+
+			},
+			youtubeIframes = $( 'iframe[src*="youtube.com"], iframe[src*="youtu.be"]' ),
+			youtubeCallback = function() {
+				youtubeIframes.each( function() {
+					var src = $( this ).attr( 'src' ), self = this, player;
+
+					if ( src.indexOf('enablejsapi') < 0 ) {
+						src += src.indexOf('?') !== -1 ? '&' : '?';
+						src += 'enablejsapi=1';
+						$( this ).attr( 'src', src );
+					}
+
+					player = new YT.Player(this, {
+						events: {
+							'onStateChange': function( e ) {
+								if ( e.data == YT.PlayerState.PLAYING && ! player.isMuted() ) {
+									audioPlayersFreeze();
+									self.dataset.activePlayer = 1;
+								} else if (e.data == YT.PlayerState.PAUSED || e.data == YT.PlayerState.ENDED) {
+									self.dataset.activePlayer = 0;
+
+									$.event.trigger( {
+										type: 'videoBuilderFreeze',
+										player: player,
+										provider: 'youtube'
+									} );
+								}
+							},
+							'onError': function (e) {
+								$.event.trigger( {
+									type: 'videoBuilderError',
+									player: player,
+									provider: 'youtube'
+								} );
+							}
+						}
+					});
+				} );
+			},
+			vimeoIframes = $( 'iframe[src*="vimeo.com"]' ),
+			vimeoCallback = function() {
+				vimeoIframes.each( function() {
+					var player = new Vimeo.Player( this ), self = this;
+
+					player.on( 'loaded', function() {
+						player.on( 'play', function() {
+							audioPlayersFreeze();
+							self.dataset.activePlayer = 1;
+						} );
+
+						player.on( 'pause', function() {
+							self.dataset.activePlayer = 0;
+
+							$.event.trigger( {
+								type: 'videoBuilderFreeze',
+								player: player,
+								provider: 'vimeo'
+							} );
+						});
+
+						player.on( 'ended', function() {
+							self.dataset.activePlayer = 0;
+
+							$.event.trigger( {
+								type: 'videoBuilderFreeze',
+								player: player,
+								provider: 'vimeo'
+							} );
+						});
+					} );
+
+				} );
+			};
+
+			if ( youtubeIframes.length ) {
+				if ( typeof YT === 'undefined' || typeof YT.Player === 'undefined' ) {
+					Themify.LoadAsync('//www.youtube.com/iframe_api', function () {
+						window.onYouTubePlayerAPIReady = youtubeCallback;
+					}, null, null, function () {
+						return typeof YT !== 'undefined' && typeof YT.Player !== 'undefined';
+					});
+				} else {
+					setTimeout( youtubeCallback, 180 );
+				}
+			}
+
+			if( vimeoIframes.length ) {
+				if ( typeof Vimeo === 'undefined' ) {
+					Themify.LoadAsync( '//player.vimeo.com/api/player.js'
+						, vimeoCallback, null, null, function () {
+							return typeof Vimeo !== 'undefined';
+						});
+				} else {
+					vimeoCallback();
+				}
+			}
+
+			$( 'audio' ).on( 'play', function() {
+				audioPlayersFreeze();
+				this.dataset.activePlayer = 1;
+			} );
+
+			$( 'audio' ).on( 'pause stop', function() {
+				this.dataset.activePlayer = 0;
+			} );
+
+			$( document ).on( 'mfpOpen', function( e ) {
+				if( $( '.video-frame', this ).length ) {
+					audioPlayersFreeze();
+				}
+			} );
+		}
 	};
 
 	// Initialize

@@ -1154,8 +1154,13 @@ class Themify_Twitter extends WP_Widget {
 		/* User-selected settings. */
 		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
 		$username = isset( $instance['username'] ) ? $instance['username'] : '';
+		$type = isset( $instance['type'] ) ? $instance['type'] : '';
+		$timeline_height = isset( $instance['timeline_height'] ) ? $instance['timeline_height'] : '';
+		$timeline_width = isset( $instance['timeline_width'] ) ? $instance['timeline_width'] : '';
 		$show_count = isset( $instance['show_count'] ) ? $instance['show_count'] : 5;
+		$embed_code = isset( $instance['grid_embed_code'] ) ? $instance['grid_embed_code'] : '';
 		$hide_timestamp = isset( $instance['hide_timestamp'] ) ? 'false' : 'true';
+		$hide_footer = isset( $instance['hide_footer'] ) ? true : false;
 		$show_follow = isset( $instance['show_follow'] ) ? ''.$instance['show_follow'] : 'false';
 		$follow_text = isset( $instance['follow_text'] ) ? $instance['follow_text'] : '';
 		$include_retweets = isset( $instance['include_retweets'] ) ? 'true' : 'false';
@@ -1177,17 +1182,27 @@ class Themify_Twitter extends WP_Widget {
 		if( ! function_exists( 'themify_shortcode_twitter' ) ) {
 			require_once THEMIFY_DIR . '/themify-shortcodes.php';
 		}
+		
+		if(isset($_POST['action']) && $_POST['action']==='tfb_load_module_partial'){
+			global $themify_twitter_instance;
+			$themify_twitter_instance++;
+		}
 
 		echo themify_shortcode_twitter(array(
-			'username' => $username,
-			'show_count' => $show_count,
-			'show_timestamp' => $hide_timestamp,
-			'show_follow' => $show_follow,
-			'follow_text' => $follow_text,
-			'include_retweets' => $include_retweets,
-			'exclude_replies' => $exclude_replies,
-			'is_widget' => 'true',
-			'widget_id' => $widget_id
+				'username'         => $username,
+				'type'             => $type,
+				'timeline_height'  => $timeline_height,
+				'timeline_width'   => $timeline_width,	
+				'show_count'       => $show_count,
+				'show_timestamp'   => $hide_timestamp,
+				'hide_footer'      => $hide_footer,
+				'show_follow'      => $show_follow,
+				'follow_text'      => $follow_text,
+				'embed_code'       => $embed_code,
+				'include_retweets' => $include_retweets,
+				'exclude_replies'  => $exclude_replies,
+				'is_widget'        => 'true',
+				'widget_id'        => $widget_id
 		));
 
 		/* After widget (defined by themes). */
@@ -1203,8 +1218,13 @@ class Themify_Twitter extends WP_Widget {
 		/* Strip tags (if needed) and update the widget settings. */
 		$instance['title'] = strip_tags( $new_instance['title'] );
 		$instance['username'] = $new_instance['username'];
+		$instance['type'] = $new_instance['type'];
+		$instance['timeline_height'] = $new_instance['timeline_height'];
+		$instance['timeline_width'] = $new_instance['timeline_width'];
 		$instance['show_count'] = $new_instance['show_count'];
 		$instance['hide_timestamp'] = $new_instance['hide_timestamp'];
+		$instance['grid_embed_code'] = $new_instance['grid_embed_code'];
+		$instance['hide_footer'] = $new_instance['hide_footer'];
 		$instance['show_follow'] = $new_instance['show_follow'];
 		$instance['follow_text'] = $new_instance['follow_text'];
 		$instance['include_retweets'] = $new_instance['include_retweets'];
@@ -1223,61 +1243,137 @@ class Themify_Twitter extends WP_Widget {
 
 		/* Set up some default widget settings. */
 		$defaults = array(
-			'title' => __('Latest Tweets', 'themify'),
-			'username' => '',
-			'show_count' => 5,
-			'hide_timestamp' => false,
-			'show_follow' => true,
-			'follow_text' => __('&rarr; Follow me', 'themify'),
-			'include_retweets' => false,
-			'exclude_replies' => true
+				'title' => __('Latest Tweets', 'themify'),
+				'username'         => '',
+				'type'             => '',
+				'timeline_width'   => 300,
+				'timeline_height'  => 400,
+				'show_count'       => 5,
+				'grid_embed_code'  => '',
+				'hide_timestamp'   => false,
+				'hide_footer'      => false,
+				'show_follow'      => true,
+				'follow_text'      => __('&rarr; Follow me', 'themify'),
+				'include_retweets' => false,
+				'exclude_replies'  => true
 		);
-		$instance = wp_parse_args( (array) $instance, $defaults ); ?>
+		$instance = wp_parse_args( (array) $instance, $defaults ); 
+		
+		$twitter_default = false;
+		if( !$instance['type'] ) {
+			$twitter_default = true;
+		} ?>
 		
 		<p>
 			<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php _e('Title:', 'themify'); ?></label><br />
 			<input id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" value="<?php echo esc_attr( $instance['title'] ); ?>" class="widefat" type="text" />
 		</p>
+		
+		<p>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'type' ) ); ?>"><?php _e('Type:', 'themify'); ?></label>
+			<select data-toggle-display="twitter-display-toggle" id="<?php echo esc_attr( $this->get_field_id( 'type' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'type' ) ); ?>">
+				<option value="0" data-display="twitter-default" <?php if ( !$instance['type'] ) echo 'selected="selected"'; ?>><?php _e('Default', 'themify'); ?></option>
+				<option value="type-timeline" data-display="twitter-timeline" <?php if ( $instance['type'] == 'type-timeline' ) echo 'selected="selected"'; ?>><?php _e('Timeline', 'themify'); ?></option>
+				<option value="type-grid" data-display="twitter-grid" <?php if ( $instance['type'] == 'type-grid' ) echo 'selected="selected"'; ?>><?php _e('Grid', 'themify'); ?></option>
+			</select>
+		</p>
+		
+		<div class="twitter-display-toggle" data-display="twitter-default" style="display: <?php echo $twitter_default ? 'block' : 'none' ?>">
+			<p>
+				<?php echo sprintf(__('<small>Twitter access token is required at <a href="%s">Themify > Settings > Twitter</a>.</small>', 'themify'), admin_url('admin.php?page=themify#setting-twitter_settings')); ?>
+			</p>
+			
+			<p>
+				<label for="<?php echo esc_attr( $this->get_field_id( 'username' ) ); ?>"><?php _e('Twitter ID:', 'themify'); ?></label>
+				<input id="<?php echo esc_attr( $this->get_field_id( 'username' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'username' ) ); ?>" value="<?php echo esc_attr( $instance['username'] ); ?>" type="text"/>
+			</p>
+			
+			<p>
+				<label for="<?php echo esc_attr( $this->get_field_id( 'show_count' ) ); ?>"><?php _e('Show:', 'themify'); ?></label>
+				<input id="<?php echo esc_attr( $this->get_field_id( 'show_count' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'show_count' ) ); ?>" value="<?php echo esc_attr( $instance['show_count'] ); ?>" size="3" type="text" /> <?php _e('tweets', 'themify'); ?>
+			</p>
+			
+			<p>
+				<input class="checkbox" type="checkbox" <?php checked( $instance['hide_timestamp'], 'on' ); ?> id="<?php echo esc_attr( $this->get_field_id( 'hide_timestamp' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'hide_timestamp' ) ); ?>" />
+				<label for="<?php echo esc_attr( $this->get_field_id( 'hide_timestamp' ) ); ?>"><?php _e('Hide timestamp', 'themify'); ?></label>
+			</p>
+			
+			<p>
+				<input class="checkbox" type="checkbox" <?php checked( $instance['show_follow'], 'on' ); ?> id="<?php echo esc_attr( $this->get_field_id( 'show_follow' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'show_follow' ) ); ?>" />
+				<label for="<?php echo esc_attr( $this->get_field_id( 'show_follow' ) ); ?>"><?php _e('Display follow me button', 'themify'); ?></label>
+			</p>
+			
+			<p>
+				<label for="<?php echo esc_attr( $this->get_field_id( 'follow_text' ) ); ?>"><?php _e('Follow me text:', 'themify'); ?></label>
+				<input id="<?php echo esc_attr( $this->get_field_id( 'follow_text' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'follow_text' ) ); ?>" value="<?php echo esc_attr( $instance['follow_text'] ); ?>" type="text" />
+			</p>
+			
+			<p>
+				<input class="checkbox" type="checkbox" <?php checked( $instance['include_retweets'], 'on' ); ?> id="<?php echo esc_attr( $this->get_field_id( 'include_retweets' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'include_retweets' ) ); ?>" />
+				<label for="<?php echo esc_attr( $this->get_field_id( 'include_retweets' ) ); ?>"><?php _e('Include retweets', 'themify'); ?></label>
+			</p>
+			
+			<p>
+				<input class="checkbox" type="checkbox" <?php checked( $instance['exclude_replies'], 'on' ); ?> id="<?php echo esc_attr( $this->get_field_id( 'exclude_replies' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'exclude_replies' ) ); ?>" />
+				<label for="<?php echo esc_attr( $this->get_field_id( 'exclude_replies' ) ); ?>"><?php _e('Exclude replies', 'themify'); ?></label>
+			</p>
+		</div>
+		
+		<div class="twitter-display-toggle" data-display="twitter-timeline" style="display: <?php echo $instance['type'] == 'type-timeline' ? 'block' : 'none' ?>">
+			<p>
+				<label for="<?php echo esc_attr( $this->get_field_id( 'username' ) ); ?>"><?php _e('Twitter ID:', 'themify'); ?></label>
+				<input id="<?php echo esc_attr( $this->get_field_id( 'username' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'username' ) ); ?>" value="<?php echo esc_attr( $instance['username'] ); ?>" type="text"/>
+			</p>
+			
+			<p>
+				<label for="<?php echo esc_attr( $this->get_field_id( 'timeline_height' ) ); ?>"><?php _e('Embed Height:', 'themify'); ?></label>
+				<input id="<?php echo esc_attr( $this->get_field_id( 'timeline_height' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'timeline_height' ) ); ?>" size=4 value="<?php echo esc_attr( $instance['timeline_height'] ); ?>" type="text"/>
+			</p>
+			
+			<p>
+				<label for="<?php echo esc_attr( $this->get_field_id( 'timeline_width' ) ); ?>"><?php _e('Embed Width:', 'themify'); ?></label>
+				<input id="<?php echo esc_attr( $this->get_field_id( 'timeline_width' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'timeline_width' ) ); ?>" size=4 value="<?php echo esc_attr( $instance['timeline_width'] ); ?>" type="text"/>
+			</p>
+			
+			<p>
+				<input class="checkbox" type="checkbox" <?php checked( $instance['hide_footer'], 'on' ); ?> id="<?php echo esc_attr( $this->get_field_id( 'hide_footer' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'hide_footer' ) ); ?>" />
+				<label for="<?php echo esc_attr( $this->get_field_id( 'hide_footer' ) ); ?>"><?php _e('Hide footer', 'themify'); ?></label>
+			</p>
+			
+			<p>
+				<input class="checkbox" type="checkbox" <?php checked( $instance['exclude_replies'], 'on' ); ?> id="<?php echo esc_attr( $this->get_field_id( 'exclude_replies' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'exclude_replies' ) ); ?>" />
+				<label for="<?php echo esc_attr( $this->get_field_id( 'exclude_replies' ) ); ?>"><?php _e('Exclude replies', 'themify'); ?></label>
+			</p>
+		</div>
+		
+		<div class="twitter-display-toggle" data-display="twitter-grid" style="display: <?php echo $instance['type'] == 'type-grid' ? 'block' : 'none' ?>">
+			<p>
+				<label style="display:block;" for="<?php echo esc_attr( $this->get_field_id( 'grid_embed_code' ) ); ?>"><?php _e('Embed Code', 'themify'); ?></label>
+				<textarea style="width: 100%; height: 100px;" id="<?php echo esc_attr( $this->get_field_id( 'grid_embed_code' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'grid_embed_code' ) ); ?>"><?php echo esc_attr( $instance['grid_embed_code'] ); ?></textarea>
+			</p>
+			
+			<p>
+				<?php echo sprintf(__('<small>To create a grid layout, you\'ll need to first <a target="_blank" href="%s">create a collection</a></small>', 'themify'), 'https://dev.twitter.com/web/embedded-timelines/collection'); ?>
+			</p>
+		</div>
+		
+		<script type="text/javascript">
+		( function( $ ) {
+			var toggleDisplay = $('[data-toggle-display]');
+			if( toggleDisplay.length ) {
+				toggleDisplay.each( function() {
+					var containerClass = $(this).attr( 'data-toggle-display' );
+					console.log( containerClass );
+					$(this).change( function() {
+						var show = $(this).find( 'option:selected' ).attr( 'data-display' );
 
-		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'username' ) ); ?>"><?php _e('Twitter ID:', 'themify'); ?></label>
-			<input id="<?php echo esc_attr( $this->get_field_id( 'username' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'username' ) ); ?>" value="<?php echo esc_attr( $instance['username'] ); ?>" type="text"/>
-		</p>
-		
-		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'show_count' ) ); ?>"><?php _e('Show:', 'themify'); ?></label>
-			<input id="<?php echo esc_attr( $this->get_field_id( 'show_count' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'show_count' ) ); ?>" value="<?php echo esc_attr( $instance['show_count'] ); ?>" size="3" type="text" /> <?php _e('tweets', 'themify'); ?>
-		</p>
-		
-		<p>
-			<input class="checkbox" type="checkbox" <?php checked( $instance['hide_timestamp'], 'on' ); ?> id="<?php echo esc_attr( $this->get_field_id( 'hide_timestamp' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'hide_timestamp' ) ); ?>" />
-			<label for="<?php echo esc_attr( $this->get_field_id( 'hide_timestamp' ) ); ?>"><?php _e('Hide timestamp', 'themify'); ?></label>
-		</p>
-		
-		<p>
-			<input class="checkbox" type="checkbox" <?php checked( $instance['show_follow'], 'on' ); ?> id="<?php echo esc_attr( $this->get_field_id( 'show_follow' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'show_follow' ) ); ?>" />
-			<label for="<?php echo esc_attr( $this->get_field_id( 'show_follow' ) ); ?>"><?php _e('Display follow me button', 'themify'); ?></label>
-		</p>
-		
-		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'follow_text' ) ); ?>"><?php _e('Follow me text:', 'themify'); ?></label>
-			<input id="<?php echo esc_attr( $this->get_field_id( 'follow_text' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'follow_text' ) ); ?>" value="<?php echo esc_attr( $instance['follow_text'] ); ?>" type="text" />
-		</p>
-		
-		<p>
-			<input class="checkbox" type="checkbox" <?php checked( $instance['include_retweets'], 'on' ); ?> id="<?php echo esc_attr( $this->get_field_id( 'include_retweets' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'include_retweets' ) ); ?>" />
-			<label for="<?php echo esc_attr( $this->get_field_id( 'include_retweets' ) ); ?>"><?php _e('Include retweets', 'themify'); ?></label>
-		</p>
-		
-		<p>
-			<input class="checkbox" type="checkbox" <?php checked( $instance['exclude_replies'], 'on' ); ?> id="<?php echo esc_attr( $this->get_field_id( 'exclude_replies' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'exclude_replies' ) ); ?>" />
-			<label for="<?php echo esc_attr( $this->get_field_id( 'exclude_replies' ) ); ?>"><?php _e('Exclude replies', 'themify'); ?></label>
-		</p>
-		
-		<p>
-			<?php echo sprintf(__('<small>Twitter access token is required at <a href="%s">Themify > Settings > Twitter</a>.</small>', 'themify'), admin_url('admin.php?page=themify#setting-twitter_settings')); ?>
-		</p>
-		
+						$( '.' + containerClass ).hide();
+						$( '.' + containerClass + '[data-display="' + show + '"]' ).show();
+					} );
+				} );
+			}
+		} )( jQuery );
+		</script>
 		<?php
 	}
 }

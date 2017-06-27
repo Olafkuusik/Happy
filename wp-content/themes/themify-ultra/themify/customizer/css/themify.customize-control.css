@@ -812,10 +812,7 @@ select.font_line_unit {
 	vertical-align: bottom;
 	padding: 0 5px;
 }
-#accordion-section-themify_options .responsive-na .themify-subaccordion li[id*="logo"],
-#sub-accordion-section-themify_options .responsive-na .themify-subaccordion li[id*="logo"] {
-	display: none !important;
-}
+
 .devices [data-device] {
 	position:relative;
 }
@@ -865,6 +862,11 @@ select.font_line_unit {
 	max-height: 100%;
 	max-width: 100%;
 	width: 976px;
+}
+
+.preview-tablet .wp-full-overlay-main {
+	width: 768px;
+	margin: auto 0 auto -384px
 }
 
 /* clearfix */

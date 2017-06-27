@@ -305,7 +305,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 				'label' => __( 'Background Image', 'themify' ),
 				'class' => 'xlarge',
 				'prop' => 'background-image',
-				'selector' => ' div.module-buttons',
+				'selector' => '.module.module-buttons',
 				'option_js' => true
 			),
 			array(
@@ -314,7 +314,7 @@ class TB_Buttons_Module extends Themify_Builder_Module {
 				'label' => __( 'Background Color', 'themify' ),
 				'class' => 'small',
 				'prop' => 'background-color',
-				'selector' => array( ' div.module-buttons'),
+				'selector' => '.module.module-buttons',
 			),
 			// Font
 			array(

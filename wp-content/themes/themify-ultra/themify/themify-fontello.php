@@ -123,7 +123,7 @@ function themify_fontello_get_config( $name = null, $default = null ) {
 			if( $config = themify_get_file_contents( $path['dir'] . 'config.json' ) ) {
 				$config = json_decode( $config, true );
 				if( isset( $name ) ) {
-					if( isset( $config[ $name ] ) ) {
+					if( isset( $config[ $name ] ) && ! empty( $config[ $name ] ) ) {
 						$config = $config[ $name ];
 					} else {
 						$config = $default;

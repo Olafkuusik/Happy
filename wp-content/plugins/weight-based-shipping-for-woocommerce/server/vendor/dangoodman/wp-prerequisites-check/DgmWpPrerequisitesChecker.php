@@ -15,18 +15,20 @@ class WbsVendors_DgmWpPrerequisitesChecker
         $this->wcVersion = $wcVersion;
 
         // Hook admin_notices always since errors can be added lately
-        add_action('admin_notices', array($this, '_showErrors'));
+        add_action('admin_notices', array($this, '_showNotices'));
     }
 
     public function check()
     {
         $this->errors = array();
+        $this->warnings = array();
 
         if (version_compare($phpv = PHP_VERSION, $this->phpVersion, '<')) {
             $this->errors[] =
                 "You are running an outdated PHP version {$phpv}. 
                  {pluginName} requires PHP {phpVersion}+. 
                  Contact your hosting support to switch to a newer PHP version.";
+
         }
         
         global $wp_version;
@@ -51,30 +53,36 @@ class WbsVendors_DgmWpPrerequisitesChecker
             }
         }
 
+        if ($this->errors) {
+            return false;
+        }
+
+        if (!class_exists('WbsVendors_DgmWpDismissibleNotices')) {
+            require_once(__DIR__.'/DgmWpDismissibleNotices.php');
+        }
+
+        if (!\WbsVendors_DgmWpDismissibleNotices::isNoticeDismissed($noticeId = 'dgm-zend-guard-loader')) {
+            if (version_compare($phpv = PHP_VERSION, $minphpv = '5.4', '<') && self::isZendGuardLoaderActive()) {
+                $this->warnings[$noticeId] =
+                    "You are running PHP version {$phpv} with Zend Guard Loader extension active.
+                    This server configuration might not be compatible with {pluginName}.
+                    If you are getting 500 Internal Server Error or 503 Service Unavailable 
+                    errors on Cart or Checkout pages when the plugin is active, disable
+                    Zend Guard Loader or update your PHP version to {$minphpv}+.";
+            }
+        }
+
+        if ($this->warnings) {
+            \WbsVendors_DgmWpDismissibleNotices::init();
+        }
+
         return !$this->errors;
     }
 
-    public function _showErrors()
+    public function _showNotices()
     {
-        if (!$this->errors) {
-            return;
-        }
-
-        ?>
-            <div class="notice notice-error">
-                <?php foreach ($this->errors as $error): ?>
-                    <?php
-                        $error = strtr($error, array(
-                            '{pluginName}' => $this->pluginName,
-                            '{phpVersion}' => $this->phpVersion,
-                            '{wpVersion}' => $this->wpVersion,
-                            '{wcVersion}' => $this->wcVersion,
-                        ));
-                    ?>
-                    <p><?php echo esc_html($error) ?></p>
-                <?php endforeach; ?>
-            </div>
-        <?php
+        $this->showNotices($this->errors, 'error');
+        $this->showNotices($this->warnings, 'warning');
     }
 
     public function _checkWoocommerceVersion()
@@ -89,6 +97,36 @@ class WbsVendors_DgmWpPrerequisitesChecker
         }
     }
 
+    private function showNotices($notices, $kind)
+    {
+        if ($notices) {
+            ?>
+                <?php foreach ($notices as $dismissId => $notice): ?>
+                    <?php
+                        $dismissClass = null;
+                        $dismissAttr = null;
+                        if (is_string($dismissId) && !empty($dismissId)) {
+                            $dismissClass = "is-dismissible";
+                            $dismissAttr = "data-dismissible=".esc_html($dismissId);
+                        }
+                    ?>
+                    <div class="notice notice-<?php echo esc_html($kind) ?> <?php echo $dismissClass ?>"
+                        <?php echo $dismissAttr ?>
+                    >
+                        <?php
+                            $notice = strtr($notice, array(
+                                '{pluginName}' => $this->pluginName,
+                                '{phpVersion}' => $this->phpVersion,
+                                '{wpVersion}' => $this->wpVersion,
+                                '{wcVersion}' => $this->wcVersion,
+                            ));
+                        ?>
+                        <p><?php echo esc_html($notice) ?></p>
+                    </div>
+                <?php endforeach; ?>
+            <?php
+        }
+    }
 
     static private function isWoocommerceActive()
     {
@@ -106,6 +144,39 @@ class WbsVendors_DgmWpPrerequisitesChecker
             array_key_exists('woocommerce/woocommerce.php', $active_plugins);
     }
 
+    static private function getPhpIniBool($name, $default = null)
+    {
+        $value = ini_get($name);
+
+        if ($value === false) {
+            return $default;
+        }
+
+        if ((int)$value > 0) {
+
+            $value = true;
+
+        } else {
+
+            $lowered = strtolower($value);
+
+            if (in_array($lowered, array('true', 'on', 'yes'), true)) {
+                $value = true;
+            } else {
+                $value = false;
+            }
+        }
+
+        return $value;
+    }
+
+    static private function isZendGuardLoaderActive()
+    {
+        return
+            in_array('Zend Guard Loader', get_loaded_extensions(), true) &&
+            self::getPhpIniBool('zend_loader.enable', true);
+    }
+
 
     private $pluginName;
     private $phpVersion;
@@ -113,4 +184,5 @@ class WbsVendors_DgmWpPrerequisitesChecker
     private $wcVersion;
 
     private $errors;
+    private $warnings;
 }

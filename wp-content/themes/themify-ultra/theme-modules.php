@@ -1081,6 +1081,18 @@ function themify_shop_layout( $data = array() ){
 		array('value' => 'sidebar2 content-right', 	'img' => 'images/layout-icons/sidebar2-content-right.png', 'title' => __('2 Left Sidebars', 'themify')),
 		array('value' => 'sidebar-none', 'img' => 'images/layout-icons/sidebar-none.png', 'title' => __('No Sidebar', 'themify'))
 	);
+
+	/**
+	 * Entries layout options
+	 * @var array
+	 */
+	$default_entry_layout_options = array(
+		array('value' => 'list-post', 'img' => 'images/layout-icons/list-post.png', 'title' => __('List Post', 'themify')),
+		array('value' => 'grid4', 'img' => 'images/layout-icons/grid4.png', 'title' => __('Grid 4', 'themify'), 'selected' => true),
+		array('value' => 'grid3', 'img' => 'images/layout-icons/grid3.png', 'title' => __('Grid 3', 'themify')),
+		array('value' => 'grid2', 'img' => 'images/layout-icons/grid2.png', 'title' => __('Grid 2', 'themify'))
+	);
+
 	$default_options = array(
 		'' => '',
 		__('Yes', 'themify') => 'yes',
@@ -1120,7 +1132,29 @@ function themify_shop_layout( $data = array() ){
 	$output .= '<input type="hidden" name="setting-shop_layout" class="val" value="'.$val.'" /></p>';
         
 	$output .= shop_archive_layout();
-        /**
+
+	/**
+	 * Entries Layout
+	 */
+	$output .= '<p>
+					<span class="label">' . __('Product Layout', 'themify') . '</span>';
+	$val = isset( $data['setting-products_layout'] ) ? $data['setting-products_layout'] : '';
+	foreach($default_entry_layout_options as $option){
+		if ( ( '' == $val || ! $val || ! isset( $val ) ) && ( isset( $option['selected'] ) && $option['selected'] ) ) {
+			$val = $option['value'];
+		}
+		if ( $val == $option['value'] ) {
+			$class = 'selected';
+		} else {
+			$class = '';
+		}
+		$output .= '<a href="#" class="preview-icon '.$class.'" title="'.$option['title'].'"><img src="'.THEME_URI.'/'.$option['img'].'" alt="'.$option['value'].'"  /></a>';
+	}
+
+	$output .= '	<input type="hidden" name="setting-products_layout" class="val" value="'.$val.'" />
+				</p>';
+
+	/**
 	 * Enable Masonry
 	 */
 	$output .=	'<p>
@@ -1159,6 +1193,25 @@ function themify_shop_layout( $data = array() ){
 					<span class="label">' . __('Hide Product Price', 'themify') . '</span>
 					<select name="setting-product_archive_hide_price">
 						'.$hide_price.'
+					</select>
+				</p>';
+
+	/**
+	 * Hide Add to Cart Button
+	 * @var String
+	 */
+	$hide_cart_button = '';
+	foreach($default_options as $name => $option){
+		if ( themify_get( 'setting-product_archive_hide_cart_button' ) == $option ) {
+			$hide_cart_button .= '<option value="'.$option.'" selected="selected">'.$name.'</option>';
+		} else {
+			$hide_cart_button .= '<option value="'.$option.'">'.$name.'</option>';
+		}
+	}
+	$output .= '<p class="feature_box_posts">
+					<span class="label">' . __('Hide Add to Cart Button', 'themify') . '</span>
+					<select name="setting-product_archive_hide_cart_button">
+						'.$hide_cart_button.'
 					</select>
 				</p>';
 
@@ -1232,6 +1285,13 @@ function themify_single_product( $data = array() ){
 		$output .= '<a href="#" class="preview-icon '.$class.'" title="'.$option['title'].'"><img src="'.THEME_URI.'/'.$option['img'].'" alt="'.$option['value'].'"  /></a>';
 	}
 	$output .= '<input type="hidden" name="setting-single_product_layout" class="val" value="'.$val.'" /></p>';
+
+	/**
+	 * Hide Breadcrumbs
+	 * @var String
+	 */
+	$output .= '<p><span class="label">' . __('Hide Shop Breadcrumbs', 'themify') . '</span>
+				<label for="setting-hide_shop_single_breadcrumbs"><input type="checkbox" id="setting-hide_shop_single_breadcrumbs" name="setting-hide_shop_single_breadcrumbs" '.checked( themify_get( 'setting-hide_shop_single_breadcrumbs' ), 'on', false ).' /> ' . __('Check to hide shop breadcrumbs', 'themify') . '</label></p>';
 
 	/**
 	 * Product Reviews

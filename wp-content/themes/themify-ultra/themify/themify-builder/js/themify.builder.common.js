@@ -885,7 +885,8 @@
                         $(this).closest('.themify_builder_input').find('.query_category_multiple').val($(this).val());
                     })
                     .on(actionEvent, '.reset-styling', self.resetStyling);
-                  
+
+                $( window ).on( 'scroll', ThemifyBuilderCommon.tinyMCEMenuFix );
                    
                 if (!themifyBuilder.disableShortcuts) {
                     self.controlByKeyInput();
@@ -908,6 +909,8 @@
                     positions = self.$lightbox.position(),
                     new_positions = {};
                 positions.left < containment[0] && (new_positions.left = containment[0]), 0 > positions.top && (new_positions.top = 0), positions.left > containment[2] && (new_positions.left = containment[2]), positions.top > containment[3] && (new_positions.top = containment[3]), self.$lightbox.css(new_positions)
+
+                ThemifyBuilderCommon.tinyMCEMenuFix();
             },
 
             open: function( options, callback) {
@@ -997,7 +1000,8 @@
                 $lightboxContainer.append($response);
 
                 self.$lightbox.find('.themify_builder_options_tab_wrapper').each(function(){
-                    new SimpleBar(this);
+                   var el = new SimpleBar(this);
+                   $( el.getScrollElement() ).on( 'scroll', ThemifyBuilderCommon.tinyMCEMenuFix );
                 });
 
                 self.adjustHeight(posSizeObj.height);
@@ -1544,8 +1548,11 @@
         randNumber: function() {
           this.uuid++;
           return this.uuid + '-' + Math.random().toString( 36 ).substr( 2, 7 );
+        },
+        tinyMCEMenuFix: function() {
+            var activeMenu = $( '.wp-editor-wrap .mce-active' );
+            if( activeMenu.length ) $( '.wp-editor-wrap' ).trigger( 'click' );
         }
-
     };
 
 }(jQuery, window, document));

@@ -657,7 +657,7 @@ function themify_get_image( $args ) {
 				$out .= " height=\"{$height}\"";
 			}
 			if ( $attachment_id != 0 ) {
-				$args['class'] .= ' wp-image-' . $attachment_id; /* add attachment_id class to img tag */
+				$args['class'] .= ' wp-post-image wp-image-' . $attachment_id; /* add attachment_id class to img tag */
 			}
 			if ( ! empty( $args['class'] ) ) {
 				$out .= " class=\"{$args['class']}\"";
@@ -2375,8 +2375,15 @@ function themify_unset_flag( $name ) {
 function themify_enque($url,$check=false){
     static $is_disabled = null;
     if($is_disabled===null){
-        $is_disabled = (defined('WP_DEBUG') &&  WP_DEBUG) || themify_check('setting-script_minification-min');
-    }
+		/**
+		 * Check if using minified script files in disabled by wp-config.
+		 * @ref: https://codex.wordpress.org/Debugging_in_WordPress#SCRIPT_DEBUG
+		 */
+		$is_disabled = ( defined( 'WP_DEBUG' ) &&  WP_DEBUG ) || ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG );
+		if(!$is_disabled){
+			$is_disabled = themify_is_themify_theme()?themify_check('setting-script_minification-min'):themify_builder_get('builder_minified');
+		}
+    }	
     if($is_disabled){
         return $check?false:$url;
     }

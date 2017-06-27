@@ -62,6 +62,16 @@ return array(
 		),
 		'category' => 'display',
 	),
+        'Alice' => array(
+		'label' => 'Alice',
+		'variants' => array(
+			'regular',
+		),
+		'subsets' => array(
+			'latin',
+		),
+		'category' => 'display',
+	),
 	'Belgrano' => array(
 		'label' => 'Belgrano',
 		'variants' => array(
@@ -82,6 +92,29 @@ return array(
 		'subsets' => array(
 			'greek',
 			'greek-ext',
+			'latin',
+			'latin-ext',
+		),
+		'category' => 'serif',
+	),
+        'Courgette' => array(
+		'label' => 'Courgette',
+		'variants' => array(
+			'regular',
+		),
+		'subsets' => array(
+			'latin',
+			'latin-ext',
+		),
+		'category' => 'serif',
+	),
+        'Crete Round' => array(
+		'label' => 'Crete Round',
+		'variants' => array(
+			'regular',
+                        'italic'
+		),
+		'subsets' => array(
 			'latin',
 			'latin-ext',
 		),
@@ -126,6 +159,17 @@ return array(
 		'subsets' => array(
 			'latin',
 			'latin-ext',
+		),
+		'category' => 'serif',
+	),
+        'Dancing Script' => array(
+		'label' => 'Dancing Script',
+		'variants' => array(
+			'700',
+			'regular',
+		),
+		'subsets' => array(
+			'latin',
 		),
 		'category' => 'serif',
 	),
@@ -251,6 +295,46 @@ return array(
 		),
 		'category' => 'serif',
 	),
+        'Great Vibes' => array(
+		'label' => 'Great Vibes',
+		'variants' => array(
+			'regular',
+		),
+		'subsets' => array(
+			'latin',
+			'latin-ext',
+		),
+		'category' => 'serif',
+	),
+        'Handlee' => array(
+		'label' => 'Handlee',
+		'variants' => array(
+			'regular',
+		),
+		'subsets' => array(
+			'latin',
+		),
+		'category' => 'serif',
+	),
+        'Josefin Sans' => array(
+		'label' => 'Josefin Sans',
+		'variants' => array(
+			'100',
+			'100italic',
+			'300',
+			'300italic',
+			'600',
+			'600italic',
+			'700',
+			'700italic',
+			'italic',
+			'regular',
+		),
+		'subsets' => array(
+			'latin',
+		),
+		'category' => 'serif',
+	),
 	'Josefin Slab' => array(
 		'label' => 'Josefin Slab',
 		'variants' => array(
@@ -295,6 +379,17 @@ return array(
 		),
 		'category' => 'sans-serif',
 	),
+        'Kaushan Script' => array(
+		'label' => 'Kaushan Script',
+		'variants' => array(
+			'regular',
+		),
+		'subsets' => array(
+			'latin',
+			'latin-ext',
+		),
+		'category' => 'serif',
+	),
 	'Libre Baskerville' => array(
 		'label' => 'Libre Baskerville',
 		'variants' => array(
@@ -305,6 +400,19 @@ return array(
 		'subsets' => array(
 			'latin',
 			'latin-ext',
+		),
+		'category' => 'serif',
+	),
+        'Lobster' => array(
+		'label' => 'Lobster',
+		'variants' => array(
+			'regular',
+		),
+		'subsets' => array(
+			'latin',
+			'latin-ext',
+                        'cyrillic-ext',
+                        'cyrillic'
 		),
 		'category' => 'serif',
 	),
@@ -499,6 +607,17 @@ return array(
 		),
 		'category' => 'sans-serif',
 	),
+        'Playball' => array(
+		'label' => 'Playball',
+		'variants' => array(
+			'regular',
+		),
+		'subsets' => array(
+			'latin',
+			'latin-ext',
+		),
+		'category' => 'sans-serif',
+	),
 	'Playfair Display' => array(
 		'label' => 'Playfair Display',
 		'variants' => array(
@@ -599,6 +718,49 @@ return array(
 		),
 		'category' => 'serif',
 	),
+        'Satisfy' => array(
+		'label' => 'Satisfy',
+		'variants' => array(
+			'regular',
+		),
+		'subsets' => array(
+			'latin',
+		),
+		'category' => 'sans-serif',
+	),
+        'Sacramento' => array(
+		'label' => 'Sacramento',
+		'variants' => array(
+			'regular',
+		),
+		'subsets' => array(
+			'latin',
+                        'latin-ext',
+		),
+		'category' => 'sans-serif',
+	),
+        'Sail' => array(
+		'label' => 'Sail',
+		'variants' => array(
+			'regular',
+		),
+		'subsets' => array(
+			'latin',
+		),
+		'category' => 'sans-serif',
+	),
+        'Sorts Mill Goudy' => array(
+		'label' => 'Sorts Mill Goudy',
+		'variants' => array(
+			'regular',
+                        'italic'
+		),
+		'subsets' => array(
+			'latin',
+                        'latin-ext'
+		),
+		'category' => 'sans-serif',
+	),
 	'Stint Ultra Expanded' => array(
 		'label' => 'Stint Ultra Expanded',
 		'variants' => array(
@@ -640,6 +802,19 @@ return array(
 			'latin',
 		),
 		'category' => 'display',
+	),
+        'Vollkorn' => array(
+		'label' => 'Vollkorn',
+		'variants' => array(
+			'700',
+			'700italic',
+			'italic',
+			'regular',
+		),
+		'subsets' => array(
+			'latin',
+		),
+		'category' => 'serif',
 	),
 	'Vollkorn' => array(
 		'label' => 'Vollkorn',

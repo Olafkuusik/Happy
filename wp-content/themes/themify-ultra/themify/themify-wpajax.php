@@ -365,7 +365,7 @@ function themify_reset_styling(){
 	$temp_data = array();
 	foreach($data as $a){
 		$v = explode("=", $a);
-		$temp_data[$v[0]] = str_replace("+"," ",preg_replace_callback('/%([0-9a-f]{2})/i', 'themify_save_replace_cb', $v[1]));
+		$temp_data[$v[0]] = str_replace("+"," ", preg_replace_callback('/%([0-9a-f]{2})/i', 'themify_save_replace_cb', $v[1]));
 	}
 	$temp = array();
 	foreach($temp_data as $key => $val){
@@ -389,7 +389,7 @@ function themify_reset_setting(){
 	$temp_data = array();
 	foreach($data as $a){
 		$v = explode("=", $a);
-		$temp_data[$v[0]] = str_replace("+"," ",preg_replace_callback('/%([0-9a-f]{2})/i', 'themify_save_replace_cb', $v[1]));
+		$temp_data[$v[0]] = str_replace("+"," ", preg_replace_callback('/%([0-9a-f]{2})/i', 'themify_save_replace_cb', $v[1]));
 	
 	}
 	$temp = array();

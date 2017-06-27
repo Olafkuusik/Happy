@@ -16,7 +16,7 @@ class Themify_Access_Role {
 
 	private function __construct(){
 		add_filter( 'themify_theme_config_setup', array( $this, 'config_setup' ), 14 );
-		add_filter( 'themify_customizer_settings', array( $this, 'tf_themify_hide_customizer' ), 99 );
+		add_filter( 'admin_init', array( $this, 'tf_themify_hide_customizer' ), 99 );
 		add_filter( 'themify_builder_is_frontend_editor', array( $this, 'tf_themify_hide_builder_frontend' ), 99 );
 		add_filter( 'themify_metabox/fields/themify-meta-boxes', array( $this, 'tf_themify_hide_custom_panel_and_backend_builder' ), 99 );
 	}
@@ -51,7 +51,7 @@ class Themify_Access_Role {
 		$prefix = 'setting-'.$setting.'-';
 
 		ob_start();
-		if ( 'custom_panel' == $setting ) :
+		if ( 'custom_panel' === $setting ) :
 			?>
 			<div class="themify-info-link"><?php _e( 'Role access allow certain user roles to have access to the tool. Only set disable if you want to disallow the tool to certain user(s), otherwise keep everything as default.', 'themify' ); ?></div>
 			<?php
@@ -137,20 +137,18 @@ class Themify_Access_Role {
 		if( is_user_logged_in() ){
 			$return = $meta;
 			// Get current user's properties
-			$user = wp_get_current_user();
-			// Retrieve user role
-			$userRole = isset( $user->roles[0] ) ? $user->roles[0] : '';
-
+			$role = self::get_current_role();
+                      
 			// Generate prefix with the setting name for custom panel
 			$prefix = 'setting-custom_panel-';
-			$custom_panel = themify_get( $prefix.$userRole );
+			$custom_panel = themify_get( $prefix.$role );
 
 			// Generate prefix with the setting name for backend builder
 			$prefix = 'setting-backend-';
-			$backend_builder = themify_get( $prefix.$userRole );
+			$backend_builder = themify_get( $prefix.$role );
 
 			// Remove Page Builde if disabled from role access control
-			if( "disable" == $backend_builder ){
+			if( 'disable' === $backend_builder ){
 				// Check each meta box for panels
 				foreach( $meta as $key => $panel ) {
 					// if page builder id found in meta boxes, unset it
@@ -161,7 +159,7 @@ class Themify_Access_Role {
 			}
 
 			// Remove Custom Panel if disabled from role access control
-			if( "disable" == $custom_panel ) {
+			if( 'disable' === $custom_panel ) {
 				foreach( $meta as $key => $panel ) {
 					if( 'page-builder' !== $panel['id'] ) {
 						unset( $meta[ $key ] );
@@ -178,27 +176,34 @@ class Themify_Access_Role {
 	public static function check_access_backend() {
 		static $has_access = NULL; 
 		if(is_null($has_access) && is_user_logged_in() ){
-			$user = wp_get_current_user();
-			$userRole = isset( $user->roles[0] ) ? $user->roles[0] : '';
+			$role = self::get_current_role();
 			$prefix = 'setting-backend-';
-			$backend_builder = themify_get( $prefix.$userRole );
-			$has_access = "disable" != $backend_builder;
-		}
+			$backend_builder = themify_get( $prefix.$role );
+			$has_access = 'disable' !== $backend_builder;
+		}  
 		return $has_access;
 	}
+        
+        private static function get_current_role(){
+            static $user = null;
+            if($user===null){
+                 $user = wp_get_current_user();
+                 $user = isset( $user->roles[0] ) ? $user->roles[0] : '';
+            }
+            return $user;
+        }
 
-	// Hide Themify Builder Frontend
+        // Hide Themify Builder Frontend
 	function tf_themify_hide_builder_frontend( $return ) {
 		if( is_user_logged_in() ){
-			$user = wp_get_current_user();
-			$userRole = isset( $user->roles[0] ) ? $user->roles[0] : '';
+			$role = self::get_current_role();
 
 			// Generate prefix with the setting name
 			$prefix = 'setting-frontend-';
-			$value = themify_get( $prefix.$userRole );
-			if ( "enable" == $value ) {
+			$value = themify_get( $prefix.$role );
+			if ( 'enable' === $value ) {
 				return true;
-			} elseif( "disable" == $value ) {
+			} elseif( 'disable' === $value ) {
 				return false;
 			} elseif( current_user_can( 'edit_posts', get_the_ID() ) ){
 				return $return;
@@ -209,25 +214,25 @@ class Themify_Access_Role {
 	// Hide Themify Builder Customizer
 	function tf_themify_hide_customizer( $data ) {
 		if( is_user_logged_in() ){
-			$user = wp_get_current_user();
-			$userRole = isset( $user->roles[0] ) ? $user->roles[0] : '';
-
+                        $is_available = current_user_can('customize');
+			$role = self::get_current_role();
+                        
 			// Generate prefix with the setting name
 			$prefix = 'setting-customizer-';
-			$value = themify_get( $prefix.$userRole );
+			$value = themify_get( $prefix.$role );
 			// get the the role object
-			$editor = get_role($userRole);
-			if ( "enable" == $value ) {
+			$editor = get_role($role);
+			if ( 'enable' === $value && !$is_available) {
 				// add $cap capability to this role object
-				$editor->add_cap('edit_theme_options');
-			} elseif( "disable" == $value ) {
-				// add $cap capability to this role object
-				$editor->remove_cap('edit_theme_options');
+                            $editor->add_cap('edit_theme_options');
+                                
+			} elseif( 'disable' === $value &&  $is_available) {
+                            $editor->remove_cap('edit_theme_options');
 			}
 		}
 
 		return $data;
-	}
+	}  
 }
 endif;
 

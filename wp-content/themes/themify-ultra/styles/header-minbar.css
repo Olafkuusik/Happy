@@ -311,22 +311,24 @@ body.slide-cart-visible.sidemenu-right {
 }
 
 /* dropdown icon */
+.mobile_menu_active #main-nav .menu-item-has-children .child-arrow:before,
+.mobile_menu_active #main-nav .page_item_has_children .child-arrow:before,
 #main-nav .menu-item-has-children .child-arrow:before,
 #main-nav .page_item_has_children .child-arrow:before {
-    content: "\e64b";
-	font-family: themify;
+    content: "\e801"; /* ti-angle-down */
+	font-family: 'themify_theme_icon';
 	font-size: 0.8em;
 	cursor: pointer;
     position: absolute;
     right: 0;
-	top: 4px;
+	top: 0;
 	-webkit-transition: all 0.3s ease-in-out;
 	-moz-transition: all 0.3s ease-in-out;
 	transition: all 0.3s ease-in-out;
 }
 #main-nav .menu-item-has-children .child-arrow.toggle-on:before,
 #main-nav .page_item_has_children .child-arrow.toggle-on:before {
-    content: "\e646";
+    content: "\e800"; /* ti-close */
 	-webkit-transform: rotate(-90deg);
 	-moz-transform: rotate(-90deg);
 	transform: rotate(-90deg);

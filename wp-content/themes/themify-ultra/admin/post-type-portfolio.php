@@ -780,6 +780,12 @@ if ( ! function_exists( 'themify_default_portfolio_single_layout' ) ) {
 		$prefix = 'setting-default_portfolio_single_';
 
 		/**
+		 * Sidebar Layout
+		 * @var string
+		 */
+		$layout = isset( $data[$prefix.'layout'] ) ? $data[$prefix.'layout'] : '';
+
+		/**
 		 * Basic default options '', 'yes', 'no'
 		 * @var array
 		 */
@@ -788,7 +794,20 @@ if ( ! function_exists( 'themify_default_portfolio_single_layout' ) ) {
 			array('name'=>__('Yes', 'themify'),'value'=>'yes'),
 			array('name'=>__('No', 'themify'),'value'=>'no')
 		);
-		
+
+		/**
+		 * Sidebar Layout Options
+		 * @var array
+		 */
+		$sidebar_options = array(
+			array('value' => 'sidebar1', 'img' => 'images/layout-icons/sidebar1.png', 'title' => __('Sidebar Right', 'themify')),
+			array('value' => 'sidebar1 sidebar-left', 'img' => 'images/layout-icons/sidebar1-left.png', 'title' => __('Sidebar Left', 'themify')),
+			array('value' => 'sidebar2', 'img' => 'images/layout-icons/sidebar2.png', 'title' => __('Left and Right', 'themify')),
+			array('value' => 'sidebar2 content-left', 	'img' => 'images/layout-icons/sidebar2-content-left.png', 'title' => __('2 Right Sidebars', 'themify')),
+			array('value' => 'sidebar2 content-right', 	'img' => 'images/layout-icons/sidebar2-content-right.png', 'title' => __('2 Left Sidebars', 'themify')),
+			array('value' => 'sidebar-none', 'img' => 'images/layout-icons/sidebar-none.png', 'selected' => true, 'title' => __('No Sidebar', 'themify')),
+		);
+
 		/**
 		 * Post Layout options
 		 * @var array
@@ -799,10 +818,30 @@ if ( ! function_exists( 'themify_default_portfolio_single_layout' ) ) {
 			array('value' => 'gallery', 'img' => 'images/layout-icons/post-gallery.png', 'title' => __('Gallery', 'themify')),
 			array('value' => 'split', 'img' => 'images/layout-icons/post-split.png', 'title' => __('Split', 'themify'))
 		);
+
+		/**
+		 * HTML for settings panel
+		 * @var string
+		 */
+		$output = '<p><span class="label">' . __('Portfolio Sidebar Option', 'themify') . '</span>';
+			foreach($sidebar_options as $option){
+				if ( ( '' == $layout || !$layout || ! isset( $layout ) ) && ( isset( $option['selected'] ) && $option['selected'] ) ) {
+					$layout = $option['value'];
+				}
+				if($layout == $option['value']){
+					$class = 'selected';
+				} else {
+					$class = '';
+				}
+				$output .= '<a href="#" class="preview-icon '.$class.'" title="'.$option['title'].'"><img src="'.THEME_URI.'/'.$option['img'].'" alt="'.$option['value'].'"  /></a>';
+			}
+		$output .= '<input type="hidden" name="'.$prefix.'layout" class="val" value="'.$layout.'" />';
+		$output .= '</p>';
+		
 		/**
          * Post Layout placement
          */
-        $output = '<p>
+        $output .= '<p>
 						<span class="label">' . __('Portfolio Layout', 'themify') . '</span>';
         $val = themify_get($prefix . 'portfolio_layout_type');
         foreach ($post_layout as $option) {

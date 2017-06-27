@@ -72,7 +72,7 @@ function themify_theme_page_meta_box( $args = array() ){
 			'description' => '',
 			'type'        => 'dropdown',
 			// extracted from $args
-			'meta'        => $args['nav_menus'],
+			'meta'        => themify_get_available_menus(),
 		),
 		// Full section scrolling
 		array(

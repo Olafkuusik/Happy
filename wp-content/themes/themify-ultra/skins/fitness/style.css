@@ -8,6 +8,10 @@ Required Plugins: builder-contact, builder-maps-pro, builder-image-pro, builder-
 /************************************************************************************
 GENERAL
 *************************************************************************************/
+@font-face {
+	font-family: 'themify_theme_icon';
+	src: url('data:application/octet-stream;base64,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') format('woff');
+}
 body {
 	font: 1em 'Roboto', sans-serif;
 	line-height: 1.5em;
@@ -279,9 +283,10 @@ BUILDER
 	font: 1.5em 'Viga', sans-serif;
 	padding: 0.96em 0.625em;
 	width: auto;
-	border-bottom: 1px solid #ddd;	
+	border-bottom: 1px solid #ddd;
+	box-sizing: border-box;
 }
-.module-pricing-table .module-pricing-table-header {
+.module.module-pricing-table .module-pricing-table-header {
 	padding: 0;
 }
 .module-pricing-table.pricing-enlarge .module-pricing-table-title {
@@ -300,31 +305,35 @@ BUILDER
 	font-size: 1.25em;
 	line-height: 1.75em;
 }
-.module-pricing-table .module-pricing-table-price {
+.module.module-pricing-table .module-pricing-table-price {
 	font: 4em 'Viga', sans-serif;
 	border-bottom: 1px solid #ddd;
 	margin-bottom: 0;
 	margin-top: 0.45em;
 	padding-bottom: 0.6em;
 }
-.module-pricing-table.pricing-enlarge .module-pricing-table-price {
+.module.module-pricing-table.pricing-enlarge .module-pricing-table-price {
 	background: #222 ;
 	font: 4.9em 'Viga', sans-serif;
 	margin: 0;
 	padding: 0.7em 0;
 	font-weight: bold;
 }
-.module-pricing-table .module-pricing-table-features {
+.module.module-pricing-table .module-pricing-table-features {
 	color: #404040;
 }
-.module-pricing-table.pricing-enlarge .module-pricing-table-button,
-.module-pricing-table .module-pricing-table-button {
+.module.module-pricing-table.pricing-enlarge .module-pricing-table-button,
+.module.module-pricing-table .module-pricing-table-button {
 	border-radius: 0;
 	font: 1em 'Viga', sans-serif;
-	width: 58%
+	width: 58%;
+	color: #fff;
 }
 .module-pricing-table {
 	margin-bottom: 1em;
+}
+.module.module-pricing-table {
+	background-color: #fff;
 }
 
 /* Image Module */
@@ -480,9 +489,9 @@ Amenities Page
 	margin-bottom: 0.75em;
 }
 .note-section ul li:before {
-	content: "\f111";
+	content: "\f111"; /* fa-circle */
 	color: #e75d42;
-	font: 0.625em/25px FontAwesome;
+	font: 0.625em/25px 'themify_theme_icon';
 	left: 0;
 	position: absolute;
 	display: inline-block;
@@ -763,6 +772,13 @@ WOOCOMMERCE
 .woocommerce-page #respond input#submit.alt:hover, .woocommerce-page a.button.alt:hover,
 .woocommerce-page button.button.alt:hover, .woocommerce-page input.button.alt:hover {
 	background-color: #0bcf6c;
+}
+
+.mobile_menu_active.header-horizontal #site-logo {
+	font-size: 30px;
+}
+.mobile_menu_active.header-horizontal .header-icons {
+	top: 10px;
 }
 
 /************************************************************************************

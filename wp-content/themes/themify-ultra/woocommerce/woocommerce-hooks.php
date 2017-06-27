@@ -58,8 +58,14 @@ add_filter('woocommerce_get_price_html', 'themify_no_price');
 // Set number of products shown in product archive pages
 add_filter('loop_shop_per_page', 'themify_products_per_page');
 // Alter or remove success message after adding to cart with ajax.
-$cart_message = 'wc_add_to_cart_message' . version_compare( WOOCOMMERCE_VERSION, '3.0.0', '>=' ) ? '_html' : '';
-add_filter( $cart_message, 'themify_theme_wc_add_to_cart_message' );
+$cart_message_hook = 'wc_add_to_cart_message';
+$cart_message_hook .= version_compare( WOOCOMMERCE_VERSION, '3.0.0', '>=' ) ? '_html' : '';
+add_filter( $cart_message_hook, 'themify_theme_wc_add_to_cart_message' );
+
+// Hide Add to Cart Button
+if( themify_get('setting-product_archive_hide_cart_button') == 'yes' ) {
+	add_filter( 'woocommerce_loop_add_to_cart_link', '__return_false' );
+}
 
 /**
  * Fragments
@@ -90,4 +96,24 @@ add_action( 'wp_ajax_nopriv_theme_add_to_cart', 'themify_theme_woocommerce_add_t
 if ( is_plugin_active( 'woocommerce-dynamic-gallery/wc_dynamic_gallery_woocommerce.php' ) ) {
 	remove_action( 'themify_single_product_image', 'woocommerce_show_product_images', 20);
 	remove_action( 'themify_single_product_image', 'woocommerce_show_product_thumbnails', 20);
+}
+
+/**
+ * Specific for infinite scroll themes
+ */
+
+if( 'infinite' == themify_get('setting-more_posts') ){
+	remove_action( 'woocommerce_after_shop_loop', 'woocommerce_pagination', 10 );
+	remove_action( 'woocommerce_after_shop_loop', 'themify_theme_shop_pagination', 10 );
+	function themify_shop_infinite_scroll() {
+		global $wp_query;
+		$total_pages = (int)$wp_query->max_num_pages;
+		$current_page = (get_query_var('paged')) ? get_query_var('paged') : 1;
+		if( $total_pages > $current_page ){
+			//If it's a Query Category page, set the number of total pages
+			echo '<p id="load-more"><a href="' . next_posts( $total_pages, false ) . '">' . __('Load More', 'themify') . '</a></p>';
+			echo '<script type="text/javascript">var qp_max_pages = ' . $total_pages . ';</script>';
+		}
+	};
+	add_action('woocommerce_after_shop_loop', 'themify_shop_infinite_scroll', 9 );
 }

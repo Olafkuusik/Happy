@@ -234,7 +234,7 @@ if ( ! function_exists( 'themify_builder_grid_lists' ) ) {
 			<div class="grid_icon ti-layout-column3"><span class="row-anchor-name"><?php echo esc_attr( $row_anchor ); ?></span></div>
 			<div class="themify_builder_grid_list_wrapper">
                                 <ul class="grid_tabs">
-                                    <li class="selected"><a data-handle="<?php echo $handle; ?>" href="#desktop"><?php _e('DESKTOP','themify')?></a></li>
+                                    <li><a data-handle="<?php echo $handle; ?>" href="#desktop"><?php _e('DESKTOP','themify')?></a></li>
                                     <li><a data-handle="<?php echo $handle; ?>" href="#tablet"><?php _e('TABLET','themify')?></a></li>
                                     <li><a data-handle="<?php echo $handle; ?>" href="#mobile"><?php _e('MOBILE','themify')?></a></li>
                                 </ul>

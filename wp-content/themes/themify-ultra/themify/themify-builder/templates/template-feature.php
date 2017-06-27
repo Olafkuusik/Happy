@@ -180,11 +180,6 @@ if (TFCache::start_cache('feature', self::$post_id, array('ID' => $module_ID))):
 
 		<div class="module-feature-image">
 
-			<?php if( '' != $overlap_image_feature ) {
-				echo themify_get_image( 'src=' . $overlap_image_feature . '&w=' . $overlap_image_width . '&h=' . $overlap_image_height . '&ignore=true' );
-			};
-			?>
-
 			<?php if ('' != $link_feature) : ?>
 				<a href="<?php echo esc_url( $link_feature ); ?>" <?php
 				if ('lightbox' == $link_type) : echo 'class="themify_lightbox"';
@@ -194,22 +189,31 @@ if (TFCache::start_cache('feature', self::$post_id, array('ID' => $module_ID))):
 				?> <?php echo $link_attr; ?>>
 				   <?php endif; ?>
 
+				<?php if( '' != $overlap_image_feature ) {
+					echo themify_get_image( 'src=' . $overlap_image_feature . '&w=' . $overlap_image_width . '&h=' . $overlap_image_height . '&ignore=true' );
+				}; ?>
+
 				<div class="module-feature-chart-html5"
-					data-progress="0"
-					data-progress-end="<?php echo esc_attr($circle_percentage_feature) ?>"
-					data-bgcolor="<?php echo esc_attr($this->stylesheet->get_rgba_color($icon_bg_feature)); ?>"
-					data-color="<?php echo esc_attr($this->stylesheet->get_rgba_color($circle_color_feature)); ?>"
-					data-trackcolor="<?php echo esc_attr($chart_vars['trackColor']); ?>"
-					data-size="<?php echo esc_attr($chart_vars['size']); ?>"
-					data-linewidth="<?php echo esc_attr($circle_stroke_feature); ?>"
-					data-animate="<?php echo esc_attr($chart_vars['animate']); ?>"
-					
-					data-linecap="<?php echo esc_attr($chart_vars['lineCap']); ?>"
-					data-scalelength="<?php echo esc_attr($chart_vars['scaleLength']); ?>"
-					data-rotate="<?php echo esc_attr($chart_vars['rotate']); ?>">
-					
-					<div class="chart-html5-circle">
-					</div>
+					<?php if ('' != $circle_percentage_feature && '0' != $circle_percentage_feature): ?>
+						data-progress="0"
+						data-progress-end="<?php echo esc_attr($circle_percentage_feature) ?>"
+						data-bgcolor="<?php echo esc_attr($this->stylesheet->get_rgba_color($icon_bg_feature)); ?>"
+						data-color="<?php echo esc_attr($this->stylesheet->get_rgba_color($circle_color_feature)); ?>"
+						data-trackcolor="<?php echo esc_attr($chart_vars['trackColor']); ?>"
+						data-size="<?php echo esc_attr($chart_vars['size']); ?>"
+						data-linewidth="<?php echo esc_attr($circle_stroke_feature); ?>"
+						data-animate="<?php echo esc_attr($chart_vars['animate']); ?>"
+
+						data-linecap="<?php echo esc_attr($chart_vars['lineCap']); ?>"
+						data-scalelength="<?php echo esc_attr($chart_vars['scaleLength']); ?>"
+						data-rotate="<?php echo esc_attr($chart_vars['rotate']); ?>"
+					<?php endif; ?>
+					>
+
+					<?php if ( '' != $circle_percentage_feature && '0' != $circle_percentage_feature ) : ?>
+						<div class="chart-html5-circle">
+						</div>
+					<?php endif; ?>
 
 					<div class="chart-html5-inset <?php if ('icon' == $icon_type_feature && !empty($icon_feature)) echo 'chart-html5-inset-icon' ?>">
 						
@@ -218,7 +222,7 @@ if (TFCache::start_cache('feature', self::$post_id, array('ID' => $module_ID))):
 							<img src="<?php echo esc_url($image_feature); ?>" alt="<?php echo esc_attr($alt); ?>" />
 						<?php else : ?>
 							<?php if ('' != $icon_bg_feature) : ?><div class="module-feature-background" style="background: <?php echo esc_attr($this->stylesheet->get_rgba_color($icon_bg_feature)); ?>"></div><?php endif; ?>
-							<?php if ('' != $icon_feature) : ?><i class="module-feature-icon <?php echo esc_attr(themify_get_icon($icon_feature)); ?>" style="color: <?php echo esc_attr($this->stylesheet->get_rgba_color($icon_color_feature)); ?>"></i><?php endif; ?>
+							<?php if ('' != $icon_feature) : ?><i class="module-feature-icon <?php if( '' == $circle_percentage_feature || '0' == $circle_percentage_feature ) echo "no-circle"; ?> <?php echo esc_attr(themify_get_icon($icon_feature)); ?>" style="color: <?php echo esc_attr($this->stylesheet->get_rgba_color($icon_color_feature)); ?>"></i><?php endif; ?>
 						<?php endif; ?>
 
 					</div>

@@ -47,7 +47,8 @@ if(!function_exists('themify_before_shop_content')) {
 			<!-- content -->
 			<div id="content" class="<?php echo (is_product() || themify_is_shop()) ? 'list-post':''; ?>">
 				
-				<?php if(!themify_check('setting-hide_shop_breadcrumbs')) { ?>
+				<?php if( ! ( themify_check( 'setting-hide_shop_breadcrumbs' ) 
+					|| ( themify_check( 'setting-hide_shop_single_breadcrumbs' ) && is_product() ) ) ) { ?>
 				
 					<?php themify_breadcrumb_before(); ?>
 					

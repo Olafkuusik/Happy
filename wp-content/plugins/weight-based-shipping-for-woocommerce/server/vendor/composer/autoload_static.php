@@ -4,7 +4,7 @@
 
 namespace WbsVendors\Composer\Autoload;
 
-class ComposerStaticInit3d2de2f2ace99de36b3d7b2030d830f6
+class ComposerStaticInit51f686b33a4fd4fc87f6420f27e1bdb8
 {
     public static $files = array (
         'b411d774a68934fe83360f73e6fe640f' => __DIR__ . '/..' . '/dangoodman/composer-capsule-runtime/autoload.php',
@@ -69,15 +69,16 @@ class ComposerStaticInit3d2de2f2ace99de36b3d7b2030d830f6
         'WbsVendors\\Dgm\\Arrays\\Arrays' => __DIR__ . '/..' . '/dangoodman/arrays/Arrays.php',
         'WbsVendors\\Dgm\\ClassNameAware\\ClassNameAware' => __DIR__ . '/..' . '/dangoodman/class-name-aware/ClassNameAware.php',
         'WbsVendors\\Dgm\\SimpleProperties\\SimpleProperties' => __DIR__ . '/..' . '/dangoodman/simple-properties/SimpleProperties.php',
+        'WbsVendors_DgmWpDismissibleNotices' => __DIR__ . '/..' . '/dangoodman/wp-prerequisites-check/DgmWpDismissibleNotices.php',
         'WbsVendors_DgmWpPrerequisitesChecker' => __DIR__ . '/..' . '/dangoodman/wp-prerequisites-check/DgmWpPrerequisitesChecker.php',
     );
 
     public static function getInitializer(\WbsVendors\Composer\Autoload\ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = \WbsVendors\Composer\Autoload\ComposerStaticInit3d2de2f2ace99de36b3d7b2030d830f6::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = \WbsVendors\Composer\Autoload\ComposerStaticInit3d2de2f2ace99de36b3d7b2030d830f6::$prefixDirsPsr4;
-            $loader->classMap = \WbsVendors\Composer\Autoload\ComposerStaticInit3d2de2f2ace99de36b3d7b2030d830f6::$classMap;
+            $loader->prefixLengthsPsr4 = \WbsVendors\Composer\Autoload\ComposerStaticInit51f686b33a4fd4fc87f6420f27e1bdb8::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = \WbsVendors\Composer\Autoload\ComposerStaticInit51f686b33a4fd4fc87f6420f27e1bdb8::$prefixDirsPsr4;
+            $loader->classMap = \WbsVendors\Composer\Autoload\ComposerStaticInit51f686b33a4fd4fc87f6420f27e1bdb8::$classMap;
 
         }, null, \WbsVendors\Composer\Autoload\ClassLoader::class);
     }

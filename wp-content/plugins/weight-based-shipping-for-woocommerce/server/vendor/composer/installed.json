@@ -382,22 +382,23 @@
     },
     {
         "name": "dangoodman/wp-prerequisites-check",
-        "version": "1.0.0",
-        "version_normalized": "1.0.0.0",
+        "version": "1.1.0",
+        "version_normalized": "1.1.0.0",
         "source": {
             "type": "git",
             "url": "git@bitbucket.org:dangoodman/lib-wp-prerequisites-check.git",
-            "reference": "422cf1dd0d940e830b42ee5d222efe037c6c8cc2"
+            "reference": "d19787d3870f8e0617d58cc7bccd08256c835449"
         },
         "require": {
             "php": "^5.0"
         },
-        "time": "2017-01-15T12:14:59+00:00",
+        "time": "2017-06-05T15:55:21+00:00",
         "type": "library",
         "installation-source": "source",
         "autoload": {
             "classmap": [
-                "DgmWpPrerequisitesChecker.php"
+                "DgmWpPrerequisitesChecker.php",
+                "DgmWpDismissibleNotices.php"
             ]
         }
     }

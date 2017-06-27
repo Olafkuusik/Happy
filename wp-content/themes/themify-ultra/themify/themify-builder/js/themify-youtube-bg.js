@@ -549,87 +549,43 @@ var ytp = ytp || {};
     };
 
     /**
-     *
-     * @param align
-     * can be center, top, bottom, right, left; (default is center,center)
+     
      */
-    $.fn.optimizeDisplay = function (align) {
-        var YTPlayer = this.get(0),
-                vid = {};
-
-        YTPlayer.opt.align = align || YTPlayer.opt.align;
-
-        YTPlayer.opt.align = typeof YTPlayer.opt.align !== "undefined " ? YTPlayer.opt.align : "center,center";
-        var YTPAlign = YTPlayer.opt.align.split(",");
+    $.fn.optimizeDisplay = function () {
+        var YTPlayer = this.get(0);
 
         if (YTPlayer.opt.optimizeDisplay) {
-            var win = {};
-            var el = YTPlayer.wrapper;
-
-            win.width = el.outerWidth();
-            win.height = el.outerHeight();
-
-            vid.width = win.width + 100;
-            vid.height = YTPlayer.opt.ratio === "16/9" ? Math.ceil(vid.width * (9 / 16)) : Math.ceil(vid.width * (3 / 4));
-
-            vid.marginTop = -((vid.height - win.height) / 2);
-            vid.marginLeft = 0;
-
-            var lowest = vid.height < win.height;
-
-            if (lowest) {
-
-                vid.height = win.height;
-                vid.width = YTPlayer.opt.ratio === "16/9" ? Math.floor(win.height * (16 / 9)) : Math.floor(win.height * (4 / 3));
-
-                vid.marginTop = 0;
-                vid.marginLeft = -((vid.width - win.width) / 2);
-
-            }
-
-            for (var a in YTPAlign) {
-
-                //var al = YTPAlign[ a ].trim();
-                var al = YTPAlign[ a ].replace(/ /g, "");
-
-                switch (al) {
-
-                    case "top":
-                        vid.marginTop = lowest ? -((vid.height - win.height) / 2) : 0;
-                        break;
-
-                    case "bottom":
-                        vid.marginTop = lowest ? 0 : -(vid.height - win.height);
-                        break;
-
-                    case "left":
-                        vid.marginLeft = 0;
-                        break;
-
-                    case "right":
-                        vid.marginLeft = lowest ? -(vid.width - win.width) : 0;
-                        break;
-
-                    default:
-                        break;
-                }
-
-            }
-
-        } else {
-            vid.width = "100%";
-            vid.height = "100%";
-            vid.marginTop = 0;
-            vid.marginLeft = 0;
-        }
-
-        $(YTPlayer.playerEl).css({
-            width: vid.width,
-            height: vid.height,
-            marginTop: vid.marginTop,
-            marginLeft: vid.marginLeft
-        });
-
+            var el = YTPlayer.wrapper,
+            containerW = el.outerWidth(),
+            containerH = el.outerHeight();
+			containerW = containerW < $(window).width() ? containerW : $(window).width();
+			containerH = containerH < $(window).height() ?containerH : $(window).height();
+			console.log(containerW,el.outerWidth(),el)
+			var top = 0,
+				left = 0,
+				width = '',
+				height = '',
+				mediaAspect = YTPlayer.opt.ratio === "16/9"?16/9:YTPlayer.opt.ratio,
+				containerAspect = containerW/containerH;
+				if (containerAspect < mediaAspect) {
+					top = 0;
+					left = -(containerH*mediaAspect-containerW)/2;
+					width = containerH*mediaAspect;
+					height = containerH;
+				}
+				else{
+					top = -(containerW/mediaAspect-containerH)/2;
+					left = 0;
+					width = containerW;
+					height = containerW/mediaAspect;
+				}
+				YTPlayer.wrapper.find('.themify_ytb_playerbox').css({
+					top: top,
+					left: left,
+					width: width,
+					height: height
+				});
+		}
     };
 
 

@@ -1173,7 +1173,7 @@
 					var $self = $(this);
 					$(key + '-mode-wrap', control.container).hide();
 					$(key + '-' + $self.val() + '-mode', control.container).show();
-
+					
 					control.value[control.id].mode = $self.val();
 					$field.val(JSON.stringify(control.value[control.id])).trigger('change');
 				});
@@ -1208,6 +1208,33 @@
 		},
 		getCurrentDevice: function() {
 			return api.previewedDevice.get();
+		},
+		radioChange: function( $obj, key ) {
+			var control = this,
+				$field = $(control.field, control.container),
+				initVal = $obj.find( 'input[type="radio"]:checked' ).val();
+
+			$obj.find( 'input[type="radio"]' ).on('click', function () {
+				var val = $(this).val();
+
+				if ( control.isResponsiveStyling() ) {
+					if ( _.isUndefined( control.value[control.id][control.getCurrentDevice()] ) ) 
+						control.value[control.id][control.getCurrentDevice()] = {};
+
+					control.value[control.id][control.getCurrentDevice()][key] = val;
+				} else {
+					control.value[control.id][key] = val;
+					$obj.closest( '.customize-control' ).data( 'deskValue', val );
+				}
+
+				$obj.nextAll( '[class*="-mode-wrap"]' ).hide();
+				$obj.nextAll( '[class*="-' + val + '-mode"]' ).show();
+
+				$field.val(JSON.stringify(control.value[control.id])).trigger('change');
+			});
+
+			$obj.nextAll( '[class*="-mode-wrap"]' ).hide();
+			$obj.nextAll( '[class*="-' + initVal + '-mode"]' ).show();
 		}
 
 	});
@@ -1276,9 +1303,6 @@
 
 			control.value[control.id] = $field.val() ? $.parseJSON($field.val()) : {};
 
-			// Logo Mode Changer
-			control.changeMode('.logo');
-
 			// Site title
 			control.inputOption($('.site-name', control.container), 'blogname');
 
@@ -1324,6 +1348,9 @@
 
 			// Color Picker
 			control.pickColor();
+
+			// Logo Mode Changer
+			control.radioChange( $( '.logo-modes', control.container ), 'mode' )
 		}
 	});
 	api.controlConstructor.themify_logo = api.ThemifyLogo;
@@ -1914,5 +1941,30 @@
 	////////////////////////////////////////////////////////////////////////////
 	// Tools Control End
 	////////////////////////////////////////////////////////////////////////////
+
+	// Responsive Switcher Helper
+
+	function themifyResponsiveHelper() {
+		var buttons = '#customize-footer-actions .devices button', width, css;
+
+		$( 'body' ).on( 'click', buttons, function() {
+			var device = $( this ).data( 'device' ),
+				preview = $( '#customize-preview' );
+
+			if( typeof themifyCustomizerControls.responsiveBreakpoints === 'object'
+				&& ( width = themifyCustomizerControls.responsiveBreakpoints[ device ] ) ) {
+				css = {
+					width: width + 'px',
+					marginLeft: -width / 2
+				};
+			} else {
+				css = { width: '', marginLeft: '' };
+			}
+
+			preview.css( css );
+		} );
+	}
+	
+	themifyResponsiveHelper();
 
 })(wp, jQuery);

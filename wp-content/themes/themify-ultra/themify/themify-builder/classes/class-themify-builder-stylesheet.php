@@ -100,6 +100,9 @@ class Themify_Builder_Stylesheet {
 							continue;
 						}
 					}
+					elseif($value['prop']==='background-color' && ($value['id']==='cover_color' || $value['id']==='cover_color_hover') && isset($settings[$value['id'].'-type']) && $settings[$value['id'].'-type']!=='color'){
+						continue;
+					}
 					// Split color and opacity
 					$temp_color = explode( '_', $value['value'] );
 					$temp_opacity = isset($temp_color[1]) ? $temp_color[1] : '1';
@@ -373,8 +376,8 @@ class Themify_Builder_Stylesheet {
 		if( !empty( $column[ 'grid_width' ] ) ) {
 			$settings[ 'width' ] = $column[ 'grid_width' ] . '%';
 		}
-		echo $this->get_custom_styling($style_id, 'column', $settings);
 
+		echo $this->get_custom_styling($style_id, 'column', $settings);
 		// responsive styling
 		echo $this->render_responsive_style($style_id, 'column', $settings);
 	}
@@ -392,6 +395,7 @@ class Themify_Builder_Stylesheet {
 		$subrow['row_order'] = isset($subrow['row_order']) ? $subrow['row_order'] : '';
 		$settings = $subrow['styling'];
 		$style_id = '.themify_builder_sub_row.sub_row_'. $row . "-" . $column . "-" .$subrow['row_order'];
+
 		echo $this->get_custom_styling($style_id, 'subrow', $settings);
 		// responsive styling
 		echo $this->render_responsive_style($style_id, 'subrow', $settings);
@@ -412,8 +416,12 @@ class Themify_Builder_Stylesheet {
 		$sub_column['column_order'] = isset($sub_column['column_order']) ? $sub_column['column_order'] : '';
 		$settings = $sub_column['styling'];
 		$style_id = '.sub_column_post_' . $builder_id . '.sub_column_' . $rows . '-' .$cols . '-' . $modules . '-' . $sub_column['column_order'];
+		
+		if( !empty( $sub_column[ 'grid_width' ] ) ) {
+			$settings[ 'width' ] = $sub_column[ 'grid_width' ] . '%';
+		}
+
 		echo $this->get_custom_styling($style_id, 'sub_column', $settings);
-				
 				// responsive styling
 		echo $this->render_responsive_style($style_id, 'sub_column', $settings);
 	}
@@ -866,7 +874,7 @@ class Themify_Builder_Stylesheet {
 
 		if( !empty( $settings[ 'width' ] ) ) {
 			reset( $rules );
-			$style .= sprintf( '@media ( min-width: 1025px ) { %s{ width: %s; } }'
+			$style .= sprintf( '@media ( min-width: 1025px ) { %s{ width: %s !important; } }'
 				, key( $rules ), $settings[ 'width' ] );
 		}
 
@@ -1071,7 +1079,7 @@ class Themify_Builder_Stylesheet {
 							$selector = '.themify_builder_row' . $selector;
 						}
 
-						$css_col_custom .= sprintf( '%s{ width: %s; }' . "\n\t"
+						$css_col_custom .= sprintf( '%s{ width: %s !important; }' . "\n\t"
 							, $selector, $col[ 'grid_width' ] . '%' );
 						$css_to_save .= end( array_keys( $row['cols'] ) ) === $col_index
 							? sprintf( "@media (min-width: 1025px) {\n\t%s\n}\n", $css_col_custom ) : '';
@@ -1312,6 +1320,7 @@ class Themify_Builder_Stylesheet {
 					$result = array_merge($result, $this->make_styling_rules($tab['fields'], $settings, $empty));
 				}
 			} elseif( $option['type'] === 'image_and_gradient' && !$empty ) {
+				$new = false;
 				if( isset($settings[$option['id'] . '-type'], $settings[$option['id'] . '-gradient']) && $settings[$option['id'] . '-type'] === 'gradient' ) {
 					$new = array(
 						'id' => $option['id'],
@@ -1327,7 +1336,7 @@ class Themify_Builder_Stylesheet {
 						'type' => 'image'
 					);
 				}
-				if( isset( $new ) ) {
+				if( $new ) {
 					foreach ((array) $option['selector'] as $selector) {
 						$result[] = array_merge( $new, array( 'selector' => $selector ) );
 				   }

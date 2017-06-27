@@ -141,7 +141,7 @@ class TB_Feature_Module extends Themify_Builder_Module {
 			array(
 				'id' => 'overlap_image_feature',
 				'type' => 'image',
-				'label' => __( 'Overlap Image', 'themify' ),
+				'label' => __( 'Cover Image', 'themify' ),
 				'class' => 'xlarge',
 				'binding' => array(
 					'empty' => array( 'hide' => array( 'overlap_image_size' ) ),
@@ -492,7 +492,7 @@ class TB_Feature_Module extends Themify_Builder_Module {
 				'label' => __( 'Font Family', 'themify' ),
 				'class' => 'font-family-select',
 				'prop' => 'font-family',
-				'selector' => array( '.module-feature .module-feature-title', '.module-feature .module-feature-title a' )
+				'selector' => array( '.module-feature .module-feature-title:not(.module-title)', '.module-feature .module-feature-title a' )
 			),
 			array(
 				'id' => 'font_color_title',
@@ -500,7 +500,7 @@ class TB_Feature_Module extends Themify_Builder_Module {
 				'label' => __( 'Font Color', 'themify' ),
 				'class' => 'small',
 				'prop' => 'color',
-				'selector' => array( '.module-feature .module-feature-title', '.module-feature .module-feature-title a' )
+				'selector' => array( '.module-feature .module-feature-title:not(.module-title)', '.module-feature .module-feature-title a' )
 			),
 			array(
 				'id' => 'font_color_title_hover',
@@ -508,7 +508,7 @@ class TB_Feature_Module extends Themify_Builder_Module {
 				'label' => __( 'Color Hover', 'themify' ),
 				'class' => 'small',
 				'prop' => 'color',
-				'selector' => array( '.module-feature .module-feature-title:hover', '.module-feature .module-feature-title a:hover' )
+				'selector' => array( '.module-feature .module-feature-title:not(.module-title):hover', '.module-feature .module-feature-title a:hover' )
 			),
 			array(
 				'id' => 'multi_font_size_title',
@@ -520,7 +520,7 @@ class TB_Feature_Module extends Themify_Builder_Module {
 						'type' => 'text',
 						'class' => 'xsmall',
 						'prop' => 'font-size',
-						'selector' => '.module-feature .module-feature-title'
+						'selector' => '.module-feature .module-feature-title:not(.module-title)'
 					),
 					array(
 						'id' => 'font_size_title_unit',
@@ -539,7 +539,7 @@ class TB_Feature_Module extends Themify_Builder_Module {
 						'type' => 'text',
 						'class' => 'xsmall',
 						'prop' => 'line-height',
-						'selector' => '.module-feature .module-feature-title'
+						'selector' => '.module-feature .module-feature-title:not(.module-title)'
 					),
 					array(
 						'id' => 'line_height_title_unit',

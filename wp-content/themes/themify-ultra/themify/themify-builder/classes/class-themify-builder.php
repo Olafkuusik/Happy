@@ -929,8 +929,16 @@ class Themify_Builder {
 						wp_register_script('themify-builder-backend-js', themify_enque(THEMIFY_BUILDER_URI . "/js/themify-builder-backend.js"), array('jquery'), THEMIFY_VERSION, true);
 						wp_enqueue_script('themify-builder-backend-js');
 						$gutterClass = Themify_Builder_Model::get_grid_settings('gutter_class');
+						$excluded_key = 'setting-page_builder_exc_';
+						$builder_settings = themify_get_data();
+						$excluded_modules = array();
+						foreach ( $builder_settings as $key => $value ) {
+							if( strlen( $key ) > strlen( $excluded_key ) && substr( $key, 0, strlen( $excluded_key ) ) == $excluded_key && intval( $value ) === 1 ) {
+								array_push( $excluded_modules, str_replace( $excluded_key, '', $key ) );
+							}
+						}
 						wp_localize_script('themify-builder-backend-js', 'themifyBuilder', apply_filters('themify_builder_ajax_admin_vars', array(
-							'ajaxurl'            => admin_url('admin-ajax.php'),
+							'ajaxurl'            => admin_url('admin-ajax.php', 'relative'),
 							'tfb_load_nonce'     => wp_create_nonce('tfb_load_nonce'),
 							'tfb_url'            => THEMIFY_BUILDER_URI,
 							'post_ID'            => get_the_ID(),
@@ -950,6 +958,7 @@ class Themify_Builder {
 							// Output builder data to use by Backbone Models
 							'builder_data'       => $this->get_builder_data( get_the_ID() ),
 							'modules'            => Themify_Builder_Model::get_modules_localize_settings(),
+							'excludedModules'    => implode(',', $excluded_modules ),
 							'i18n'               => array(
 								'confirmRestoreRev'         => esc_html__('Save the current state as a revision before replacing?', 'themify'),
 								'dialog_import_page_post'   => esc_html__( 'Would you like to replace or append the builder?', 'themify' ),
@@ -962,7 +971,8 @@ class Themify_Builder {
 								'confirm_delete_layout'     => esc_html__('Are you sure want to delete this layout ?', 'themify'),
 								'enterRevComment'           => esc_html__('Add optional revision comment:', 'themify'),
 								'confirmDeleteRev'          => esc_html__('Are you sure want to delete this revision', 'themify'),
-								'switchToFrontendLabel'     => esc_html__( 'Themify Builder', 'themify' )
+								'switchToFrontendLabel'     => esc_html__( 'Themify Builder', 'themify' ),
+								'editExcludedModule'		=> esc_html__( 'This module is excluded from the Themify Builder settings and cant be edited', 'themify' )
 							)
 						)));
 						break;
@@ -1066,7 +1076,7 @@ class Themify_Builder {
 	 */
 	function builder_stylesheet_style_tag( $tag, $handle, $href, $media ) {
 		if( 'builder-styles' === $handle ) {
-			$tag = '<meta name="builder-styles-css" content="" id="builder-styles-css">' . "\n";
+			$tag = '<meta name="builder-styles-css" content="builder-styles-css" id="builder-styles-css">' . "\n";
 		}
 
 		return $tag;
@@ -1187,9 +1197,17 @@ class Themify_Builder {
 
 						$gutterClass = Themify_Builder_Model::get_grid_settings('gutter_class');
 						$columnAlignmentClass = Themify_Builder_Model::get_grid_settings('column_alignment_class');
+						$excluded_key = 'setting-page_builder_exc_';
+						$builder_settings = themify_get_data();
+						$excluded_modules = array();
+						foreach ( $builder_settings as $key => $value ) {
+							if( strlen( $key ) > strlen( $excluded_key ) && substr( $key, 0, strlen( $excluded_key ) ) == $excluded_key && intval( $value ) === 1 ) {
+								array_push( $excluded_modules, str_replace( $excluded_key, '', $key ) );
+							}
+						}
 						global $shortcode_tags;
 						wp_localize_script($script, 'themifyBuilder', apply_filters('themify_builder_ajax_front_vars', array(
-							'ajaxurl'                 => admin_url('admin-ajax.php'),
+							'ajaxurl'                 => admin_url('admin-ajax.php', 'relative'),
 							'isTouch'                 => themify_is_touch() ? 'true' : 'false',
 							'tfb_load_nonce'          => wp_create_nonce('tfb_load_nonce'),
 							'tfb_url'                 => THEMIFY_BUILDER_URI,
@@ -1209,6 +1227,7 @@ class Themify_Builder {
 							'breakpoints'             => themify_get_breakpoints(),
 							'element_style_rules'     => Themify_Builder_Model::get_elements_style_rules(),
 							'modules'                 => Themify_Builder_Model::get_modules_localize_settings(),
+							'excludedModules'         => implode( ',', $excluded_modules ),
 							'available_shortcodes'  => implode( '|', array_keys( $shortcode_tags ) ),
 							'i18n'                    => array(
 								'confirmRestoreRev'         => esc_html__('Save the current state as a revision before replacing?', 'themify'),
@@ -1224,7 +1243,9 @@ class Themify_Builder {
 								'errorSaveBuilder'          => esc_html__('Error saving. Please save again.', 'themify'),
 								// Revisions
 								'enterRevComment'           => esc_html__('Add optional revision comment:', 'themify'),
-								'confirmDeleteRev'          => esc_html__('Are you sure want to delete this revision', 'themify')
+								'confirmDeleteRev'          => esc_html__('Are you sure want to delete this revision', 'themify'),
+								'editExcludedModule'		=> esc_html__( 'This module is excluded from the Themify Builder settings and cant be edited', 'themify' ),
+								'excludedModule'            => esc_html__( 'Excluded module', 'themify' )
 							)
 						)));
 						wp_localize_script($script, 'themify_builder_plupload_init', $this->get_builder_plupload_init());
@@ -1895,6 +1916,8 @@ class Themify_Builder {
 		include_once( sprintf("%s/themify-builder-js-tmpl-front.php", THEMIFY_BUILDER_INCLUDES_DIR) );
 		include_once( sprintf("%s/themify-builder-module-panel.php", THEMIFY_BUILDER_INCLUDES_DIR) );
 		$this->components_manager->render_components_form_content();
+
+		do_action( 'themify_builder_load_javascript_templates' );
 	}
 
 	/**
@@ -1904,6 +1927,8 @@ class Themify_Builder {
 		include_once( sprintf("%s/themify-builder-js-tmpl-common.php", THEMIFY_BUILDER_INCLUDES_DIR) );
 		include_once( sprintf("%s/themify-builder-js-tmpl-admin.php", THEMIFY_BUILDER_INCLUDES_DIR) );
 		$this->components_manager->render_components_form_content();
+
+		do_action( 'themify_builder_load_javascript_templates' );
 	}
 
 	/**
@@ -3165,7 +3190,7 @@ class Themify_Builder {
 		// Start Column Render ######
 		?>
 
-		<div class="<?php  esc_attr_e($print_column_classes); ?>" <?php echo $video_data; ?>>
+		<div <?php if(Themify_Builder_Model::is_frontend_editor_page() && !empty($col['grid_width'])):?>style="width:<?php echo $col['grid_width']?>%;"<?php endif;?> class="<?php  esc_attr_e($print_column_classes); ?>" <?php echo $video_data; ?>>
 
 			<?php
 			if (isset($col['styling'])) {
@@ -3464,9 +3489,10 @@ class Themify_Builder {
 			$output = PHP_EOL; // add line break
 			ob_start();
 		}
-
-		echo sprintf('<div class="%s" %s>', esc_attr($print_sub_col_classes), $video_data);
-
+?>
+		<div <?php if(Themify_Builder_Model::is_frontend_editor_page() && !empty($sub_col['grid_width'])):?>style="width:<?php echo $sub_col['grid_width']?>%;"<?php endif;?> class="<?php esc_attr_e($print_sub_col_classes)?>" <?php echo $video_data?>>
+<?php
+	
 		if (isset($sub_col['styling'])) {
 			$sub_column_order = $rows . '-' . $cols . '-' . $modules . '-' . $col_key;
 						do_action('themify_builder_background_styling',$sub_col,$sub_column_order,'sub-col');
@@ -3599,8 +3625,7 @@ class Themify_Builder {
 		$return = array();
 		if (!empty($slug_arr)) {
 			foreach ($slug_arr as $slug) {
-							$return[] = $this->get_id_by_slug(trim($slug));
-							$return[] = $post_type;
+							$return[] = $this->get_id_by_slug(trim($slug), $post_type);
 			}
 		}
 		return $return;

@@ -82,7 +82,7 @@ class TB_Gallery_Module extends Themify_Builder_Module {
 				'id' => 'gallery_per_page',
 				'type' => 'text',
 				'label' => __( 'Images per page', 'themify' ),
-				'wrap_with_class' => 'tf-group-element tf-group-element-grid tf-checkbox-element tf-checkbox-element-pagination',
+				'wrap_with_class' => 'ui-helper-hidden tf-group-element tf-checkbox-element tf-checkbox-element-pagination',
 				'class' => 'xsmall',
 			),
 			array(

@@ -121,21 +121,6 @@ class Themify_Builder_Component_Column extends Themify_Builder_Component_Base {
 			Themify_Builder_Model::get_field_group( 'padding', '.module_column', 'bottom' ),
 			Themify_Builder_Model::get_field_group( 'padding', '.module_column', 'left' ),
 			Themify_Builder_Model::get_field_group( 'padding', '.module_column', 'all' ),
-			// Margin
-			array(
-				'type' => 'separator',
-				'meta' => array( 'html' => '<hr />' )
-			),
-			array(
-				'id' => 'separator_margin',
-				'type' => 'separator',
-				'meta' => array( 'html' => '<h4>' . __( 'Margin', 'themify') . '</h4>' ),
-			),
-			Themify_Builder_Model::get_field_group( 'margin', '.module_column', 'top' ),
-			Themify_Builder_Model::get_field_group( 'margin', '.module_column', 'right' ),
-			Themify_Builder_Model::get_field_group( 'margin', '.module_column', 'bottom' ),
-			Themify_Builder_Model::get_field_group( 'margin', '.module_column', 'left' ),
-			Themify_Builder_Model::get_field_group( 'margin', '.module_column', 'all' ),
 			// Border
 			array(
 				'type' => 'separator',

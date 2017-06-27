@@ -1,3 +1,6 @@
+# This file was updated by Duplicator on 2017-06-27 08:51:06. See .htaccess.orig for the original .htaccess file.
+# Please note that other plugins and resources write to this file. If the time-stamp above is different
+# than the current time-stamp on the file system then another resource has updated this file.
 
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
@@ -8,5 +11,4 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /happy/index.php [L]
 </IfModule>
-
 # END WordPress

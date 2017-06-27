@@ -81,9 +81,43 @@
 </script>
 
 <script type="text/html" id="tmpl-builder_module_item_draggable">
-	<div class="themify_builder_module_outer">
+	<div class="themify_builder_module_outer search_able_item">
 		<div class="themify_builder_module module-type-{{data.slug}}" data-module-slug="{{data.slug}}" data-module-name="{{data.name}}">
-			<strong class="module_name">{{data.name}}</strong> <a href="#" class="add_module_btn" title="<?php esc_html_e( 'Add module', 'themify' );?>"><?php esc_html_e( 'Add', 'themify' );?></a>
+			<strong class="module_name search_able_title">{{data.name}}</strong> <a href="#" class="add_module_btn" title="<?php esc_html_e( 'Add module', 'themify' );?>"><?php esc_html_e( 'Add', 'themify' );?></a>
+		</div>
+	</div>
+</script>
+
+<script type="text/html" id="tmpl-builder_addon_popover">
+	<div class="tb_plus_btn_popover">
+		<div class="module_search_wrap">
+			<ul class="tb_module_types">
+				<li class="active"><a href="#" data-target="tb_pc_module_holder">Modules</a></li>
+				<li><a href="#" data-target="tb_module_panel_rows_wrap">Rows</a></li>
+			</ul>
+			<div id="tb_module_panel_search">
+				<input type="text" class="tb_module_panel_search_text">
+			</div>
+		</div>
+		<div class="tb_popover_content tb_pc_module_holder"></div>
+		<div class="tb_popover_content tb_module_panel_rows_wrap" style="display:none;">
+			<div class="tb_row_cat_filter_wrap">
+				<span class="tb_row_cat_filter_active">All</span>
+				<!-- /tb_row_cat_filter_active -->
+				<ul class="tb_row_cat_filter">
+					<li><a href="#">All</a></li>
+					<!-- Fetch Testimonials from themify server with JS -->
+				</ul>
+				<!-- /tb_row_cat_filter -->
+			</div>
+			<!-- /tb_row_cat_filter_wrap -->
+			
+			<div class="tb_predesigned_rows_list">
+			
+				<!-- Fetch Pre-Design Rows from themify server with JS -->
+				
+			</div>
+			<!-- /tb_predesigned_rows_list -->
 		</div>
 	</div>
 </script>

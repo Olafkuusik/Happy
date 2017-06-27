@@ -690,7 +690,12 @@ function themify_search_excludes_cpt( $query ) {
 					$types[] = 'page';
 				}
 			} else {
-				$types = array( $query->query_vars['post_type'] );
+				// Check if only product post
+				if( $query->query_vars['post_type'] === 'product' ) {
+					$types = array( $query->query_vars['post_type'] );
+				} else {
+					$types = $query->query_vars['post_type'];
+				}
 			}
 		}
 
@@ -818,6 +823,20 @@ function themify_404_header() {
 	remove_action( 'wp', 'themify_404_header' );
 	status_header( 404 );
 	nocache_headers();
+
+	global $themify;
+	$themify->is_custom_404 = true;
+}
+
+/**
+ * Conditional tag to check if a custom 404 page is enabled
+ *
+ * @return bool
+ */
+function themify_is_custom_404() {
+	global $themify;
+
+	return isset( $themify->is_custom_404 ) && $themify->is_custom_404;
 }
 
 /**
@@ -992,10 +1011,27 @@ add_filter('the_excerpt', 'do_shortcode');
 add_filter('the_excerpt', 'shortcode_unautop');
 
 /**
- * Enable shortcode in text widget
+ * Enable shortcodes in Text widget
+ *
+ * @return string
  */
-add_filter('widget_text', 'do_shortcode');	
-add_filter('widget_text', 'shortcode_unautop');
+function themify_filter_widget_text( $text, $instance ) {
+	if( isset( $instance['filter'] ) && 'content' === $instance['filter'] ) {
+		/* if $instance['filter'] is set to "content", this is a WP 4.8+ widget,
+		 * leave it as is, since it's processed in the widget_text_content filter
+		 */
+		return $text;
+	}
+
+	$text = do_shortcode( $text );
+	$text = shortcode_unautop( $text );
+	return $text;
+}
+add_filter( 'widget_text', 'themify_filter_widget_text', 10, 2 );
+/**
+ * Enable shortcodes in Text widget for Wp 4.8+
+ */
+add_filter( 'widget_text_content', 'do_shortcode', 12 );
 
 /**
  * Load assets required by Themify framework

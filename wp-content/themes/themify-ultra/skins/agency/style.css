@@ -549,6 +549,15 @@ a.shortcode.button.outline.blue,
 	font-size: 0.9em;
 }
 
+.themify_builder_row.agency-row-overlap {
+	z-index: 2;
+	margin-top: -80px;
+	margin-bottom: -80px;
+}
+.themify_builder_active .themify_builder_row.agency-row-overlap {
+	margin-bottom: -20px;
+}
+
 /************************************************************************************
 MOBILE MENU ACTIVE
 *************************************************************************************/

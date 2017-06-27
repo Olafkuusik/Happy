@@ -15,7 +15,7 @@ class Themify_Metabox {
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 		add_action( 'pre_post_update', array( $this, 'save_postdata' ), 101 );
 		add_action( 'save_post', array( $this, 'save_postdata' ), 101 );
-		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 1 );
+		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 11 );
 		add_filter( 'is_protected_meta', array( $this, 'protected_meta' ), 10, 3 );
 	}
 
@@ -334,7 +334,7 @@ class Themify_Metabox {
 		global $typenow;
 
 		wp_enqueue_style( 'themify-datetimepicker-css', THEMIFY_METABOX_URI . 'css/jquery-ui-timepicker.min.css', array() );
-		wp_register_style( 'themify-colorpicker', THEMIFY_METABOX_URI . 'css/jquery.minicolors.min.css', array() );
+		wp_register_style( 'themify-colorpicker', THEMIFY_METABOX_URI . 'css/jquery.minicolors.css', array() );
 		wp_register_style( 'themify-metabox', THEMIFY_METABOX_URI . 'css/styles.css', array( 'themify-colorpicker' ) );
 
 		wp_register_script( 'meta-box-tabs', THEMIFY_METABOX_URI . 'js/meta-box-tabs.js', array( 'jquery' ), '1.0', true );
@@ -424,4 +424,4 @@ class Themify_Metabox {
 	}
 }
 endif;
-add_action( 'init', 'Themify_Metabox::get_instance', 5 );
+add_action( 'init', 'Themify_Metabox::get_instance', 10 );

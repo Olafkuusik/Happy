@@ -145,9 +145,7 @@ HEADER
 .header-menu-split #headerwrap {
 	border-top: 3px solid #ff887b;	
 }
-.header-menu-split.fixed-header-on #site-logo {
-	margin-top: -.5em;
-}
+
 /* site logo in split-menu layout */
 #main-nav li #site-logo a{
 	padding-bottom: 0;
@@ -457,6 +455,11 @@ BUILDER
 /************************************************************************************
 MEDIA QUERIES
 *************************************************************************************/
+.mobile_menu_active #site-logo {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
 @media screen and (min-width: 761px) {
 	/* Timeline */
 	#pagewrap .module-timeline.layout-list > ul::before {		

@@ -64,17 +64,17 @@ FixedHeader = {
 			if( $( '#gallery-controller' ).length > 0 ) {
 				FixedHeader.hasHeaderSlider = true;
 			}
-                        if(themifyScript.sticky_header){
-                            var img = '<img id="sticky_header_logo" src="' + themifyScript.sticky_header.src + '"';
-                                if(themifyScript.sticky_header.imgwidth){
-                                    img+=' width="'+themifyScript.sticky_header.imgwidth+'"';
-                                }
-                                if(themifyScript.sticky_header.imgheight){
-                                    img+=' height="'+themifyScript.sticky_header.imgheight+'"';
-                                }
-                                img+='/>';
-                            $('#site-logo a').prepend(img);
-                        }
+						if(themifyScript.sticky_header){
+							var img = '<img id="sticky_header_logo" src="' + themifyScript.sticky_header.src + '"';
+								if(themifyScript.sticky_header.imgwidth){
+									img+=' width="'+themifyScript.sticky_header.imgwidth+'"';
+								}
+								if(themifyScript.sticky_header.imgheight){
+									img+=' height="'+themifyScript.sticky_header.imgheight+'"';
+								}
+								img+='/>';
+							$('#site-logo a').prepend(img);
+						}
 			$( 'body' ).on( 'announcement_bar_position', FixedHeader.calculateHeaderHeight );
 			$( 'body' ).on( 'announcement_bar_scroll_on_after', FixedHeader.calculateHeaderHeight );
 		}
@@ -400,7 +400,7 @@ function doInfinite( $container, selector ) {
 						$container.isotope('appended', $newElems );
 					}
 				}
-                                if ($container.hasClass('auto_tiles') && $('body').hasClass('tile_enable')) {
+								if ($container.hasClass('auto_tiles') && $('body').hasClass('tile_enable')) {
 					$container.trigger('infiniteloaded.themify', [$newElems]);
 				}
 				if ( LayoutAndFilter.filterActive ) {
@@ -472,32 +472,32 @@ LayoutAndFilter = {
 					e.preventDefault();
 					var $li = $(this).parent(),
 						$entries = $li.parent().next(),
-                                                $cat = false,
-                                                $auto = $('body').hasClass('tile_enable') && $entries.hasClass('auto_tiles');
+												$cat = false,
+												$auto = $('body').hasClass('tile_enable') && $entries.hasClass('auto_tiles');
 					if ( $li.hasClass('active') ) {
 						$li.removeClass('active');
-                                                if (!$auto) {
-                                                    $entries.isotope({
-                                                            masonry: {
-                                                                    columnWidth: $entries.children('.grid-sizer').length>0?'.grid-sizer':null,
-                                                                    gutter: $entries.children('.gutter-sizer').length>0?'.gutter-sizer':null
-                                                            },
-                                                            filter: '.post',
-                                                            isOriginLeft : ! $( 'body' ).hasClass( 'rtl' )
-                                                    });
-                                                }
+												if (!$auto) {
+													$entries.isotope({
+															masonry: {
+																	columnWidth: $entries.children('.grid-sizer').length>0?'.grid-sizer':null,
+																	gutter: $entries.children('.gutter-sizer').length>0?'.gutter-sizer':null
+															},
+															filter: '.post',
+															isOriginLeft : ! $( 'body' ).hasClass( 'rtl' )
+													});
+												}
 					} else {
 						$li.siblings('.active').removeClass('active');
 						$li.addClass('active');
-                                                $cat = $li.attr('class').replace(/(current-cat)|(cat-item)|(-)|(active)/g, '').replace(' ', '');
-                                                if (!$auto) {
-                                                    $entries.isotope({
-                                                            filter: '.cat-' + $cat,
-                                                            isOriginLeft : ! $( 'body' ).hasClass( 'rtl' )
-                                                    });
-                                                }
+												$cat = $li.attr('class').replace(/(current-cat)|(cat-item)|(-)|(active)/g, '').replace(' ', '');
+												if (!$auto) {
+													$entries.isotope({
+															filter: '.cat-' + $cat,
+															isOriginLeft : ! $( 'body' ).hasClass( 'rtl' )
+													});
+												}
 					}
-                                        if (!e.isTrigger && $auto && $entries.data('themify_tiles')) {
+										if (!e.isTrigger && $auto && $entries.data('themify_tiles')) {
 						var $post = $entries.children('.post');
 						$post.show();
 						if ($cat) {
@@ -517,12 +517,12 @@ LayoutAndFilter = {
 			};
 		if ( $filter.find('a').length ) {
 			if( typeof $.fn.isotope !== 'function' ) {
-                        Themify.LoadAsync(themifyScript.themeURI + '/js/jquery.isotope.min.js', initFilter,
-                            null,
-                            null,
-                            function () {
-                                return ('undefined' !== typeof $.fn.isotope);
-                            } );
+						Themify.LoadAsync(themifyScript.themeURI + '/js/jquery.isotope.min.js', initFilter,
+							null,
+							null,
+							function () {
+								return ('undefined' !== typeof $.fn.isotope);
+							} );
 			} else {
 				initFilter();
 			}
@@ -550,40 +550,54 @@ LayoutAndFilter = {
 		});
 	},
 	layout: function() {
-			
-                $('.post-filter+.loops-wrapper,.masonry:not(.list-post)')
-                        .addClass('masonry-done')
-                        .isotope({
-                                masonry: {
-                                        columnWidth: '.grid-sizer',
-                                        gutter: '.gutter-sizer'
-                                },
-                                itemSelector: '.loops-wrapper > article',
-                                isOriginLeft : ! $( 'body' ).hasClass( 'rtl' )
-                        })
-                        .isotope( 'once', 'layoutComplete', function() {
-                                $(window).trigger('resize');
-                        });
-                if(themifyScript.shop_masonry==='yes'){
-                    var $products = $('.woocommerce.archive').find('#content').find('ul.products');
-                    if ( $products.length ) {
-                            $products.imagesLoaded(function(){
-                                    $products.isotope({
-                                            layoutMode: 'packery',
-                                            itemSelector : '.product',
-                                            isOriginLeft : ! $( 'body' ).hasClass( 'rtl' )
-                                    }).addClass('masonry-done');
-                            });
-                    }
-                }
+		var posts = $('.loops-wrapper.masonry:not(.list-post)');
+		if( posts.length > 0 ) {
+			var last = posts.children('.loops-wrapper > article').last();
+			function callback(){
+				posts
+					.addClass('masonry-done')
+					.isotope({
+						masonry: {
+							columnWidth: '.grid-sizer',
+							gutter: '.gutter-sizer'
+						},
+						itemSelector: '.loops-wrapper > article',
+						isOriginLeft : ! $( 'body' ).hasClass( 'rtl' )
+					})
+					.isotope( 'once', 'layoutComplete', function() {
+						$(window).trigger('resize');
+					});
+			}
+			if(last.hasClass('wow')){
+				last.one('webkitAnimationEnd oanimationend msAnimationEnd animationend',function(){
+					setTimeout(callback,1000);
+				});
+			}
+			else{
+				callback();
+			}
+		}
+
+		if(themifyScript.shop_masonry==='yes'){
+			var $products = $('.woocommerce.archive').find('#content').find('ul.products');
+			if ( $products.length ) {
+				$products.imagesLoaded(function(){
+					$products.isotope({
+						layoutMode: 'packery',
+						itemSelector : '.product',
+						isOriginLeft : ! $( 'body' ).hasClass( 'rtl' )
+					}).addClass('masonry-done');
+				});
+			}
+		}
 		var $gallery = $('.gallery-wrapper.packery-gallery');
 		if ( $gallery.length > 0 ) {
-					$gallery.imagesLoaded(function(){
-						$gallery.isotope({
-							layoutMode: 'packery',
-							itemSelector: '.item'
-						});
-					});
+			$gallery.imagesLoaded(function(){
+				$gallery.isotope({
+					layoutMode: 'packery',
+					itemSelector: '.item'
+				});
+			});
 		}
 	},
 	reLayout: function() {
@@ -597,14 +611,20 @@ LayoutAndFilter = {
 		if ( $gallery.length > 0 && 'object' === typeof $gallery.data('isotope') ) {
 			$gallery.isotope('layout');
 		}
-                if(themifyScript.shop_masonry==='yes'){
-                    var $products = $('.woocommerce.archive').find('#content').find('ul.products');
-                    if ( $products.length && 'object' === typeof $products.data('isotope') ) {
-                            $products.isotope('layout');
-                    }
-                }
+		if(themifyScript.shop_masonry==='yes'){
+			var $products = $('.woocommerce.archive').find('#content').find('ul.products');
+			if ( $products.length && 'object' === typeof $products.data('isotope') ) {
+				$products.isotope('layout');
+			}
+		}
 	}
 };
+
+/* reapply the layout when Builder loads module preview */
+jQuery( 'body' ).on( 'builder_load_module_partial builder_toggle_frontend', function(){
+	LayoutAndFilter.init();
+	LayoutAndFilter.layout();
+} );
 
 // DOCUMENT READY
 $(document).ready(function() {
@@ -651,11 +671,11 @@ $(document).ready(function() {
 					LayoutAndFilter.layout();
 				});
 			},
-                            null,
-                            null,
-                            function () {
-                                return ('undefined' !== typeof $.fn.isotope);
-                            });
+							null,
+							null,
+							function () {
+								return ('undefined' !== typeof $.fn.isotope);
+							});
 		} else {
 			LayoutAndFilter.init();
 			LayoutAndFilter.layout();
@@ -762,21 +782,21 @@ $(document).ready(function() {
 		});
 				
 		var $overlay = $( '<div class="body-overlay">' );
-        $body.append( $overlay ).on( 'sidemenushow.themify', function () {
-            $overlay.addClass( 'body-overlay-on' );
-        } ).on( 'sidemenuhide.themify', function () {
-            $overlay.removeClass( 'body-overlay-on' );
-        } ).on( 'click.themify touchend.themify', '.body-overlay', function () {
-            $( '#menu-icon' ).themifySideMenu( 'hide' );
-            $( '#cart-icon' ).themifySideMenu( 'hide' );
-        } ); 
-        $(window).resize(function(){
-            if( $( '#menu-icon' ).is(':visible') && $('#mobile-menu').hasClass('sidemenu-on')){
-                $overlay.addClass( 'body-overlay-on' );
-            } else {
-                $overlay.removeClass( 'body-overlay-on' );
-            }
-        });
+		$body.append( $overlay ).on( 'sidemenushow.themify', function () {
+			$overlay.addClass( 'body-overlay-on' );
+		} ).on( 'sidemenuhide.themify', function () {
+			$overlay.removeClass( 'body-overlay-on' );
+		} ).on( 'click.themify touchend.themify', '.body-overlay', function () {
+			$( '#menu-icon' ).themifySideMenu( 'hide' );
+			$( '#cart-icon' ).themifySideMenu( 'hide' );
+		} ); 
+		$(window).resize(function(){
+			if( $( '#menu-icon' ).is(':visible') && $('#mobile-menu').hasClass('sidemenu-on')){
+				$overlay.addClass( 'body-overlay-on' );
+			} else {
+				$overlay.removeClass( 'body-overlay-on' );
+			}
+		});
 	}
 
 
@@ -1041,7 +1061,7 @@ $(document).ready(function() {
 
 		$body.on('themify_onepage_afterload', function (e, $panel) {
 			// Trigger wow display for elements in this panel
-			if (tbLocalScript && tbLocalScript.animationInviewSelectors && typeof ThemifyBuilderModuleJs.wow !== 'undefined' && ThemifyBuilderModuleJs.wow) {
+			if (tbLocalScript && tbLocalScript.animationInviewSelectors && typeof ThemifyBuilderModuleJs !== 'undefined' && ThemifyBuilderModuleJs.wow) {
 				$(tbLocalScript.animationInviewSelectors).each(function (i, selector) {
 					$(selector, $panel).each(function () {
 						ThemifyBuilderModuleJs.wow.show(this);
@@ -1084,11 +1104,11 @@ $(document).ready(function() {
 	}
 
 	//Fix overlay style regardless the featured image position above/below post title
-    jQuery(".loops-wrapper.overlay .post").each(function () {
-  		jQuery(this).find('.post-image').insertBefore(jQuery(this).find('.post-content'));        
-    });
+	jQuery(".loops-wrapper.overlay .post").each(function () {
+		jQuery(this).find('.post-image').insertBefore(jQuery(this).find('.post-content'));        
+	});
 
-    /////////////////////////////////////////////
+	/////////////////////////////////////////////
 	// Mega Menu
 	/////////////////////////////////////////////
 	var megaMenuInit = function() {
@@ -1111,7 +1131,7 @@ $(document).ready(function() {
 	};
 	if( $('.has-mega-sub-menu').length ) {
 		if( typeof $.fn.ThemifyMegaMenu !== 'function' ) {
-			Themify.LoadAsync( themifyScript.themeURI + '/js/themify.mega-menu.js', megaMenuInit );
+			Themify.LoadAsync( themifyScript.themeURI + '/themify/megamenu/js/themify.mega-menu.js', megaMenuInit );
 		} else {
 			megaMenuInit();
 		}
@@ -1271,11 +1291,13 @@ $(window).load(function() {
 						var $sectionEl = usesRows ? $('.tb_section-' + hashSection) : $('#' + hashSection);
 						if ($sectionEl.length > 0) {
 							$.fn.fullpage.moveTo($sectionEl.index() + 1);
-							$(tbLocalScript.animationInviewSelectors).each(function (i, selector) {
-								$(selector, $sectionEl).addBack().each(function () {
-									ThemifyBuilderModuleJs.wow.show(this);
+							if( typeof ThemifyBuilderModuleJs !== 'undefined' ) {
+								$(tbLocalScript.animationInviewSelectors).each(function (i, selector) {
+									$(selector, $sectionEl).addBack().each(function () {
+										ThemifyBuilderModuleJs.wow.show(this);
+									});
 								});
-							});
+							}
 						}
 					}
 				}, 1500);
@@ -1365,87 +1387,87 @@ $(window).load(function() {
 
 		return false;
 	});
-        
-        	
-        function ThemifyTiles(container) {
-            var dummy = $('<div class="post-tiled tiled-square-small" style="visibility: hidden !important; opacity: 0;" />').appendTo(container.first()),
-                    $gutter = themifyScript.tiledata['padding'],
-                    $small = parseFloat(dummy.width());
+		
+			
+		function ThemifyTiles(container) {
+			var dummy = $('<div class="post-tiled tiled-square-small" style="visibility: hidden !important; opacity: 0;" />').appendTo(container.first()),
+					$gutter = themifyScript.tiledata['padding'],
+					$small = parseFloat(dummy.width());
 					dummy.remove();
 
-            container.each(function () {
-                var $this = $(this);
-                $(this).imagesLoaded().always(function (instance) {
-                    $this.children('.product').addClass('post');
-                    var $post = $this.children('.post');
-                    themifyScript.tiledata['padding'] = $this.hasClass('no-gutter') ? 0 : $gutter;
-                    $this.themify_tiles(themifyScript.tiledata, $small);
-                    setClasses($post, $small);
-                });
-            });
+			container.each(function () {
+				var $this = $(this);
+				$(this).imagesLoaded().always(function (instance) {
+					$this.children('.product').addClass('post');
+					var $post = $this.children('.post');
+					themifyScript.tiledata['padding'] = $this.hasClass('no-gutter') ? 0 : $gutter;
+					$this.themify_tiles(themifyScript.tiledata, $small);
+					setClasses($post, $small);
+				});
+			});
 
-        }
-        ;
-        function AjaxThemifyTiles(container) {
+		}
+		;
+		function AjaxThemifyTiles(container) {
 
-            $(document).ajaxComplete(function (e, request, settings) {
-                if (settings.type === 'POST' && settings.url.indexOf('wpf_search')) {
-                    ThemifyTiles($('.loops-wrapper.auto_tiles'))
-                }
-            });
-        }
-        var container = $('.auto_tiles');
-        if (container.length > 0 && $body.hasClass('tile_enable')) {
-            if ('undefined' === typeof Tiles) {
-                Themify.LoadAsync(themifyScript.themeURI + '/js/tiles.min.js', function () {
-                    if (!$.fn.themify_tiles) {
-                        if('undefined' === typeof $.fn.backstretch){
-                            Themify.LoadAsync(themify_vars.url + '/js/backstretch.min.js', function () {
-                                Themify.LoadAsync(themifyScript.themeURI + '/js/themify-tiles.js', function () {
-                                    ThemifyTiles(container);
-                                    AjaxThemifyTiles(container);
-                                },
-                                null,
-                                null,
-                                function () {
-                                    return ('undefined' !== typeof $.fn.themify_tiles);
-                                });
-                            },
-                            null,
-                            null,
-                            function () {
-                                return ('undefined' !== typeof $.fn.backstretch);
-                            });
-                        }
-                        else{
-                            Themify.LoadAsync(themifyScript.themeURI + '/js/themify-tiles.js', function () {
-                                ThemifyTiles(container);
-                                AjaxThemifyTiles(container);
-                            },
-                            null,
-                            null,
-                            function () {
-                                return ('undefined' !== typeof $.fn.themify_tiles);
-                            });
-                        }
-                    }
-                    else {
-                        ThemifyTiles(container);
-                        AjaxThemifyTiles(container);
-                    }
-                }
-                , null,
-                        null,
-                        function () {
-                            return ('undefined' !== typeof Tiles);
-                        });
-            }
-            else {
-                ThemifyTiles(container);
-                AjaxThemifyTiles(container);
-            }
+			$(document).ajaxComplete(function (e, request, settings) {
+				if (settings.type === 'POST' && settings.url.indexOf('wpf_search')) {
+					ThemifyTiles($('.loops-wrapper.auto_tiles'))
+				}
+			});
+		}
+		var container = $('.auto_tiles');
+		if (container.length > 0 && $body.hasClass('tile_enable')) {
+			if ('undefined' === typeof Tiles) {
+				Themify.LoadAsync(themifyScript.themeURI + '/js/tiles.min.js', function () {
+					if (!$.fn.themify_tiles) {
+						if('undefined' === typeof $.fn.backstretch){
+							Themify.LoadAsync(themify_vars.url + '/js/backstretch.min.js', function () {
+								Themify.LoadAsync(themifyScript.themeURI + '/js/themify-tiles.js', function () {
+									ThemifyTiles(container);
+									AjaxThemifyTiles(container);
+								},
+								null,
+								null,
+								function () {
+									return ('undefined' !== typeof $.fn.themify_tiles);
+								});
+							},
+							null,
+							null,
+							function () {
+								return ('undefined' !== typeof $.fn.backstretch);
+							});
+						}
+						else{
+							Themify.LoadAsync(themifyScript.themeURI + '/js/themify-tiles.js', function () {
+								ThemifyTiles(container);
+								AjaxThemifyTiles(container);
+							},
+							null,
+							null,
+							function () {
+								return ('undefined' !== typeof $.fn.themify_tiles);
+							});
+						}
+					}
+					else {
+						ThemifyTiles(container);
+						AjaxThemifyTiles(container);
+					}
+				}
+				, null,
+						null,
+						function () {
+							return ('undefined' !== typeof Tiles);
+						});
+			}
+			else {
+				ThemifyTiles(container);
+				AjaxThemifyTiles(container);
+			}
 
-        }
+		}
 
 });
 })(jQuery);

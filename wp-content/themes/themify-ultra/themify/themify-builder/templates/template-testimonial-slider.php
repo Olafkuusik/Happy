@@ -158,7 +158,11 @@ $paged = $this->get_paged_query();
 				<div class="testimonial-author">
 					<div class="person-name"><?php echo $content['person_name_testimonial']; ?></div>
 					<div class="person-company">
-				<span class="person-position"><?php echo $content['person_position_testimonial']; ?></span>, <span class="person-company"><?php if(!empty($content['company_website_testimonial'])){ ?><a href="<?php echo $content['company_website_testimonial']; ?>"><?php } ?><?php echo $content['company_testimonial']; ?><?php if(!empty($content['company_website_testimonial'])){ ?></a><?php } ?></span>
+				<?php if( !empty( $content['person_position_testimonial'] ) ): ?>
+					<span class="person-position"><?php echo $content['person_position_testimonial']; ?></span>,
+				<?php endif; ?>
+				
+				<span class="person-company"><?php if(!empty($content['company_website_testimonial'])){ ?><a href="<?php echo $content['company_website_testimonial']; ?>"><?php } ?><?php echo $content['company_testimonial']; ?><?php if(!empty($content['company_website_testimonial'])){ ?></a><?php } ?></span>
 					</div>
 				</div>
 				<?php } ?>
